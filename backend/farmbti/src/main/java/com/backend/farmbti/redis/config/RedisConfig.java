@@ -12,15 +12,20 @@ public class RedisConfig {
 
 	@Bean
 	public RedisConnectionFactory redisConnectionFactory() {
-		return new LettuceConnectionFactory("farmbti-redis", 6379);
+		return new LettuceConnectionFactory();
 	}
 
 	@Bean
-	public RedisTemplate<String, Object> redisTemplate() {
+	public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory factory) {
 		RedisTemplate<String, Object> template = new RedisTemplate<>();
-		template.setConnectionFactory(redisConnectionFactory());
-		template.setKeySerializer(new StringRedisSerializer());
-		template.setValueSerializer(new StringRedisSerializer());
+		template.setConnectionFactory(factory);
+		StringRedisSerializer serializer = new StringRedisSerializer();
+		template.setKeySerializer(serializer);
+		template.setValueSerializer(serializer);
+		template.setHashKeySerializer(serializer);
+		template.setHashValueSerializer(serializer);
+		template.afterPropertiesSet();
 		return template;
+
 	}
 }
