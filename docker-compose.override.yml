@@ -1,0 +1,33 @@
+services:
+  backend:
+    extends:
+      file: backend/farmbti/docker-compose.yml
+      service: backend
+
+  frontend:
+    extends:
+      file: frontend/farmbti/docker-compose.yml
+      service: frontend
+
+  db:
+    extends:
+      file: infra/farmbti-db/docker-compose.yml
+      service: postgres
+    networks:
+      - farmbti
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  cache:
+    extends:
+      file: infra/farmbti-db/docker-compose.yml
+      service: redis
+    networks:
+      - farmbti
+
+networks:
+  farmbti:
+    external: true
+
+volumes:
+  postgres_data:
