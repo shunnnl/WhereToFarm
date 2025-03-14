@@ -11,3 +11,10 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 server:
   port: 8080
+jwt:
+  secret-key: your-secret-key-should-be-very-long-and-secure
+  expiration-time: 3600000  # 1시간
+  token-prefix: "Bearer "
+  header-string: "Authorization"
+  issuer: "your-app-name"
+  refresh-expiration-time: 86400000  # 24시간

@@ -1,0 +1,186 @@
+package com.backend.farmbti.security.jwt;
+
+import com.backend.farmbti.auth.domain.User;
+import com.backend.farmbti.security.dto.Token;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
+import java.security.SignatureException;
+import java.util.Date;
+
+//JWT 토큰 생성, 검증, 파싱
+//JWT properties의 속성들을 기반으로 토큰을 생성함
+@Component
+@Slf4j
+@RequiredArgsConstructor
+public class JwtTokenProvider {
+
+    private final JwtProperties jwtProperties;
+
+    /**
+     * JWT 토큰 생성 메서드 (Access Token + Refresh Token)
+     *
+     * @param user 사용자 정보
+     * @return 액세스 토큰과 리프레시 토큰을 포함한 Token 객체
+     */
+    public Token generateToken(User user) {
+        // JwtProperties에서 만료 시간 가져오기
+        long accessTokenExpiresIn = jwtProperties.getExpirationTime();
+        long refreshTokenExpiresIn = jwtProperties.getRefreshExpirationTime();
+
+        // 액세스 토큰 생성
+        String accessToken = generateAccessToken(user, accessTokenExpiresIn);
+
+        // 리프레시 토큰 생성
+        String refreshToken = generateRefreshToken(user, refreshTokenExpiresIn);
+
+        return new Token(accessToken, refreshToken, accessTokenExpiresIn);
+    }
+
+    /**
+     * 서명에 사용할 키를 생성
+     *
+     * @return 서명용 Key 객체
+     */
+    private Key getSigningKey() {
+        byte[] keyBytes = jwtProperties.getSecretKey().getBytes(StandardCharsets.UTF_8);
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    /**
+     * 액세스 토큰 생성
+     *
+     * @param user           사용자 정보
+     * @param expirationTime 만료 시간(밀리초)
+     * @return 생성된 액세스 토큰
+     */
+    private String generateAccessToken(User user, long expirationTime) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + expirationTime);
+
+        return Jwts.builder()
+                .setSubject(String.valueOf(user.getId()))
+                .claim("id", user.getId())
+                .claim("email", user.getEmail())
+                .claim("address", user.getAddress())
+                .claim("tokenType", "access") // 토큰 타입 표시
+                .setIssuedAt(now) // 발행 시간
+                .setExpiration(expiryDate) // 만료 시간
+                .setIssuer(jwtProperties.getIssuer()) // 발행자
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256) // 서명 알고리즘
+                .compact();
+    }
+
+    /**
+     * 리프레시 토큰 생성 (최소한의 정보만 포함)
+     *
+     * @param user           사용자 정보
+     * @param expirationTime 만료 시간(밀리초)
+     * @return 생성된 리프레시 토큰
+     */
+    private String generateRefreshToken(User user, long expirationTime) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + expirationTime);
+
+        return Jwts.builder()
+                .setSubject(String.valueOf(user.getId()))
+                .claim("tokenType", "refresh") // 토큰 타입 표시
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
+                .setIssuer(jwtProperties.getIssuer())
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    /**
+     * 토큰 검증 및 클레임 추출
+     *
+     * @param token JWT 토큰
+     * @return 토큰의 클레임(페이로드) 정보
+     * @throws Exception 토큰이 유효하지 않을 경우 예외 발생
+     */
+    private Claims getClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    /**
+     * 토큰 유효성 검사
+     *
+     * @param token 검증할 토큰
+     * @return 유효하면 true, 그렇지 않으면 false
+     */
+    public boolean validateToken(String token) throws SignatureException {
+        try {
+            Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token);
+            return true;
+        } catch (MalformedJwtException e) {
+            log.error("유효하지 않은 JWT 토큰: {}", e.getMessage());
+        } catch (ExpiredJwtException e) {
+            log.error("JWT 토큰 만료: {}", e.getMessage());
+        }
+
+        return false;
+    }
+
+    /**
+     * 토큰에서 사용자 ID 추출 (claim)
+     *
+     * @param token JWT 토큰
+     * @return 사용자 ID (Long 타입)
+     */
+    public Long getUserId(String token) {
+        try {
+            Claims claims = getClaims(token);
+            return claims.get("id", Long.class);
+        } catch (Exception e) {
+            log.error("토큰에서 userId 추출 오류: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * 토큰에서 사용자 이메일 추출
+     *
+     * @param token JWT 토큰
+     * @return 사용자 이메일
+     */
+    public String getEmail(String token) {
+        try {
+            Claims claims = getClaims(token);
+            return claims.get("email", String.class);
+        } catch (Exception e) {
+            log.error("토큰에서 email 추출 오류: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * 토큰에서 사용자 주소 추출
+     *
+     * @param token JWT 토큰
+     * @return 사용자 주소
+     */
+    public String getAddress(String token) {
+        try {
+            Claims claims = getClaims(token);
+            return claims.get("address", String.class);
+        } catch (Exception e) {
+            log.error("토큰에서 address 추출 오류: {}", e.getMessage());
+            return null;
+        }
+    }
+
+
+}

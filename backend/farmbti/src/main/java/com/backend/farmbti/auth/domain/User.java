@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @Builder
 @Getter
 @Entity
-@Table(name = "users")
+@Table(name = "user")
 @NoArgsConstructor(access = AccessLevel.PROTECTED) // 기본 생성자 접근 제한 설정 (JPA 요구사항)
 public class User extends TimeStampEntity {
 
@@ -41,18 +41,17 @@ public class User extends TimeStampEntity {
     @Column(name = "profile_image")
     private String profileImage;
 
-    @Enumerated(EnumType.STRING) //데이터베이스에서 직접 값을 볼 때 "ROLE_USER"로 읽힘
-    @Column(nullable = false)
-    private Role role;
+//    @Enumerated(EnumType.STRING) //데이터베이스에서 직접 값을 볼 때 "ROLE_USER"로 읽힘
+//    @Column(nullable = false)
+//    private Role role;
 
     @Column(name = "refresh_token")
     private String refreshToken;
 
 
-    public enum Role {
-        ROLE_USER,
-        ROLE_ADMIN,
-        ROLE_MANAGER
-    }
+//    public enum Role {
+//        MENTEE,
+//        MENTOR
+//    }
 
 }
