@@ -1,1 +1,13 @@
+@font-face {
+  font-family: 'Pretendard';
+  src: url('@/assets/fonts/PretendardVariable.ttf') format('truetype-variations');
+  font-weight: 100 900; /* 100부터 900까지의 모든 두께 지원 */
+  font-style: normal;
+  font-display: swap;
+}
+
 @import "tailwindcss";
+
+@theme {
+  --font-sans: "Pretendard", system-ui, sans-serif;
+}
