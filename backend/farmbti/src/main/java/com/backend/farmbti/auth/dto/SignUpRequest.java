@@ -17,7 +17,7 @@ public class SignUpRequest {
     private String password;
     private String name;
     private String address;
-    private Long gender;
+    private Byte gender;
     private LocalDate birth;
     private String profileImage;
 

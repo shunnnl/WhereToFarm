@@ -26,7 +26,7 @@ public class User extends TimeStampEntity {
     @Column(nullable = false, length = 100) // NULL 불가, 최대 길이 100
     private String password;
 
-    @Column(nullable = false, length = 30) // NULL 불가, 최대 길이 30
+    @Column(nullable = false, length = 10) // NULL 불가, 최대 길이 30
     private String name;
 
     @Column(nullable = false)
@@ -36,7 +36,7 @@ public class User extends TimeStampEntity {
     private String address;
 
     @Column(nullable = false)
-    private Long gender;
+    private byte gender;
 
     @Column(name = "profile_image")
     private String profileImage;

@@ -28,6 +28,7 @@ public class JwtTokenProvider {
      * @param user 사용자 정보
      * @return 액세스 토큰과 리프레시 토큰을 포함한 Token 객체
      */
+    //유저가 로그인 시에 user 객체만 넘겨주면 3개의 반환 타입을 넘겨준다.
     public Token generateToken(User user) {
         // JwtProperties에서 만료 시간 가져오기
         long accessTokenExpiresIn = jwtProperties.getExpirationTime();
@@ -35,7 +36,6 @@ public class JwtTokenProvider {
 
         // 액세스 토큰 생성
         String accessToken = generateAccessToken(user, accessTokenExpiresIn);
-
         // 리프레시 토큰 생성
         String refreshToken = generateRefreshToken(user, refreshTokenExpiresIn);
 
