@@ -1,6 +1,8 @@
 package com.backend.farmbti.auth.controller;
 
-import com.backend.farmbti.auth.dto.*;
+import com.backend.farmbti.auth.dto.LoginRequest;
+import com.backend.farmbti.auth.dto.LoginResponse;
+import com.backend.farmbti.auth.dto.SignUpRequest;
 import com.backend.farmbti.auth.service.AuthService;
 import com.backend.farmbti.common.dto.CommonResponseDto;
 import com.backend.farmbti.security.util.SecurityUtils;
@@ -8,7 +10,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,29 +41,8 @@ public class AuthController {
     @PostMapping("/logout")
     public CommonResponseDto logout() {
         //현재 로그인한 사용자의 id 가져오기
-        Long id = securityUtils.getCurrentUserId();
+        Long id = securityUtils.getCurrentUsersId();
         authService.logout(id);
-        return CommonResponseDto.ok();
-    }
-
-    @Operation(summary = "회원수정", description = "프로필 이미지를 제외한 회원과 관련된 정보를 수정합니다.")
-    @PatchMapping("/update")
-    public CommonResponseDto modify(@RequestBody ModifyRequest request) {
-        authService.modify(request);
-        return CommonResponseDto.ok();
-    }
-
-    @Operation(summary = "회원수정", description = "프로필 이미지 정보를 수정합니다.")
-    @PatchMapping("/update/profile")
-    public CommonResponseDto modifyProfile(@RequestBody ModifyProfileRequest request) {
-        authService.modifyProfile(request);
-        return CommonResponseDto.ok();
-    }
-
-    @Operation(summary = "회원수정", description = "비밀번호 정보를 수정합니다.")
-    @PatchMapping("/update/password")
-    public CommonResponseDto modifyPassword(@RequestBody ModifyPasswordRequest request) {
-        authService.modifyPassword(request);
         return CommonResponseDto.ok();
     }
 

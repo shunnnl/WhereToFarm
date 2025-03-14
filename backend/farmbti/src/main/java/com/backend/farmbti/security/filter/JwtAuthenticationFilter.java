@@ -1,5 +1,6 @@
 package com.backend.farmbti.security.filter;
 
+import com.backend.farmbti.security.config.SecurityPath;
 import com.backend.farmbti.security.jwt.JwtTokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -29,6 +30,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         //1. 요청 헤더에서 JWT 토큰 추출
         String token = resolveToken(request);
+
+        // permitAll 경로이면서 토큰이 없는 경우 -> 그냥 통과
+        if (isPermitAllEndpoint(request.getRequestURI()) && token == null) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
 
         //2. 토큰이 유효한 경우 인증 정보 설정
         try {
@@ -67,6 +75,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
 
     }
+
+    //사용자 정의 path 통과
+    private boolean isPermitAllEndpoint(String uri) {
+        return SecurityPath.matches(uri);
+    }
+
 
     private String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");

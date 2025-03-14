@@ -1,9 +1,11 @@
 package com.backend.farmbti.auth.service;
 
-import com.backend.farmbti.auth.domain.User;
-import com.backend.farmbti.auth.dto.*;
+import com.backend.farmbti.auth.domain.Users;
+import com.backend.farmbti.auth.dto.LoginRequest;
+import com.backend.farmbti.auth.dto.LoginResponse;
+import com.backend.farmbti.auth.dto.SignUpRequest;
 import com.backend.farmbti.auth.exception.AuthErrorCode;
-import com.backend.farmbti.auth.repository.UserRepository;
+import com.backend.farmbti.auth.repository.UsersRepository;
 import com.backend.farmbti.common.exception.GlobalException;
 import com.backend.farmbti.security.dto.Token;
 import com.backend.farmbti.security.jwt.JwtTokenProvider;
@@ -17,7 +19,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class AuthService {
 
-    private final UserRepository userRepository;
+    private final UsersRepository usersRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -29,7 +31,7 @@ public class AuthService {
         String encodedPassword = passwordEncoder.encode(request.getPassword());
 
         //3. User 엔터티 생성
-        User user = User.builder()
+        Users users = Users.builder()
                 .email(request.getEmail())
                 .password(encodedPassword)
                 .name(request.getName())
@@ -40,14 +42,14 @@ public class AuthService {
                 .build();
 
         //4. db에 저장
-        userRepository.save(user);
+        usersRepository.save(users);
 
         log.info("회원가입 완료");
     }
 
     private void validateSignupRequest(SignUpRequest request) {
         //이미 등록된 이메일인 경우 에러
-        if (userRepository.existsByEmail(request.getEmail())) {
+        if (usersRepository.existsByEmail(request.getEmail())) {
             throw new GlobalException(AuthErrorCode.EMAIL_INVALID);
         }
     }
@@ -55,52 +57,44 @@ public class AuthService {
     public LoginResponse login(LoginRequest request) {
 
         //1. 이메일 검증
-        User user = userRepository.findByEmail(request.getEmail())
+        Users users = usersRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new GlobalException(AuthErrorCode.EMAIL_NOT_FOUND));
 
         //2. 비밀번호 검증
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            log.warn("비밀번호 불일치", user.getPassword());
+        if (!passwordEncoder.matches(request.getPassword(), users.getPassword())) {
+            log.warn("비밀번호 불일치", users.getPassword());
             throw new GlobalException(AuthErrorCode.INVALID_PASSWORD);
         }
 
-        log.info("로그인 성공", user.getEmail());
+        log.info("로그인 성공", users.getEmail());
 
         // 3. JWT 토큰 생성
-        Token token = jwtTokenProvider.generateToken(user);
+        Token token = jwtTokenProvider.generateToken(users);
 
         return LoginResponse.builder()
-                .id(user.getId())
-                .email(user.getEmail())
-                .name(user.getName())
-                .address(user.getAddress())
-                .gender(user.getGender())
-                .birth(user.getBirth())
-                .profileImage(user.getProfileImage())
+                .id(users.getId())
+                .email(users.getEmail())
+                .name(users.getName())
+                .address(users.getAddress())
+                .gender(users.getGender())
+                .birth(users.getBirth())
+                .profileImage(users.getProfileImage())
                 .token(token)
                 .build();
     }
 
     public void logout(Long id) {
-        User user = userRepository.findUserId(id)
+        Users users = usersRepository.findById(id)
                 .orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
 
-        invalidateRefreshToken(user);
-        log.info("로그아웃 완료", user.getEmail());
+        invalidateRefreshToken(users);
+        log.info("로그아웃 완료", users.getEmail());
     }
 
-    private void invalidateRefreshToken(User user) {
+    private void invalidateRefreshToken(Users users) {
         // 사용자의 리프레시 토큰 필드를 null로 설정
-        user.updateRefreshToken(null);
-        userRepository.save(user);
+        users.updateRefreshToken(null);
+        usersRepository.save(users);
     }
 
-    public void modify(ModifyRequest request) {
-    }
-
-    public void modifyProfile(ModifyProfileRequest request) {
-    }
-
-    public void modifyPassword(ModifyPasswordRequest request) {
-    }
 }

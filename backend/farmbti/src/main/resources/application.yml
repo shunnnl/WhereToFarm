@@ -27,3 +27,4 @@ jwt:
   header-string: "Authorization"
   issuer: "your-app-name"
   refresh-expiration-time: 86400000  # 24시간
+
