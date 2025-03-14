@@ -32,7 +32,7 @@ public class SecurityUtils {
             String token = extractToken(authentication);
             return jwtTokenProvider.getUserId(token);
         } catch (Exception e) {
-            log.warn("토큰에서 userId를 추출할 수 없습니다.");
+            log.warn("토큰에서 userId를 추출할 수 없습니다."); //밑의 illegal 예외처리가 실행됨.
             return null;
         }
     }

@@ -41,14 +41,9 @@ public class AuthController {
     public CommonResponseDto logout() {
         //현재 로그인한 사용자의 id 가져오기
         Long id = securityUtils.getCurrentUserId();
-
         authService.logout(id);
         return CommonResponseDto.ok();
     }
-
-//    @Operation(summary="회원탈퇴", description = "회원탈퇴를 처리합니다.")
-//    @DeleteMapping("/exit")
-//    public CommonResponseDto
 
     @Operation(summary = "회원수정", description = "프로필 이미지를 제외한 회원과 관련된 정보를 수정합니다.")
     @PatchMapping("/update")

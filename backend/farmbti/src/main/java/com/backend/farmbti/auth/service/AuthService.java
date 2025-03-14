@@ -56,7 +56,7 @@ public class AuthService {
 
         //1. 이메일 검증
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new GlobalException(AuthErrorCode.EMAIL_NOT_FOUND));
 
         //2. 비밀번호 검증
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
@@ -82,7 +82,17 @@ public class AuthService {
     }
 
     public void logout(Long id) {
+        User user = userRepository.findUserId(id)
+                .orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
 
+        invalidateRefreshToken(user);
+        log.info("로그아웃 완료", user.getEmail());
+    }
+
+    private void invalidateRefreshToken(User user) {
+        // 사용자의 리프레시 토큰 필드를 null로 설정
+        user.updateRefreshToken(null);
+        userRepository.save(user);
     }
 
     public void modify(ModifyRequest request) {

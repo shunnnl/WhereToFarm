@@ -1,12 +1,14 @@
 package com.backend.farmbti.security.jwt;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties(prefix = "jwt") //yml에서 jwt: 로 설정값들을 추가해줄 수 있다.
 @Getter
+@Setter
 public class JwtProperties {
     // JWT 시크릿 키 (서명에 사용)
     private String secretKey;

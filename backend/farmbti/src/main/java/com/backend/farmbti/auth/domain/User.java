@@ -48,6 +48,10 @@ public class User extends TimeStampEntity {
     @Column(name = "refresh_token")
     private String refreshToken;
 
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
 
 //    public enum Role {
 //        MENTEE,
