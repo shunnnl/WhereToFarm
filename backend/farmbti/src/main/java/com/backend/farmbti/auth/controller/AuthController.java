@@ -7,10 +7,11 @@ import com.backend.farmbti.auth.service.AuthService;
 import com.backend.farmbti.common.dto.CommonResponseDto;
 import com.backend.farmbti.security.util.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,15 +20,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 @Tag(name = "회원 컨트롤러", description = "로그인, 회원가입, 사용자 인증토큰 발급 등 회원정보를 관리하는 컨트롤러")
+@Slf4j
 public class AuthController {
 
     private final AuthService authService;
     private final SecurityUtils securityUtils;
 
     @Operation(summary = "회원가입", description = "회원가입을 처리합니다.")
-    @PostMapping("/singUp")
-    public CommonResponseDto singUp(@RequestBody SignUpRequest request) {
-        authService.singUp(request);
+    @PostMapping("/signUp")
+    public CommonResponseDto signUp(@RequestBody SignUpRequest request) {
+        log.info("회원가입 요청 수신: {}", request);  // 전체 객체 로깅
+        log.info("회원가입 요청 수신: {}", request.getEmail());
+        authService.signUp(request);
         return CommonResponseDto.ok();
     }
 

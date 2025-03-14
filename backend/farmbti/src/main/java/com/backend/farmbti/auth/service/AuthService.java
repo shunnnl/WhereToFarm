@@ -23,7 +23,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public void singUp(SignUpRequest request) {
+    public void signUp(SignUpRequest request) {
         //1. 에러 검증
         validateSignupRequest(request);
 

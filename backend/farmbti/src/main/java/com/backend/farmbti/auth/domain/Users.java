@@ -4,7 +4,7 @@ import com.backend.farmbti.common.entity.TimeStampEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
+import java.util.Date;
 
 @AllArgsConstructor
 @Builder
@@ -30,7 +30,7 @@ public class Users extends TimeStampEntity {
     private String name;
 
     @Column(nullable = false)
-    private LocalDate birth;
+    private Date birth;
 
     @Column(nullable = false)
     private String address;

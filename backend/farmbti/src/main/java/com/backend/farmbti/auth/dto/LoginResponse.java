@@ -3,7 +3,7 @@ package com.backend.farmbti.auth.dto;
 import com.backend.farmbti.security.dto.Token;
 import lombok.Builder;
 
-import java.time.LocalDate;
+import java.util.Date;
 
 @Builder
 public class LoginResponse {
@@ -12,7 +12,7 @@ public class LoginResponse {
     private String name;
     private String address;
     private Byte gender;
-    private LocalDate birth;
+    private Date birth;
     private String profileImage;
     private Token token;
 }

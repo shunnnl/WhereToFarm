@@ -5,6 +5,7 @@ import com.backend.farmbti.common.dto.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -84,6 +85,21 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = ErrorResponse.of(GlobalErrorCode.METHOD_NOT_ALLOWED);
         return ResponseEntity
                 .status(GlobalErrorCode.METHOD_NOT_ALLOWED.getStatus())
+                .body(CommonResponseDto.error(errorResponse));
+    }
+
+    @ExceptionHandler(HttpMediaTypeNotAcceptableException.class)
+    public ResponseEntity<CommonResponseDto<Object>> handleMediaTypeNotAcceptable(
+            HttpMediaTypeNotAcceptableException e) {
+        log.error("Media type not acceptable:", e);
+
+        ErrorResponse errorResponse = ErrorResponse.of(
+                GlobalErrorCode.MEDIA_TYPE_NOT_ACCEPTABLE,
+                "지원하지 않는 미디어 타입입니다."
+        );
+
+        return ResponseEntity
+                .status(GlobalErrorCode.MEDIA_TYPE_NOT_ACCEPTABLE.getStatus())
                 .body(CommonResponseDto.error(errorResponse));
     }
 }
