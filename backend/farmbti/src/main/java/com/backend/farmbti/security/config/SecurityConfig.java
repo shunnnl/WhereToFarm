@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 //스프링 부트가 실행될 때 이 설정을 읽어서 보안 설정을 적용
 @Configuration
@@ -16,6 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final CorsConfigurationSource corsConfigurationSource;
 
     /**
      * 보안 필터 체인을 설정하는 Bean
@@ -31,6 +33,10 @@ public class SecurityConfig {
                 // CSRF(Cross-Site Request Forgery) 보호 기능
                 // 이거 없으면 해커가 사용자 모르게 요청 날릴 수 있어서 꼭 필요함
                 .csrf(Customizer.withDefaults())
+
+                // CORS 설정 적용
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
+
                 .formLogin(AbstractHttpConfigurer::disable) // 폼 로그인 비활성화
                 .httpBasic(AbstractHttpConfigurer::disable)  // 기본 인증도 비활성화
                 //JWT 필터 클래스를 쓰려면 생성자 주입이 필요하다.
@@ -38,13 +44,12 @@ public class SecurityConfig {
                 // 요청 권한 설정
                 // 모든 HTTP 요청(.anyRequest())에 대해 인증(.authenticated())이 필요하다고 설정
                 // 즉, 로그인 안 하면 어떤 페이지도 접근 불가능하게 만듦
-                .authorizeHttpRequests(authorize -> authorize
-                        .anyRequest().authenticated()
-                );
+                // URL 별 접근 권한 설정
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(SecurityPath.getAllPublicPaths()).permitAll()
+                        .anyRequest().authenticated());
         // 최종적으로 구성된 보안 필터 체인을 빌드해서 반환해요
         // 이제 모든 HTTP 요청은 이 필터 체인을 통과
         return http.build();
     }
-
-
 }
