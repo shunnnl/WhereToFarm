@@ -4,6 +4,7 @@ import BannerSlider from './BannerSlider';
 import ServiceIcons from './ServiceIcons';
 import BenefitCard from './BenefitCard';
 import NewsSection from './NewsSection';
+import Mentor  from './Mentor';
 import { bannerSlides, serviceIcons, newsItems } from './homeData';
 
 const Home = () => {
@@ -24,6 +25,9 @@ const Home = () => {
 
         {/* 귀농뉴스 섹션 */}
         <NewsSection newsItems={newsItems} />
+
+        {/* 하단 바로가기 섹션 */}
+        <Mentor/>
 
       </ContentLayout>
     </div>
