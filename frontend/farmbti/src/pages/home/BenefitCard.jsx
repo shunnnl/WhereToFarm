@@ -1,23 +1,34 @@
 import React from 'react';
 
-// 카드 컴포넌트
+// 카드 컴포넌트 - NewsCard와 높이 통일
 const Card = ({ icon, title, subtitle, buttonText }) => {
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 flex flex-col items-center w-80 h-64 flex-shrink-0 md:w-full md:max-w-md">
-      <div className="mb-4 text-4xl text-pink-500">
-        {icon}
+    <div className="bg-white rounded-lg shadow-md flex flex-col h-64 transition-transform hover:-translate-y-1 duration-300">
+      {/* 상단 패딩을 더 추가하여 컨텐츠 중앙 정렬 */}
+      <div className="pt-8 pb-2 flex justify-center">
+        <div className="text-4xl text-pink-500">
+          {icon}
+        </div>
       </div>
-      <h3 className="text-lg font-bold mb-2 text-center">{title}</h3>
-      <p className="text-gray-600 text-center mb-6">{subtitle}</p>
-      <button 
-        className="mt-auto flex items-center text-gray-700 hover:text-black transition-colors"
-        onClick={() => console.log(`${title} 버튼 클릭됨`)}
-      >
-        <span className="mr-2">{buttonText}</span>
-        <span className="rounded-full bg-gray-200 w-6 h-6 flex items-center justify-center text-sm">
-          {'>'}
-        </span>
-      </button>
+      
+      {/* 본문 컨텐츠 */}
+      <div className="px-6 flex-grow flex flex-col items-center">
+        <h3 className="text-lg font-bold mb-2 text-center">{title}</h3>
+        <p className="text-gray-600 text-center">{subtitle}</p>
+      </div>
+      
+      {/* 버튼 영역을 분리하여 푸터처럼 배치 */}
+      <div className="px-6 pb-6 mt-auto">
+        <button 
+          className="flex items-center text-gray-700 hover:text-black transition-colors mx-auto"
+          onClick={() => console.log(`${title} 버튼 클릭됨`)}
+        >
+          <span className="mr-2">{buttonText}</span>
+          <span className="rounded-full bg-gray-200 w-6 h-6 flex items-center justify-center text-sm">
+            {'>'}
+          </span>
+        </button>
+      </div>
     </div>
   );
 };
@@ -44,7 +55,7 @@ const BenefitCards = () => {
       buttonText: "자세히 살펴보기"
     }
   ];
-
+  
   return (
     <div className="mt-8">
       <div className="flex items-center mb-6">
@@ -52,7 +63,7 @@ const BenefitCards = () => {
         <span className="ml-1 text-gray-500">{'>'}</span>
       </div>
       
-      <div className="flex flex-row space-x-4 overflow-x-auto pb-4 md:justify-between md:overflow-visible">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {cardsData.map((card, index) => (
           <Card
             key={index}

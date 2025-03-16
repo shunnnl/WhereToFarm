@@ -3,7 +3,8 @@ import ContentLayout from '../../components/layout/ContentLayout';
 import BannerSlider from './BannerSlider';
 import ServiceIcons from './ServiceIcons';
 import BenefitCard from './BenefitCard';
-import { bannerSlides, serviceIcons } from './homeData';
+import NewsSection from './NewsSection';
+import { bannerSlides, serviceIcons, newsItems } from './homeData';
 
 const Home = () => {
   return (
@@ -18,8 +19,11 @@ const Home = () => {
         {/* 아이콘 메뉴와 주요 서비스 텍스트 섹션 */}
         <ServiceIcons icons={serviceIcons} />
 
-        {/* 주요 서비스 카드 섹션 */}
+        {/* 관심있는 혜택 섹션 */}
         <BenefitCard />
+
+        {/* 귀농뉴스 섹션 */}
+        <NewsSection newsItems={newsItems} />
 
       </ContentLayout>
     </div>
