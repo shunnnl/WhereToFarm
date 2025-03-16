@@ -2,8 +2,7 @@ import React from 'react';
 import PageLayout from '../../components/layout/PageLayout';
 import BannerSlider from './BannerSlider';
 import ServiceIcons from './ServiceIcons';
-import MainServices from './MainServices';
-import { bannerSlides, serviceIcons, mainServices } from './homeData';
+import { bannerSlides, serviceIcons } from './homeData';
 
 const Home = () => {
   return (
@@ -12,11 +11,9 @@ const Home = () => {
       <BannerSlider slides={bannerSlides} />
       
       <PageLayout>
-        {/* 아이콘 메뉴 섹션 */}
+        {/* 아이콘 메뉴와 주요 서비스 텍스트 섹션 */}
         <ServiceIcons icons={serviceIcons} />
 
-        {/* 주요 서비스 섹션 */}
-        <MainServices services={mainServices} />
       </PageLayout>
     </div>
   );
