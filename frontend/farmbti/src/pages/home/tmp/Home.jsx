@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import homeimage_1 from "../asset/home/home_image_1.svg";
 import homeimage_2 from "../asset/home/home_image_2.svg"; 
 import homeimage_3 from "../asset/home/home_image_3.svg"; 
-import FullWidthSection from '../components/layout/FullWidthSection';
-import PageLayout from '../components/layout/PageLayout';
+import FullWidthSection from '../../../components/layout/FullWidthSection';
+import PageLayout from '../../../components/layout/PageLayout';
 
 const Home = () => {
   // 슬라이더에 사용할 이미지 배열과 각 이미지별 버튼 설정

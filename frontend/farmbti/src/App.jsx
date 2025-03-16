@@ -6,7 +6,7 @@ import NavBar from './components/common/NavBar';
 import PageLayout from './components/layout/PageLayout';
 
 // 페이지 컴포넌트 import
-import Home from './pages/Home';
+import Home from './pages/home/Home';
 
 function App() {
   return (
