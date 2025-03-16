@@ -64,24 +64,25 @@ export const mainServices = [
   // 추가 서비스 항목들을 여기에 추가할 수 있습니다.
 ];
 
+import tempimgae from '../../asset/home/news_image.svg' 
 export const newsItems = [
   {
     id: 1,
-    imageUrl: '/images/farm.jpg',
+    imageUrl: tempimgae,
     title: '정남중 귀농 이유 물었더니',
     subtitle: '농업의 미래과 변천 가능성 많아..',
     moreLink: '/news/1'
   },
   {
     id: 2,
-    imageUrl: '/images/presentation.jpg',
+    imageUrl: tempimgae,
     title: '귀농·귀촌 정보 보급자리',
     subtitle: '지원 대상자 4곳 추가 선정',
     moreLink: '/news/2'
   },
   {
     id: 3, 
-    imageUrl: '/images/greenhouse.jpg',
+    imageUrl: tempimgae,
     title: '후계농 육성 자금 1조원으로 확대..',
     subtitle: '청년 농업인 지원 강화',
     moreLink: '/news/3'
