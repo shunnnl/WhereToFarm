@@ -2,6 +2,7 @@ import React from 'react';
 import ContentLayout from '../../components/layout/ContentLayout';
 import BannerSlider from './BannerSlider';
 import ServiceIcons from './ServiceIcons';
+import BenefitCard from './BenefitCard';
 import { bannerSlides, serviceIcons } from './homeData';
 
 const Home = () => {
@@ -18,6 +19,8 @@ const Home = () => {
         <ServiceIcons icons={serviceIcons} />
 
         {/* 주요 서비스 카드 섹션 */}
+        <BenefitCard />
+
       </ContentLayout>
     </div>
   );

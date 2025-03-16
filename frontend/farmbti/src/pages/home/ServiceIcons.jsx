@@ -3,7 +3,7 @@ import React from 'react';
 const ServiceIcons = ({ icons }) => {
   return (
     <div className="py-20">
-      <div className="flex justify-between items-center max-w-screen-2xl mx-auto px-8">
+      <div className="flex justify-between items-center max-w-screen-2xl mx-auto">
         {/* 왼쪽: 아이콘 메뉴 */}
         <div className="grid grid-cols-4 gap-10 w-3/5">
           {icons.map((service, index) => (
