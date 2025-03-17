@@ -25,11 +25,28 @@ const LoginPage = () => {
         password: ''
       };
 
-      
 
+    // 이메일 유효성 검사
+    if (!email.trim()) {
+      newErrors.email = '이메일을 입력해주세요.';
+    } else if (!validateEmail(email)) {
+      newErrors.email = '유효한 이메일 형식이 아닙니다.';
+    }
 
-    // 로그인 로직 구현 (예: API 호출)
-    console.log('Login attempt with:', { email, password });
+    // 비밀번호 유효성 검사
+    if (!password.trim()) {
+      newErrors.password = '비밀번호를 입력해주세요.';
+    }
+
+    // 오류가 있으면 상태 업데이트 및 제출 방지
+    if (newErrors.email || newErrors.password) {
+      setErrors(newErrors);
+      return;
+    }
+
+    // 유효성 검사 통과 시 로그인 시도
+    console.log('로그인 시도:', { email, password });
+    // 여기서 백엔드 API 호출을 진행합니다
   };
 
   return (
