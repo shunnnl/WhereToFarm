@@ -5,9 +5,29 @@ import { Link } from 'react-router-dom';
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errors, setErrors] = useState({
+    email: '',
+    password: ''
+  });
+
+  // 이메일 유효성 검사
+  const validateEmail = (email) => {
+    // 이메일 정규표현식
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
   const handleLogin = (e) => {
     e.preventDefault();
+       // 이전 오류 초기화
+       const newErrors = {
+        email: '',
+        password: ''
+      };
+
+      
+
+
     // 로그인 로직 구현 (예: API 호출)
     console.log('Login attempt with:', { email, password });
   };
@@ -23,7 +43,6 @@ const LoginPage = () => {
     }}>
       </div>
 
-      {/* 우측 로그인 섹션 */}
       {/* 우측 로그인 섹션 */}
       <div className="w-1/2 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
