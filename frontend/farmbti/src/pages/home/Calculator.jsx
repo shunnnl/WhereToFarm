@@ -25,7 +25,7 @@ const Mentor = () => {
               <div className="w-96 h-48">
               <img 
                   src={FarmerImage} 
-                  alt="계산기기" 
+                  alt="계산기" 
                   className="w-full h-full object-contain"
                 />
               </div>
