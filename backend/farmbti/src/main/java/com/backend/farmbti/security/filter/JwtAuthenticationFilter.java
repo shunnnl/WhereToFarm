@@ -48,6 +48,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
+        // 추가된 부분: 인증이 필요한 경로에 토큰이 없는 경우 오류 응답 반환
+        if (!isPermitEndpoint && token == null) {
+            log.warn("[JwtAuthenticationFilter] 보호된 경로에 토큰 없음: {}", uri);
+            response.setContentType("application/json;charset=UTF-8");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401 상태 코드
+
+            String jsonResponse = "{\"success\":false,\"data\":null,\"error\":{\"code\":\"TOKEN_NOT_FOUND\",\"message\":\"인증 토큰이 필요합니다\",\"status\":401}}";
+            response.getWriter().write(jsonResponse);
+            return; // 여기서 필터 체인 종료
+        }
+
+
         //2. 토큰이 유효한 경우 인증 정보 설정
         try {
             if (token != null && jwtTokenProvider.validateToken(token)) {
@@ -66,7 +78,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // 사용자 인증 객체 생성 및 SecurityContext에 설정
                 Authentication authentication = new UsernamePasswordAuthenticationToken(
                         email,                  // principal (보통 username이나 email)
-                        null,                   // credentials (비밀번호, 보안을 위해 null로 설정)
+                        token,                   // securityUtil에서 추출힘
                         authorities            // 권한 목록
                 );
 
