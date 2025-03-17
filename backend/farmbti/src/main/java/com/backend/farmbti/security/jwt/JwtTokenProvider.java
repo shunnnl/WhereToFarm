@@ -1,7 +1,11 @@
 package com.backend.farmbti.security.jwt;
 
 import com.backend.farmbti.auth.domain.Users;
+import com.backend.farmbti.auth.exception.AuthErrorCode;
+import com.backend.farmbti.auth.repository.UsersRepository;
+import com.backend.farmbti.common.exception.GlobalException;
 import com.backend.farmbti.security.dto.Token;
+import com.backend.farmbti.security.exception.JwtErrorCode;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +15,7 @@ import org.springframework.stereotype.Component;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.security.SignatureException;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 //JWT 토큰 생성, 검증, 파싱
@@ -21,6 +26,7 @@ import java.util.Date;
 public class JwtTokenProvider {
 
     private final JwtProperties jwtProperties;
+    private final UsersRepository usersRepository;
 
     /**
      * JWT 토큰 생성 메서드 (Access Token + Refresh Token)
@@ -39,7 +45,14 @@ public class JwtTokenProvider {
         // 리프레시 토큰 생성
         String refreshToken = generateRefreshToken(users, refreshTokenExpiresIn);
 
-        return new Token(accessToken, refreshToken, accessTokenExpiresIn);
+        LocalDateTime now = LocalDateTime.now();
+
+        //현재시간
+        //액세스 토큰 만료일을 알아보기 쉽게 3600000 -> 1시간
+        long accessTokenExpiresInHours = accessTokenExpiresIn / 3600000;
+        LocalDateTime expirationTime = now.plusHours(accessTokenExpiresInHours);
+
+        return new Token(accessToken, refreshToken, expirationTime);
     }
 
     /**
@@ -60,8 +73,11 @@ public class JwtTokenProvider {
      * @return 생성된 액세스 토큰
      */
     private String generateAccessToken(Users users, long expirationTime) {
+
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expirationTime);
+
+        log.info("만료 시간: " + expiryDate);
 
         return Jwts.builder()
                 .setSubject(String.valueOf(users.getId()))
@@ -75,6 +91,36 @@ public class JwtTokenProvider {
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256) // 서명 알고리즘
                 .compact();
     }
+
+    public Token refreshAccessToken(String refreshToken) throws SignatureException {
+        if (!validateToken(refreshToken)) {
+            throw new GlobalException(JwtErrorCode.TOKEN_NOT_FOUND);
+        }
+        Claims claims = getClaims(refreshToken);
+
+        String tokenType = claims.get("tokenType", String.class);
+
+        if (!"refresh".equals(tokenType)) {
+            throw new GlobalException(JwtErrorCode.TOKEN_NOT_VALID);
+        }
+
+        // 4. 사용자 ID 추출
+        Long userId = Long.parseLong(claims.getSubject());
+
+        // 5. 사용자 조회 (서비스나 레포지토리 주입 필요)
+        Users users = usersRepository.findById(userId)
+                .orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
+
+        // 6. 저장된 리프레시 토큰과 일치하는지 확인
+        if (!refreshToken.equals(users.getRefreshToken())) {
+            throw new GlobalException(JwtErrorCode.REFRESH_NOT_VALID);
+        }
+
+        // 7. 새 액세스 토큰 생성
+        return generateToken(users);
+
+    }
+
 
     /**
      * 리프레시 토큰 생성 (최소한의 정보만 포함)

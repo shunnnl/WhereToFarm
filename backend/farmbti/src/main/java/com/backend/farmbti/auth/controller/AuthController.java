@@ -2,9 +2,12 @@ package com.backend.farmbti.auth.controller;
 
 import com.backend.farmbti.auth.dto.LoginRequest;
 import com.backend.farmbti.auth.dto.LoginResponse;
+import com.backend.farmbti.auth.dto.RefreshTokenRequest;
 import com.backend.farmbti.auth.dto.SignUpRequest;
 import com.backend.farmbti.auth.service.AuthService;
 import com.backend.farmbti.common.dto.CommonResponseDto;
+import com.backend.farmbti.security.dto.Token;
+import com.backend.farmbti.security.jwt.JwtTokenProvider;
 import com.backend.farmbti.security.util.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,6 +17,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.security.SignatureException;
 
 
 @RestController
@@ -25,6 +30,7 @@ public class AuthController {
 
     private final AuthService authService;
     private final SecurityUtils securityUtils;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Operation(summary = "회원가입", description = "회원가입을 처리합니다.")
     @PostMapping("/signUp")
@@ -40,6 +46,14 @@ public class AuthController {
     public CommonResponseDto<LoginResponse> singUp(@RequestBody LoginRequest request) {
         return CommonResponseDto.ok(authService.login(request));
     }
+
+    @Operation(summary = "리프레쉬", description = "리프레쉬 토큰을 처리합니다.")
+    @PostMapping("/refresh")
+    public CommonResponseDto refreshToken(@RequestBody RefreshTokenRequest request) throws SignatureException {
+        Token newToken = jwtTokenProvider.refreshAccessToken(request.getRefreshToken());
+        return CommonResponseDto.ok(newToken);
+    }
+
 
     @Operation(summary = "로그아웃", description = "로그아웃을 처리합니다.")
     @PostMapping("/logout")
