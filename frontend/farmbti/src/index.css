@@ -3,13 +3,12 @@
 @tailwind utilities;
 
 @font-face {
-  font-family: 'Pretendard';
-  src: url('@/assets/fonts/PretendardVariable.ttf') format('truetype-variations');
+  font-family: 'Pretendard Variable';
+  src: url('./asset/fonts/PretendardVariable.ttf') format('truetype');
   font-weight: 100 900;
-  font-style: normal;
   font-display: swap;
 }
 
-@theme {
-  --font-sans: "Pretendard", system-ui, sans-serif;
+body {
+  font-family: 'Pretendard Variable', sans-serif;
 }
