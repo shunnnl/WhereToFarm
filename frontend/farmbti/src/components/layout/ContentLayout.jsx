@@ -8,7 +8,7 @@ const ContentLayout = ({ children, fullWidth = false }) => {
   }
   
   return (
-    <div className="max-w-screen-2xl mx-auto px-10">
+    <div className="max-w-screen-2xl mx-auto px-24">
       {children}
     </div>
   );
