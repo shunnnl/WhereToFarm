@@ -5,6 +5,7 @@ import ServiceIcons from './ServiceIcons';
 import BenefitCard from './BenefitCard';
 import NewsSection from './NewsSection';
 import Mentor  from './Mentor';
+import Calculator from './Calculator'
 import { bannerSlides, serviceIcons, newsItems } from './homeData';
 
 const Home = () => {
@@ -27,7 +28,10 @@ const Home = () => {
         <NewsSection newsItems={newsItems} />
 
         {/* 하단 바로가기 섹션 */}
-        <Mentor/>
+        <div className="space-y-6">
+          <Mentor/>
+          <Calculator/>
+        </div>
 
       </ContentLayout>
     </div>
