@@ -5,11 +5,49 @@ import { Link } from 'react-router-dom';
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errors, setErrors] = useState({
+    email: '',
+    password: ''
+  });
+
+  console.log("errors = ", errors)
+  // 이메일 유효성 검사
+  const validateEmail = (email) => {
+    // 이메일 정규표현식
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
   const handleLogin = (e) => {
     e.preventDefault();
-    // 로그인 로직 구현 (예: API 호출)
-    console.log('Login attempt with:', { email, password });
+       // 이전 오류 초기화
+       const newErrors = {
+        email: '',
+        password: ''
+      };
+
+
+    // 이메일 유효성 검사
+    if (!email.trim()) {
+      newErrors.email = '이메일을 입력해주세요.';
+    } else if (!validateEmail(email)) {
+      newErrors.email = '유효한 이메일 형식이 아닙니다.';
+    }
+
+    // 비밀번호 유효성 검사
+    if (!password.trim()) {
+      newErrors.password = '비밀번호를 입력해주세요.';
+    }
+
+    // 오류가 있으면 상태 업데이트 및 제출 방지
+    if (newErrors.email || newErrors.password) {
+      setErrors(newErrors);
+      return;
+    }
+
+    // 유효성 검사 통과 시 로그인 시도
+    console.log('로그인 시도:', { email, password });
+    // 여기서 백엔드 API 호출을 진행합니다
   };
 
   return (
@@ -24,12 +62,11 @@ const LoginPage = () => {
       </div>
 
       {/* 우측 로그인 섹션 */}
-      {/* 우측 로그인 섹션 */}
       <div className="w-1/2 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
           <h2 className="text-3xl font-bold mb-2 text-gray-800">Login</h2>
           <p className="text-gray-500 mb-8">로그인 후 다양한 서비스를 이용하세요</p>
-          <form onSubmit={handleLogin} className="space-y-6">
+          <form onSubmit={handleLogin} noValidate className="space-y-6">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
                 이메일
@@ -43,6 +80,8 @@ const LoginPage = () => {
                 placeholder="이메일을 입력해주세요"
                 className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
               />
+            {errors.email && (<p className="mt-1 text-sm text-red-600">{errors.email}</p>)}
+
             </div>
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
@@ -57,6 +96,8 @@ const LoginPage = () => {
                 placeholder="비밀번호를 입력해주세요"
                 className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
               />
+            {errors.password && (<p className="mt-1 text-sm text-red-600">{errors.password}</p>)}
+
             </div>
             <div className="flex items-center justify-between">
               <div className="flex items-center">
