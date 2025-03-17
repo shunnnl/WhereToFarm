@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import signup_image from '../../asset/auth/login.svg';
+import useKakaoAddressService from './useKakaoAddressService';
 
 const SignupPage = () => {
   const [formData, setFormData] = useState({
@@ -14,15 +15,28 @@ const SignupPage = () => {
     adress: ''
   });
 
-  const [errors, setErrors] = useState({});
-  console.log("errors = ", errors)
+    const [errors, setErrors] = useState({});
+    console.log("errors = ", errors)
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prevState => ({
-      ...prevState,
-      [name]: value
-    }));
+    // 주소가 선택되었을 때 호출될 함수
+    const handleAddressSelected = (addressData) => {
+        setFormData(prev => ({
+            ...prev,
+            adress: addressData.address,
+        }));
+    };
+    
+    // 주소검색 서비스 훅 사용
+    const { openAddressSearch } = useKakaoAddressService(handleAddressSelected);
+
+
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prevState => ({
+        ...prevState,
+        [name]: value
+        }));
 
     if (errors[name]) {
         setErrors(prev => ({
@@ -336,7 +350,16 @@ const SignupPage = () => {
                   required
                   placeholder="주소"
                   className="col-span-2 block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  readOnly
                 />
+                          {/* 주소검색 버튼 - 직접 Signup.jsx에 구현 */}
+                <button
+                    type="button"
+                    onClick={openAddressSearch}
+                    className="px-4 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+                >
+                    주소 검색
+                </button>
               </div>
               {errors.adress && (<p className="mt-1 text-sm text-red-600">{errors.adress}</p>)}
 
