@@ -7,8 +7,14 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum SecurityPath {
+
+    //Swagger 관련 경로
+    SWAGGER("/swagger-ui/**"),
+    SWAGGER_API_DOCS("/v3/api-docs/**"),  // 추가된 부분
+    SWAGGER_RESOURCES("/swagger-resources/**"),  // 추가된 부분
+
     // Auth 관련 경로
-    SIGNUP("/api/auth/signup"),
+    SIGNUP("/api/auth/signUp"),
     LOGIN("/api/auth/login");
 
     // 각 Enum 상수가 가지는 경로 문자열
@@ -20,4 +26,19 @@ public enum SecurityPath {
                 .map(SecurityPath::getPath)
                 .toArray(String[]::new);
     }
+
+    public static boolean matches(String uri) {
+        return java.util.Arrays.stream(values())
+                .anyMatch(securityPath -> {
+                    String pattern = securityPath.getPath();
+                    // /** 패턴 처리
+                    if (pattern.endsWith("/**")) {
+                        String basePattern = pattern.substring(0, pattern.length() - 2);
+                        return uri.startsWith(basePattern);
+                    }
+                    // 정확한 경로 매칭
+                    return pattern.equals(uri);
+                });
+    }
+
 }

@@ -12,6 +12,7 @@ public enum GlobalErrorCode implements ErrorCode {
     INTERNAL_SERVER_ERROR(500, "서버 오류가 발생했습니다"),
     RESOURCE_NOT_FOUND(404, "요청한 리소스를 찾을 수 없습니다"),
     METHOD_NOT_ALLOWED(405, "지원하지 않는 HTTP 메소드입니다"),
+    MEDIA_TYPE_NOT_ACCEPTABLE(406, "지원하지 않는 미디어 타입입니다."),
     CONCURRENT_UPDATE(500, "다른 트랜잭션에 의해 데이터가 변경되었습니다");
 
     private final int status;

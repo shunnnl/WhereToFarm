@@ -2,9 +2,11 @@ package com.backend.farmbti.auth.dto;
 
 import com.backend.farmbti.security.dto.Token;
 import lombok.Builder;
+import lombok.Getter;
 
-import java.time.LocalDate;
+import java.util.Date;
 
+@Getter
 @Builder
 public class LoginResponse {
     private Long id;
@@ -12,7 +14,7 @@ public class LoginResponse {
     private String name;
     private String address;
     private Byte gender;
-    private LocalDate birth;
+    private Date birth;
     private String profileImage;
     private Token token;
 }

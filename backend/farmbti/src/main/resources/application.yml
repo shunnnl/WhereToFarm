@@ -27,3 +27,9 @@ jwt:
   header-string: "Authorization"
   issuer: "your-app-name"
   refresh-expiration-time: 86400000  # 24시간
+logging:
+  level:
+    root: INFO
+    com.backend.farmbti: DEBUG
+    com.backend.farmbti.security.filter: DEBUG
+
