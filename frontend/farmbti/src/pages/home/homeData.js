@@ -11,7 +11,8 @@ export const bannerSlides = [
   {
      src: homeimage_1,
      alt: "Home Banner Image 1",
-    button: null // 첫 번째 페이지는 버튼 없음
+    button: null, // 첫 번째 페이지는 버튼 없음
+    text: null
   },
   {
      src: homeimage_2,
@@ -19,15 +20,21 @@ export const bannerSlides = [
     button: {
       text: "자세히 보기",
       link: "/detail-page-2" // 나중에수정
-    }
-  },
+    },
+    text: {
+      before: "나의 ",
+      highlight: "귀농지",
+      after: "는?"
+      }
+    },
   {
      src: homeimage_3,
      alt: "Home Banner Image 3",
     button: {
       text: "신청하기",
       link: "/apply" // 나중에 수정
-    }
+    },
+    text:null
   },
 ];
 

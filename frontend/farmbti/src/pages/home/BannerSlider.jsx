@@ -35,17 +35,28 @@ const BannerSlider = ({ slides }) => {
             alt={slide.alt}
             className="w-full h-full object-cover object-center"
           />
-          
+
+          {/* 텍스트가 있는 경우만 표시 */}
+          {slide.text && (
+            <div className="absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center z-20">
+              <p className="text-8xl text-white font-bold shadow-lg">
+                {slide.text.before}
+                <span className="text-green-800">{slide.text.highlight}</span>
+                {slide.text.after}
+              </p>
+            </div>
+          )}
+                    
           {/* 버튼이 있는 경우에만 표시 */}
           {slide.button && (
             <a
               href={slide.button.link}
-              className="absolute bottom-16 left-1/2 transform -translate-x-1/2 px-10 py-4 text-lg bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-md transition-colors duration-300"
+              className="absolute bottom-16 left-1/2 transform -translate-x-1/2 px-16 py-6 text-2xl bg-green-800 hover:bg-blue-700 text-white font-medium rounded-lg shadow-md transition-colors duration-300"
             >
               {slide.button.text}
             </a>
           )}
-        </div>
+          </div>
       ))}
       
       {/* 하단 인디케이터 */}
