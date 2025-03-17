@@ -2,6 +2,7 @@ import React from 'react';
 import ContentLayout from '../../components/layout/ContentLayout';
 import GradientSection from './GradientSection';
 import TogetherSection from './TogetherSection';
+import MapSection from './MapSection';
 const MentorPage = () => {
   return (
     <div className="w-full">
@@ -14,6 +15,9 @@ const MentorPage = () => {
       <ContentLayout>
         <div className="mt-16">
             <TogetherSection/>
+        </div>
+        <div className="mt-16">
+            <MapSection/>
         </div>
 
       </ContentLayout>
