@@ -4,7 +4,8 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 // 컴포넌트 import
 import Navbar from './components/common/Navbar';
 import Home from './pages/home/Home';
-
+import LoginPage from './pages/auth/Loginpage';
+import SignupPage from './pages/auth/SignupPage';
 function App() {
   return (
     <BrowserRouter>
@@ -16,6 +17,8 @@ function App() {
         <Routes>
           {/* 기본 페이지 */}
           <Route path="/" element={<Home />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
           {/* 추가 라우트들... */}
         </Routes>
         

@@ -32,11 +32,16 @@ const Navbar = () => {
         
         <div className="flex items-center">         
           <button className="p-2 hover:bg-gray-100 rounded-full">             
-            <img                
-              src={userIcon}                
-              alt="사용자"                
-              className="h-6 w-6"             
-            />           
+              <Link 
+                  to="/login" 
+                  className="p-2 hover:bg-gray-100 rounded-full"
+              >
+                  <img
+                      src={userIcon}
+                      alt="사용자"
+                      className="h-6 w-6"
+                  />
+              </Link>           
           </button>           
           <button className="p-2 hover:bg-gray-100 rounded-full">             
             <img                
