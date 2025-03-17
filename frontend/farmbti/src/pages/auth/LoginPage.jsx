@@ -10,6 +10,7 @@ const LoginPage = () => {
     password: ''
   });
 
+  console.log("errors = ", errors)
   // 이메일 유효성 검사
   const validateEmail = (email) => {
     // 이메일 정규표현식
@@ -65,7 +66,7 @@ const LoginPage = () => {
         <div className="w-full max-w-md">
           <h2 className="text-3xl font-bold mb-2 text-gray-800">Login</h2>
           <p className="text-gray-500 mb-8">로그인 후 다양한 서비스를 이용하세요</p>
-          <form onSubmit={handleLogin} className="space-y-6">
+          <form onSubmit={handleLogin} noValidate className="space-y-6">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
                 이메일
@@ -79,6 +80,8 @@ const LoginPage = () => {
                 placeholder="이메일을 입력해주세요"
                 className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
               />
+            {errors.email && (<p className="mt-1 text-sm text-red-600">{errors.email}</p>)}
+
             </div>
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
@@ -93,6 +96,8 @@ const LoginPage = () => {
                 placeholder="비밀번호를 입력해주세요"
                 className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
               />
+            {errors.password && (<p className="mt-1 text-sm text-red-600">{errors.password}</p>)}
+
             </div>
             <div className="flex items-center justify-between">
               <div className="flex items-center">
