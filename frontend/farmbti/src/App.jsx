@@ -6,6 +6,8 @@ import Navbar from './components/common/Navbar';
 import Home from './pages/home/Home';
 import LoginPage from './pages/auth/Loginpage';
 import SignupPage from './pages/auth/SignupPage';
+import MentorPage from './pages/mentor/MentorPage';
+
 function App() {
   return (
     <BrowserRouter>
@@ -19,7 +21,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
-          {/* 추가 라우트들... */}
+          <Route path="/mentors" element={<MentorPage />} />
         </Routes>
         
         {/* 푸터가 있다면 여기에 추가 */}
