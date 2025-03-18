@@ -61,7 +61,7 @@ public class SecurityConfig {
                         //SecurityPath.getAllPublicPaths()
                     ).permitAll()
                     .anyRequest().authenticated()
-                );
+                ).addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         // 최종적으로 구성된 보안 필터 체인을 빌드해서 반환해요
         // 이제 모든 HTTP 요청은 이 필터 체인을 통과
         return http.build();
