@@ -11,16 +11,16 @@ const PaginationComponent = ({ activePage, totalItemsCount, onChange, itemsPerPa
         totalItemsCount={totalItemsCount}
         pageRangeDisplayed={5}
         onChange={onChange}
-        itemClass="px-3 py-1 mx-1 rounded bg-gray-200 hover:bg-gray-300"
-        activeClass="bg-blue-500 text-white"
+        itemClass="px-2 py-0.5 mx-1 rounded bg-gray-200 hover:bg-gray-300"
+        activeClass="bg-green-800 text-white"
         linkClass="outline-none"
         innerClass="flex flex-row items-center justify-center"
 
       />
       
-      <div className="text-center text-sm text-gray-500 mt-2">
+      {/* <div className="text-center text-sm text-green-500 mt-2">
         Page {activePage} of {Math.ceil(totalItemsCount / itemsPerPage)} (Total: {totalItemsCount} regions)
-      </div>
+      </div> */}
     </div>
   );
 };
