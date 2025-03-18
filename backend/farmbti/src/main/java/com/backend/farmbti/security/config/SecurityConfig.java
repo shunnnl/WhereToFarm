@@ -53,12 +53,8 @@ public class SecurityConfig {
                 // 즉, 로그인 안 하면 어떤 페이지도 접근 불가능하게 만듦
                 // URL 별 접근 권한 설정
                 .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/swagger-ui/**",
-                        "/v3/api-docs/**",
-                        "/swagger-resources/**",
-                        "/webjars/**",
-                        "/configuration/**").permitAll()
-                    .anyRequest().authenticated()
+                        .requestMatchers(SecurityPath.getAllPublicPaths()).permitAll()
+                        .anyRequest().authenticated()
                 );
         // 최종적으로 구성된 보안 필터 체인을 빌드해서 반환해요
         // 이제 모든 HTTP 요청은 이 필터 체인을 통과
