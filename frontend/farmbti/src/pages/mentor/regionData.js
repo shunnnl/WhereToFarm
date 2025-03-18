@@ -1,5 +1,5 @@
-const regionData = {
-    "후보": [
+export const regionData = {
+    "candidate": [
       {
         "name": "경기",
         "region": [

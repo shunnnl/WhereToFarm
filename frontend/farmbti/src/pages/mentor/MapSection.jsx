@@ -1,10 +1,13 @@
 import React from 'react';
+import {regionData} from './regionData.js';
+
 import { useRef, useEffect, useState } from 'react';
 const MapSection = () => {
     const [hoveredRegion, setHoveredRegion] = useState(null);
     const svgRef = useRef(null);
     const [selectedRegion, setSelectedRegion] = useState(null);
     const [displayRegion, setDisplayRegion] = useState(null);
+    const [candidate, setCandidate] = useState(null);
 
     console.log("selectedRegion = ", selectedRegion)
 
@@ -13,6 +16,19 @@ const MapSection = () => {
       if (svgRef.current) {
         // SVG 내의 모든 path 요소 선택
         const paths = svgRef.current.querySelectorAll('path');
+
+        // 후보 지역리스트 가져오기기
+        const findCandidateRegion = (regionName) => {
+            console.log(regionName)
+            for(const candidate of regionData.candidate) {
+                console.log("for문 candidate = ", candidate)
+                if(candidate.name.includes(regionName)) {
+                    console.log("리턴값 candidate = ", candidate)
+                    return candidate.region;
+                }
+            }
+            return null
+        }
         
         // 각 path에 이벤트 리스너 추가
         paths.forEach(path => {
@@ -67,7 +83,10 @@ const MapSection = () => {
             }
             path.setAttribute('data-original-fill', getHoverColor(path.getAttribute('id')));
 
-            
+            console.log("region.name = ", region.name)
+            const candidateList = findCandidateRegion(region.name)
+            setCandidate(candidateList)
+            console.log("candidate = ",candidateList)
             setSelectedRegion(region)
             setHoveredRegion(region)
 
@@ -78,6 +97,9 @@ const MapSection = () => {
           path.style.transition = 'fill 0.3s ease';
         });
       }
+
+      
+
     }, [selectedRegion]);
     
     // 지역별 hover 색상 가져오기
@@ -142,7 +164,7 @@ const MapSection = () => {
     />
     <path
         id="incheon"
-        name="인천천"
+        name="인천"
         d="m 113.77429,124.42884 2.46,-1.99 1.69,-0.73 0.62,-1.58 1.5,-1.27 2.08,0.19 7.46,6.03 0,0 3.83,1.29 -0.13,1.25 0.58,0.33 0,0 -3.54,4.55 0,0 0.13,4.02 3.31,2.9 0,0 0.03,1.19 -0.71,0.79 -0.02,0.66 0,0 0.26,1.15 -0.94,0.82 0,0 -0.55,0.43 -0.29,1.08 0,0 -0.55,-0.16 -0.13,-0.2 -1.31,-0.23 0.47,-1.81 -0.68,-0.53 -0.26,0.07 0.6,0.49 -0.13,0.76 -0.6,0.36 -0.29,-2.2 -0.31,-0.13 0.05,2.27 0.42,0.23 -0.03,0.49 -1.97,2.27 -3.57,-0.49 -3.68,4.64 -3.2,0.03 -0.13,0 -1.26,0.1 -0.34,1.09 -1,-0.03 0.84,-0.26 0.53,-1.84 2.18,0 -0.45,0.82 2.84,0 3.6,-4.51 -1.34,-0.43 -2.7,-2.73 -0.94,-4.28 -0.5,2.31 -1.47,-0.1 0.37,-0.82 -0.5,-0.72 0.68,-0.1 -0.47,-0.39 0.11,-0.56 -0.81,1.29 -0.97,-0.1 -0.24,-0.39 0.37,-1.38 -0.21,-0.89 0.6,-0.03 -0.34,-0.82 0.79,-1.52 2.99,-1.19 1.23,0.4 -0.76,-0.54 -0.16,-1.14 -1.05,0.99 -1.36,0.13 0.05,-1.32 -0.73,-0.39 -0.29,-0.69 0.97,0.1 -0.16,-1.25 -0.58,0 -0.05,-0.82 -0.53,0 -0.08,-0.43 0.68,-0.3 0.05,-1.42 -2.62,1.02 -0.16,0.63 -0.39,-0.4 -0.6,0.23 -2.31,2.02 2.21,-2.08 3.91,-1.62 -0.84,-1.06 -0.74,-0.13 -0.52,-1.42 z m -26.000004,1.62 1.76,0.89 0.08,0.36 0.87,-0.26 0.53,1.55 0.89,0.46 2.97,-0.43 -0.26,1.45 -2.05,-0.43 -1.86,0.63 -0.05,-0.56 -0.34,0 -1.02,0.96 0.37,-2.11 -1.94,-1.91 0.05,-0.6 z m 19.640004,3.16 0.76,0.73 -0.03,0.46 3.57,0.99 0.55,0.92 0.84,0.4 0.42,1.85 -2.26,1.42 -1.39,-0.07 -0.6,-0.59 -1,1.25 -2.13,0.96 -1.73,2.24 -4.02,2.93 -1.550004,-0.2 -1.31,0.76 -0.05,-0.53 0.58,-0.33 -0.18,-1.12 -0.94,-0.66 -1.23,0.82 0.89,-0.92 -0.47,-0.72 -0.74,0.23 0,0.79 -0.63,-0.53 -0.24,0.76 -0.52,-0.72 -1.1,-0.1 0.87,-0.62 -0.47,-0.16 0.13,-0.95 -0.55,0.07 -0.66,-0.72 -0.18,-0.69 0.42,-0.69 1.65,-0.03 3.94,-2.8 5.570004,-0.26 1.34,-0.96 0.68,-2.7 1.77,-0.51 z m -9.850004,14.66 0.11,0.82 0.79,0.26 0.79,1.28 1.100004,0.53 -0.08,0.59 -0.630004,-0.07 0.580004,0.43 -0.710004,0.49 0,0.69 -1.57,0.43 -0.95,-0.92 0.37,-1.25 -0.26,-0.69 -1.18,-0.3 0.81,-1.45 0.08,-0.99 0.75,0.15 z"
     />
     <path
@@ -206,6 +228,18 @@ const MapSection = () => {
                         {displayRegion.name}
                     </div>
                     )} 
+                
+                {/* 후보 지역 표시 */}
+                {candidate && (
+                    <ul>
+                        {candidate.map((regionName, index) => (
+                            <li key={index}>{regionName}</li>
+                        ))}
+
+                    </ul>
+                )
+
+                }
              
             </h2>
         </div>
