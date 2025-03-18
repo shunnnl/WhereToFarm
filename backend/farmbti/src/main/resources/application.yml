@@ -31,3 +31,8 @@ logging:
     root: INFO
     com.backend.farmbti: DEBUG
     com.backend.farmbti.security.filter: DEBUG
+springdoc:
+  api-docs:
+    path: /v3/api-docs  # ✅ Swagger API 문서 기본 경로 설정
+  swagger-ui:
+    path: /swagger-ui.html  # ✅ Swagger UI 경로 설정
