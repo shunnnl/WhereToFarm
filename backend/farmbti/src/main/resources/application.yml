@@ -22,7 +22,6 @@ server:
 jwt:
   secret-key: ${JWT_SECRET}
   expiration-time: ${JWT_EXPIRATION}
-  refresh-expiration-time: ${JWT_REFRESH_EXPIRATION}
   token-prefix: "Bearer "
   header-string: "Authorization"
   issuer: "your-app-name"
