@@ -41,17 +41,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         boolean isPermitEndpoint = isPermitAllEndpoint(uri);
         log.info("[JwtAuthenticationFilter] 허용된 경로 여부: {}, 경로: {}", isPermitEndpoint, uri);
 
-        // ✅ Swagger 관련 요청은 필터링에서 제외 (JWT 인증 무시)
-        if (uri.startsWith("/v3/api-docs") ||
-            uri.startsWith("/swagger-ui") ||
-            uri.startsWith("/swagger-resources") ||
-            uri.startsWith("/webjars") ||
-            uri.startsWith("/configuration")) {
-            log.info("[JwtAuthenticationFilter] Swagger 경로 요청 - 필터 제외: {}", uri);
-            filterChain.doFilter(request, response);
-            return;
-        }
-
         // permitAll 경로이면서 토큰이 없는 경우 -> 그냥 통과
         if (isPermitEndpoint && token == null) {
             log.info("[JwtAuthenticationFilter] 허용된 경로이며 토큰이 없음 - 필터 통과");

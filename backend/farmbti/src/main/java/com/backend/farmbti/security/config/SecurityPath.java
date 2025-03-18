@@ -33,6 +33,14 @@ public enum SecurityPath {
     }
 
     public static boolean matches(String uri) {
+        System.out.println("====== SecurityPath DEBUG ======");
+        System.out.println("Checking URI: " + uri);
+        System.out.println("Defined security paths:");
+        for (SecurityPath path : values()) {
+            System.out.println(" - " + path.name() + ": " + path.getPath());
+        }
+        System.out.println("==============================");
+
         return java.util.Arrays.stream(values())
                 .anyMatch(securityPath -> {
                     String pattern = securityPath.getPath();
