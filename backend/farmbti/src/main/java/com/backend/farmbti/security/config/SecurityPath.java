@@ -43,6 +43,7 @@ public enum SecurityPath {
         return java.util.Arrays.stream(values())
                 .anyMatch(securityPath -> {
                     String pattern = securityPath.getPath();
+                    log.info("🩵🩵 pattern: " + pattern);
 
                     // ✅ 정확한 경로 매칭 ("/v3/api-docs" 같은 단일 경로)
                     if (pattern.equals(uri)) {
