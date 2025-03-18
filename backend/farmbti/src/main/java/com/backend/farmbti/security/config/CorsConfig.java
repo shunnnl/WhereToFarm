@@ -16,7 +16,8 @@ public class CorsConfig {
 
         // 허용할 오리진(프론트엔드 도메인) 설정
         configuration.setAllowedOrigins(Arrays.asList(
-                "http://localhost:3000"    // 로컬 개발 환경
+                "http://localhost:3000",    // 로컬 개발 환경
+                "http://j12d209.p.ssafy.io:8080"
         ));
 
         // 허용할 HTTP 메서드 설정
