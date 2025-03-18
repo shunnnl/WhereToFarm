@@ -26,6 +26,9 @@ public class CropsReport extends TimeStampEntity {
     @Column(name = "my_total_quantity")
     private double myTotalQuantity;
 
+    @Column(name = "my_total_price")
+    private double myTotalPrice;
+
     @Column(name = "my_total_operating_price")
     private double myTotalOperatingPrice;
 
