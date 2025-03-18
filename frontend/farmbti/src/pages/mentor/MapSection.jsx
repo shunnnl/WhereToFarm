@@ -15,7 +15,7 @@ const MapSection = () => {
     console.log("selectedRegion = ", selectedRegion)
 
         const [activePage, setActivePage] = useState(1);
-        const itemsPerPage = 8;
+        const itemsPerPage = 12;
       
         // 페이지 변경 핸들러
         const handlePageChange = (pageNumber) => {
@@ -145,7 +145,7 @@ const MapSection = () => {
     };
   
     return (
-    <div className="flex">
+    <div className="flex gap-4">
       <div className="w-1/2 bg-green-800 flex items-center justify-center p-4 rounded-xl">
       <svg 
         ref={svgRef}
@@ -244,19 +244,17 @@ const MapSection = () => {
         </svg>
     </div>
     <div className="w-1/2">
-        <h2> 
+        <div> 
                 {/* 호버 시 지역명 표시 */}
-                {displayRegion && (
-                    <div>
-                        {displayRegion.name}
-                    </div>
-                    )} 
+                <h3 className="flex items-center text-xl py-4">
+                선택한 지역: {displayRegion && <span className="ml-2 text-xl font-bold text-green-500">{displayRegion.name}</span>}
+                </h3>
                 
                 {/* 후보 지역 표시 */}
                     {candidate && candidate.length > 0 ? (
                         <>
                         {/* 카드 그리드 배치 */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mb-6">
                             {currentItems.map((regionName, index) => (
                             <RegionCard 
                                 key={startIndex + index} 
@@ -275,10 +273,10 @@ const MapSection = () => {
                         />
                         </>
                     ) : (
-                        <div className="text-center p-4">등록된 지역이 없습니다.</div>
+                        <div className="text-center p-4 text-xl">등록된 지역이 없습니다.</div>
                     )}
              
-            </h2>
+            </div>
         </div>
     </div>
   )
