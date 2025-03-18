@@ -51,7 +51,7 @@ public enum SecurityPath {
 
                     // /** 패턴 처리
                     if (pattern.endsWith("/**")) {
-                        String basePattern = pattern.substring(0, pattern.length() - 3);
+                        String basePattern = pattern.substring(0, pattern.length() - 2);
                         return uri.startsWith(basePattern);
                     }
                     // 정확한 경로 매칭
