@@ -2,8 +2,10 @@ package com.backend.farmbti.security.config;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 //보안 경로를 관리하는 열거형(Enum) 클래스 -> 이 경로는 인증 처리를 안함
+@Slf4j
 @Getter
 @AllArgsConstructor
 public enum SecurityPath {
@@ -33,13 +35,13 @@ public enum SecurityPath {
     }
 
     public static boolean matches(String uri) {
-        System.out.println("====== SecurityPath DEBUG ======");
-        System.out.println("Checking URI: " + uri);
-        System.out.println("Defined security paths:");
+        log.info("====== SecurityPath DEBUG ======");
+        log.info("Checking URI: {}", uri);
+        log.info("Defined security paths:");
         for (SecurityPath path : values()) {
-            System.out.println(" - " + path.name() + ": " + path.getPath());
+            log.info(" - {}: {}", path.name(), path.getPath());
         }
-        System.out.println("==============================");
+        log.info("==============================");
 
         return java.util.Arrays.stream(values())
                 .anyMatch(securityPath -> {
