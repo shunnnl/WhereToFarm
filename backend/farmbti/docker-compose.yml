@@ -10,6 +10,9 @@ services:
       - .env
     networks:
       - farmbti
+    depends_on:
+      - postgres
+      - redis
 
 networks:
   farmbti:
