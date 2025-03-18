@@ -52,14 +52,13 @@ public class SecurityConfig {
                 // 즉, 로그인 안 하면 어떤 페이지도 접근 불가능하게 만듦
                 // URL 별 접근 권한 설정
                 .authorizeHttpRequests(auth -> auth
-                    .requestMatchers(
-                        "/actuator/**"
-                        //SecurityPath.getAllPublicPaths()
-                    ).permitAll()
+                    .requestMatchers("/actuator/**").permitAll()  // Actuator 엔드포인트 허용
+                    .requestMatchers(SecurityPath.getAllPublicPaths()).permitAll()
                     .anyRequest().authenticated()
                 )
 
-                //JWT 필터 클래스를 쓰려면 생성자 주입이 필요하다.
+
+            //JWT 필터 클래스를 쓰려면 생성자 주입이 필요하다.
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         // 최종적으로 구성된 보안 필터 체인을 빌드해서 반환해요
