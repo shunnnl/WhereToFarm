@@ -36,3 +36,14 @@ springdoc:
     path: /v3/api-docs  # ✅ Swagger API 문서 기본 경로 설정
   swagger-ui:
     path: /swagger-ui.html  # ✅ Swagger UI 경로 설정
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+  security:
+    enabled: false  # ✅ Actuator 자체 보안 해제

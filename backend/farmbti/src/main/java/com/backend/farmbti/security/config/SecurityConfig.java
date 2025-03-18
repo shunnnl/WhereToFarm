@@ -52,7 +52,10 @@ public class SecurityConfig {
                 // 즉, 로그인 안 하면 어떤 페이지도 접근 불가능하게 만듦
                 // URL 별 접근 권한 설정
                 .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/actuator/**").permitAll()  // Actuator 엔드포인트 허용
+                    .requestMatchers(
+                        "/actuator/**",
+                        "/v3/api-docs"
+                    ).permitAll()  // Actuator 엔드포인트 허용
                     .requestMatchers(SecurityPath.getAllPublicPaths()).permitAll()
                     .anyRequest().authenticated()
                 )
