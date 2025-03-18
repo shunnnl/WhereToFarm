@@ -82,15 +82,29 @@ const MapSection = () => {
           // Hover 해제 이벤트
           path.addEventListener('mouseleave', () => {
             const pathId = path.getAttribute('id');
+            const origFill = path.getAttribute('data-original-fill');
+
+            console.log('mouseleave 이벤트 발생:', pathId);
+            console.log('selectedRegion:', selectedRegion);
+            console.log('data-original-fill:', origFill);
 
 
             // 선택된 지역이 아닌 경우에만 원래 색상으로 되돌림
-            if (!selectedRegion || selectedRegion.id !== pathId) {
+            if (selectedRegion && selectedRegion.id === pathId) {
+                console.log('선택된 지역 유지, 색상:', getHoverColor(pathId));
+
+                // 선택된 지역은 선택 색상 유지
+                path.setAttribute('fill', getHoverColor(pathId));
+            } else {
+                                        console.log('원래 색상으로 복원:', origFill);
+
+                // 선택되지 않은 지역은 원래 색상으로 복원
                 path.setAttribute('fill', path.getAttribute('data-original-fill'));
-                }            
+            }      
             setHoveredRegion(null);
             setDisplayRegion(selectedRegion)
-          });
+          }
+        );
 
           // Click 이벤트
           path.addEventListener('click', () => {
@@ -100,6 +114,8 @@ const MapSection = () => {
                 id: path.getAttribute('id'),
                 name: path.getAttribute('name') || path.getAttribute('id')  
             }
+
+
             path.setAttribute('data-original-fill', getHoverColor(path.getAttribute('id')));
 
             console.log("region.name = ", region.name)
@@ -119,6 +135,8 @@ const MapSection = () => {
 
       
 
+      
+
     }, [selectedRegion]);
 
 
@@ -128,17 +146,17 @@ const MapSection = () => {
     // 지역별 hover 색상 가져오기
     const getHoverColor = (regionId) => {
       const colorMap = {
-        busan: '#ff9e9e',
-        daegu: '#9ee6ff',
-        daejeon: '#9effab',
-        seoul: '#ffcf9e',
-        incheon: '#d69eff',
-        gwangju: '#ffe19e',
-        ulsan: '#9effdb',
+        busan: '#65706A',
+        daegu: '#65706A',
+        daejeon: '#65706A',
+        seoul: '#65706A',
+        incheon: '#65706A',
+        gwangju: '#65706A',
+        ulsan: '#65706A',
         jeju: '#c9ff9e',
-        sejong: '#F499E2',
+        sejong: '#65706A',
         // 기본값: 다른 지역을 위한 색상
-        default: '#D2EAD8'
+        default: '#9EF8B5'
       };
       
       return colorMap[regionId] || colorMap.default;
