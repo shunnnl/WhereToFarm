@@ -1,7 +1,9 @@
 package com.backend.farmbti.common.dto;
 
 import lombok.Builder;
+import lombok.Getter;
 
+@Getter
 @Builder
 public class CommonResponseDto<T> {
     private boolean success; //요청 성공 여부(true/false)

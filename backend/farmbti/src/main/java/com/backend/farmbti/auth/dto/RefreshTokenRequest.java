@@ -3,9 +3,8 @@ package com.backend.farmbti.auth.dto;
 import lombok.Data;
 import lombok.Getter;
 
-@Data
 @Getter
-public class LoginRequest {
-    private String email;
-    private String password;
+@Data
+public class RefreshTokenRequest {
+    String refreshToken;
 }

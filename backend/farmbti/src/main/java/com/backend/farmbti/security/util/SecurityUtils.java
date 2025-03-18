@@ -22,7 +22,7 @@ public class SecurityUtils {
      *
      * @return 사용자 ID (인증 정보가 없을 경우 null)
      */
-    public Long getCurrentUserId() {
+    public Long getCurrentUsersId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
             throw new GlobalException(JwtErrorCode.TOKEN_NOT_FOUND);
@@ -42,7 +42,7 @@ public class SecurityUtils {
      *
      * @return 사용자 이메일 (인증 정보가 없을 경우 null)
      */
-    public String getCurrentUserEmail() {
+    public String getCurrentUsersEmail() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
             throw new GlobalException(JwtErrorCode.TOKEN_NOT_FOUND);
@@ -62,7 +62,7 @@ public class SecurityUtils {
      *
      * @return 사용자 주소 (인증 정보가 없을 경우 null)
      */
-    public String getCurrentUserAddress() {
+    public String getCurrentUsersAddress() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
             throw new GlobalException(JwtErrorCode.TOKEN_NOT_FOUND);

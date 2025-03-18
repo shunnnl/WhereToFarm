@@ -4,19 +4,19 @@ import com.backend.farmbti.common.entity.TimeStampEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
+import java.util.Date;
 
 @AllArgsConstructor
 @Builder
 @Getter
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED) // 기본 생성자 접근 제한 설정 (JPA 요구사항)
-public class User extends TimeStampEntity {
+public class Users extends TimeStampEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
+    @Column(name = "users_id")
     private Long id;
     //private: 객체의 데이터를 외부에서 직접 접근하지 못하게 하고, 대신 메소드를 통해 접근
 
@@ -30,7 +30,7 @@ public class User extends TimeStampEntity {
     private String name;
 
     @Column(nullable = false)
-    private LocalDate birth;
+    private Date birth;
 
     @Column(nullable = false)
     private String address;

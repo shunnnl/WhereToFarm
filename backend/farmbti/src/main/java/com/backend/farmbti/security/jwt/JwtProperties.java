@@ -27,5 +27,4 @@ public class JwtProperties {
 
     // 토큰 갱신 관련 설정
     private long refreshExpirationTime;
-
 }

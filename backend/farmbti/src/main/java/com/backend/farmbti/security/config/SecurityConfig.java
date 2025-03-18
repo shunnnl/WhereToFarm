@@ -4,7 +4,6 @@ import com.backend.farmbti.security.filter.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -39,8 +38,8 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 // CSRF(Cross-Site Request Forgery) 보호 기능
-                // 이거 없으면 해커가 사용자 모르게 요청 날릴 수 있어서 꼭 필요함
-                .csrf(Customizer.withDefaults())
+                // CSRF 보호 기능 비활성화 (REST API에서는 일반적으로 비활성화)
+                .csrf(csrf -> csrf.disable())  // CSRF 비활성화
 
                 // CORS 설정 적용
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))

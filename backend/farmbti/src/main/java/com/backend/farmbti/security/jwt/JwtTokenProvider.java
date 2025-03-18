@@ -1,7 +1,11 @@
 package com.backend.farmbti.security.jwt;
 
-import com.backend.farmbti.auth.domain.User;
+import com.backend.farmbti.auth.domain.Users;
+import com.backend.farmbti.auth.exception.AuthErrorCode;
+import com.backend.farmbti.auth.repository.UsersRepository;
+import com.backend.farmbti.common.exception.GlobalException;
 import com.backend.farmbti.security.dto.Token;
+import com.backend.farmbti.security.exception.JwtErrorCode;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +15,7 @@ import org.springframework.stereotype.Component;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.security.SignatureException;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 //JWT 토큰 생성, 검증, 파싱
@@ -21,25 +26,33 @@ import java.util.Date;
 public class JwtTokenProvider {
 
     private final JwtProperties jwtProperties;
+    private final UsersRepository usersRepository;
 
     /**
      * JWT 토큰 생성 메서드 (Access Token + Refresh Token)
      *
-     * @param user 사용자 정보
+     * @param users 사용자 정보
      * @return 액세스 토큰과 리프레시 토큰을 포함한 Token 객체
      */
     //유저가 로그인 시에 user 객체만 넘겨주면 3개의 반환 타입을 넘겨준다.
-    public Token generateToken(User user) {
+    public Token generateToken(Users users) {
         // JwtProperties에서 만료 시간 가져오기
         long accessTokenExpiresIn = jwtProperties.getExpirationTime();
         long refreshTokenExpiresIn = jwtProperties.getRefreshExpirationTime();
 
         // 액세스 토큰 생성
-        String accessToken = generateAccessToken(user, accessTokenExpiresIn);
+        String accessToken = generateAccessToken(users, accessTokenExpiresIn);
         // 리프레시 토큰 생성
-        String refreshToken = generateRefreshToken(user, refreshTokenExpiresIn);
+        String refreshToken = generateRefreshToken(users, refreshTokenExpiresIn);
 
-        return new Token(accessToken, refreshToken, accessTokenExpiresIn);
+        LocalDateTime now = LocalDateTime.now();
+
+        //현재시간
+        //액세스 토큰 만료일을 알아보기 쉽게 3600000 -> 1시간
+        long accessTokenExpiresInHours = accessTokenExpiresIn / 3600000;
+        LocalDateTime expirationTime = now.plusHours(accessTokenExpiresInHours);
+
+        return new Token(accessToken, refreshToken, expirationTime);
     }
 
     /**
@@ -55,19 +68,22 @@ public class JwtTokenProvider {
     /**
      * 액세스 토큰 생성
      *
-     * @param user           사용자 정보
+     * @param users          사용자 정보
      * @param expirationTime 만료 시간(밀리초)
      * @return 생성된 액세스 토큰
      */
-    private String generateAccessToken(User user, long expirationTime) {
+    private String generateAccessToken(Users users, long expirationTime) {
+
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expirationTime);
 
+        log.info("만료 시간: " + expiryDate);
+
         return Jwts.builder()
-                .setSubject(String.valueOf(user.getId()))
-                .claim("id", user.getId())
-                .claim("email", user.getEmail())
-                .claim("address", user.getAddress())
+                .setSubject(String.valueOf(users.getId()))
+                .claim("id", users.getId())
+                .claim("email", users.getEmail())
+                .claim("address", users.getAddress())
                 .claim("tokenType", "access") // 토큰 타입 표시
                 .setIssuedAt(now) // 발행 시간
                 .setExpiration(expiryDate) // 만료 시간
@@ -76,19 +92,49 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    public Token refreshAccessToken(String refreshToken) throws SignatureException {
+        if (!validateToken(refreshToken)) {
+            throw new GlobalException(JwtErrorCode.TOKEN_NOT_FOUND);
+        }
+        Claims claims = getClaims(refreshToken);
+
+        String tokenType = claims.get("tokenType", String.class);
+
+        if (!"refresh".equals(tokenType)) {
+            throw new GlobalException(JwtErrorCode.TOKEN_NOT_VALID);
+        }
+
+        // 4. 사용자 ID 추출
+        Long userId = Long.parseLong(claims.getSubject());
+
+        // 5. 사용자 조회 (서비스나 레포지토리 주입 필요)
+        Users users = usersRepository.findById(userId)
+                .orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
+
+        // 6. 저장된 리프레시 토큰과 일치하는지 확인
+        if (!refreshToken.equals(users.getRefreshToken())) {
+            throw new GlobalException(JwtErrorCode.REFRESH_NOT_VALID);
+        }
+
+        // 7. 새 액세스 토큰 생성
+        return generateToken(users);
+
+    }
+
+
     /**
      * 리프레시 토큰 생성 (최소한의 정보만 포함)
      *
-     * @param user           사용자 정보
+     * @param users          사용자 정보
      * @param expirationTime 만료 시간(밀리초)
      * @return 생성된 리프레시 토큰
      */
-    private String generateRefreshToken(User user, long expirationTime) {
+    private String generateRefreshToken(Users users, long expirationTime) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expirationTime);
 
         return Jwts.builder()
-                .setSubject(String.valueOf(user.getId()))
+                .setSubject(String.valueOf(users.getId()))
                 .claim("tokenType", "refresh") // 토큰 타입 표시
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
