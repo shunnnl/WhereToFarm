@@ -11,7 +11,7 @@ public enum SecurityPath {
     //Swagger 관련 경로
     //Swagger 관련 경로
     SWAGGER_UI("/swagger-ui/**"),
-    SWAGGER_API_DOCS("/v3/api-docs"),
+    SWAGGER_API_DOCS("/v3/api-docs/"),
     SWAGGER_API_DOCS_ALL("/v3/api-docs/**"),
     SWAGGER_RESOURCES("/swagger-resources/**"),
     SWAGGER_WEBJARS("/webjars/**"),  // 추가 필요
