@@ -31,18 +31,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String uri = request.getRequestURI();
 
-        // ✅ Swagger 관련 요청은 필터링에서 제외 (JWT 인증 무시)
-//        log.info("🩵🩵Swagger 관련 요청은 필터링에서 제외🩵🩵");
-//        if (uri.startsWith("/v3/api-docs") ||
-//            uri.startsWith("/swagger-ui") ||
-//            uri.startsWith("/swagger-resources") ||
-//            uri.startsWith("/webjars") ||
-//            uri.startsWith("/configuration")) {
-//            log.info("[JwtAuthenticationFilter] Swagger 경로 요청 - 필터 제외: {}", uri);
-//            filterChain.doFilter(request, response);
-//            return;
-//        }
-
         String method = request.getMethod();
         log.info("[JwtAuthenticationFilter] 요청 시작: {} {}", method, uri);
 

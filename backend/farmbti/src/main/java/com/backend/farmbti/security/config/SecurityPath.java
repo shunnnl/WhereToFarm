@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 public enum SecurityPath {
 
     //test 경로
-    API_TEST("/actuator/health"),
+    API_TEST("/actuator/**"),
 
     //Swagger 관련 경로
     SWAGGER_UI("/swagger-ui/**"),
@@ -37,26 +37,24 @@ public enum SecurityPath {
     }
 
     public static boolean matches(String uri) {
-
+        log.info("🟢 [SecurityPath] 요청된 URI: {}", uri);
         return java.util.Arrays.stream(values())
-                .anyMatch(securityPath -> {
-                    String pattern = securityPath.getPath();
+            .anyMatch(securityPath -> {
+                String pattern = securityPath.getPath();
+                log.info("🔍 [SecurityPath] 비교할 패턴: {}", pattern);
 
-                    // ✅ 정확한 경로 매칭 ("/v3/api-docs" 같은 단일 경로)
-                    if (pattern.equals(uri)) {
-                        log.info("💜 [SecurityPath] 정확한 경로 매칭 확인");
-                        return true;
-                    }
+                if (pattern.equals(uri)) {
+                    log.info("💜 [SecurityPath] 정확한 경로 매칭 확인: {}", pattern);
+                    return true;
+                }
 
-                    // /** 패턴 처리
-                    if (pattern.endsWith("/**")) {
-                        log.info("💜 [SecurityPath] /** 패턴 처리");
-                        String basePattern = pattern.substring(0, pattern.length() - 2);
-                        return uri.startsWith(basePattern);
-                    }
-                    // 정확한 경로 매칭
-                    return pattern.equals(uri);
-                });
+                if (pattern.endsWith("/**")) {
+                    log.info("💜 [SecurityPath] /** 패턴 처리: {}", pattern);
+                    String basePattern = pattern.substring(0, pattern.length() - 2);
+                    return uri.startsWith(basePattern);
+                }
+                return pattern.equals(uri);
+            });
     }
 
 }
