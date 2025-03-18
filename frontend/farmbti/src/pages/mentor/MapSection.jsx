@@ -6,7 +6,8 @@ const MapSection = () => {
     const [selectedRegion, setSelectedRegion] = useState(null);
     const [displayRegion, setDisplayRegion] = useState(null);
 
-    console.log('hoverdRegion = ', hoveredRegion)
+    console.log("selectedRegion = ", selectedRegion)
+
     // SVG 파일을 직접 로드한 후 paths 요소들에 이벤트 리스너 추가
     useEffect(() => {
       if (svgRef.current) {
@@ -26,6 +27,7 @@ const MapSection = () => {
           // Hover 이벤트
           path.addEventListener('mouseenter', () => {
             console.log('mouseenter 이벤트 발생:', path.getAttribute('id'));
+
             // 이전 상태 저장
             path.setAttribute('data-original-fill', path.getAttribute('fill'));
             
@@ -44,18 +46,27 @@ const MapSection = () => {
           
           // Hover 해제 이벤트
           path.addEventListener('mouseleave', () => {
-            // 원래 색상으로 되돌림
-            path.setAttribute('fill', path.getAttribute('data-original-fill'));
+            const pathId = path.getAttribute('id');
+
+
+            // 선택된 지역이 아닌 경우에만 원래 색상으로 되돌림
+            if (!selectedRegion || selectedRegion.id !== pathId) {
+                path.setAttribute('fill', path.getAttribute('data-original-fill'));
+                }            
             setHoveredRegion(null);
             setDisplayRegion(selectedRegion)
           });
 
           // Click 이벤트
           path.addEventListener('click', () => {
+            
+
             const region = {
                 id: path.getAttribute('id'),
                 name: path.getAttribute('name') || path.getAttribute('id')  
             }
+            path.setAttribute('data-original-fill', getHoverColor(path.getAttribute('id')));
+
             
             setSelectedRegion(region)
             setHoveredRegion(region)
@@ -80,6 +91,7 @@ const MapSection = () => {
         gwangju: '#ffe19e',
         ulsan: '#9effdb',
         jeju: '#c9ff9e',
+        sejong: '#F499E2',
         // 기본값: 다른 지역을 위한 색상
         default: '#D2EAD8'
       };
