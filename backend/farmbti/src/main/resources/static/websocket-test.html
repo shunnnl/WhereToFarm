@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>WebSocket Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+</head>
+<body>
+<h1>WebSocket 테스트 페이지</h1>
+<button onclick="connect()">연결</button>
+<button onclick="sendMessage()">메시지 보내기</button>
+<button onclick="disconnect()">연결 해제</button>
+<div id="response"></div>
+
+<script>
+    let stompClient = null;
+
+    function connect() {
+        document.getElementById('response').innerHTML += "연결 시도 중...<br>";
+
+        stompClient = new StompJs.Client({
+            brokerURL: 'ws://localhost:8080/gs-guide-websocket'
+        });
+
+        stompClient.onConnect = function (frame) {
+            document.getElementById('response').innerHTML += "연결됨!<br>";
+
+            stompClient.subscribe('/topic/greetings', function (message) {
+                const response = JSON.parse(message.body);
+                document.getElementById('response').innerHTML +=
+                    "메시지 받음: " + response.content + "<br>";
+            });
+        };
+
+        stompClient.onStompError = function (error) {
+            document.getElementById('response').innerHTML +=
+                "에러: " + error.headers['message'] + "<br>";
+        };
+
+        stompClient.activate();
+    }
+
+    function sendMessage() {
+        if (stompClient && stompClient.connected) {
+            const message = {name: "테스터"};
+            document.getElementById('response').innerHTML +=
+                "메시지 전송: " + JSON.stringify(message) + "<br>";
+
+            stompClient.publish({
+                destination: '/app/hello',
+                body: JSON.stringify(message)
+            });
+        } else {
+            document.getElementById('response').innerHTML +=
+                "먼저 연결하세요<br>";
+        }
+    }
+
+    function disconnect() {
+        if (stompClient) {
+            stompClient.deactivate();
+            stompClient = null;
+            document.getElementById('response').innerHTML += "연결 해제됨<br>";
+        }
+    }
+</script>
+</body>
+</html>

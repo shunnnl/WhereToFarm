@@ -13,6 +13,10 @@ public enum SecurityPath {
     SWAGGER_API_DOCS("/v3/api-docs/**"),  // 추가된 부분
     SWAGGER_RESOURCES("/swagger-resources/**"),  // 추가된 부분
 
+    //WebSocket 관련 경로
+    WEB_SOCKET("/websocket-test.html"),
+    WEB_SOCKET_CONNECTION("/gs-guide-websocket"),
+
     // Auth 관련 경로
     SIGNUP("/api/auth/signUp"),
     LOGIN("/api/auth/login");
