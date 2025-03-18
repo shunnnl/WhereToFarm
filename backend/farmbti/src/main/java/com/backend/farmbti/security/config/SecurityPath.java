@@ -35,13 +35,10 @@ public enum SecurityPath {
     }
 
     public static boolean matches(String uri) {
-        log.info("====== SecurityPath DEBUG ======");
-        log.info("Checking URI: {}", uri);
-        log.info("Defined security paths:");
-        for (SecurityPath path : values()) {
-            log.info(" - {}: {}", path.name(), path.getPath());
+
+        if ("/v3/api-docs".equals(uri)) {
+            return true;
         }
-        log.info("==============================");
 
         return java.util.Arrays.stream(values())
                 .anyMatch(securityPath -> {
