@@ -15,9 +15,8 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   data:
     redis:
-      host: redis
-      port: 6379
-      password:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
 server:
   port: 8080
 jwt:
