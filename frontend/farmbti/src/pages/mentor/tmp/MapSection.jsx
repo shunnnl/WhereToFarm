@@ -1,69 +1,78 @@
 import React from 'react';
 import { useRef, useEffect, useState } from 'react';
 const MapSection = () => {
-    const [hoveredRegion, setHoveredRegion] = useState(null);
-    const svgRef = useRef(null);
-    
-    // SVG 파일을 직접 로드한 후 paths 요소들에 이벤트 리스너 추가
-    useEffect(() => {
-      if (svgRef.current) {
-        // SVG 내의 모든 path 요소 선택
-        const paths = svgRef.current.querySelectorAll('path');
-        
-        // 각 path에 이벤트 리스너 추가
-        paths.forEach(path => {
-          // 기본 스타일 저장
-          const originalFill = path.getAttribute('fill') || '#e0e0e0';
-          path.setAttribute('fill', originalFill);
-          path.setAttribute('data-original-fill', originalFill);
-          
-          // Hover 이벤트
-          path.addEventListener('mouseenter', () => {
-            // 이전 상태 저장
-            path.setAttribute('data-original-fill', path.getAttribute('fill'));
-            
-            // hover 색상으로 변경
-            path.setAttribute('fill', getHoverColor(path.getAttribute('id')));
-            
-            // 지역 이름 표시
-            setHoveredRegion({
-              id: path.getAttribute('id'),
-              name: path.getAttribute('name') || path.getAttribute('id')
-            });
-          });
-          
-          // Hover 해제 이벤트
-          path.addEventListener('mouseleave', () => {
-            // 원래 색상으로 되돌림
-            path.setAttribute('fill', path.getAttribute('data-original-fill'));
-            setHoveredRegion(null);
-          });
-          
-          // 커서 스타일 추가
+  const svgRef = useRef(null);
+  const [activeRegion, setActiveRegion] = useState(null);
+  
+  useEffect(() => {
+    if (svgRef.current) {
+      // SVG에서 모든 path 요소 가져오기
+      const paths = svgRef.current.querySelectorAll('path');
+      
+      // 기존 이벤트 리스너 제거 (중복 방지)
+      paths.forEach(path => {
+        path.removeEventListener('mouseenter', () => {});
+        path.removeEventListener('mouseleave', () => {});
+      });
+      
+      // 각 path에 이벤트 리스너 추가
+      paths.forEach(path => {
+        const handleMouseEnter = () => {
+          // 현재 지역 정보 저장
+          setActiveRegion(path.getAttribute('name'));
+          // 호버 스타일 적용
+          path.setAttribute('fill', '#000000');
           path.style.cursor = 'pointer';
-          path.style.transition = 'fill 0.3s ease';
+        };
+        
+        const handleMouseLeave = () => {
+          // 지역 정보 초기화
+          setActiveRegion(null);
+          // 원래 스타일로 복원 - className에서 색상 클래스 추출
+          const colorClass = path.getAttribute('class');
+          if (colorClass) {
+            // class에서 색상 추출하여 다시 적용
+            const rankMatch = colorClass.match(/rank\d/);
+            if (rankMatch) {
+              const styleTag = svgRef.current.querySelector('style');
+              const cssText = styleTag.textContent;
+              const colorMatch = cssText.match(new RegExp(`\\.${rankMatch[0]} { fill: (#[A-Fa-f0-9]{6}); }`));
+              if (colorMatch && colorMatch[1]) {
+                path.setAttribute('fill', colorMatch[1]);
+              }
+            }
+          } else {
+            path.removeAttribute('fill');
+          }
+        };
+        
+        path.addEventListener('mouseenter', handleMouseEnter);
+        path.addEventListener('mouseleave', handleMouseLeave);
+      });
+    }
+    
+    // 컴포넌트 언마운트 시 이벤트 리스너 정리
+    return () => {
+      if (svgRef.current) {
+        const paths = svgRef.current.querySelectorAll('path');
+        paths.forEach(path => {
+          path.removeEventListener('mouseenter', () => {});
+          path.removeEventListener('mouseleave', () => {});
         });
       }
-    }, []);
-    
-    // 지역별 hover 색상 가져오기
-    const getHoverColor = (regionId) => {
-      const colorMap = {
-        busan: '#ff9e9e',
-        daegu: '#9ee6ff',
-        daejeon: '#9effab',
-        seoul: '#ffcf9e',
-        incheon: '#d69eff',
-        gwangju: '#ffe19e',
-        ulsan: '#9effdb',
-        jeju: '#c9ff9e',
-        // 기본값: 다른 지역을 위한 색상
-        default: '#a0a0a0'
-      };
-      
-      return colorMap[regionId] || colorMap.default;
     };
+  }, []);
   
+  const mapStyles = `
+    path {
+      transition: fill 0.3s ease;
+    }
+    .rank1 { fill: #FAE0E0; }
+    .rank2 { fill: #F8D3D4; }
+    .rank3 { fill: #F19B9A; }
+    .rank4 { fill: #EC5A5A; }
+    .rank5 { fill: #E13632; }
+  `;
     return (
     <div className="flex">
       <div className="w-1/2 bg-green-800 flex items-center justify-center p-4 rounded-xl">
@@ -73,7 +82,7 @@ const MapSection = () => {
         viewBox="0 0 524 631" 
         className="w-4/5 h-auto mx-auto my-2"
         >
-
+        <style>{mapStyles}</style>
 
         <path
         id="busan"
@@ -163,14 +172,7 @@ const MapSection = () => {
        
         </svg>
     </div>
-    <div className="w-1/2">
-            {/* 호버 시 지역명 표시 */}
-            {hoveredRegion && (
-                <div className="absolute top-4 left-4 bg-white px-2 py-1 rounded shadow-md border text-sm">
-                {hoveredRegion.name}
-                </div>
-            )}
-        </div>
+    <div className="w-1/2">오른쪽 섹션</div>
     </div>
   )
 };
