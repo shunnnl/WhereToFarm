@@ -10,7 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 @AllArgsConstructor
 public enum SecurityPath {
 
-    //Swagger 관련 경로
+    //test 경로
+    API_TEST("/actuator/health"),
+
     //Swagger 관련 경로
     SWAGGER_UI("/swagger-ui/**"),
     SWAGGER_API_DOCS("/v3/api-docs"),
