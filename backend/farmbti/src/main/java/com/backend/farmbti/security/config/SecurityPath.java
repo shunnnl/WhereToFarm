@@ -10,7 +10,8 @@ public enum SecurityPath {
 
     //Swagger 관련 경로
     SWAGGER("/swagger-ui/**"),
-    SWAGGER_API_DOCS("/v3/api-docs/**"),  // 추가된 부분
+    SWAGGER_API_DOCS("/v3/api-docs"),
+    SWAGGER_API_DOCS_ALL("/v3/api-docs/**"),  // 추가된 부분
     SWAGGER_RESOURCES("/swagger-resources/**"),  // 추가된 부분
 
     // Auth 관련 경로
