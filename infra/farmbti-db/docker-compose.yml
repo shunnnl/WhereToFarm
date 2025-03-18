@@ -1,14 +1,12 @@
-version: "2.8"
+version: "3.8"
 
 services:
   postgres:
-    image: postgres
+    image: postgres:15
     container_name: postgres
     restart: always
-    environment:
-      POSTGRES_USER: ssafy
-      POSTGRES_PASSWORD: ssafy209!@ 
-      POSTGRES_DB: farmbti_db 
+    env_file:
+      - .env
     ports:
       - "5432:5432"
     volumes:
@@ -17,19 +15,22 @@ services:
       - farmbti
 
   redis:
-    image: redis 
+    image: redis:7
     container_name: redis
     restart: always
+    command: redis-server --save 60 1 --loglevel warning
     ports:
       - "6379:6379"
+    volumes:
+      - redis_data:/data
     networks:
       - farmbti
 
 volumes:
   postgres_data:
+  redis_data:
 
 networks:
   farmbti:
     name: farmbti
     driver: bridge
-
