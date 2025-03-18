@@ -18,9 +18,7 @@ public class CorsConfig {
         configuration.setAllowedOrigins(Arrays.asList(
             "http://localhost:3000",    // 로컬 개발 환경
             "http://localhost:8080",
-            "http://j12d209.p.ssafy.io",
-            "http://j12d209.p.ssafy.io:8080/swagger-ui/index.html",
-            "http://j12d209.p.ssafy.io:8080/v3/api-docs"
+            "http://j12d209.p.ssafy.io"
         ));
 
         // 허용할 HTTP 메서드 설정

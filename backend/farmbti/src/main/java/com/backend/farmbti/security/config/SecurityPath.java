@@ -36,10 +36,6 @@ public enum SecurityPath {
 
     public static boolean matches(String uri) {
 
-        if ("/v3/api-docs".equals(uri)) {
-            return true;
-        }
-
         return java.util.Arrays.stream(values())
                 .anyMatch(securityPath -> {
                     String pattern = securityPath.getPath();
