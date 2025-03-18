@@ -1,5 +1,8 @@
 import React from 'react';
 import {regionData} from './regionData.js';
+import RegionCard from './RegionCard.jsx';
+import Pagination from 'react-js-pagination';
+import PaginationComponent from './Pagination.jsx';
 
 import { useRef, useEffect, useState } from 'react';
 const MapSection = () => {
@@ -10,6 +13,22 @@ const MapSection = () => {
     const [candidate, setCandidate] = useState(null);
 
     console.log("selectedRegion = ", selectedRegion)
+
+        const [activePage, setActivePage] = useState(1);
+        const itemsPerPage = 8;
+      
+        // 페이지 변경 핸들러
+        const handlePageChange = (pageNumber) => {
+          setActivePage(pageNumber);
+        };
+      
+        // 현재 페이지에 표시할 항목 계산
+        const startIndex = (activePage - 1) * itemsPerPage;
+        const currentItems = candidate?.slice(startIndex, startIndex + itemsPerPage) || []
+
+
+
+
 
     // SVG 파일을 직접 로드한 후 paths 요소들에 이벤트 리스너 추가
     useEffect(() => {
@@ -101,6 +120,10 @@ const MapSection = () => {
       
 
     }, [selectedRegion]);
+
+
+
+
     
     // 지역별 hover 색상 가져오기
     const getHoverColor = (regionId) => {
@@ -230,16 +253,30 @@ const MapSection = () => {
                     )} 
                 
                 {/* 후보 지역 표시 */}
-                {candidate && (
-                    <ul>
-                        {candidate.map((regionName, index) => (
-                            <li key={index}>{regionName}</li>
-                        ))}
-
-                    </ul>
-                )
-
-                }
+                    {candidate && candidate.length > 0 ? (
+                        <>
+                        {/* 카드 그리드 배치 */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                            {currentItems.map((regionName, index) => (
+                            <RegionCard 
+                                key={startIndex + index} 
+                                regionName={regionName} 
+                                index={startIndex + index} 
+                            />
+                            ))}
+                        </div>
+                        
+                        {/* 페이지네이션 컴포넌트 */}
+                        <PaginationComponent
+                            activePage={activePage}
+                            totalItemsCount={candidate.length}
+                            onChange={handlePageChange}
+                            itemsPerPage={itemsPerPage}
+                        />
+                        </>
+                    ) : (
+                        <div className="text-center p-4">등록된 지역이 없습니다.</div>
+                    )}
              
             </h2>
         </div>
