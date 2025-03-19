@@ -52,10 +52,6 @@ public class SecurityConfig {
                 // 즉, 로그인 안 하면 어떤 페이지도 접근 불가능하게 만듦
                 // URL 별 접근 권한 설정
                 .authorizeHttpRequests(auth -> auth
-                    .requestMatchers(
-                        //"/actuator/**",
-                        "/v3/api-docs"
-                    ).permitAll()  // Actuator 엔드포인트 허용
                     .requestMatchers(SecurityPath.getAllPublicPaths()).permitAll()
                     .anyRequest().authenticated()
                 )
@@ -67,5 +63,13 @@ public class SecurityConfig {
         // 최종적으로 구성된 보안 필터 체인을 빌드해서 반환해요
         // 이제 모든 HTTP 요청은 이 필터 체인을 통과
         return http.build();
+    }
+    
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring()
+                .requestMatchers(PathRequest.toStaticResources().atCommonLocations())
+                .requestMatchers("/api/v1/swagger-ui/**", "/api/v1/v3/api-docs/**", "/api/v1/swagger-resources/**",
+                        "/api/v1/webjars/**");
     }
 }

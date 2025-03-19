@@ -17,7 +17,7 @@ public class CorsConfig {
         // 허용할 오리진(프론트엔드 도메인) 설정
         configuration.setAllowedOrigins(Arrays.asList(
             "http://localhost:3000",    // 로컬 개발 환경
-            "http://localhost:8080",
+            "http://localhost:8081",
             "http://j12d209.p.ssafy.io"
         ));
 
@@ -27,8 +27,13 @@ public class CorsConfig {
         ));
         
         // 허용할 헤더 설정
-        configuration.setAllowedHeaders(Arrays.asList(
-                "Authorization", "Cache-Control", "Content-Type"
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+
+        // 클라이언트가 접근할 수 있는 헤더 설정
+        configuration.setExposedHeaders(Arrays.asList(
+                "Authorization",
+                "Refresh-Token",
+                "New-Access-Token"
         ));
 
         // 인증 정보(쿠키 등) 허용 설정
