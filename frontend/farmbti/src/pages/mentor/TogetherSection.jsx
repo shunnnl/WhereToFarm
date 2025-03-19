@@ -1,5 +1,6 @@
 import React from 'react';
 import Modal from 'react-modal';
+import MentorRegistrationModal from './MentorRegistrationModal ';
 import together from '../../asset/mentor/together.svg';
 import { Link } from 'react-router-dom'; 
 import { useRef, useEffect, useState } from 'react';
@@ -45,20 +46,11 @@ const TogetherSection = () => {
 
 
 
-      <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={() => setModalIsOpen(false)}
-        className="bg-white p-6 rounded shadow-md max-w-md mx-auto mt-20"
-        overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
-      >
-        <h2 className="text-xl font-bold">This is Modal content</h2>
-        <button
-          className="mt-4 bg-red-500 text-white py-2 px-4 rounded"
-          onClick={() => setModalIsOpen(false)}
-        >
-          Close Modal
-        </button>
-      </Modal>
+      {/* 분리된 모달 컴포넌트 사용 */}
+      <MentorRegistrationModal 
+        isOpen={modalIsOpen} 
+        onRequestClose={() => setModalIsOpen(false)} 
+      />
 
 
 
