@@ -38,8 +38,10 @@ public class CropsReport extends TimeStampEntity {
     @Column(name = "my_rate")
     private float myRate;
 
-    @Column(name = "monthly_price", columnDefinition = "jsonb")
-    private String monthlyPrice;
+    private boolean house;
+
+    @Column(name = "my_monthly_price", columnDefinition = "jsonb")
+    private String myMonthlyPrice;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "crops_id")

@@ -16,5 +16,6 @@ public class CropsEstimateResponse {
     private double myTotalOperatingPrice;
     private double myTotalRealPrice;
     private float myRate;
-    private String monthlyPrice;
+    private boolean house;
+    private String myMonthlyPrice;
 }

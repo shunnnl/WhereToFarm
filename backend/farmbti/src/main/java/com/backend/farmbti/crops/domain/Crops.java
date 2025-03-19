@@ -1,6 +1,5 @@
 package com.backend.farmbti.crops.domain;
 
-import com.backend.farmbti.common.entity.TimeStampEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,18 +10,18 @@ import lombok.*;
 @Entity
 @Table(name = "crops")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Crops extends TimeStampEntity {
+public class Crops {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "crops_id")
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "crops_name")
     private String name;
 
-//    @Column(name = "crops_image")
-//    private String cropsImage;
+    @Column(name = "crops_image")
+    private String cropsImage;
 
     @Column(nullable = false)
     private int quantity;
@@ -38,5 +37,12 @@ public class Crops extends TimeStampEntity {
 
     @Column(name = "total_rate", nullable = false)
     private float totalRate;
+
+    @Column(nullable = false)
+    private boolean house;
+
+    @Column(name = "monthly_price", columnDefinition = "jsonb")
+    private String monthlyPrice;
+
 
 }

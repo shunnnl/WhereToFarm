@@ -48,7 +48,7 @@ public class CropsService {
         float rate = (float) (realPrice / totalPrice) * 100;
 
         //5. 월별 예상 매출액 그래프
-        
+
 
         //6. db 저장 (예상 수익 그래프 넣기)
         CropsReport cropsReport = CropsReport.builder()
@@ -59,6 +59,7 @@ public class CropsService {
                 .myTotalOperatingPrice(operatingPrice)
                 .myTotalRealPrice(realPrice)
                 .myRate(rate)
+                .house(crops.isHouse())
                 .build();
 
         cropsReportRepository.save(cropsReport);
@@ -73,6 +74,7 @@ public class CropsService {
                 .myTotalOperatingPrice(operatingPrice)
                 .myTotalRealPrice(realPrice)
                 .myRate(rate)
+                .house(crops.isHouse())
                 .build();
     }
 }
