@@ -98,13 +98,13 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
       <div className="mb-8 space-y-4">
         {/* 날짜선택 */}
         <h3 className="text-lg font-medium">귀농 등록</h3>
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-3 gap-4 mb-4 w-80 mx-l ">
                 <select
                   name="Year"
                   value={formData.Year}
                   onChange={handleChange}
                   required
-                  className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 "
                 >
                   <option value="">연도</option>
                   {yearOptions.map(year => (
@@ -139,33 +139,27 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
 
 
 
-        <div className="flex flex-wrap justify-center space-x-4">
+        <div className="flex flex-wrap justify-center">
           {topFood.map((food) => (
             <div key={food.id} className="w-1/5 p-2 flex flex-col items-center">
-              <div className="relative inline-block">
+              <div className="relative flex items-center">
                 <input
                   type="radio"
                   id={food.id}
                   name="foodType"
                   checked={selectedFoods.includes(food.id)}
                   onChange={() => toggleFood(food.id)}
-                  className="sr-only"
+                  className="absolute left-0 top-1/2 -translate-y-1/2 z-10"
                 />
                 <label 
                   htmlFor={food.id}
-                  className="cursor-pointer"
+                  className="cursor-pointer pl-6"
                 >
                   <div className="w-16 h-16 bg-green-700 rounded-full flex items-center justify-center text-white">
                     <img src={food.iconSrc} alt={food.label} className="w-14 h-14" />
                   </div>
                 </label>
                 <div className="absolute -top-1 -left-1">
-                  <input
-                    type="checkbox"
-                    checked={selectedFoods.includes(food.id)}
-                    onChange={() => toggleFood(food.id)}
-                    className="h-5 w-5 rounded border-gray-300"
-                  />
                 </div>
               </div>
               <span className="mt-2 text-sm">{food.label}</span>
