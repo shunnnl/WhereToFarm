@@ -37,25 +37,24 @@ public enum SecurityPath {
     }
 
     public static boolean matches(String uri) {
-        return true;
-        // log.info("🟢 [SecurityPath] 요청된 URI: {}", uri);
-        // return java.util.Arrays.stream(values())
-        //     .anyMatch(securityPath -> {
-        //         String pattern = securityPath.getPath();
-        //         log.info("🔍 [SecurityPath] 비교할 패턴: {}", pattern);
-        //
-        //         if (pattern.equals(uri)) {
-        //             log.info("💜 [SecurityPath] 정확한 경로 매칭 확인: {}", pattern);
-        //             return true;
-        //         }
-        //
-        //         if (pattern.endsWith("/**")) {
-        //             log.info("💜 [SecurityPath] /** 패턴 처리: {}", pattern);
-        //             String basePattern = pattern.substring(0, pattern.length() - 2);
-        //             return uri.startsWith(basePattern);
-        //         }
-        //         return pattern.equals(uri);
-        //     });
+        log.info("🟢 [SecurityPath] 요청된 URI: {}", uri);
+        return java.util.Arrays.stream(values())
+            .anyMatch(securityPath -> {
+                String pattern = securityPath.getPath();
+                log.info("🔍 [SecurityPath] 비교할 패턴: {}, {}", pattern, uri);
+
+                if (pattern.equals(uri)) {
+                    log.info("💜 [SecurityPath] 정확한 경로 매칭 확인: {}", pattern);
+                    return true;
+                }
+
+                if (pattern.endsWith("/**")) {
+                    log.info("💜 [SecurityPath] /** 패턴 처리: {}", pattern);
+                    String basePattern = pattern.substring(0, pattern.length() - 2);
+                    return uri.startsWith(basePattern);
+                }
+                return pattern.equals(uri);
+            });
     }
 
 }

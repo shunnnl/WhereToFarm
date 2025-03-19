@@ -53,7 +53,7 @@ public class SecurityConfig {
                 // URL 별 접근 권한 설정
                 .authorizeHttpRequests(auth -> auth
                     .requestMatchers(
-                        "/actuator/**",
+                        //"/actuator/**",
                         "/v3/api-docs"
                     ).permitAll()  // Actuator 엔드포인트 허용
                     .requestMatchers(SecurityPath.getAllPublicPaths()).permitAll()

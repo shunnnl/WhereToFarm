@@ -115,6 +115,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     //사용자 정의 path 통과
     private boolean isPermitAllEndpoint(String uri) {
+        log.info(uri);
         boolean matches = SecurityPath.matches(uri);
         log.debug("[JwtAuthenticationFilter] SecurityPath.matches 결과: {}, URI: {}", matches, uri);
         return matches;

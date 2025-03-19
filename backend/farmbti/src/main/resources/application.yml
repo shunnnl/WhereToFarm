@@ -18,7 +18,7 @@ spring:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT:6379}
 server:
-  port: 8080
+  port: 8081
 jwt:
   secret-key: ${JWT_SECRET}
   expiration-time: 3600000
@@ -37,13 +37,13 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html  # ✅ Swagger UI 경로 설정
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-  endpoint:
-    health:
-      show-details: always
-  security:
-    enabled: false  # ✅ Actuator 자체 보안 해제
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        include: "*"
+#  endpoint:
+#    health:
+#      show-details: always
+#  security:
+#    enabled: false  # ✅ Actuator 자체 보안 해제
