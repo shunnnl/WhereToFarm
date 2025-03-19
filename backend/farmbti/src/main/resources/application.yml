@@ -25,7 +25,7 @@ jwt:
   token-prefix: "Bearer "
   header-string: "Authorization"
   issuer: "your-app-name"
-  refresh-expiration-time: 86400000  # 24시간
+  refresh-expiration-time: 86400000
 logging:
   level:
     root: INFO
@@ -33,17 +33,6 @@ logging:
     com.backend.farmbti.security.filter: DEBUG
 springdoc:
   api-docs:
-    path: /v3/api-docs  # ✅ Swagger API 문서 기본 경로 설정
+    path: /v3/api-docs
   swagger-ui:
-    path: /swagger-ui.html  # ✅ Swagger UI 경로 설정
-
-#management:
-#  endpoints:
-#    web:
-#      exposure:
-#        include: "*"
-#  endpoint:
-#    health:
-#      show-details: always
-#  security:
-#    enabled: false  # ✅ Actuator 자체 보안 해제
+    path: /swagger-ui.html
