@@ -19,16 +19,16 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
   
 
   const topFood = [
-    { id: 'apple', label: 'apple', iconSrc: '/assets/mentor/icons/apple.png' },
-    { id: 'cucumber', label: 'cucumber', iconSrc: '/assets/mentor/icons/cucumber.png' },
-    { id: 'grape', label: 'grape', iconSrc: '/assets/mentor/icons/grape.png' },
-    { id: 'greenonion', label: 'greenonion', iconSrc: '/assets/mentor/icons/greenonion.png' },
-    { id: 'lettuce', label: 'lettuce', iconSrc: '/assets/mentor/icons/lettuce.png' },
-    { id: 'onion', label: 'onion', iconSrc: '/assets/mentor/icons/onion.png' },
-    { id: 'pear', label: 'pear', iconSrc: '/assets/mentor/icons/pear.png' },
-    { id: 'sweetpotato', label: 'sweetpotato', iconSrc: '/assets/mentor/icons/sweetpotato.png' },
-    { id: 'tangerine', label: 'tangerine', iconSrc: '/assets/mentor/icons/tangerine.png' },
-    { id: 'watermelon', label: 'watermelon', iconSrc: '/assets/mentor/icons/watermelon.png' }
+    { id: 'apple', label: 'apple', iconSrc: 'src/asset/mentor/icons/apple.png' },
+    { id: 'cucumber', label: 'cucumber', iconSrc: 'src/asset/mentor/icons/cucumber.png' },
+    { id: 'grape', label: 'grape', iconSrc: 'src/asset/mentor/icons/grape.png' },
+    { id: 'greenonion', label: 'greenonion', iconSrc: 'src/asset/mentor/icons/greenonion.png' },
+    { id: 'lettuce', label: 'lettuce', iconSrc: 'src/asset/mentor/icons/lettuce.png' },
+    { id: 'onion', label: 'onion', iconSrc: 'src/asset/mentor/icons/onion.png' },
+    { id: 'pear', label: 'pear', iconSrc: 'src/asset/mentor/icons/pear.png' },
+    { id: 'sweetpotato', label: 'sweetpotato', iconSrc: 'src/asset/mentor/icons/sweetpotato.png' },
+    { id: 'tangerine', label: 'tangerine', iconSrc: 'src/asset/mentor/icons/tangerine.png' },
+    { id: 'watermelon', label: 'watermelon', iconSrc: 'src/asset/mentor/icons/watermelon.png' }
   ];
 
   const toggleFood = (id) => {
@@ -88,17 +88,16 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
     <Modal
       isOpen={isOpen}
       onRequestClose={onRequestClose}
-      className="bg-white p-6 rounded shadow-md max-w-md mx-auto mt-20"
+      className="bg-white p-6 rounded shadow-md max-w-4xl w-full mx-auto mt-20"
       overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
     >
       <h2 className="text-xl font-bold">멘토 등록</h2>
       <p className="text-gray-600 text-sm">성공적인 자신의 귀농 스토리를 들려주고 싶지 않나요?</p>
         <p className="text-gray-600 text-sm">멘토로 등록한 후, 멘티들과 많은 이야기를 나누어보세요!</p>
 
-      <div className="mb-8">
+      <div className="mb-8 space-y-4">
         {/* 날짜선택 */}
-        <h3 className="text-lg font-medium mb-4 mt-8">귀농 등록</h3>
-        <div className="flex space-x-4">
+        <h3 className="text-lg font-medium">귀농 등록</h3>
               <div className="grid grid-cols-3 gap-4">
                 <select
                   name="Year"
@@ -138,6 +137,40 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
                 </select>
               </div>
 
+
+
+        <div className="flex flex-wrap justify-center space-x-4">
+          {topFood.map((food) => (
+            <div key={food.id} className="w-1/5 p-2 flex flex-col items-center">
+              <div className="relative inline-block">
+                <input
+                  type="radio"
+                  id={food.id}
+                  name="foodType"
+                  checked={selectedFoods.includes(food.id)}
+                  onChange={() => toggleFood(food.id)}
+                  className="sr-only"
+                />
+                <label 
+                  htmlFor={food.id}
+                  className="cursor-pointer"
+                >
+                  <div className="w-16 h-16 bg-green-700 rounded-full flex items-center justify-center text-white">
+                    <img src={food.iconSrc} alt={food.label} className="w-14 h-14" />
+                  </div>
+                </label>
+                <div className="absolute -top-1 -left-1">
+                  <input
+                    type="checkbox"
+                    checked={selectedFoods.includes(food.id)}
+                    onChange={() => toggleFood(food.id)}
+                    className="h-5 w-5 rounded border-gray-300"
+                  />
+                </div>
+              </div>
+              <span className="mt-2 text-sm">{food.label}</span>
+            </div>
+          ))}
         </div>
 
       </div>
