@@ -41,7 +41,7 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
 
   const handleDescriptionChange = (e) => {
     const text = e.target.value;
-    if (text.length <= 100) {
+    if (text.length <= 1000) {
       setDescription(text);
     }
   };
@@ -88,17 +88,25 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
     <Modal
       isOpen={isOpen}
       onRequestClose={onRequestClose}
-      className="bg-white p-6 rounded shadow-md max-w-4xl w-full mx-auto mt-20"
+      className="bg-white p-6 rounded-xl shadow-md max-w-4xl w-full mx-auto "
       overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
     >
-      <h2 className="text-xl font-bold">멘토 등록</h2>
-      <p className="text-gray-600 text-sm">성공적인 자신의 귀농 스토리를 들려주고 싶지 않나요?</p>
-        <p className="text-gray-600 text-sm">멘토로 등록한 후, 멘티들과 많은 이야기를 나누어보세요!</p>
 
-      <div className="mb-8 space-y-4">
+
+      <div className='mb-4'>
+        <h2 className="text-2xl font-bold mb-2">멘토 등록</h2>
+        <p className="text-gray-600 text-sm">성공적인 자신의 귀농 스토리를 들려주고 싶지 않나요?</p>
+          <p className="text-gray-600 text-sm">멘토로 등록한 후, 멘티들과 많은 이야기를 나누어보세요!</p>
+
+      </div>
+
+
+
+      <div className="mb-4 space-y-4">
         {/* 날짜선택 */}
-        <h3 className="text-lg font-medium">귀농 등록</h3>
-              <div className="grid grid-cols-3 gap-4 mb-4 w-80 mx-l ">
+        <div className='flex items-center space-x-4'>
+          <h3 className="text-xl font-bold">귀농 등록</h3>
+              <div className="grid grid-cols-3 gap-4 w-80">
                 <select
                   name="Year"
                   value={formData.Year}
@@ -136,9 +144,11 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
                   ))}
                 </select>
               </div>
+            </div>
 
 
-
+    <div className="flex items-center space-x-4">
+      <h3 className="text-xl font-bold whitespace-nowrap">재배 작물</h3>
         <div className="flex flex-wrap justify-center">
           {topFood.map((food) => (
             <div key={food.id} className="w-1/5 p-2 flex flex-col items-center">
@@ -165,11 +175,33 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
               <span className="mt-2 text-sm">{food.label}</span>
             </div>
           ))}
+          </div>
         </div>
+
+
+
+
+        {/* 텍스트입력 */}
+        <div className="flex items-center space-x-4">
+          <h3 className="text-xl font-bold whitespace-nowrap">멘토 소개</h3>
+          <div className="flex flex-wrap justify-center w-full">
+            <textarea
+              id="description"
+              value={description}
+              onChange={handleDescriptionChange}
+              className="w-full max-w-4xl px-3 py-2 border border-gray-300 rounded-lg 
+              focus:outline-none focus:ring-2 focus:ring-blue-500 
+              focus:border-transparent resize-y"
+              placeholder="여기에 텍스트를 입력하세요"
+            />
+
+          </div>
+        </div>
+
 
       </div>
       <button
-        className="mt-4 bg-red-500 text-white py-2 px-4 rounded"
+        className="mt-8 bg-red-500 text-white py-2 px-4 rounded"
         onClick={onRequestClose}
       >
         닫기
