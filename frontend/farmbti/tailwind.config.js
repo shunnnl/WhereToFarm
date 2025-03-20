@@ -27,6 +27,7 @@ module.exports = {
         // Accent colors
         accentGreen: {
           DEFAULT: "#D0DFB8",
+          light: "#EDF2E3",
         },
         accentBrown: {
           DEFAULT: "#D5C6A7",
@@ -37,7 +38,7 @@ module.exports = {
           alt1: "#EFF2E3",
           alt2: "#F0EFEB",
           alt3: "#EBF5EC",
-          alt4: "#F5F1E5",
+          alt4: "#F9F6ED",
         },
         // Text colors
         textColor: {
