@@ -65,11 +65,4 @@ public class SecurityConfig {
         return http.build();
     }
     
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring()
-                .requestMatchers(PathRequest.toStaticResources().atCommonLocations())
-                .requestMatchers("/api/v1/swagger-ui/**", "/api/v1/v3/api-docs/**", "/api/v1/swagger-resources/**",
-                        "/api/v1/webjars/**");
-    }
 }
