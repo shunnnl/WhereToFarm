@@ -1,0 +1,55 @@
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME = "s12p21d209_backend"  // Docker 이미지명
+        CONTAINER_NAME = "farmbti-backend" // 실행될 컨테이너 이름
+        PORT = "8081"                      // 컨테이너에서 열릴 포트
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                git branch: 'backend', url: 'https://lab.ssafy.com/s12-bigdata-dist-sub1/S12P21D209.git'
+            }
+        }
+
+        stage('Build Backend') {
+            steps {
+                dir('backend/farmbti') {
+                    sh './gradlew clean build'
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                dir('backend/farmbti') {
+                    sh "docker build -t ${IMAGE_NAME}:latest ."
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                withDockerRegistry([credentialsId: 'docker-hub', url: 'https://index.docker.io/v1/']) {
+                    sh "docker push ${IMAGE_NAME}:latest"
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh """
+                # 기존 컨테이너 중지 및 삭제
+                docker stop ${CONTAINER_NAME} || true
+                docker rm ${CONTAINER_NAME} || true
+
+                # 새로운 컨테이너 실행
+                docker run -d --name ${CONTAINER_NAME} -p ${PORT}:${PORT} ${IMAGE_NAME}:latest
+                """
+            }
+        }
+    }
+}
+
