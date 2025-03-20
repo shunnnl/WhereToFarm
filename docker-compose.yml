@@ -1,9 +1,9 @@
-version: '3.8'
+version: "3.8"
 
 services:
   frontend:
     build:
-      context: ../../frontend/farmbti
+      context: ./frontend/farmbti
       dockerfile: Dockerfile
     container_name: farmbti-frontend
     restart: always
@@ -16,8 +16,10 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./default.conf:/etc/nginx/conf.d/default.conf
-      - ../../frontend/farmbti/dist:/usr/share/nginx/html
+      - ./infra/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./frontend/farmbti/dist:/usr/share/nginx/html
+    depends_on:
+      - frontend
     networks:
       - farmbti
 
