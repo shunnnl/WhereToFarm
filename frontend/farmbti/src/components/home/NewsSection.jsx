@@ -6,8 +6,7 @@ const NewsSection = ({ newsItems }) => {
     <div className="mt-8 mb-12">
       {/* 뉴스 헤더 섹션 */}
       <div className="flex items-center mb-4">
-        <span className="font text-5xl font-bold mb-6">📰 더 많은 귀농 소식이 있어요</span>
-        <span className="ml-1 text-lg">›</span>
+        <span className="font text-5xl font-bold mb-6">📰 더 많은 귀농 소식이 있어요 ></span>
       </div>
       
       {/* 뉴스 카드 레이아웃 */}
