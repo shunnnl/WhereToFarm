@@ -23,7 +23,11 @@ const Navbar = () => {
         <div className="w-auto flex-grow flex justify-center">           
           <ul className="font-medium flex flex-row space-x-8 rtl:space-x-reverse text-base">             
             <li><a href="#" className={menuItemClass}>지역 추천 받기</a></li>             
-            <li><a href="#" className={menuItemClass}>내 작물 수익 계산기</a></li>             
+            <li>
+              <Link to="/crop-calculator" className={menuItemClass}>
+                작물 수확 계산기
+              </Link>
+            </li>
             <li><a href="#" className={menuItemClass}>귀농 매물 보기</a></li>             
             <li><a href="#" className={menuItemClass}>멘토 찾기</a></li>             
             <li><a href="#" className={menuItemClass}>귀농 뉴스</a></li>           
