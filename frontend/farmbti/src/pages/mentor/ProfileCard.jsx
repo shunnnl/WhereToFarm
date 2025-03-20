@@ -18,10 +18,11 @@ const ProfileCard = ({
       flex-col 
       items-center 
       w-1/3
+      h-96
       ${className}
     `}>
       {/* 원형 이미지 */}
-      <div className="w-24 h-24 rounded-full border-4 border-green-100 overflow-hidden bg-green-100">
+      <div className="w-48 h-48 rounded-full border-4 border-green-100 overflow-hidden bg-green-100 mt-4">
         <img 
           src={imageSrc} 
           alt={name} 
@@ -31,9 +32,9 @@ const ProfileCard = ({
       
       {/* 이름과 직함 */}
       <div className="mt-4 text-center">
-        <p className="text-lg font-medium">
+        <p className="text-2xl font-bold">
           {name} 
-          {title && <span className="text-gray-500 text-sm ml-1">{title}</span>}
+          {title && <span className="text-gray-500 text-lg ml-1">{title}</span>}
         </p>
       </div>
       
@@ -46,7 +47,7 @@ const ProfileCard = ({
             px-3 
             py-1 
             rounded-full 
-            text-sm
+            text-xl
           ">
             # {tag}
           </span>

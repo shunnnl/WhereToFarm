@@ -5,7 +5,7 @@ import ProfileCard from './ProfileCard'
 
 const MentorSelect = () => {
   return (
-    <div className="w-full max-w-6xl h-auto" 
+    <div className="w-full h-auto" 
          style={{ 
            backgroundColor: 'rgba(229, 245, 202, 0.59)',
            borderRadius: '8px',
