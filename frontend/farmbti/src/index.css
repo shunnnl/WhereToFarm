@@ -12,3 +12,9 @@
 body {
   font-family: 'Pretendard Variable', sans-serif;
 }
+
+#root {
+  max-width: 1200px; /* 원하는 최대 너비 */
+  margin: 0 auto; /* 좌우 중앙 정렬 */
+  padding: 0 20px; /* 좌우 패딩 */
+}
