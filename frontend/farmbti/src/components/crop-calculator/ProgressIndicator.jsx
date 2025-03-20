@@ -1,6 +1,6 @@
 const ProgressIndicator = ({ currentStep }) => {
   return (
-    <div className="progress-indicator-container">
+    <div className="progress-indicator-container p-10">
       <div className="currentStep-section flex items-center justify-between mx-14 y-4">
         <div
           className={`flex items-center ${
