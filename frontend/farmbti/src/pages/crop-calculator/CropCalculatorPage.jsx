@@ -2,6 +2,8 @@ import PageHeader from "../../components/common/PageHeader";
 import InputSection from "../../components/crop-calculator/InputSection";
 import ProgressIndicator from "../../components/crop-calculator/ProgressIndicator";
 
+import { useState } from "react";
+
 const CropCalculatorPage = () => {
   const [step, setStep] = useState(1);
   return (
