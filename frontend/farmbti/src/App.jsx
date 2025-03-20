@@ -7,6 +7,7 @@ import Home from './pages/home/Home';
 import LoginPage from './pages/auth/Loginpage';
 import SignupPage from './pages/auth/SignupPage';
 import MentorPage from './pages/mentor/MentorPage';
+import CropCalculatorPage from './pages/crop-calculator/CropCalculatorPage';
 
 function App() {
   return (
@@ -14,7 +15,7 @@ function App() {
       <div className="App">
         {/* 네비게이션 바는 동일한 너비와 패딩 사용 */}
         <Navbar />
-        
+
         {/* 페이지 내용 */}
         <Routes>
           {/* 기본 페이지 */}
@@ -22,8 +23,9 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/mentors" element={<MentorPage />} />
+          <Route path="/crop-calculator" element={<CropCalculatorPage />} />
         </Routes>
-        
+
         {/* 푸터가 있다면 여기에 추가 */}
       </div>
     </BrowserRouter>
