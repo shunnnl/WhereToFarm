@@ -1,5 +1,5 @@
 import PageHeader from "../../components/common/PageHeader";
-import InputSection from "../../components/crop-calculator/InputSection";
+import AreaInputSection from "../../components/crop-calculator/AreaInputSection";
 import ProgressIndicator from "../../components/crop-calculator/ProgressIndicator";
 
 import { useState } from "react";
@@ -12,9 +12,9 @@ const CropCalculatorPage = () => {
         title="작물 수익 계산기"
         description="원하는 작물 재배에 따른 예상 수익을 계산해보세요."
       />
-      <div className="crop-calculator-container w-auto mx-10 bg-background-alt3">
+      <div className="crop-calculator-container w-auto mx-10 bg-background">
         <ProgressIndicator currentstep={step}/>
-        <InputSection/>
+        <AreaInputSection/>
       </div>
     </div>
   );
