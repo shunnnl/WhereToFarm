@@ -21,6 +21,39 @@ const BannerSlider = ({ slides }) => {
     setCurrentImageIndex(index);
   };
 
+
+    // 슬라이드별 텍스트 렌더링 함수
+    const renderSlideText = (slide, index) => {
+      if (!slide.text) return null;
+  
+      // 1번 및 3번 슬라이드 형식 (title, content_1, content_2, content_3)
+      if (slide.text.title) {
+        const textColor = index === 2 ? "text-black" : "text-white";
+
+        return (
+          <div className="absolute top-1/4 left-1/2 transform -translate-x-1/2 text-left z-20 w-4/5 md:w-3/4 lg:w-2/3">
+          <h1 className={`text-4xl md:text-5xl lg:text-6xl ${textColor} font-bold mb-6`}>
+            {slide.text.title}
+          </h1>
+          <p className={`text-md md:text-lg ${textColor}`}>
+            {slide.text.content_1}
+          </p>
+          <p className={`text-md md:text-lg ${textColor}`}>
+            {slide.text.content_2}
+          </p>
+          <p className={`text-md md:text-lg ${textColor} mb-6`}>
+            {slide.text.content_3}
+          </p>
+        </div>
+  
+        );
+      }
+      
+  
+      return null;
+    };
+  
+
   return (
     <div className="relative w-full h-[500px] overflow-hidden">
       {slides.map((slide, index) => (
@@ -39,13 +72,17 @@ const BannerSlider = ({ slides }) => {
           {/* 텍스트가 있는 경우만 표시 */}
           {slide.text && (
             <div className="absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center z-20">
-              <p className="text-8xl text-white font-bold shadow-lg">
+              <p className="text-8xl text-white font-bold">
                 {slide.text.before}
                 <span className="text-green-800">{slide.text.highlight}</span>
                 {slide.text.after}
               </p>
             </div>
           )}
+
+          {/* 슬라이드별 텍스트 렌더링 */}
+          {renderSlideText(slide, index)}
+
                     
           {/* 버튼이 있는 경우에만 표시 */}
           {slide.button && (

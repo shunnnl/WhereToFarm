@@ -12,7 +12,12 @@ export const bannerSlides = [
      src: homeimage_1,
      alt: "Home Banner Image 1",
     button: null, // 첫 번째 페이지는 버튼 없음
-    text: null
+    text: {
+      title: "귀농의 첫걸음, 똑똑하게",
+      content_1:"귀농, 어디로 가야 할지 고민되시나요?",
+      content_2:"빅데이터 분석을 통해 당신에게 딱 맞는 최적의 귀농 지역을 추천해 드립니다.",
+      content_3:"지금 바로 클릭하고 새로운 시작을 준비해보세요!" 
+    }
   },
   {
      src: homeimage_2,
@@ -34,7 +39,12 @@ export const bannerSlides = [
       text: "신청하기",
       link: "/apply" // 나중에 수정
     },
-    text:null
+    text:{
+      title:"농부가 된다면, 나의 수익은?",
+      content_1:"어떤 작물을 재배할지 고민되시나요?",
+      content_2:"재배 면적에 따라 예상 수익, 투자 비용, 순이익까지 한 눈에 확인하고,",
+      content_3:"나에게 딱 맞는 농사 계획을 세워보세요!"
+    }
   },
 ];
 

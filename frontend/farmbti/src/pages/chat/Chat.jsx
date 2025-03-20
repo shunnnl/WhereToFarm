@@ -66,33 +66,23 @@ const Chat = () => {
             {/* 멘토 1 */}
             <div className="flex items-center p-2 hover:bg-gray-100 rounded cursor-pointer">
               <div className="w-12 h-12 rounded-full overflow-hidden mr-3">
-                <img src="/api/placeholder/48/48" alt="윤석열" className="w-full h-full object-cover" />
+                <img src="/api/placeholder/48/48" alt="멘토1" className="w-full h-full object-cover" />
               </div>
               <div>
-                <p className="font-bold">윤석열</p>
-                <p className="text-sm text-gray-500">안과 총 의아주세요~^^</p>
+                <p className="font-bold">멘토1</p>
+                <p className="text-sm text-gray-500">연락주세요</p>
               </div>
             </div>
-            
-            {/* 멘토 2 */}
-            <div className="flex items-center p-2 hover:bg-gray-100 rounded cursor-pointer">
-              <div className="w-12 h-12 rounded-full overflow-hidden mr-3">
-                <img src="/api/placeholder/48/48" alt="노무현" className="w-full h-full object-cover" />
-              </div>
-              <div>
-                <p className="font-bold">노무현</p>
-                <p className="text-sm text-gray-500">변리사 총 의아주세요~^^</p>
-              </div>
-            </div>
+
             
             {/* 멘토 3 */}
             <div className="flex items-center p-2 hover:bg-gray-100 rounded cursor-pointer">
               <div className="w-12 h-12 rounded-full overflow-hidden mr-3">
-                <img src="/api/placeholder/48/48" alt="박정희" className="w-full h-full object-cover" />
+                <img src="/api/placeholder/48/48" alt="멘토2" className="w-full h-full object-cover" />
               </div>
               <div>
-                <p className="font-bold">박정희</p>
-                <p className="text-sm text-gray-500">변리사 총 의아주세요~^^</p>
+                <p className="font-bold">멘토2</p>
+                <p className="text-sm text-gray-500">연락주세요</p>
               </div>
             </div>
           </div>
