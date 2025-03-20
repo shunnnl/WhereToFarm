@@ -1,5 +1,6 @@
 import React from 'react';
 import tmpimage from './tmp/하치와레.jpg'
+import { useState } from 'react';
 
 const ProfileCard = ({ 
   name, 
@@ -8,6 +9,9 @@ const ProfileCard = ({
   tag,
   className = ''
 }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
+
   return (
     <div className={`
       bg-white 

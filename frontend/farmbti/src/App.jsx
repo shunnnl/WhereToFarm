@@ -8,6 +8,7 @@ import LoginPage from './pages/auth/Loginpage';
 import SignupPage from './pages/auth/SignupPage';
 import MentorPage from './pages/mentor/MentorPage';
 import Footer from './components/common/footer';
+import Chat from './pages/chat/Chat';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/mentors" element={<MentorPage />} />
+          <Route path="/chat" element={<Chat />} />
         </Routes>
         
         {/* 푸터 */}
