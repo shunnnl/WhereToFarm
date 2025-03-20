@@ -5,14 +5,14 @@ pipeline {
         IMAGE_NAME = "s12p21d209_backend"  // Docker 이미지명
         CONTAINER_NAME = "farmbti-backend" // 실행될 컨테이너 이름
         PORT = "8081"                      // 컨테이너에서 열릴 포트
-        GIT_CREDENTIALS_ID = 'farmbti'
+        GIT_CREDENTIALS_ID = 'gitlab-credentials'
     }
 
     stages {
         stage('Checkout Code') {
             steps {
                 git branch: 'backend',
-                credentialsId: GIT_CREDENTIALS_ID,
+                credentialsId: 'gitlab-credentials',
                 url: 'https://lab.ssafy.com/s12-bigdata-dist-sub1/S12P21D209.git'
             }
         }
