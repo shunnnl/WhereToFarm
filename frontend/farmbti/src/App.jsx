@@ -7,6 +7,7 @@ import Home from './pages/home/Home';
 import LoginPage from './pages/auth/Loginpage';
 import SignupPage from './pages/auth/SignupPage';
 import MentorPage from './pages/mentor/MentorPage';
+import Footer from './components/common/footer';
 
 function App() {
   return (
@@ -24,7 +25,10 @@ function App() {
           <Route path="/mentors" element={<MentorPage />} />
         </Routes>
         
-        {/* 푸터가 있다면 여기에 추가 */}
+        {/* 푸터 */}
+        <div className="mt-24">
+          <Footer />
+        </div>
       </div>
     </BrowserRouter>
   );
