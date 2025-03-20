@@ -3,6 +3,8 @@ import ContentLayout from '../../components/layout/ContentLayout';
 import GradientSection from './GradientSection';
 import TogetherSection from './TogetherSection';
 import MapSection from './MapSection';
+import MentodSelect from './MentorSelect';
+import MentorSelect from './MentorSelect';
 const MentorPage = () => {
   return (
     <div className="w-full">
@@ -19,8 +21,11 @@ const MentorPage = () => {
         <div className="mt-16">
             <MapSection/>
         </div>
-
+        <div className="mt-16">
+            <MentorSelect/>
+        </div>
       </ContentLayout>
+
     </div>
   );
 };
