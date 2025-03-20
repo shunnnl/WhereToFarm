@@ -12,7 +12,7 @@ const CropCalculatorPage = () => {
         title="작물 수익 계산기"
         description="원하는 작물 재배에 따른 예상 수익을 계산해보세요."
       />
-      <div className="crop-calculator-container w-full bg-gray-100">
+      <div className="crop-calculator-container w-full bg-background-alt3 py-8">
         <ProgressIndicator currentstep={step}/>
         <InputSection/>
       </div>
