@@ -1,10 +1,9 @@
 import React from 'react';
 import ContentLayout from '../../components/layout/ContentLayout';
-import GradientSection from './GradientSection';
-import TogetherSection from './TogetherSection';
-import MapSection from './MapSection';
-import MentodSelect from './MentorSelect';
-import MentorSelect from './MentorSelect';
+import GradientSection from '../../components/mentor/GradientSection';
+import TogetherSection from '../../components/mentor/TogetherSection';
+import MapSection from '../../components/mentor/MapSection';
+import MentorSelect from '../../components/mentor/MentorSelect';
 const MentorPage = () => {
   return (
     <div className="w-full">

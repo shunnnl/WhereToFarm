@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import signup_image from '../../asset/auth/login.svg';
-import useKakaoAddressService from './useKakaoAddressService';
+import useKakaoAddressService from '../../API/useKakaoAddressService';
 
 const SignupPage = () => {
   const [formData, setFormData] = useState({
