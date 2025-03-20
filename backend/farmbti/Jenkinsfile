@@ -20,7 +20,7 @@ pipeline {
         stage('Build Backend') {
             steps {
                 dir('backend/farmbti') {
-                    sh './gradlew clean build'
+                    sh 'export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF-8" && ./gradlew clean build'
                 }
             }
         }
