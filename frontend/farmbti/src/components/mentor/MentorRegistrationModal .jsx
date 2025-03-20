@@ -200,12 +200,21 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
 
 
       </div>
-      <button
-        className="mt-8 bg-red-500 text-white py-2 px-4 rounded"
-        onClick={onRequestClose}
-      >
-        닫기
-      </button>
+
+
+      <div className="flex justify-end gap-4">
+        <button
+          className="mt-8 bg-red-500 text-white py-2 px-4 rounded"
+          onClick={onRequestClose}
+        >
+          닫기
+        </button>
+
+        <button className="mt-8 bg-green-800 text-white py-2 px-4 rounded"
+        >
+          등록
+        </button>
+      </div>
     </Modal>
   );
 };

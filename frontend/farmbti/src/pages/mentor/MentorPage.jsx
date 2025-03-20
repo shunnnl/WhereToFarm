@@ -1,8 +1,9 @@
 import React from 'react';
 import ContentLayout from '../../components/layout/ContentLayout';
-import GradientSection from './GradientSection';
-import TogetherSection from './TogetherSection';
-import MapSection from './MapSection';
+import GradientSection from '../../components/mentor/GradientSection';
+import TogetherSection from '../../components/mentor/TogetherSection';
+import MapSection from '../../components/mentor/MapSection';
+import MentorSelect from '../../components/mentor/MentorSelect';
 const MentorPage = () => {
   return (
     <div className="w-full">
@@ -19,8 +20,11 @@ const MentorPage = () => {
         <div className="mt-16">
             <MapSection/>
         </div>
-
+        <div className="mt-16">
+            <MentorSelect/>
+        </div>
       </ContentLayout>
+
     </div>
   );
 };

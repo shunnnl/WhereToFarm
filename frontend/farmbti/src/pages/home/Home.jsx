@@ -1,12 +1,12 @@
 import React from 'react';
 import ContentLayout from '../../components/layout/ContentLayout';
-import BannerSlider from './BannerSlider';
-import ServiceIcons from './ServiceIcons';
-import BenefitCard from './BenefitCard';
-import NewsSection from './NewsSection';
-import Mentor  from './Mentor';
-import Calculator from './Calculator'
-import { bannerSlides, serviceIcons, newsItems } from './homeData';
+import BannerSlider from '../../components/home/BannerSlider';
+import ServiceIcons from '../../components/home/ServiceIcons';
+import BenefitCard from '../../components/home/BenefitCard';
+import NewsSection from '../../components/home/NewsSection';
+import Mentor  from '../../components/home/Mentor';
+import Calculator from '../../components/home/Calculator'
+import { bannerSlides, serviceIcons, newsItems } from '../../components/home/homeData';
 
 const Home = () => {
   return (
