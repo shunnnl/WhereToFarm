@@ -9,18 +9,47 @@ pipeline {
     }
 
     stages {
+        stage('Load .env File') {
+            steps {
+                configFileProvider([configFile(fileId: 'env-config', targetLocation: '.env')]) {
+                    script {
+                        sh '''
+                        set -e
+                        echo "✅ .env 파일 로드 중..."
+                        cat .env
+                        export $(cat .env | xargs)
+                        source .env
+                        '''
+                    }
+                }
+            }
+        }
+            
         stage('Checkout Code') {
             steps {
-                git branch: 'backend',
-                credentialsId: 'gitlab-credentials',
-                url: 'https://lab.ssafy.com/s12-bigdata-dist-sub1/S12P21D209.git'
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: '*/backend']],
+                    userRemoteConfigs: [[
+                        url: 'https://lab.ssafy.com/s12-bigdata-dist-sub1/S12P21D209.git',
+                        credentialsId: 'gitlab-credentials'
+                    ]]
+                ])
             }
         }
 
         stage('Build Backend') {
             steps {
                 dir('backend/farmbti') {
-                    sh 'export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF-8" && ./gradlew clean build'
+                    sh '''
+                    set -e
+                    echo "✅ 백엔드 빌드 시작"
+                    export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF-8"
+                    export $(cat .env | xargs)
+                    source .env
+                    ./gradlew clean build
+                    echo "✅ 빌드 완료"
+                    '''
                 }
             }
         }
@@ -28,7 +57,12 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 dir('backend/farmbti') {
-                    sh "docker build -t ${IMAGE_NAME}:latest ."
+                    sh '''
+                    set -e
+                    echo "✅ Docker 이미지 빌드 시작"
+                    docker build -t ${IMAGE_NAME}:latest .
+                    echo "✅ Docker 이미지 빌드 완료"
+                    '''
                 }
             }
         }
@@ -36,23 +70,30 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 withDockerRegistry([credentialsId: 'docker-hub', url: 'https://index.docker.io/v1/']) {
-                    sh "docker push ${IMAGE_NAME}:latest"
+                    sh '''
+                    set -e
+                    echo "✅ Docker Hub에 이미지 푸시 중..."
+                    docker push ${IMAGE_NAME}:latest
+                    echo "✅ Docker 이미지 푸시 완료"
+                    '''
                 }
             }
         }
 
         stage('Deploy') {
             steps {
-                sh """
-                # 기존 컨테이너 중지 및 삭제
+                sh '''
+                set -e
+                echo "✅ 기존 컨테이너 종료 및 삭제"
                 docker stop ${CONTAINER_NAME} || true
                 docker rm ${CONTAINER_NAME} || true
-
-                # 새로운 컨테이너 실행
+                
+                echo "✅ 새로운 컨테이너 실행"
                 docker run -d --name ${CONTAINER_NAME} -p ${PORT}:${PORT} ${IMAGE_NAME}:latest
-                """
+                
+                echo "✅ 배포 완료"
+                '''
             }
         }
     }
 }
-
