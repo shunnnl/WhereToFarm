@@ -8,6 +8,9 @@ import LoginPage from './pages/auth/Loginpage';
 import SignupPage from './pages/auth/SignupPage';
 import MentorPage from './pages/mentor/MentorPage';
 import CropCalculatorPage from './pages/crop-calculator/CropCalculatorPage';
+import Footer from './components/common/footer';
+import Chat from './pages/chat/chat';
+
 
 function App() {
   return (
@@ -24,9 +27,13 @@ function App() {
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/mentors" element={<MentorPage />} />
           <Route path="/crop-calculator" element={<CropCalculatorPage />} />
+          <Route path="/chat" element={<Chat />} />
         </Routes>
 
         {/* 푸터가 있다면 여기에 추가 */}
+        <div className="mt-24">
+          <Footer />
+        </div>
       </div>
     </BrowserRouter>
   );
