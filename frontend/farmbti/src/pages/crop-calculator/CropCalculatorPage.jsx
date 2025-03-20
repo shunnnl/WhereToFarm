@@ -1,8 +1,9 @@
 import PageHeader from "../../components/common/PageHeader";
 import InputSection from "../../components/crop-calculator/InputSection";
-import StepSection from "../../components/crop-calculator/StepSection";
+import ProgressIndicator from "../../components/crop-calculator/ProgressIndicator";
 
 const CropCalculatorPage = () => {
+  const [step, setStep] = useState(1);
   return (
     <div>
       <PageHeader
@@ -10,7 +11,7 @@ const CropCalculatorPage = () => {
         description="원하는 작물 재배에 따른 예상 수익을 계산해보세요."
       />
       <div className="crop-calculator-container w-full bg-gray-100">
-        <StepSection/>
+        <ProgressIndicator currentstep={step}/>
         <InputSection/>
       </div>
     </div>

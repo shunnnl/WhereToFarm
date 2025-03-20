@@ -1,4 +1,4 @@
-const StepSection = () => {
+const ProgressIndicator = ({currentStep}) => {
   return (
     <div className="step-section w-full flex justify-between px-32 py-6">
       <div className="step-1 flex items-center">
@@ -17,4 +17,4 @@ const StepSection = () => {
   );
 };
 
-export default StepSection;
+export default ProgressIndicator;
