@@ -40,10 +40,12 @@ module.exports = {
           alt4: "#F5F1E5",
         },
         // Text colors
-        text: {
+        textColor: {
           white: "#FFFFFF",
           black: "#273129",
-          gray: "#616161",
+          darkgray: "#616161",
+          gray: "#9E9E9E",
+          lightgray: "#BDBDBD",
         },
         // State colors
         notice: {
