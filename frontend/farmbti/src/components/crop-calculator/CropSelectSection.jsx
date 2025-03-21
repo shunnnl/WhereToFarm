@@ -37,6 +37,7 @@ const CropSelectSection = ({
                   : "cursor-not-allowed"
               }`}
               onClick={onSubmit}
+              disabled={!isActive}
             >
               <img
                 src={`../src/asset/crops/${crop.img}`}

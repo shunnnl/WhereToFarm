@@ -40,8 +40,8 @@ const CropCalculatorPage = () => {
   };
 
   const handleCropSubmit = () => {
-    if (selectedCrop === null) {
-      setError("작물을 선택해주세요.");
+    if (convertedArea != null) {
+      setError("평수를 먼저 입력해주세요.");
       return;
     }
     caculateHarvest(area, convertedArea, selectedCrop);
