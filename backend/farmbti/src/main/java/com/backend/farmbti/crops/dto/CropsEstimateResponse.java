@@ -7,7 +7,7 @@ import lombok.Getter;
 @Builder
 public class CropsEstimateResponse {
 
-    private Long id;
+    private Long reportId;
     private String cropsName;
     private double myAreaVolume;
     private double myAreaField;
@@ -17,5 +17,5 @@ public class CropsEstimateResponse {
     private double myTotalRealPrice;
     private float myRate;
     private boolean house;
-    private String myMonthlyPrice;
+    private Object myMonthlyPrice;
 }

@@ -1,5 +1,6 @@
 package com.backend.farmbti.crops.domain;
 
+import com.backend.farmbti.auth.domain.Users;
 import com.backend.farmbti.common.entity.TimeStampEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -14,8 +15,9 @@ public class CropsReport extends TimeStampEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "crops_result_id")
+    @Column(name = "crops_report_id")
     private Long id;
+
 
     @Column(name = "my_area_volume")
     private double myAreaVolume;
@@ -37,14 +39,23 @@ public class CropsReport extends TimeStampEntity {
 
     @Column(name = "my_rate")
     private float myRate;
-
-    private boolean house;
-
-    @Column(name = "my_monthly_price", columnDefinition = "jsonb")
+    
+    @Column(name = "my_monthly_price", columnDefinition = "TEXT")
     private String myMonthlyPrice;
+
+    // 기본값은 false임
+    private boolean bookmarked;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "crops_id")
     private Crops crops; //crops 테이블과 1:N 단방향 관계
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "users_id")
+    private Users users; //users 테이블과 1:N 단방향 관계
+
+    public void bookmark() {
+        this.bookmarked = true;
+    }
 
 }

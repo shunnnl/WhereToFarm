@@ -20,11 +20,8 @@ public class Crops {
     @Column(nullable = false, name = "crops_name")
     private String name;
 
-    @Column(name = "crops_image")
-    private String cropsImage;
-
     @Column(nullable = false)
-    private int quantity;
+    private double quantity;
 
     @Column(name = "total_price", nullable = false)
     private double totalPrice;
@@ -41,7 +38,7 @@ public class Crops {
     @Column(nullable = false)
     private boolean house;
 
-    @Column(name = "monthly_price", columnDefinition = "jsonb")
+    @Column(name = "monthly_price", columnDefinition = "TEXT")
     private String monthlyPrice;
 
 
