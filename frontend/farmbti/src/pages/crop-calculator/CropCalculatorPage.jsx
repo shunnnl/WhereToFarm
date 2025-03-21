@@ -40,19 +40,40 @@ const CropCalculatorPage = () => {
   };
 
   const handleCropSubmit = () => {
-    if (convertedArea != null) {
-      setError("평수를 먼저 입력해주세요.");
+    // 작물이 선택되지 않았을 경우
+    if (!selectedCrop) {
+      setError("작물을 선택해주세요.");
       return;
     }
-    caculateHarvest(area, convertedArea, selectedCrop);
+    // 평수가 입력되지 않았을 경우
+    if (convertedArea === 0) {
+      setError("평수를 먼저 입력해주세요.");
+      setStep(1); // 첫 단계로 돌아가기
+      return;
+    }
+
+    // 이미 3단계인 경우 중복 호출 방지
+    if (step === 3) {
+      return;
+    }
+
+    setError(null);
+    setStep(3);
+    console.log("Step changed to 3, selectedCrop:", selectedCrop.name);
+
+    // API 호출 등 후속 작업 실행
+    calculateHarvest(area, convertedArea, selectedCrop);
   };
 
-  const caculateHarvest = async (area, convertedArea, selectedCrop) => {
+  const calculateHarvest = async (area, convertedArea, selectedCrop) => {
     setIsLoading(true); // 로딩 시작
     setError(null); // 에러 초기화
     try {
       // api  호출
-      setStep(3);
+      console.log("API 호출 시작", { area, convertedArea, crop: selectedCrop });
+
+      // 임시 딜레이 (실제 API 호출로 대체)
+      await new Promise((resolve) => setTimeout(resolve, 1000));
     } catch (error) {
       // api 호출 실패
       // 예외 처리 로직
