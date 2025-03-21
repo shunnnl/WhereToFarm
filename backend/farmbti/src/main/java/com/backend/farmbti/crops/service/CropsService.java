@@ -7,6 +7,7 @@ import com.backend.farmbti.common.exception.GlobalException;
 import com.backend.farmbti.crops.domain.Crops;
 import com.backend.farmbti.crops.domain.CropsReport;
 import com.backend.farmbti.crops.dto.CropsAllResponse;
+import com.backend.farmbti.crops.dto.CropsDetailReponse;
 import com.backend.farmbti.crops.dto.CropsEstimateRequest;
 import com.backend.farmbti.crops.dto.CropsEstimateResponse;
 import com.backend.farmbti.crops.exception.CropsErrorCode;
@@ -69,7 +70,6 @@ public class CropsService {
                 .myTotalOperatingPrice(operatingPrice)
                 .myTotalRealPrice(realPrice)
                 .myRate(rate)
-                .myMonthlyPrice(monthlyPrice)
                 .crops(crops)  // crops 관계 설정
                 .users(users)   // users 관계 설정
                 .build();
@@ -147,9 +147,22 @@ public class CropsService {
         return responses;
     }
 
-    public Object getCropsDetail(Long usersId, Long reportId) {
-        // 사용자 확인
-        Users users = usersRepository.findById(usersId)
-                .orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
+    public CropsDetailReponse getCropsDetail(Long usersId, Long cropsReportId) {
+
+        CropsReport cropsReport = cropsReportRepository.findByUsersIdAndCropsReportId(usersId, cropsReportId);
+        Crops crops = cropsReport.getCrops();
+
+        return CropsDetailReponse.builder()
+                .cropsName(crops.getName())
+                .myAreaVolume(cropsReport.getMyAreaVolume())
+                .myAreaField(cropsReport.getMyAreaField())
+                .myTotalQuantity(cropsReport.getMyTotalQuantity())
+                .myTotalPrice(cropsReport.getMyTotalPrice())
+                .myTotalOperatingPrice(cropsReport.getMyTotalOperatingPrice())
+                .myTotalRealPrice(cropsReport.getMyTotalRealPrice())
+                .myRate(cropsReport.getMyRate())
+                .myMonthlyPrice(crops.getMonthlyPrice())
+                .house(crops.isHouse())
+                .build();
     }
 }

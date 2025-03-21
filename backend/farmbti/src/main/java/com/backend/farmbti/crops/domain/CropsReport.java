@@ -39,9 +39,6 @@ public class CropsReport extends TimeStampEntity {
 
     @Column(name = "my_rate")
     private float myRate;
-    
-    @Column(name = "my_monthly_price", columnDefinition = "TEXT")
-    private String myMonthlyPrice;
 
     // 기본값은 false임
     private boolean bookmarked;

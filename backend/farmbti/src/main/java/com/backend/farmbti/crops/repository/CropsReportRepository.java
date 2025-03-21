@@ -13,4 +13,6 @@ public interface CropsReportRepository extends JpaRepository<CropsReport, Long> 
 
     @Query("select cr from CropsReport cr where cr.users.iDd = :usersId")
     List<CropsReport> findByUsersId(@Param("usersId") Long usersId);
+
+    CropsReport findByUsersIdAndCropsReportId(Long usersId, Long cropsReportId);
 }
