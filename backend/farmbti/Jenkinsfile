@@ -2,10 +2,12 @@ pipeline {
     agent any
 
     environment {
+        DOCKER_HUB_USERNAME = "nageum"  // Docker Hub 계정명 추가
         IMAGE_NAME = "s12p21d209_backend"
         CONTAINER_NAME = "farmbti-backend"
         PORT = "8081"
         GIT_CREDENTIALS_ID = 'gitlab-credentials'
+        DOCKER_CREDENTIALS_ID = 'docker-hub'  // Docker Hub Credentials ID 추가
     }
 
     stages {
@@ -61,7 +63,7 @@ pipeline {
                     #!/bin/bash
                     set -e
                     echo "✅ Docker 이미지 빌드 시작"
-                    docker build -t ${IMAGE_NAME} .
+                    docker build -t ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:latest .
                     echo "✅ Docker 이미지 빌드 완료"
                     '''
                 }
@@ -70,12 +72,12 @@ pipeline {
 
         stage('Push Docker Image') {
             steps {
-                withDockerRegistry([credentialsId: 'docker-hub', url: 'https://index.docker.io/v1/']) {
+                withDockerRegistry([credentialsId: DOCKER_CREDENTIALS_ID, url: 'https://index.docker.io/v1/']) {
                     sh '''
                     #!/bin/bash
                     set -e
                     echo "✅ Docker Hub에 이미지 푸시 중..."
-                    docker push ${IMAGE_NAME}:latest
+                    docker push ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:latest
                     echo "✅ Docker 이미지 푸시 완료"
                     '''
                 }
@@ -85,13 +87,12 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    // Docker Compose를 사용하여 컨테이너 종료 및 실행
                     echo "✅ 기존 컨테이너 종료 및 삭제"
                     sh 'docker-compose -f backend/farmbti/docker-compose.yml down || true'
-        
+
                     echo "✅ 새로운 컨테이너 실행"
                     sh 'docker-compose -f backend/farmbti/docker-compose.yml up -d'
-        
+
                     echo "✅ 배포 완료"
                 }
             }
