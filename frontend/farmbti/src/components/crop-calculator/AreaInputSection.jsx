@@ -26,7 +26,7 @@ const AreaInputSection = ({
           차이가 있을 수 있습니다. 따라서 참고용으로만 활용하시길 바랍니다.
         </p>
 
-        {error && <p className="text-sm text-fail-highlight flex items-center justify-center mb-3">
+        {isActive && error && <p className="text-sm text-fail-highlight flex items-center justify-center mb-3">
           {error}
         </p>}
 
