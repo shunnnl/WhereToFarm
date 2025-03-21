@@ -34,7 +34,7 @@ authAxios.interceptors.response.use(
   }
 );
 
-// 인증이 필요없는 api 
+// 인증이 필요없는 api
 const publicAxios = axios.create({
   baseURL: import.meta.env.VITE_BASE_URL,
   withCredentials: true,
@@ -43,15 +43,14 @@ const publicAxios = axios.create({
   },
 });
 
-
 publicAxios.interceptors.request.use(
-    (config) => {
-        return config;
-    },
-    (error) => {
-        return Promise.reject(error);
-    }
-)
+  (config) => {
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 publicAxios.interceptors.response.use(
   (response) => {
@@ -61,3 +60,5 @@ publicAxios.interceptors.response.use(
     return Promise.reject(error.response?.data || error);
   }
 );
+
+export { authAxios, publicAxios };
