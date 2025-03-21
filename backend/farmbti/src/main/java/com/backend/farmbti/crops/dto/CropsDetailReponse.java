@@ -3,11 +3,9 @@ package com.backend.farmbti.crops.dto;
 import lombok.Builder;
 import lombok.Getter;
 
-@Getter
 @Builder
-public class CropsEstimateResponse {
-
-    private Long reportId;
+@Getter
+public class CropsDetailReponse {
     private String cropsName;
     private double myAreaVolume;
     private double myAreaField;
