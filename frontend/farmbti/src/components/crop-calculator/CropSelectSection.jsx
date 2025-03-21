@@ -9,16 +9,16 @@ const CropSelectSection = ({
   error,
 }) => {
   const [cropsList, setCropList] = useState([
-    "사과",
-    "배",
-    "감귤",
-    "수박",
-    "포도",
-    "고구마",
-    "상추",
-    "오이",
-    "양파",
-    "대파",
+    { name: "사과", img: "apple.png" },
+    { name: "배", img: "pear.png" },
+    { name: "감귤", img: "tangerine.png" },
+    { name: "포도", img: "grape.png" },
+    { name: "수박", img: "watermelon.png" },
+    { name: "오이", img: "cucumber.png" },
+    { name: "대파", img: "greenonion.png" },
+    { name: "양파", img: "onion.png" },
+    { name: "상추", img: "lettuce.png" },
+    { name: "고구마", img: "sweetpotato.png" },
   ]);
   return (
     <div
@@ -30,11 +30,20 @@ const CropSelectSection = ({
         {cropsList.map((crop) => {
           return (
             <button
-              key={crop}
-              className="text-textColor-white w-32 h-32 hover:bg-supportGreen hover:shadow-lg"
+              key={crop.naem}
+              className={`text-textColor-white w-32 h-32 flex flex-col justify-center items-center ${
+                isActive
+                  ? "hover:bg-supportGreen hover:shadow-lg"
+                  : "cursor-not-allowed"
+              }`}
               onClick={onSubmit}
             >
-              {crop}
+              <img
+                src={`../src/asset/crops/${crop.img}`}
+                alt={crop.name}
+                className="w-14 h-14"
+              />
+              <p>{crop.name}</p>
             </button>
           );
         })}
