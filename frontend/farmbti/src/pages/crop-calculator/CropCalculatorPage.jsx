@@ -14,6 +14,18 @@ const CropCalculatorPage = () => {
   const [error, setError] = useState(null);
 
   const handleAreaSubmit = () => {
+    // 평수 입력이 없을 경우
+    if (area === null || area === undefined || area === "") {
+      setError("평수를 입력해주세요.");
+      return;
+    }
+    // 숫자 타입 체크
+    const areaNum = Number(area);
+    if (isNaN(areaNum)) {
+      setError("평수는 숫자만 입력 가능합니다.");
+      return;
+    }
+    // 평수 범위 체크
     if (area < 100 || area > 1500) {
       setError("평수는 100평과 1500평 사이의 값을 입력해주세요.");
       return;
