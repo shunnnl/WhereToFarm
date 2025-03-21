@@ -98,7 +98,7 @@ const Chat = () => {
               <img src="/api/placeholder/40/40" alt="프로필" className="w-full h-full object-cover" />
             </div>
             <div>
-              <h2 className="font-bold">윤석열 멘토님</h2>
+              <h2 className="font-bold">멘토1</h2>
             </div>
           </div>
           <button className="text-gray-600">
