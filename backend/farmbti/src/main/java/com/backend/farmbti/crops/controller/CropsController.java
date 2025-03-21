@@ -51,7 +51,7 @@ public class CropsController {
 
     @GetMapping("/get/{reportId}")
     @Operation(summary = "작물 계산기 상세 조회", description = "마이페이지에서 작물 계산기를 상세 조회합니다.")
-    public CommonResponseDto getCrops(@PathVariable(name = "reportId") Long reportId) {
+    public CommonResponseDto getCrops(@PathVariable(name = "reportId") Long reportId) throws JsonProcessingException {
         Long id = securityUtils.getCurrentUsersId();
         return CommonResponseDto.ok(cropsService.getCropsDetail(id, reportId));
     }

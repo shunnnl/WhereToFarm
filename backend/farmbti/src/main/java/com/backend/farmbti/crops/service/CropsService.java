@@ -127,7 +127,7 @@ public class CropsService {
     public List<CropsAllResponse> getCrops(Long usersId) {
 
         //userId에 해당하는 모든 리포트 객체를 리스트로 가져옴
-        List<CropsReport> cropsReport = cropsReportRepository.findByUsersId(usersId);
+        List<CropsReport> cropsReport = cropsReportRepository.findByUsersIdAndBookmarkedTrue(usersId);
 
         //결과를 담을 리스트를 생성
         List<CropsAllResponse> responses = new ArrayList<>();
@@ -147,10 +147,17 @@ public class CropsService {
         return responses;
     }
 
-    public CropsDetailReponse getCropsDetail(Long usersId, Long cropsReportId) {
+    public CropsDetailReponse getCropsDetail(Long usersId, Long cropsReportId) throws JsonProcessingException {
 
-        CropsReport cropsReport = cropsReportRepository.findByUsersIdAndCropsReportId(usersId, cropsReportId);
+        CropsReport cropsReport = cropsReportRepository.findByUsers_IdAndId(usersId, cropsReportId)
+                .orElseThrow(() -> new GlobalException(CropsReportErrorCode.REPORT_NOT_FOUND));
+
         Crops crops = cropsReport.getCrops();
+
+        String monthlyPrice = crops.getMonthlyPrice(); // JSON 문자열
+
+        // monthlyPrice JSON 문자열을 파싱하여 객체로 변환
+        Object parsedMonthlyPrice = objectMapper.readValue(monthlyPrice, Object.class);
 
         return CropsDetailReponse.builder()
                 .cropsName(crops.getName())
@@ -161,7 +168,7 @@ public class CropsService {
                 .myTotalOperatingPrice(cropsReport.getMyTotalOperatingPrice())
                 .myTotalRealPrice(cropsReport.getMyTotalRealPrice())
                 .myRate(cropsReport.getMyRate())
-                .myMonthlyPrice(crops.getMonthlyPrice())
+                .myMonthlyPrice(parsedMonthlyPrice)
                 .house(crops.isHouse())
                 .build();
     }
