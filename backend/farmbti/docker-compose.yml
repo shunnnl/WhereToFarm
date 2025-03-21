@@ -12,7 +12,26 @@ services:
       - ./src/main/resources/application.yml:/app/application.yml
     networks:
       - farmbti
+      
+  jenkins:
+    container_name: farmbti-jenkins
+    image: jenkins/jenkins:lts
+    ports:
+      - "8080:8080"       # Jenkins 웹 UI 포트
+      - "50000:50000"     # Jenkins 에이전트와의 통신 포트
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock  # Docker Daemon 연결
+    environment:
+      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false  # Jenkins setup wizard 비활성화
+    networks:
+      - farmbti
+    privileged: true  # Docker 명령어 실행을 위해 필요한 권한 설정
 
 networks:
   farmbti:
     external: true
+
+volumes:
+  jenkins_home:
+    driver: local
