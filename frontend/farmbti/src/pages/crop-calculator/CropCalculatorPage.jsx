@@ -27,7 +27,7 @@ const CropCalculatorPage = () => {
         description="원하는 작물 재배에 따른 예상 수익을 계산해보세요."
       />
       <div className="crop-calculator-container w-auto mx-10 bg-background">
-        <ProgressIndicator currentstep={step} />
+        <ProgressIndicator currentStep={step} />
         <AreaInputSection
           area={area}
           setArea={setArea}
