@@ -1,3 +1,4 @@
+# 1. Node.js 환경에서 React 빌드
 FROM node:18 AS build
 
 WORKDIR /app
@@ -8,10 +9,12 @@ RUN npm install --legacy-peer-deps
 COPY . .
 RUN npm run build
 
-RUN npm install @rollup/rollup-linux-x64-gnu --legacy-peer-deps
-
+# 2. Nginx로 정적 파일 서빙
 FROM nginx:alpine
-COPY --from=build /app/dist /usr/share/nginx/html
+
+COPY nginx.conf /etc/nginx/nginx.conf
+
+COPY --from=build /app/build /usr/share/nginx/html
 
 CMD ["nginx", "-g", "daemon off;"]
 
