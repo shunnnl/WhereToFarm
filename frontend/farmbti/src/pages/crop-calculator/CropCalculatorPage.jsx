@@ -4,6 +4,7 @@ import CropSelectSection from "../../components/crop-calculator/CropSelectSectio
 import ProgressIndicator from "../../components/crop-calculator/ProgressIndicator";
 
 import { useState } from "react";
+import ResultSection from "../../components/crop-calculator/ResultSection";
 
 const CropCalculatorPage = () => {
   const [step, setStep] = useState(1);
@@ -107,6 +108,7 @@ const CropCalculatorPage = () => {
           isCompleted={step > 2}
           error={error}
         />
+        <ResultSection step={step} result={result} isLoading={isLoding}/>
       </div>
     </div>
   );
