@@ -15,7 +15,7 @@ const AreaInputSection = ({
         isActive ? "opacity-100" : "opacity-50"
       }`}
     >
-      <div className="px-8 py-4 bg-accentGreen-light rounded-t-lg shadow-md mb-4 flex flex-col">
+      <div className="px-8 py-4 bg-accentGreen-light rounded-t-lg shadow-md flex flex-col">
         <h2 className="text-xl font-bold mb-2 text-primaryGreen">
           재배 평수 입력
         </h2>
