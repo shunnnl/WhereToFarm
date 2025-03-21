@@ -61,7 +61,7 @@ pipeline {
                     #!/bin/bash
                     set -e
                     echo "✅ Docker 이미지 빌드 시작"
-                    docker build -t ${IMAGE_NAME}:latest .
+                    docker build -t ${IMAGE_NAME} .
                     echo "✅ Docker 이미지 빌드 완료"
                     '''
                 }
@@ -84,18 +84,16 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                sh '''
-                #!/bin/bash
-                set -e
-                echo "✅ 기존 컨테이너 종료 및 삭제"
-                docker stop ${CONTAINER_NAME} || true
-                docker rm ${CONTAINER_NAME} || true
-                
-                echo "✅ 새로운 컨테이너 실행"
-                docker run -d --name ${CONTAINER_NAME} -p ${PORT}:${PORT} ${IMAGE_NAME}:latest
-                
-                echo "✅ 배포 완료"
-                '''
+                script {
+                    # Docker Compose를 사용하여 컨테이너 종료 및 실행
+                    echo "✅ 기존 컨테이너 종료 및 삭제"
+                    sh 'docker-compose -f backend/farmbti/docker-compose.yml down || true'
+        
+                    echo "✅ 새로운 컨테이너 실행"
+                    sh 'docker-compose -f backend/farmbti/docker-compose.yml up -d'
+        
+                    echo "✅ 배포 완료"
+                }
             }
         }
     }
