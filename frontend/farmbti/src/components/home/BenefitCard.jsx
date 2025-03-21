@@ -59,7 +59,7 @@ const BenefitCards = () => {
   return (
     <div className="mt-8">
       <div className="flex items-center mb-6">
-        <span className="font text-5xl font-bold mb-6">📢 관심있는 혜택을 찾아보세요 ></span>
+        <span className="font text-5xl font-bold mb-6">📢 관심있는 혜택을 찾아보세요 ↗️</span>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
