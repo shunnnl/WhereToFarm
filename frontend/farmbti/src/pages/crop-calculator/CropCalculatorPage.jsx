@@ -1,5 +1,6 @@
 import PageHeader from "../../components/common/PageHeader";
 import AreaInputSection from "../../components/crop-calculator/AreaInputSection";
+import CropSelectSection from "../../components/crop-calculator/CropSelectSection";
 import ProgressIndicator from "../../components/crop-calculator/ProgressIndicator";
 
 import { useState } from "react";
@@ -8,7 +9,7 @@ const CropCalculatorPage = () => {
   const [step, setStep] = useState(1);
   const [area, setArea] = useState(null);
   const [convertedArea, setConvertedARea] = useState(0);
-  const [crop, setCrop] = useState(null);
+  const [selectedCrop, setSelectedCrop] = useState(null);
   const [result, setResult] = useState(null);
   const [isLoding, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -38,6 +39,29 @@ const CropCalculatorPage = () => {
     setStep(2);
   };
 
+  const handleCropSubmit = () => {
+    if (selectedCrop === null) {
+      setError("작물을 선택해주세요.");
+      return;
+    }
+    caculateHarvest(area, convertedArea, selectedCrop);
+  };
+
+  const caculateHarvest = async (area, convertedArea, selectedCrop) => {
+    setIsLoading(true); // 로딩 시작
+    setError(null); // 에러 초기화
+    try {
+      // api  호출
+      setStep(3);
+    } catch (error) {
+      // api 호출 실패
+      // 예외 처리 로직
+      setError("계산 중 오류가 발생했습니다.");
+    } finally {
+      setIsLoading(false); // 로딩 종료
+    }
+  };
+
   return (
     <div>
       <PageHeader
@@ -52,6 +76,14 @@ const CropCalculatorPage = () => {
           convertedArea={convertedArea}
           onSubmit={handleAreaSubmit}
           isActive={step === 1}
+          error={error}
+        />
+        <CropSelectSection
+          selectedCrop={selectedCrop}
+          setSelectedCrop={setSelectedCrop}
+          onSubmit={handleCropSubmit}
+          isActive={step === 2}
+          isCompleted={step > 2}
           error={error}
         />
       </div>
