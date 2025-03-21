@@ -15,8 +15,8 @@ public enum SecurityPath {
     SWAGGER_RESOURCES("/swagger-resources/**"),  // 추가된 부분
 
     // Auth 관련 경로
-    SIGNUP("/api/auth/signUp"),
-    LOGIN("/api/auth/login");
+    SIGNUP("/auth/signUp"),
+    LOGIN("/auth/login");
 
     // 각 Enum 상수가 가지는 경로 문자열
     private final String path;
