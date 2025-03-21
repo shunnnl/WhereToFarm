@@ -7,6 +7,7 @@ pipeline {
         PORT = "3000"
         GIT_CREDENTIALS_ID = 'gitlab-credentials'  // GitLab 로그인 정보
         DOCKER_CREDENTIALS_ID = 'docker-hub'  // Docker Hub 로그인 정보
+        NODE_VERSION = "18"  // 사용할 Node.js 버전
     }
 
     stages {
@@ -23,6 +24,18 @@ pipeline {
             }
         }
 
+        stage('Check Node.js & npm') {
+            steps {
+                sh '''
+                echo "������ Checking Node.js & npm..."
+                which node || echo "❌ Node.js not found"
+                which npm || echo "❌ npm not found"
+                node -v || echo "❌ Failed to get Node.js version"
+                npm -v || echo "❌ Failed to get npm version"
+                '''
+            }
+        }
+
         stage('Build Frontend') {
             steps {
                 dir('frontend/farmbti') {
@@ -30,8 +43,25 @@ pipeline {
                     #!/bin/bash
                     set -e
                     echo "✅ 프론트엔드 빌드 시작"
+                    
+                    # 환경 변수 로드
+                    export PATH=$PATH:/usr/local/bin
+                    export NODE_ENV=production
+
+                    # Node.js 설치 여부 확인 후 빌드
+                    if ! command -v node &> /dev/null; then
+                        echo "❌ Node.js가 감지되지 않음. Node.js를 설치해야 합니다."
+                        exit 1
+                    fi
+
+                    if ! command -v npm &> /dev/null; then
+                        echo "❌ npm이 감지되지 않음. npm을 설치해야 합니다."
+                        exit 1
+                    fi
+
                     npm install
                     npm run build
+
                     echo "✅ 빌드 완료"
                     '''
                 }
