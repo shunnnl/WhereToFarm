@@ -10,5 +10,4 @@ import java.util.Optional;
 public interface CropsRepository extends JpaRepository<Crops, Long> {
 
     Optional<Crops> findByName(String cropsName);
-
 }
