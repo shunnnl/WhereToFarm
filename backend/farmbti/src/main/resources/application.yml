@@ -32,12 +32,12 @@ logging:
     com.backend.farmbti: DEBUG
     com.backend.farmbti.security.filter: DEBUG
 springdoc:
-  swagger-ui:
-    disable-swagger-default-url: true
-    path: /swagger-ui.html
-    enabled: true
   api-docs:
-    path: /v3/api-docs
     enabled: true
-    #url: http://j12d209.p.ssafy.io/api/v3/api-docs
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    config-url: /api/v3/api-docs/swagger-config
+    url: http://j12d209.p.ssafy.io/api/v3/api-docs
 
