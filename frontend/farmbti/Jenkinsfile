@@ -29,12 +29,9 @@ pipeline {
                 sh """#!/bin/bash
                 echo "������ Checking Node.js & npm..."
 
-                # NVM 환경 로드 (Jenkins 내에서 실행)
-                export NVM_DIR="/home/ubuntu/.nvm"
+                export NVM_DIR="/var/lib/jenkins/.nvm"
                 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-                [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
-
-                # Node.js 및 npm 버전 확인
+    
                 command -v node || echo "❌ Node.js not found"
                 command -v npm || echo "❌ npm not found"
                 node -v || echo "❌ Failed to get Node.js version"
