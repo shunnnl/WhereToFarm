@@ -12,9 +12,11 @@ public enum SecurityPath {
     SWAGGER_UI("/swagger-ui/**"),
     SWAGGER_UI_HTML("/swagger-ui.html"),
     SWAGGER_RESOURCES("/swagger-resources/**"),
-    SWAGGER_API_DOCS("/v3/api-docs/**"),
+    SWAGGER_API_DOCS_ALL("/v3/api-docs/**"),
     SWAGGER_CONFIG("/v3/api-docs/swagger-config"),
     SWAGGER_WEBJARS("/webjars/**"),
+    SWAGGER_FAVICON("/favicon.ico"),
+    SWAGGER_API_DOCS("/v3/api-docs"),
 
     // Auth 관련 경로
     SIGNUP("/auth/signUp"),
