@@ -38,6 +38,11 @@ springdoc:
   swagger-ui:
     enabled: true
     path: /swagger-ui.html
-    config-url: /api/v3/api-docs/swagger-config
-    url: http://j12d209.p.ssafy.io/api/v3/api-docs
+    urls:
+      - url: /v3/api-docs
+        name: FarmBTI API
+    disable-swagger-default-url: true
+    display-request-duration: true
+    operations-sorter: alpha
+  paths-to-match: /**
 
