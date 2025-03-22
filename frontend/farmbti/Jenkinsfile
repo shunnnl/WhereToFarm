@@ -26,35 +26,34 @@ pipeline {
 
         stage('Check Node.js & npm') {
             steps {
-                sh '''
+                sh """#!/bin/bash
                 echo "������ Checking Node.js & npm..."
 
                 # NVM 환경 로드
                 export NVM_DIR="$HOME/.nvm"
-                [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-                [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+                . "$NVM_DIR/nvm.sh" || true
+                . "$NVM_DIR/bash_completion" || true
 
                 # Node.js 및 npm 버전 확인
-                which node || echo "❌ Node.js not found"
-                which npm || echo "❌ npm not found"
+                command -v node || echo "❌ Node.js not found"
+                command -v npm || echo "❌ npm not found"
                 node -v || echo "❌ Failed to get Node.js version"
                 npm -v || echo "❌ Failed to get npm version"
-                '''
+                """
             }
         }
 
         stage('Build Frontend') {
             steps {
                 dir('frontend/farmbti') {
-                    sh '''
-                    #!/bin/bash
+                    sh """#!/bin/bash
                     set -e
                     echo "✅ 프론트엔드 빌드 시작"
 
                     # NVM 환경 로드
                     export NVM_DIR="$HOME/.nvm"
-                    [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-                    [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
+                    . "$NVM_DIR/nvm.sh" || true
+                    . "$NVM_DIR/bash_completion" || true
 
                     # Node.js 및 npm 확인 후 빌드 실행
                     if ! command -v node &> /dev/null; then
@@ -74,7 +73,7 @@ pipeline {
                     npm run build
 
                     echo "✅ 빌드 완료"
-                    '''
+                    """
                 }
             }
         }
