@@ -45,7 +45,11 @@ pipeline {
                     echo "✅ 프론트엔드 빌드 시작"
                     
                     # 환경 변수 로드
-                    export PATH=$PATH:/usr/local/bin
+                    #export PATH=$PATH:/usr/local/bin
+                    #export NODE_ENV=production
+                    
+                    # Jenkins에서 설정한 Node.js 경로 사용
+                    export PATH=$PATH:/var/lib/jenkins/tools/hudson.plugins.nodejs.tools.NodeJSInstallation/NodeJS_18/bin
                     export NODE_ENV=production
 
                     # Node.js 설치 여부 확인 후 빌드
