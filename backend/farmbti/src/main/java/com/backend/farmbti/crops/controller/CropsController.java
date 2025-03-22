@@ -19,7 +19,6 @@ public class CropsController {
 
     private final CropsService cropsService;
     private final SecurityUtils securityUtils;
-    private final UsersRepository usersRepository;
 
     @PostMapping("/estimate")
     @Operation(summary = "작물 계산", description = "작물 계산을 위한 입력 처리합니다.")
