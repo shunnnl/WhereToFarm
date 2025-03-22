@@ -7,7 +7,7 @@ pipeline {
         PORT = "3000"
         GIT_CREDENTIALS_ID = 'gitlab-credentials'  // GitLab 로그인 정보
         DOCKER_CREDENTIALS_ID = 'docker-hub'  // Docker Hub 로그인 정보
-        NODE_VERSION = "18"  // 사용할 Node.js 버전
+        NVM_DIR = "/home/ubuntu/.nvm"  // NVM 경로 설정
     }
 
     stages {
@@ -28,6 +28,13 @@ pipeline {
             steps {
                 sh '''
                 echo "������ Checking Node.js & npm..."
+
+                # NVM 환경 로드
+                export NVM_DIR="$HOME/.nvm"
+                [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+                [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+                # Node.js 및 npm 버전 확인
                 which node || echo "❌ Node.js not found"
                 which npm || echo "❌ npm not found"
                 node -v || echo "❌ Failed to get Node.js version"
@@ -43,16 +50,13 @@ pipeline {
                     #!/bin/bash
                     set -e
                     echo "✅ 프론트엔드 빌드 시작"
-                    
-                    # 환경 변수 로드
-                    #export PATH=$PATH:/usr/local/bin
-                    #export NODE_ENV=production
-                    
-                    # Jenkins에서 설정한 Node.js 경로 사용
-                    export PATH=$PATH:/var/lib/jenkins/tools/hudson.plugins.nodejs.tools.NodeJSInstallation/NodeJS_18/bin
-                    export NODE_ENV=production
 
-                    # Node.js 설치 여부 확인 후 빌드
+                    # NVM 환경 로드
+                    export NVM_DIR="$HOME/.nvm"
+                    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+                    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+                    # Node.js 및 npm 확인 후 빌드 실행
                     if ! command -v node &> /dev/null; then
                         echo "❌ Node.js가 감지되지 않음. Node.js를 설치해야 합니다."
                         exit 1
@@ -62,6 +66,9 @@ pipeline {
                         echo "❌ npm이 감지되지 않음. npm을 설치해야 합니다."
                         exit 1
                     fi
+
+                    node -v
+                    npm -v
 
                     npm install
                     npm run build
@@ -77,7 +84,7 @@ pipeline {
                 script {
                     echo "✅ 기존 컨테이너 종료 및 삭제"
                     sh 'docker-compose -f frontend/farmbti/docker-compose.yml down || true'
-                    
+
                     echo "✅ 새로운 컨테이너 실행"
                     sh 'docker-compose -f frontend/farmbti/docker-compose.yml up -d'
 
