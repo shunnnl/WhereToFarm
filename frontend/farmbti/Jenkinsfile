@@ -7,7 +7,7 @@ pipeline {
         PORT = "3000"
         GIT_CREDENTIALS_ID = 'gitlab-credentials'  // GitLab 로그인 정보
         DOCKER_CREDENTIALS_ID = 'docker-hub'  // Docker Hub 로그인 정보
-        NVM_DIR = "/home/ubuntu/.nvm"  // NVM 경로 설정
+        NVM_DIR = "/var/lib/jenkins/.nvm"  // NVM 경로 설정
     }
 
     stages {
