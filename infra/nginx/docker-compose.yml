@@ -1,6 +1,15 @@
 version: '3.8'
 
 services:
+  frontend:
+    build:
+      context: ../../frontend/farmbti
+      dockerfile: Dockerfile
+    container_name: farmbti-frontend
+    restart: always
+    networks:
+      - farmbti
+
   nginx:
     image: nginx:latest
     container_name: farmbti-nginx
