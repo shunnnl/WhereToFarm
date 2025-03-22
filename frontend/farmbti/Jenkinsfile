@@ -86,10 +86,10 @@ pipeline {
             steps {
                 script {
                     echo "✅ 기존 컨테이너 종료 및 삭제"
-                    sh 'docker-compose -f frontend/farmbti/docker-compose.yml down || true'
+                    sh 'docker rm -f ${CONTAINER_NAME} || true'  // ❗ 기존 컨테이너 강제 종료 및 삭제
 
                     echo "✅ 새로운 컨테이너 실행"
-                    sh 'docker-compose -f frontend/farmbti/docker-compose.yml up -d'
+                    sh 'docker-compose -f frontend/farmbti/docker-compose.yml up --force-recreate -d'  // ❗ 컨테이너 강제 재생성
 
                     echo "✅ 배포 완료"
                 }
