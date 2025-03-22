@@ -2,32 +2,26 @@ package com.backend.farmbti.security.config;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
+//보안 경로를 관리하는 열거형(Enum) 클래스 -> 이 경로는 인증 처리를 안함
 @Getter
 @AllArgsConstructor
 public enum SecurityPath {
 
-    //test 경로
-    API_TEST("/actuator/**"),
-
     //Swagger 관련 경로
-    SWAGGER_UI("/swagger-ui/**"),
-    //SWAGGER_API_DOCS("/v3/api-docs"),
-    SWAGGER_API_DOCS("/v3/api-docs/**"),
-    SWAGGER_UI_HTML("/swagger-ui.html"),
-    SWAGGER_RESOURCES("/swagger-resources/**"),
-    SWAGGER_WEBJARS("/webjars/**"),
-    SWAGGER_CONFIGURATION("/configuration/**"),
+    SWAGGER("/swagger-ui/**"),
+    SWAGGER_API_DOCS("/v3/api-docs"),
+    SWAGGER_API_DOCS_ALL("/v3/api-docs/**"),  // 추가된 부분
+    SWAGGER_RESOURCES("/swagger-resources/**"),  // 추가된 부분
 
     // Auth 관련 경로
     SIGNUP("/auth/signUp"),
     LOGIN("/auth/login");
- 
+
+    // 각 Enum 상수가 가지는 경로 문자열
     private final String path;
 
-    //SecurityPath enum???의??모든 공개 경로?String 배열?변?해주는 메서??    
+    //SecurityPath enum에 정의된 모든 공개 경로를 String 배열로 변환해주는 메서드
     public static String[] getAllPublicPaths() {
         return java.util.Arrays.stream(values())
                 .map(SecurityPath::getPath)
@@ -35,23 +29,17 @@ public enum SecurityPath {
     }
 
     public static boolean matches(String uri) {
-        log.info("[SecurityPath] 요청 URI: {}", uri);
         return java.util.Arrays.stream(values())
-            .anyMatch(securityPath -> {
-                String pattern = securityPath.getPath();
-                log.info("[SecurityPath] 비교 패턴: {}, {}", pattern, uri);
-
-                if (pattern.equals(uri)) {
-                    return true;
-                }
-
-                if (pattern.endsWith("/**")) {
-                    log.info("[SecurityPath] /** 패턴 처리: {}", pattern);
-                    String basePattern = pattern.substring(0, pattern.length() - 2);
-                    return uri.startsWith(basePattern);
-                }
-                return pattern.equals(uri);
-            });
+                .anyMatch(securityPath -> {
+                    String pattern = securityPath.getPath();
+                    // /** 패턴 처리
+                    if (pattern.endsWith("/**")) {
+                        String basePattern = pattern.substring(0, pattern.length() - 2);
+                        return uri.startsWith(basePattern);
+                    }
+                    // 정확한 경로 매칭
+                    return pattern.equals(uri);
+                });
     }
 
 }
