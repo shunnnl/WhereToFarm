@@ -66,7 +66,14 @@ pipeline {
                     node -v
                     npm -v
 
-                    npm install
+                    # ê¸°ì¡´ íŒ¨í‚¤ì§€ ì‚­ì œ í›„ ì¬ì„¤ì¹˜
+                    echo "í ¾í·¹ ê¸°ì¡´ node_modules ë° package-lock.json ì‚­ì œ"
+                    rm -rf node_modules package-lock.json
+        
+                    echo "í ½í³¦ npm íŒ¨í‚¤ì§€ ì„¤ì¹˜ ì¤‘..."
+                    npm install --legacy-peer-deps
+        
+                    echo "í ½íº€ Vite ë¹Œë“œ ì‹¤í–‰"
                     npm run build
 
                     echo "âœ… ë¹Œë“œ ì™„ë£Œ"
