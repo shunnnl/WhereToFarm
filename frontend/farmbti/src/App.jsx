@@ -8,7 +8,7 @@ import LoginPage from './pages/auth/LoginPage';
 import SignupPage from './pages/auth/SignupPage';
 import MentorPage from './pages/mentor/MentorPage';
 import CropCalculatorPage from './pages/crop-calculator/CropCalculatorPage';
-import Footer from './components/common/footer';
+import Footer from './components/common/Footer';
 import Chat from './pages/chat/chat';
 
 
