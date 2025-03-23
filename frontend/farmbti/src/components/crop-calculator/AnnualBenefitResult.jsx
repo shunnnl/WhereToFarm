@@ -31,10 +31,10 @@ const AnnualBenefitResult = ({
             *본 수치는 노지 재배를 기준으로 합니다.
           </p>)}
       </div>
-      <div className="px-10 mb-5 w-full flex justify-between text-center items-center">
+      <div className="px-10 mb-5 w-full flex justify-between text-center items-center bg-background p-4 rounded-lg">
         <div className="totalPrice w-1/5">
           <p className="text-lg text-textColor-black m-2">연간 총 매출액</p>
-          <div className="bg-secondaryYellow">
+          <div className="bg-yellow-100 p-3 rounded-md">
             <span className="text-xl text-textColor-black font-semibold">{forrmatedMyTotalPrice}</span>
             <span className="text-lg text-textColor-black font-semibold"> 원</span>
           </div>
@@ -44,7 +44,7 @@ const AnnualBenefitResult = ({
         </div>
         <div className="totaOpertaingPrice w-1/5">
           <p className="text-lg text-textColor-black m-2">연간 총 경영비</p>
-          <div className="bg-secondaryYellow">
+          <div className="bg-yellow-100 p-3 rounded-md">
             <span className="text-xl text-textColor-black font-semibold">{forrmatedMyTotalOperatingPrice}</span>
             <span className="text-lg text-textColor-black font-semibold"> 원</span>
           </div>
@@ -54,13 +54,13 @@ const AnnualBenefitResult = ({
         </div>
         <div className="totalRealPrice w-1/5">
           <p className="text-lg text-textColor-black m-2">연간 예상 순 수익</p>
-          <div className="bg-secondaryYellow">
+          <div className="bg-red-100 p-3 rounded-md">
             <span className="text-xl text-textColor-black font-semibold">{forrmatedMyTotalRealPrice}</span>
             <span className="text-lg text-textColor-black font-semibold"> 원</span>
           </div>
         </div>
       </div>
-      <div className="bg-secondaryYellow px-5">
+      <div className=" bg-accentGreen p-4 rounded-lg w-full text-center">
         <span className="text-xl text-textColor-black">총 매출액 대비 순 수익은</span>
         <span className="text-xl text-textColor-black font-semibold"> {myRate.toFixed(2)}%</span>
         <span className="text-xl text-textColor-black">입니다.</span>
