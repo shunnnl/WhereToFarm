@@ -65,7 +65,7 @@ pipeline {
                     echo "✅ 새로운 컨테이너 실행"
                     sh 'docker-compose -f backend/farmbti/docker-compose.yml up -d'
 
-                    echo "✅ 배포 완료!"
+                    echo "✅ 배포 완료!!"
                 }
             }
         }
