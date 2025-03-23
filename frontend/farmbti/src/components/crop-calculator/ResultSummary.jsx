@@ -5,8 +5,8 @@ const ResultSummary = ({
   myTotalQuantity,
 }) => {
   return (
-    <div className="report-summary bg-accentGreen-light rounded-lg shadow-sm m-4 p-4">
-      <div>
+    <div className="report-summary bg-accentGreen-light rounded-lg shadow-sm m-8 p-6">
+      <div className="p-1">
         <span className="text-xl font-medium text-textColor-black">
           선택하신 작물은{" "}
         </span>
@@ -17,7 +17,7 @@ const ResultSummary = ({
           입니다.
         </span>
       </div>
-      <div>
+      <div className="p-1">
         <span className="text-xl font-medium text-textColor-black">
           입력하신 재배 면적은{" "}
         </span>
@@ -30,7 +30,7 @@ const ResultSummary = ({
           입니다.
         </span>
       </div>
-      <div>
+      <div className="p-1">
         <span className="text-xl font-medium text-textColor-black">
           1년 1기작 기준
         </span>
