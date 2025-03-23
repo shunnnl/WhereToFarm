@@ -17,7 +17,8 @@ const ResultSection = ({ step, result, userName, isLoading }) => {
       )}
       {!isLoading && result && step === 3 && (
         <div className="m-5 bg-white w-full h-full shadow-md">
-          <div className="report-name mx-6 my-8">
+          <div className="report-name mx-14 my-8">
+            <span className="text-3xl pr-2">📜 {" "}</span>
             <span className="text-3xl font-bold text-supportGreen">
               {userName}{" "}
             </span>
