@@ -13,18 +13,14 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                script {
-                    sh '''
-                    echo "✅ Git 최신 코드 강제 업데이트..."
-                    git config --global --add safe.directory /var/lib/jenkins/workspace/farmbti-be
-                    cd /var/lib/jenkins/workspace/farmbti-be
-                    git remote set-url origin https://<GITLAB_USERNAME>:<GITLAB_ACCESS_TOKEN>@lab.ssafy.com/s12-bigdata-dist-sub1/S12P21D209.git
-                    git fetch --all
-                    git reset --hard origin/backend
-                    git pull origin backend
-                    echo "✅ Git 최신 코드 가져오기 완료!"
-                    '''
-                }
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: '*/backend']],
+                    userRemoteConfigs: [[
+                    url: 'https://lab.ssafy.com/s12-bigdata-dist-sub1/S12P21D209.git',
+                    credentialsId: 'gitlab-credentials'
+                    ]]
+                ])
             }
         }
 
@@ -55,18 +51,6 @@ pipeline {
                     export $(grep -v '^#' .env | xargs)
                     ./gradlew clean build
                     echo "✅ 빌드 완료"
-                    '''
-                }
-            }
-        }
-
-        stage('Build Docker Image') {
-            steps {
-                dir('backend/farmbti') {
-                    sh '''
-                    echo "✅ Docker 이미지 빌드 시작"
-                    docker-compose build
-                    echo "✅ Docker 이미지 빌드 완료"
                     '''
                 }
             }
