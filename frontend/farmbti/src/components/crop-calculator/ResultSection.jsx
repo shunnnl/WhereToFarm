@@ -1,6 +1,5 @@
 import AnnualBenefitResult from "./AnnualBenefitResult";
 
-import { useState } from "react";
 import ResultSummary from "./ResultSummary";
 
 const ResultSection = ({ step, result, userName, isLoading }) => {
@@ -38,9 +37,9 @@ const ResultSection = ({ step, result, userName, isLoading }) => {
           <AnnualBenefitResult
             myTotalPrice={result.myTotalPrice}
             myTotalOperatingPrice={result.myTotalOperatingPrice}
-            mymyTotalRealPrice={result.myTotalRealPrice}
+            myTotalRealPrice={result.myTotalRealPrice}
             myRate={result.myRate}
-            isHouse={result}
+            isHouse={result.house}
           />
         </div>
       )}
