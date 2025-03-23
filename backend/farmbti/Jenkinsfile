@@ -15,13 +15,14 @@ pipeline {
             steps {
                 script {
                     sh '''
-                        echo "✅ Git 최신 코드 강제 업데이트..."
-                        git config --global --add safe.directory /var/lib/jenkins/workspace/farmbti-be
-                        cd /var/lib/jenkins/workspace/farmbti-be
-                        git fetch --all
-                        git reset --hard origin/backend
-                        git pull origin backend
-                        echo "✅ Git 최신 코드 가져오기 완료!"
+                    echo "✅ Git 최신 코드 강제 업데이트..."
+                    git config --global --add safe.directory /var/lib/jenkins/workspace/farmbti-be
+                    cd /var/lib/jenkins/workspace/farmbti-be
+                    git remote set-url origin https://<GITLAB_USERNAME>:<GITLAB_ACCESS_TOKEN>@lab.ssafy.com/s12-bigdata-dist-sub1/S12P21D209.git
+                    git fetch --all
+                    git reset --hard origin/backend
+                    git pull origin backend
+                    echo "✅ Git 최신 코드 가져오기 완료!"
                     '''
                 }
             }
