@@ -5,7 +5,7 @@ const ResultSummary = ({
   myTotalQuantity,
 }) => {
   return (
-    <div className="report-summary bg-accentGreen-light rounded-lg shadow-sm m-8 p-6">
+    <div className="report-summary bg-accentGreen-light rounded-lg shadow-md m-8 p-6">
       <div className="p-1">
         <span className="text-xl font-medium text-textColor-black">
           선택하신 작물은{" "}
