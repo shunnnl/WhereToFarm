@@ -22,7 +22,7 @@ pipeline {
                     git fetch --all
                     git reset --hard origin/backend
                     git pull origin backend
-                    echo "✅ Git 최신 코드 가져오기 완료!!"
+                    echo "✅ Git 최신 코드 가져오기 완료!"
                     '''
                 }
             }
