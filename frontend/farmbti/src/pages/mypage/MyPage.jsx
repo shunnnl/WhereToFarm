@@ -1,12 +1,22 @@
+import { useState } from "react";
 import MyProfile from "../../components/MyPage/MyProfile";
 
-import { Outlet, NavLink } from "react-router";
+import { Outlet, NavLink, useSearchParams } from "react-router";
 
 const MyPage = () => {
+  const [myInfo, setMyInfo] = useState({
+    userName: "황뚜비",
+    userImage: "파일 주소",
+    birthDate: "2002-11-05",
+    email: "subi@naver.com",
+    region: "경상남도 진주시",
+    crops: ["미나리", "고구마"],
+    isMentor: true
+  });
   return (
     <div className="mypage-container bg-gradient-to-b from-[#FFFCF2] to-secondaryYellow-light flex">
       <div className="w-1/3 h-screen bg-white mx-5 my-10 rounded-lg shadow-lg">
-        <MyProfile />
+        <MyProfile myInfo={myInfo}/>
       </div>
       <div className="w-2/3 bg-white mx-5 my-10 rounded-lg shadow-lg">
         <div className="flex justify-between text-center m-7">
