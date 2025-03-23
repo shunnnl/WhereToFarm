@@ -1,14 +1,9 @@
 import AnnualBenefitResult from "./AnnualBenefitResult";
 
 import { useState } from "react";
+import ResultSummary from "./ResultSummary";
 
 const ResultSection = ({ step, result, userName, isLoading }) => {
-  const [cropsName, setCropName] = useState(result.cropsName);
-  const [myAreaVolume, setMyAreaVolume] = useState(result.myAreaVolume);
-  const [myAreaField, setMyAreaField] = useState(result.myAreaField);
-  const [myTotalQuantity, setMyTotalQuantity] = useState(
-    result.myTotalQuantity
-  );
   return (
     <div className="bg-accentGreen-light min-h-screen mx-5 flex felx-col items-center justify-center">
       {step === 1 && (
@@ -34,51 +29,18 @@ const ResultSection = ({ step, result, userName, isLoading }) => {
               예상 수익 보고서
             </span>
           </div>
-          <div className="report-summary bg-accentGreen-light rounded-lg shadow-sm m-4 p-4">
-            <div>
-              <span className="text-xl font-medium text-textColor-black">
-                선택하신 작물은{" "}
-              </span>
-              <span className="text-2xl font-bold text-primaryGreen">
-                {cropsName}{" "}
-              </span>
-              <span className="text-xl font-medium text-textColor-black">
-                입니다.
-              </span>
-            </div>
-            <div>
-              <span className="text-xl font-medium text-textColor-black">
-                입력하신 재배 면적은{" "}
-              </span>
-              <span className="text-2xl font-bold text-primaryGreen">
-                {" "}
-                {myAreaVolume} 평 ({myAreaField.toFixed(2)} ㎡)
-              </span>
-              <span className="text-xl font-medium text-textColor-black">
-                {" "}
-                입니다.
-              </span>
-            </div>
-            <div>
-              <span className="text-xl font-medium text-textColor-black">
-                1년 1기작 기준
-              </span>
-              <span className="text-2xl font-bold text-primaryGreen">
-                {" "}
-                {myTotalQuantity.toFixed(2)} Kg
-              </span>
-              <span className="text-xl font-medium text-textColor-black">
-                {" "}
-                수확을 할 수 있을 것으로 예상됩니다.
-              </span>
-            </div>
-          </div>
+          <ResultSummary
+            cropsName={result.cropsName}
+            myAreaVolume={result.myAreaVolume}
+            myAreaField={result.myAreaField}
+            myTotalQuantity={result.myTotalQuantity}
+          />
           <AnnualBenefitResult
             myTotalPrice={result.myTotalPrice}
             myTotalOperatingPrice={result.myTotalOperatingPrice}
             mymyTotalRealPrice={result.myTotalRealPrice}
             myRate={result.myRate}
-            isHouse={result.house}
+            isHouse={result}
           />
         </div>
       )}
