@@ -19,7 +19,7 @@ const AnnualBenefitResult = ({
     maximumFractionDigits: 0,
   });
   return (
-    <div className="bg-accentGreen-light rounded-lg shadow-sm m-8 p-6 flex flex-col justify-center items-center">
+    <div className="bg-accentGreen-light rounded-lg shadow-md m-8 p-6 flex flex-col justify-center items-center">
       <div className="text-center mb-5">
         <p className="text-2xl font-bold mb-2">연간 예상 작물 수익</p>
         {isHouse ? (
@@ -39,8 +39,8 @@ const AnnualBenefitResult = ({
             <span className="text-lg text-textColor-black font-semibold"> 원</span>
           </div>
         </div>
-        <div>
-          <p className="text-3xl">-</p>
+        <div className="bg-accentGreen w-10 h-10 rounded-full">
+          <p className="text-3xl text-textColor-black">-</p>
         </div>
         <div className="totaOpertaingPrice w-1/5">
           <p className="text-lg text-textColor-black m-2">연간 총 경영비</p>
@@ -49,8 +49,8 @@ const AnnualBenefitResult = ({
             <span className="text-lg text-textColor-black font-semibold"> 원</span>
           </div>
         </div>
-        <div>
-          <p className="text-3xl">=</p>
+        <div className="bg-accentGreen w-10 h-10 rounded-full">
+          <p className="text-3xl text-textColor-black">=</p>
         </div>
         <div className="totalRealPrice w-1/5">
           <p className="text-lg text-textColor-black m-2">연간 예상 순 수익</p>
@@ -60,7 +60,7 @@ const AnnualBenefitResult = ({
           </div>
         </div>
       </div>
-      <div className="bg-secondaryYellow">
+      <div className="bg-secondaryYellow px-5">
         <span className="text-xl text-textColor-black">총 매출액 대비 순 수익은</span>
         <span className="text-xl text-textColor-black font-semibold"> {myRate.toFixed(2)}%</span>
         <span className="text-xl text-textColor-black">입니다.</span>
