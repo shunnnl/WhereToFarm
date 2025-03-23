@@ -11,6 +11,19 @@ pipeline {
     }
 
     stages {
+        stage('Checkout Code') {
+            steps {
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: '*/backend']],
+                    userRemoteConfigs: [[
+                        url: 'https://lab.ssafy.com/s12-bigdata-dist-sub1/S12P21D209.git',
+                        credentialsId: 'gitlab-credentials'
+                    ]]
+                ])
+            }
+        }
+
         stage('Load .env File') {
             steps {
                 configFileProvider([configFile(fileId: 'env-config', targetLocation: 'backend/farmbti/.env')]) {
@@ -27,19 +40,6 @@ pipeline {
             }
         }
 
-        stage('Checkout Code') {
-            steps {
-                checkout([
-                    $class: 'GitSCM',
-                    branches: [[name: '*/backend']],
-                    userRemoteConfigs: [[
-                        url: 'https://lab.ssafy.com/s12-bigdata-dist-sub1/S12P21D209.git',
-                        credentialsId: 'gitlab-credentials'
-                    ]]
-                ])
-            }
-        }
-
         stage('Build Backend') {
             steps {
                 dir('backend/farmbti') {
@@ -51,6 +51,18 @@ pipeline {
                     export $(grep -v '^#' .env | xargs)
                     ./gradlew clean build
                     echo "✅ 빌드 완료"
+                    '''
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                dir('backend/farmbti') {
+                    sh '''
+                    echo "✅ Docker 이미지 빌드 시작"
+                    docker-compose build
+                    echo "✅ Docker 이미지 빌드 완료"
                     '''
                 }
             }
