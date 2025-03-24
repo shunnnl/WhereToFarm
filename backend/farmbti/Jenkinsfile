@@ -2,12 +2,12 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HUB_USERNAME = "nageum"
+        DOCKER_HUB_USERNAME = "nageum"  // Docker Hub 계정명 추가
         IMAGE_NAME = "farmbti_backend"
         CONTAINER_NAME = "farmbti-backend"
         PORT = "8081"
         GIT_CREDENTIALS_ID = 'gitlab-credentials'
-        DOCKER_CREDENTIALS_ID = 'docker-hub'
+        DOCKER_CREDENTIALS_ID = 'docker-hub'  // Docker Hub Credentials ID 추가
     }
 
     stages {
@@ -59,33 +59,14 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    // 빌드된 JAR 파일을 찾아서 복사
-                    sh '''
-                    #!/bin/bash
-                    set -e
-                    echo "✅ 빌드 결과물 찾기"
-                    JAR_FILE=$(find backend/farmbti/build/libs -name "*.jar" | head -n 1)
-                    echo "JAR 파일: $JAR_FILE"
+                    echo "✅ 기존 컨테이너 종료 및 삭제"
+                    sh 'docker stop ${CONTAINER_NAME} || true'
+                    sh 'docker rm ${CONTAINER_NAME} || true'
 
-                    # docker-compose.yml 파일도 복사
-                    echo "✅ Docker 설정 파일 복사"
-                    cp backend/farmbti/docker-compose.yml /tmp/docker-compose.yml
-                    cp backend/farmbti/Dockerfile /tmp/Dockerfile
-
-                    # JAR 파일을 지정된 위치로 복사
-                    echo "✅ JAR 파일 복사"
-                    sudo mkdir -p /home/ubuntu/app/backend/deploy
-                    sudo cp $JAR_FILE /home/ubuntu/app/backend/deploy/app.jar
-                    sudo cp /tmp/docker-compose.yml /home/ubuntu/app/backend/deploy/
-                    sudo cp /tmp/Dockerfile /home/ubuntu/app/backend/deploy/
-
-                    # 도커 컨테이너 재시작
-                    echo "✅ Docker 컨테이너 재시작"
-                    cd /home/ubuntu/app/backend/deploy
-                    sudo docker-compose down || true
-                    sudo docker-compose build --no-cache
-                    sudo docker-compose up -d
-                    '''
+                    echo "✅ 배포 시작"
+                    sh 'docker-compose -f backend/farmbti/docker-compose.yml down || true'
+                    sh 'docker-compose -f backend/farmbti/docker-compose.yml build --no-cache'
+                    sh 'docker-compose -f backend/farmbti/docker-compose.yml up -d'
 
                     echo "✅ 배포 완료!!"
                     sh 'docker ps -a | grep ${CONTAINER_NAME}'
