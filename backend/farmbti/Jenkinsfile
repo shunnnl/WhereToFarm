@@ -103,6 +103,9 @@ pipeline {
                     echo "✅ Docker 최신 이미지 Pull"
                     sh "docker pull ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:latest"
 
+                    echo "✅ 환경 변수 확인"
+                    sh "env | grep SPRING_DATASOURCE || true"
+
                     echo "✅ 배포 시작"
                     sh 'cd /var/jenkins_home/app/backend/farmbti/ && $DOCKER_COMPOSE_PATH down || true'
                     sh 'cd /var/jenkins_home/app/backend/farmbti/ && $DOCKER_COMPOSE_PATH up -d --force-recreate'
