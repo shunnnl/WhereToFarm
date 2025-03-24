@@ -64,7 +64,7 @@ pipeline {
                     sh 'docker rm ${CONTAINER_NAME} || true'
 
                     echo "✅ 앱 디렉토리 코드 업데이트"
-                    sh 'rsync -av --delete backend/farmbti/ /home/ubuntu/app/backend/farmbti/ --exclude .git --exclude .env'
+                    sh 'sudo rsync -av --delete backend/farmbti/ /home/ubuntu/app/backend/farmbti/ --exclude .git --exclude .env'
 
                     echo "✅ 배포 시작"
                     sh 'cd /home/ubuntu/app/backend/farmbti && docker-compose down || true'
