@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKER_HUB_USERNAME = "nageum"  // Docker Hub 계정명 추가
-        IMAGE_NAME = "s12p21d209_backend"
+        IMAGE_NAME = "farmbti_backend"
         CONTAINER_NAME = "farmbti-backend"
         PORT = "8081"
         GIT_CREDENTIALS_ID = 'gitlab-credentials'
