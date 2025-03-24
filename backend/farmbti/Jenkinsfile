@@ -42,7 +42,7 @@ pipeline {
 
         stage('Build Backend') {
             steps {
-                dir('backend/farmbti') {
+                dir('/home/ubuntu/app/backend/farmbti') {
                     sh '''
                     #!/bin/bash
                     set -e
