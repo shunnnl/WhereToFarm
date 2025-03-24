@@ -11,15 +11,17 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/zeppelin")
 @Tag(name = "Zeppelin 컨트롤러", description = "Zeppelin 노트 실행, 결과 조회, 특정 정보 전달하는 등 Zeppelin 관리하는 컨트롤러")
 public class ZeppelinController {
-
     private final ZeppelinService zeppelinService;
 
     public ZeppelinController(ZeppelinService zeppelinService) {
         this.zeppelinService = zeppelinService;
     }
 
-    @Operation(summary = "전체 paragraph에서 파라미터 적용 및 note 실행")
-    @PostMapping("/run-notebook-with-params-for-last/{noteId}")
+    @Operation(
+            summary = "전체 paragraph에서 파라미터 적용 및 note 실행",
+            description = "Zeppelin 노트북의 모든 paragraph에 파라미터를 적용하고 순차적으로 실행한 후, 마지막 paragraph의 결과를 반환합니다. 각 paragraph는 필요한 파라미터만 사용합니다."
+    )
+    @PostMapping("/run-notebook-with-params-for-all/{noteId}")
     public ResponseEntity<String> runNotebookWithParamsForLast(
             @PathVariable String noteId,
             @RequestBody ZeppelinRequestDto requestDto
