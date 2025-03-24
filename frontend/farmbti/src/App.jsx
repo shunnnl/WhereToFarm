@@ -2,14 +2,14 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 // 컴포넌트 import
-import Navbar from './components/common/Navbar';
+import Navbar from './components/common/NavBar';
 import Home from './pages/home/Home';
-import LoginPage from './pages/auth/Loginpage';
+import LoginPage from './pages/auth/LoginPage';
 import SignupPage from './pages/auth/SignupPage';
 import MentorPage from './pages/mentor/MentorPage';
 import CropCalculatorPage from './pages/crop-calculator/CropCalculatorPage';
-import Footer from './components/common/footer';
-import Chat from './pages/chat/chat';
+import Footer from './components/common/Footer';
+import Chat from './pages/chat/Chat';
 
 
 function App() {

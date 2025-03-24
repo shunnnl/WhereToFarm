@@ -12,9 +12,10 @@
   "dependencies": {
     "@svg-maps/south-korea": "^1.0.1",
     "axios": "^1.8.2",
+    "d3": "^7.9.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-js-pagination": "^3.0.3",
+    "react-js-pagination": "^3.0.2",
     "react-modal": "^3.16.3",
     "react-paginate": "^8.3.0",
     "react-redux": "^9.2.0",
@@ -24,6 +25,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
+    "@tailwindcss/postcss": "^4.0.15",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^4.3.4",

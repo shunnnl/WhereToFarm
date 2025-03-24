@@ -1,0 +1,99 @@
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME = "nageum/s12p21d209_frontend"  // Docker Hub 이미지명
+        CONTAINER_NAME = "farmbti-frontend"  // 컨테이너 이름
+        PORT = "3000"
+        GIT_CREDENTIALS_ID = 'gitlab-credentials'  // GitLab 로그인 정보
+        DOCKER_CREDENTIALS_ID = 'docker-hub'  // Docker Hub 로그인 정보
+        NVM_DIR = "/var/lib/jenkins/.nvm"  // NVM 경로 설정
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: '*/front']],  // front 브랜치 사용
+                    userRemoteConfigs: [[
+                        url: 'https://lab.ssafy.com/s12-bigdata-dist-sub1/S12P21D209.git',
+                        credentialsId: "${GIT_CREDENTIALS_ID}"
+                    ]]
+                ])
+            }
+        }
+
+        stage('Check Node.js & npm') {
+            steps {
+                sh """#!/bin/bash
+                echo "������ Checking Node.js & npm..."
+
+                export NVM_DIR="/var/lib/jenkins/.nvm"
+                [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+    
+                command -v node || echo "❌ Node.js not found"
+                command -v npm || echo "❌ npm not found"
+                node -v || echo "❌ Failed to get Node.js version"
+                npm -v || echo "❌ Failed to get npm version"
+                """
+            }
+        }
+
+        stage('Build Frontend') {
+            steps {
+                dir('frontend/farmbti') {
+                    sh """#!/bin/bash
+                    set -e
+                    echo "✅ 프론트엔드 빌드 시작"
+
+                    # NVM 환경 로드
+                    export NVM_DIR="$HOME/.nvm"
+                    . "$NVM_DIR/nvm.sh" || true
+                    . "$NVM_DIR/bash_completion" || true
+
+                    # Node.js 및 npm 확인 후 빌드 실행
+                    if ! command -v node &> /dev/null; then
+                        echo "❌ Node.js가 감지되지 않음. Node.js를 설치해야 합니다."
+                        exit 1
+                    fi
+
+                    if ! command -v npm &> /dev/null; then
+                        echo "❌ npm이 감지되지 않음. npm을 설치해야 합니다."
+                        exit 1
+                    fi
+
+                    node -v
+                    npm -v
+
+                    # 기존 패키지 삭제 후 재설치
+                    echo "������ 기존 node_modules 및 package-lock.json 삭제"
+                    rm -rf node_modules package-lock.json
+        
+                    echo "������ npm 패키지 설치 중..."
+                    npm install --legacy-peer-deps
+        
+                    echo "������ Vite 빌드 실행"
+                    npm run build
+
+                    echo "✅ 빌드 완료"
+                    """
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    echo "✅ 기존 컨테이너 종료 및 삭제"
+                    sh 'docker rm -f ${CONTAINER_NAME} || true'  // ❗ 기존 컨테이너 강제 종료 및 삭제
+
+                    echo "✅ 새로운 컨테이너 실행"
+                    sh 'docker-compose -f frontend/farmbti/docker-compose.yml up --force-recreate -d'  // ❗ 컨테이너 강제 재생성
+
+                    echo "✅ 배포 완료"
+                }
+            }
+        }
+    }
+}
