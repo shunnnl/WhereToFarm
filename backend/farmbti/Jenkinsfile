@@ -2,12 +2,12 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HUB_USERNAME = "nageum"  // Docker Hub 계정명 추가
+        DOCKER_HUB_USERNAME = "nageum"
         IMAGE_NAME = "farmbti_backend"
         CONTAINER_NAME = "farmbti-backend"
         PORT = "8081"
         GIT_CREDENTIALS_ID = 'gitlab-credentials'
-        DOCKER_CREDENTIALS_ID = 'docker-hub'  // Docker Hub Credentials ID 추가
+        DOCKER_CREDENTIALS_ID = 'docker-hub'
     }
 
     stages {
@@ -64,14 +64,36 @@ pipeline {
                     sh 'docker rm ${CONTAINER_NAME} || true'
 
                     echo "✅ 배포 시작"
-                    sh 'docker-compose -f backend/farmbti/docker-compose.yml down || true'
-                    sh 'docker-compose -f backend/farmbti/docker-compose.yml build --no-cache'
-                    sh 'docker-compose -f backend/farmbti/docker-compose.yml up -d'
+                    // Jenkins 워크스페이스에서 직접 docker-compose 실행
+                    sh '''
+                    #!/bin/bash
+                    set -e
+                    cd backend/farmbti
+                    docker-compose down || true
+                    docker-compose build --no-cache
+                    docker-compose up -d
+                    '''
 
                     echo "✅ 배포 완료!!"
                     sh 'docker ps -a | grep ${CONTAINER_NAME}'
                 }
             }
+        }
+    }
+
+    post {
+        success {
+            // 성공 시 앱 서버의 Git 저장소도 업데이트
+            sh '''
+            #!/bin/bash
+            set -e
+            if sudo -n true 2>/dev/null; then
+                echo "✅ 앱 서버 Git 저장소 업데이트"
+                sudo bash -c "cd /home/ubuntu/app/backend && git fetch --all && git reset --hard origin/backend"
+            else
+                echo "⚠️ sudo 권한이 없어 앱 서버 Git 저장소 업데이트를 건너뜁니다"
+            fi
+            '''
         }
     }
 }
