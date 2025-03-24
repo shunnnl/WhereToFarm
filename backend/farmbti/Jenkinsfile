@@ -85,6 +85,13 @@ pipeline {
                     sh 'cp -f backend/farmbti/docker-compose.yml ~/app/backend/farmbti/'
                     sh 'cp -f backend/farmbti/Dockerfile ~/app/backend/farmbti/'
 
+                    echo "✅ .env 파일 권한 설정"
+                    sh '''
+                    sudo chown -R 1000:1000 /home/ubuntu/env/backend/
+                    sudo chmod -R 755 /home/ubuntu/env/backend/
+                    ls -lah /home/ubuntu/env/backend/
+                    '''
+
                     echo "✅ Docker 최신 이미지 Pull"
                     sh "docker pull ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:latest"
 
