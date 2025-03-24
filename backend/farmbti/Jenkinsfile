@@ -73,7 +73,7 @@ pipeline {
                     docker-compose up -d
                     '''
 
-                    echo "✅ 배포 완료!!"
+                    echo "✅ 배포 완료"
                     sh 'docker ps -a | grep ${CONTAINER_NAME}'
                 }
             }
