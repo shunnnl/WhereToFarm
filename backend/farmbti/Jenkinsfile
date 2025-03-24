@@ -56,23 +56,6 @@ pipeline {
             }
         }
 
-        stage('Build & Push Docker Image') {
-            steps {
-                script {
-                    echo "✅ Docker Hub 로그인"
-                    sh "echo '${DOCKER_HUB_PASSWORD}' | docker login -u '${DOCKER_HUB_USERNAME}' --password-stdin"
-
-                    echo "✅ Docker 이미지 빌드 및 태그 지정"
-                    sh "docker build -t ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:latest backend/farmbti"
-
-                    echo "✅ Docker Hub에 푸시"
-                    sh "docker push ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:latest"
-
-                    echo "✅ Docker 이미지 푸시 완료!"
-                }
-            }
-        }
-
         stage('Deploy') {
             steps {
                 script {
