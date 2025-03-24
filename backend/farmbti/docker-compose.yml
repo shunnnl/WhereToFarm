@@ -1,25 +1,15 @@
-version: "3.8"
+version: '3.8'
 
 services:
-  frontend:
-    build:
-      context: ./frontend/farmbti
-      dockerfile: Dockerfile
-    container_name: farmbti-frontend
-    restart: always
-    networks:
-      - farmbti
-
-  nginx:
-    image: nginx:latest
-    container_name: farmbti-nginx
+  backend:
+    container_name: farmbti-backend
+    build: .
     ports:
-      - "80:80"
+      - "8081:8081"
+    env_file:
+      - .env
     volumes:
-      - ./infra/nginx/default.conf:/etc/nginx/conf.d/default.conf
-      - ./frontend/farmbti/dist:/usr/share/nginx/html
-    depends_on:
-      - frontend
+      - ./src/main/resources/application.yml:/app/application.yml
     networks:
       - farmbti
 
