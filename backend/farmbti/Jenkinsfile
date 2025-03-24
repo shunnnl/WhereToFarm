@@ -6,7 +6,7 @@ pipeline {
         IMAGE_NAME = "farmbti_backend"
         CONTAINER_NAME = "farmbti-backend"
         PORT = "8081"
-        GIT_CREDENTIALS_ID = 'gitlab-credentials'
+        GIT_CREDENTIALS_ID = 'gitlab_token'
         DOCKER_CREDENTIALS_ID = 'docker-hub'  // Docker Hub Credentials ID 추가
     }
 
