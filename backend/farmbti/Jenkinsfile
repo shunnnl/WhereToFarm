@@ -59,14 +59,23 @@ pipeline {
 
         stage('Push Docker Image') {
              steps {
-                  withDockerRegistry([credentialsId: DOCKER_CREDENTIALS_ID, url: 'https://index.docker.io/v1/']) {
-                      sh '''
-                      #!/bin/bash
-                      set -e
-                      echo "✅ Docker Hub에 이미지 푸시 중..."
-                      docker push ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:latest
-                      echo "✅ Docker 이미지 푸시 완료"
-                      '''
+                  def maxRetries = 3
+                  def retryCount = 0
+                  def pushSuccessful = false
+
+                  while (retryCount < maxRetries && !pushSuccessful) {
+                  try {
+                  sh '''
+                  echo "Docker 이미지 푸시 시도 (${retryCount + 1}번째)"
+                  docker push ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:latest
+                  '''
+                  pushSuccessful = true
+                  } catch (Exception e) {
+                       retryCount++
+                       if (retryCount >= maxRetries) {
+                            error "Docker 이미지 푸시 실패: ${e.message}"
+                       }
+                       sleep(10) // 10초 대기 후 재시도
                   }
              }
         }
