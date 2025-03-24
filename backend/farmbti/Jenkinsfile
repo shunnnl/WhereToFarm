@@ -21,6 +21,7 @@ pipeline {
                     credentialsId: 'gitlab_token'
                     ]]
                 ])
+                sh 'echo "✅ 코드 체크아웃 완료"'
             }
         }
 
@@ -42,7 +43,7 @@ pipeline {
 
         stage('Build Backend') {
             steps {
-                dir('/home/ubuntu/jenkins-data/farmbti-be') {
+                dir("${env.WORKSPACE}") {
                     sh '''
                     #!/bin/bash
                     set -e
