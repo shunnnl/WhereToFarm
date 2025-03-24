@@ -87,12 +87,11 @@ const MapSection = () => {
                     
                     setHoveredRegion(null);
                     
-                    // 호버가 해제될 때 선택된 지역 정보로 표시 정보 돌려놓기
+                    // 중요: 호버가 해제될 때 항상 선택된 지역 정보를 표시하거나 유지
                     if (selectedRegion) {
                         setDisplayRegion(selectedRegion);
-                    } else {
-                        setDisplayRegion(null);
                     }
+                    // 선택된 지역이 없더라도 표시 정보는 null로 설정하지 않음
                 });
 
                 // Click 이벤트
@@ -120,7 +119,8 @@ const MapSection = () => {
                         // 선택 해제
                         path.setAttribute('fill', originalFillsRef.current[pathId]);
                         setSelectedRegion(null);
-                        setDisplayRegion(null);
+                        // 중요: 선택 해제 시에도 마지막 선택 지역 정보 유지 (null로 설정하지 않음)
+                        setDisplayRegion(region);
                     } else {
                         // 새로운 지역 선택
                         path.setAttribute('fill', getHoverColor(pathId));
@@ -168,7 +168,6 @@ const MapSection = () => {
 
 
 
-
     
     // 지역별 hover 색상 가져오기
     const getHoverColor = (regionId) => {
@@ -196,7 +195,7 @@ const MapSection = () => {
         ref={svgRef}
         xmlns="south-korea.svg" 
         viewBox="0 0 524 631" 
-        className="w-4/5 h-auto mx-auto my-2"
+        className="w-4/5 h-200 mx-auto my-2"
         >
 
 
@@ -288,7 +287,7 @@ const MapSection = () => {
        
         </svg>
     </div>
-    <div className="w-1/2">
+    <div className="w-1/2  h-[680px] overflow-auto">
         <div> 
                 {/* 호버 시 지역명 표시 */}
                 <h3 className="flex items-center text-xl py-4">
