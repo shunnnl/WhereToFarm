@@ -12,6 +12,19 @@ pipeline {
     }
 
     stages {
+        stage('Load Secrets from Jenkins') {
+             steps {
+                  script {
+                       echo "✅ Jenkins 환경 변수 로드"
+                       env.DB_URL = credentials('DB_URL')
+                       env.DB_USERNAME = credentials('DB_USERNAME')
+                       env.DB_PASSWORD = credentials('DB_PASSWORD')
+                       env.REDIS_HOST = credentials('REDIS_HOST')
+                       env.REDIS_PORT = credentials('REDIS_PORT')
+                  }
+             }
+        }
+
         stage('Checkout Code') {
             steps {
                 checkout([
@@ -107,8 +120,16 @@ pipeline {
                     sh "env | grep SPRING_DATASOURCE || true"
 
                     echo "✅ 배포 시작"
-                    sh 'cd /var/jenkins_home/app/backend/farmbti/ && $DOCKER_COMPOSE_PATH down || true'
-                    sh 'cd /var/jenkins_home/app/backend/farmbti/ && $DOCKER_COMPOSE_PATH up -d --force-recreate'
+                    sh '''
+                    cd /var/jenkins_home/app/backend/farmbti/
+                    $DOCKER_COMPOSE_PATH down || true
+                    DB_URL="${DB_URL}" \
+                    DB_USERNAME="${DB_USERNAME}" \
+                    DB_PASSWORD="${DB_PASSWORD}" \
+                    REDIS_HOST="${REDIS_HOST}" \
+                    REDIS_PORT="${REDIS_PORT}" \
+                    $DOCKER_COMPOSE_PATH up -d --force-recreate
+                    '''
 
                     echo "✅ 배포 완료!!"
                     sh 'docker ps -a | grep farmbti-backend'
