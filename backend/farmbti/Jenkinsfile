@@ -2,12 +2,12 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HUB_USERNAME = "nageum"
+        DOCKER_HUB_USERNAME = "nageum"  // Docker Hub 계정명 추가
         IMAGE_NAME = "farmbti_backend"
         CONTAINER_NAME = "farmbti-backend"
         PORT = "8081"
         GIT_CREDENTIALS_ID = 'gitlab-credentials'
-        DOCKER_CREDENTIALS_ID = 'docker-hub'
+        DOCKER_CREDENTIALS_ID = 'docker-hub'  // Docker Hub Credentials ID 추가
     }
 
     stages {
@@ -17,8 +17,8 @@ pipeline {
                     $class: 'GitSCM',
                     branches: [[name: '*/backend']],
                     userRemoteConfigs: [[
-                        url: 'https://lab.ssafy.com/s12-bigdata-dist-sub1/S12P21D209.git',
-                        credentialsId: 'gitlab-credentials'
+                    url: 'https://lab.ssafy.com/s12-bigdata-dist-sub1/S12P21D209.git',
+                    credentialsId: 'gitlab-credentials'
                     ]]
                 ])
             }
@@ -64,47 +64,12 @@ pipeline {
                     sh 'docker rm ${CONTAINER_NAME} || true'
 
                     echo "✅ 배포 시작"
-                    sh '''
-                    #!/bin/bash
-                    set -e
-                    cd backend/farmbti
-                    docker-compose down || true
-                    docker-compose build --no-cache
-                    docker-compose up -d
-                    '''
+                    sh 'docker-compose -f backend/farmbti/docker-compose.yml down || true'
+                    sh 'docker-compose -f backend/farmbti/docker-compose.yml build --no-cache'
+                    sh 'docker-compose -f backend/farmbti/docker-compose.yml up -d'
 
-                    echo "✅ 배포 완료"
+                    echo "✅ 배포 완료!!"
                     sh 'docker ps -a | grep ${CONTAINER_NAME}'
-                }
-            }
-        }
-    }
-
-    post {
-        success {
-            script {
-                withCredentials([usernamePassword(credentialsId: 'gitlab-credentials', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
-                    sh '''
-                    #!/bin/bash
-                    set -e
-                    echo "✅ 앱 서버 Git 저장소 업데이트"
-
-                    # Git 인증 정보 설정
-                    git config --global credential.helper store
-                    echo "https://${GIT_USERNAME}:${GIT_PASSWORD}@lab.ssafy.com" > ~/.git-credentials
-                    chmod 600 ~/.git-credentials
-                    git config --global user.email "jenkins@yourdomain.com"
-                    git config --global user.name "Jenkins CI"
-
-                    # Git 업데이트 수행
-                    cd /home/ubuntu/app/backend
-                    git fetch --all
-                    git reset --hard origin/backend
-                    git pull origin backend
-
-                    # Git 인증 정보 제거 (보안 강화)
-                    rm -f ~/.git-credentials
-                    '''
                 }
             }
         }
