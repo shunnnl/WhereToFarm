@@ -64,18 +64,19 @@ pipeline {
                   def pushSuccessful = false
 
                   while (retryCount < maxRetries && !pushSuccessful) {
-                  try {
-                  sh '''
-                  echo "Docker 이미지 푸시 시도 (${retryCount + 1}번째)"
-                  docker push ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:latest
-                  '''
-                  pushSuccessful = true
-                  } catch (Exception e) {
-                       retryCount++
-                       if (retryCount >= maxRetries) {
-                            error "Docker 이미지 푸시 실패: ${e.message}"
-                       }
-                       sleep(10) // 10초 대기 후 재시도
+                      try {
+                          sh '''
+                          echo "Docker 이미지 푸시 시도 (${retryCount + 1}번째)"
+                          docker push ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:latest
+                          '''
+                          pushSuccessful = true
+                      } catch (Exception e) {
+                           retryCount++
+                           if (retryCount >= maxRetries) {
+                                error "Docker 이미지 푸시 실패: ${e.message}"
+                           }
+                           sleep(10) // 10초 대기 후 재시도
+                      }
                   }
              }
         }
