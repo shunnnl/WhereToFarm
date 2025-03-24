@@ -41,10 +41,14 @@ const publicAxios = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+
 });
 
 publicAxios.interceptors.request.use(
   (config) => {
+    console.log("config =========", config)
+    console.log("authAxios public:", publicAxios.defaults.baseURL);
+
     return config;
   },
   (error) => {

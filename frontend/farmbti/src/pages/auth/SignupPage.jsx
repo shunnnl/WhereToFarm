@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import signup_image from '../../asset/auth/login.svg';
 import useKakaoAddressService from '../../API/useKakaoAddressService';
+import { publicAxios } from '../../API/common/AxiosInstance'
 
 const SignupPage = () => {
   const [formData, setFormData] = useState({
@@ -12,7 +13,7 @@ const SignupPage = () => {
     birthYear: '',
     birthMonth: '',
     birthDay: '',
-    adress: ''
+    address: ''
   });
 
     const [errors, setErrors] = useState({});
@@ -22,12 +23,16 @@ const SignupPage = () => {
     const handleAddressSelected = (addressData) => {
         setFormData(prev => ({
             ...prev,
-            adress: addressData.address,
+            address: addressData.address,
         }));
     };
     
     // 주소검색 서비스 훅 사용
     const { openAddressSearch } = useKakaoAddressService(handleAddressSelected);
+
+
+
+    
 
 
 
@@ -119,15 +124,15 @@ const SignupPage = () => {
         }
       
         // 주소 검증
-        if (!formData.adress) {
-          newErrors.adress = '주소는 필수 입력 항목입니다.';
+        if (!formData.address) {
+          newErrors.address = '주소는 필수 입력 항목입니다.';
         }
       
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
         };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // 회원가입 로직 구현 (예: API 호출)
     console.log('Signup attempt with:', formData);
@@ -138,6 +143,62 @@ const SignupPage = () => {
     if (isValid) {
     // 회원가입 로직 구현 (예: API 호출)
     console.log('Signup attempt with:', formData);
+    try {
+
+      const birthDate = new Date(
+        formData.birthYear,
+        formData.birthMonth - 1, // JavaScript에서 월은 0부터 시작
+        formData.birthDay
+      ).toISOString(); // ISO 8601 형식으로 변환
+
+      // 백엔드에 전송할 데이터 구조화
+      const userData = {
+        email: formData.email,
+        password: formData.password,
+        name: formData.name,
+        address: formData.address,
+        gender: formData.gender,
+        birth: birthDate
+      };
+      console.log("요청할 데이터:", userData);
+
+      
+      // axios를 사용하여 회원가입 API 호출
+      const response = await publicAxios.post('/api/users/signup', userData);
+      
+      console.log('회원가입 성공:', response);
+      
+      // 회원가입 성공 후 처리
+      alert('회원가입이 완료되었습니다!');
+      // 로그인 페이지로 리다이렉트 (React Router 사용 시)
+      // navigate('/login');
+      
+    } catch (error) {
+      console.error('회원가입 실패:', error);
+      
+      // 서버에서 받은 오류 메시지 처리
+      if (error.response?.data) {
+        const errorData = error.response.data;
+        
+        // 필드별 오류 메시지가 있을 경우
+        if (errorData.errors) {
+          setErrors(prev => ({
+            ...prev,
+            ...errorData.errors
+          }));
+        } 
+        // 일반 오류 메시지
+        else if (errorData.message) {
+          alert(`회원가입 실패: ${errorData.message}`);
+        }
+      } else {
+        alert('서버 연결 오류가 발생했습니다. 다시 시도해주세요.');
+      }
+    }
+
+    
+      
+
   }
 
   };
@@ -338,14 +399,14 @@ const SignupPage = () => {
             </div>
 
             <div>
-              <label htmlFor="adress" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-2">
                 주소
               </label>
               <div className="grid grid-cols-3 gap-4">
                 <input
                   type="text"
-                  name="adress"
-                  value={formData.adress}
+                  name="address"
+                  value={formData.address}
                   onChange={handleChange}
                   required
                   placeholder="주소"
@@ -361,7 +422,7 @@ const SignupPage = () => {
                     주소 검색
                 </button>
               </div>
-              {errors.adress && (<p className="mt-1 text-sm text-red-600">{errors.adress}</p>)}
+              {errors.address && (<p className="mt-1 text-sm text-red-600">{errors.address}</p>)}
 
             </div>
 
