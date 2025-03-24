@@ -122,22 +122,31 @@ public class ZeppelinService {
             JsonNode root = mapper.readTree(rawZeppelinResult);
             String data = root.path("body").path("results").path("msg").get(0).path("data").asText();
 
-            String[] lines = data.split("\n");
+            if (data == null || data.isEmpty()) {
+                throw new GlobalException(ZeppelinErrorCode.EMPTY_RESULT);
+            }
 
+            String[] lines = data.split("\n");
             for (String line : lines) {
                 if (line.startsWith("|") && !line.contains("full_region")) {
-                    // |전라북도 정읍시|0.87159306|  → ["", "전라북도 정읍시", "0.87159306", ""]
                     String[] parts = line.split("\\|");
                     if (parts.length > 1) {
-                        String region = parts[1].trim(); // 전라북도 정읍시
+                        String region = parts[1].trim();
                         regionList.add(region);
                     }
                 }
             }
+
+            if (regionList.isEmpty()) {
+                throw new GlobalException(ZeppelinErrorCode.EMPTY_RESULT);
+            }
+
+            return regionList;
+
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new GlobalException(ZeppelinErrorCode.RESULT_PARSE_FAILED);
         }
-        return regionList;
     }
+
 
 }
