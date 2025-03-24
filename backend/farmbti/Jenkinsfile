@@ -1,0 +1,73 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_HUB_USERNAME = "nageum"  // Docker Hub 계정명 추가
+        IMAGE_NAME = "s12p21d209_backend"
+        CONTAINER_NAME = "farmbti-backend"
+        PORT = "8081"
+        GIT_CREDENTIALS_ID = 'gitlab-credentials'
+        DOCKER_CREDENTIALS_ID = 'docker-hub'  // Docker Hub Credentials ID 추가
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: '*/backend']],
+                    userRemoteConfigs: [[
+                    url: 'https://lab.ssafy.com/s12-bigdata-dist-sub1/S12P21D209.git',
+                    credentialsId: 'gitlab-credentials'
+                    ]]
+                ])
+            }
+        }
+
+        stage('Load .env File') {
+            steps {
+                configFileProvider([configFile(fileId: 'env-config', targetLocation: 'backend/farmbti/.env')]) {
+                    script {
+                        sh '''
+                        #!/bin/bash
+                        set -e
+                        echo "✅ .env 파일 로드 중..."
+                        cat backend/farmbti/.env
+                        export $(grep -v '^#' backend/farmbti/.env | xargs)
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('Build Backend') {
+            steps {
+                dir('backend/farmbti') {
+                    sh '''
+                    #!/bin/bash
+                    set -e
+                    echo "✅ 백엔드 빌드 시작"
+                    export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF-8"
+                    export $(grep -v '^#' .env | xargs)
+                    ./gradlew clean build
+                    echo "✅ 빌드 완료"
+                    '''
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    echo "✅ 기존 컨테이너 종료 및 삭제"
+                    sh 'docker-compose -f backend/farmbti/docker-compose.yml down || true'
+
+                    echo "✅ 새로운 컨테이너 실행"
+                    sh 'docker-compose -f backend/farmbti/docker-compose.yml up -d'
+
+                    echo "✅ 배포 완료!!"
+                }
+            }
+        }
+    }
+}

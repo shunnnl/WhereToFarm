@@ -24,6 +24,8 @@ services:
       service: redis
     networks:
       - farmbti
+    volumes:
+      - redis_data:/data
 
 networks:
   farmbti:
@@ -31,3 +33,4 @@ networks:
 
 volumes:
   postgres_data:
+  redis_data:
