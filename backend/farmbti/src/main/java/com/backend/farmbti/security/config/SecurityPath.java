@@ -8,15 +8,11 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum SecurityPath {
 
-    //Swagger 관련 경로 - 모든 Swagger 관련 경로 추가
-    SWAGGER_UI("/swagger-ui/**"),
-    SWAGGER_UI_HTML("/swagger-ui.html"),
-    SWAGGER_RESOURCES("/swagger-resources/**"),
-    SWAGGER_API_DOCS_ALL("/v3/api-docs/**"),
-    SWAGGER_CONFIG("/v3/api-docs/swagger-config"),
-    SWAGGER_WEBJARS("/webjars/**"),
-    SWAGGER_FAVICON("/favicon.ico"),
+    //Swagger 관련 경로
+    SWAGGER("/swagger-ui/**"),
     SWAGGER_API_DOCS("/v3/api-docs"),
+    SWAGGER_API_DOCS_ALL("/v3/api-docs/**"),  // 추가된 부분
+    SWAGGER_RESOURCES("/swagger-resources/**"),  // 추가된 부분
 
     //WebSocket 관련 경로
     WEB_SOCKET("/websocket-test.html"),
@@ -49,4 +45,5 @@ public enum SecurityPath {
                     return pattern.equals(uri);
                 });
     }
+
 }
