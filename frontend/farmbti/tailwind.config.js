@@ -17,6 +17,7 @@ module.exports = {
         },
         secondaryYellow: {
           DEFAULT: "#FFEC8D",
+          light:"#FFF4C2",
         },
         secondaryBrown: {
           DEFAULT: "#B5A37F",
