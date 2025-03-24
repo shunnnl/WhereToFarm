@@ -42,7 +42,7 @@ pipeline {
 
         stage('Build Backend') {
             steps {
-                dir('/home/ubuntu/app/backend/farmbti') {
+                dir('/home/ubuntu/jenkins-data/farmbti-be') {
                     sh '''
                     #!/bin/bash
                     set -e
