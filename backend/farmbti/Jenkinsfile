@@ -34,8 +34,7 @@ pipeline {
                         #!/bin/bash
                         set -e
                         echo "✅ .env 파일 로드 중..."
-                        cat backend/farmbti/.env
-                        export $(grep -v '^#' backend/farmbti/.env | xargs)
+                        export $(grep -v '^#' backend/farmbti/.env | xargs)  # ✅ 환경 변수로 설정
                         '''
                     }
                 }
