@@ -51,13 +51,40 @@ pipeline {
                     export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF-8"
                     export $(grep -v '^#' .env | xargs)
                     chmod +x gradlew  # 실행 권한 추가
-                    ./gradlew clean build -x test
+                    ./gradlew clean bootJar -x test
                     echo "✅ 빌드 완료"
                     '''
                 }
             }
         }
 
+        stage('Build Docker Image') {
+             steps {
+                 dir('backend/farmbti') {
+                     sh '''
+                     #!/bin/bash
+                     set -e
+                     echo "✅ Docker 이미지 빌드 시작"
+                     docker build -t ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:latest .
+                     echo "✅ Docker 이미지 빌드 완료"
+                     '''
+                 }
+             }
+        }
+
+        stage('Push Docker Image') {
+             steps {
+                  withDockerRegistry([credentialsId: DOCKER_CREDENTIALS_ID, url: 'https://index.docker.io/v1/']) {
+                      sh '''
+                      #!/bin/bash
+                      set -e
+                      echo "✅ Docker Hub에 이미지 푸시 중..."
+                      docker push ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:latest
+                      echo "✅ Docker 이미지 푸시 완료"
+                      '''
+                  }
+             }
+        }
 
         stage('Deploy') {
             steps {
@@ -73,10 +100,12 @@ pipeline {
                     sh 'cp -f backend/farmbti/docker-compose.yml ~/app/backend/farmbti/'
                     sh 'cp -f backend/farmbti/Dockerfile ~/app/backend/farmbti/'
 
+                    echo "✅ Docker 최신 이미지 Pull"
+                    sh "docker pull ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:latest"
+
                     echo "✅ 배포 시작"
                     sh 'cd /var/jenkins_home/app/backend/farmbti/ && $DOCKER_COMPOSE_PATH down || true'
-                    sh 'cd /var/jenkins_home/app/backend/farmbti/ && $DOCKER_COMPOSE_PATH build --no-cache'
-                    sh 'cd /var/jenkins_home/app/backend/farmbti/ && $DOCKER_COMPOSE_PATH up -d'
+                    sh 'cd /var/jenkins_home/app/backend/farmbti/ && $DOCKER_COMPOSE_PATH up -d --force-recreate'
 
                     echo "✅ 배포 완료!!"
                     sh 'docker ps -a | grep farmbti-backend'
