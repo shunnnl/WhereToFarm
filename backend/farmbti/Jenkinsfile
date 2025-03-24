@@ -17,8 +17,8 @@ pipeline {
                     $class: 'GitSCM',
                     branches: [[name: '*/backend']],
                     userRemoteConfigs: [[
-                    url: 'https://lab.ssafy.com/s12-bigdata-dist-sub1/S12P21D209.git',
-                    credentialsId: 'gitlab-credentials'
+                        url: 'https://lab.ssafy.com/s12-bigdata-dist-sub1/S12P21D209.git',
+                        credentialsId: 'gitlab-credentials'
                     ]]
                 ])
             }
@@ -64,7 +64,6 @@ pipeline {
                     sh 'docker rm ${CONTAINER_NAME} || true'
 
                     echo "✅ 배포 시작"
-                    // Jenkins 워크스페이스에서 직접 docker-compose 실행
                     sh '''
                     #!/bin/bash
                     set -e
@@ -83,17 +82,31 @@ pipeline {
 
     post {
         success {
-            // 성공 시 앱 서버의 Git 저장소도 업데이트
-            sh '''
-            #!/bin/bash
-            set -e
-            if sudo -n true 2>/dev/null; then
-                echo "✅ 앱 서버 Git 저장소 업데이트"
-                sudo bash -c "cd /home/ubuntu/app/backend && git fetch --all && git reset --hard origin/backend"
-            else
-                echo "⚠️ sudo 권한이 없어 앱 서버 Git 저장소 업데이트를 건너뜁니다"
-            fi
-            '''
+            script {
+                withCredentials([usernamePassword(credentialsId: 'gitlab-credentials', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
+                    sh '''
+                    #!/bin/bash
+                    set -e
+                    echo "✅ 앱 서버 Git 저장소 업데이트"
+
+                    # Git 인증 정보 설정
+                    git config --global credential.helper store
+                    echo "https://${GIT_USERNAME}:${GIT_PASSWORD}@lab.ssafy.com" > ~/.git-credentials
+                    chmod 600 ~/.git-credentials
+                    git config --global user.email "jenkins@yourdomain.com"
+                    git config --global user.name "Jenkins CI"
+
+                    # Git 업데이트 수행
+                    cd /home/ubuntu/app/backend
+                    git fetch --all
+                    git reset --hard origin/backend
+                    git pull origin backend
+
+                    # Git 인증 정보 제거 (보안 강화)
+                    rm -f ~/.git-credentials
+                    '''
+                }
+            }
         }
     }
 }
