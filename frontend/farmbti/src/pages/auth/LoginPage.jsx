@@ -51,9 +51,11 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="flex h-screen">
+  
+  
+    <div className="w-full h-screen flex">
       {/* 좌측 이미지 섹션 */}
-      <div className="w-1/2 bg-cover bg-center bg-no-repeat rounded-tr-2xl rounded-br-2xl" 
+      <div className="w-1/2 bg-cover bg-center bg-no-repeat rounded-tr-2xl rounded-br-2xl"
  
       style={{
         backgroundImage: `url(${login_image})`,

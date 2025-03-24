@@ -10,6 +10,7 @@ import MentorPage from './pages/mentor/MentorPage';
 import CropCalculatorPage from './pages/crop-calculator/CropCalculatorPage';
 import Footer from './components/common/Footer';
 import Chat from './pages/chat/Chat';
+import Estate from './pages/estate/Estate';
 
 
 function App() {
@@ -23,11 +24,13 @@ function App() {
         <Routes>
           {/* 기본 페이지 */}
           <Route path="/" element={<Home />} />
+
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/mentors" element={<MentorPage />} />
           <Route path="/crop-calculator" element={<CropCalculatorPage />} />
           <Route path="/chat" element={<Chat />} />
+          <Route path="/estate" element={<Estate />} />
         </Routes>
 
         {/* 푸터가 있다면 여기에 추가 */}
