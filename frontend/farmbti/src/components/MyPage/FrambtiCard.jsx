@@ -1,4 +1,4 @@
-import { navigate } from "react-router";
+import { useNavigate } from "react-router";
 
 const FarmbtiCard = ({ id, reportName, farmerType, date, matchRate }) => {
   const formattedDate = new Date(date)
@@ -13,13 +13,13 @@ const FarmbtiCard = ({ id, reportName, farmerType, date, matchRate }) => {
   const progressWidth = `${matchRate}%`;
 
   const handleNavigate = (reportId) => {
-    navigate(`/report/${reportId}`);
+    useNavigate(`/report/${reportId}`)
   };
   return (
     <div className="w-full max-w-md rounded-lg overflow-hidden shadow-md bg-gradient-to-br to-primaryGreen from-supportGreen">
       <div className="px-6 py-2 text-white flex justify-between items-center">
-        <div className="font-bold text-lg">귀농 유형</div>
-        <div className="text-sm">{farmerType}</div>
+      <div className="font-medium text-sm">귀농 유형</div>
+      <div className="text-md">{farmerType}</div>
       </div>
 
       <div className="bg-white p-6 rounded-t-lg">
