@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 
-const MentorSettingForm = ({ onSubmit }) => {
+const MentorSettingForm = ({ onSubmit, initialData }) => {
   const [formData, setFormData] = useState({
-    Year: "",
-    Month: "",
-    Day: "",
-    foodType: "",
-    description: "",
+    Year: initialData?.Year || "",
+    Month: initialData?.Month || "",
+    Day: initialData?.Day || "",
+    foodType: initialData?.foodType || "",
+    description: initialData?.description || "",
   });
 
   const [selectedFoods, setSelectedFoods] = useState([]);
@@ -132,7 +132,7 @@ const MentorSettingForm = ({ onSubmit }) => {
     <form onSubmit={handleSubmit} className="mb-4 space-y-4">
       {/* 날짜선택 */}
       <div className="flex items-center space-x-4">
-        <h3 className="text-xl font-bold">귀농 등록</h3>
+        <h3 className="text-xl font-medium">귀농 등록</h3>
         <div className="grid grid-cols-3 gap-4 w-80">
           <select
             name="Year"
@@ -180,7 +180,7 @@ const MentorSettingForm = ({ onSubmit }) => {
       </div>
 
       <div className="flex items-center space-x-4">
-        <h3 className="text-xl font-bold whitespace-nowrap">재배 작물</h3>
+        <h3 className="text-xl font-medium whitespace-nowrap">재배 작물</h3>
         <div className="flex flex-wrap justify-center">
           {topFood.map((food) => (
             <div key={food.id} className="w-1/5 p-2 flex flex-col items-center">
@@ -212,7 +212,7 @@ const MentorSettingForm = ({ onSubmit }) => {
 
       {/* 텍스트입력 */}
       <div className="flex items-center space-x-4">
-        <h3 className="text-xl font-bold whitespace-nowrap">멘토 소개</h3>
+        <h3 className="text-xl font-medium whitespace-nowrap">멘토 소개</h3>
         <div className="flex flex-wrap justify-center w-full">
           <textarea
             id="description"

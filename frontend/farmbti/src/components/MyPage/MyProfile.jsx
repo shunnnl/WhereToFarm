@@ -3,13 +3,27 @@ import leaveIcon from "../../asset/mypage/leaves.svg";
 import { Camera, MessageSquare, User, Settings, Lock } from "lucide-react";
 import MyPageModal from "./MyPageModal";
 import MentorSettingForm from "./MentorSettingContent";
-import { useSearchParams } from "react-router";
+import MyInfoSettingContent from "./MyInfoSettingContent";
 
 const MyProfile = ({ myInfo }) => {
   const modalRef = useRef(null);
-  const [modalType, setModalType] = useState("")
+  const [modalType, setModalType] = useState("");
   const [modalContent, setModalContent] = useState(null);
   const [modalTitle, setModalTitle] = useState("");
+
+  // 모달 타입 별 상태 분리
+  const [mentorFormData, setMentorFormData] = useState(null);
+  const [userInfoFormData, setUserInfoFormData] = useState(null);
+  const [passwordFormData, setPasswordFormData] = useState(null);
+  // 디버깅용 데이테 출력
+  const [formData, setFormData] = useState(null);
+
+  // 상태, 예외 처리
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [feedbackMessage, setFeedbackMessage] = useState({
+    type: "",
+    message: "",
+  });
 
   const handleChatting = () => {
     // chat 페이지로 넘어가기
@@ -17,8 +31,16 @@ const MyProfile = ({ myInfo }) => {
   };
 
   const handleMetorSetting = () => {
-    setModalType("mentor")
-    setModalContent(<MentorSettingForm />);
+    setModalType("mentor");
+    setModalContent(
+      <MentorSettingForm
+        initialData={myInfo}
+        onSubmit={(data) => {
+          console.log("멘토 데이터 수신:", data);
+          setMentorFormData(data);
+        }}
+      />
+    );
     setModalTitle("멘토 정보 수정");
     modalRef.current?.openModal();
     return;
@@ -26,26 +48,86 @@ const MyProfile = ({ myInfo }) => {
 
   const handleMyInfoSetting = () => {
     setModalType("user-info");
+    setModalContent(
+      <MyInfoSettingContent
+        initialData={myInfo}
+        onSubmit={(data) => {
+          console.log("정보 수정 데이터 수신:", data);
+          console.log("함수 호출")
+          setUserInfoFormData(data);
+        }}
+      />
+    );
+    setModalTitle("회원 정보 수정");
+    modalRef.current?.openModal();
     return;
   };
 
   const handleMyPasswordSetting = () => {
-    setModalType("password")
+    setModalType("password");
     return;
   };
 
-  // 폼 제출 처리 함수 추가
-  const handleConfirm = () => {
-    // 여기서 API 호출 등의 폼 제출 로직 처리
-    console.log("변경사항 저장");
-    // 모달의 타입에 따라 다른 처리 로직 구현 가능
-    if (modalType === "mentor") {
-      // 멘토 정보 수정 API 호출
-    } else if (modalType === "user-info") {
-      // 회원 정보 수정 API 호출
-    } else if (modalType === "password") {
-      // 비밀번호 수정 API 호출
+  const handleConfirm = async () => {
+    console.log("수정 중...");
+    try {
+      setIsSubmitting(true);
+      setFeedbackMessage({ type: "", message: "" });
+
+      switch (modalType) {
+        case "mentor":
+          if (mentorFormData) {
+            // 멘토 정보 수정 로직
+            setFeedbackMessage({
+              type: "success",
+              message: "멘토 정보가 성공적으로 업데이트되었습니다.",
+            });
+            setFormData(mentorFormData);
+
+            // 모달 닫기
+            modalRef.current?.closeModal();
+          }
+          break;
+
+        case "user-info":
+          if (userInfoFormData) {
+            // 회원 정보 수정 로직
+            setFeedbackMessage({
+              type: "success",
+              message: "회원 정보가 성공적으로 업데이트되었습니다.",
+            });
+            setFormData(userInfoFormData);
+
+            // 모달 닫기
+            modalRef.current?.closeModal();
+          }
+          break;
+
+        case "password":
+          if (passwordFormData) {
+            // 비밀번호 수정 로직
+            setFeedbackMessage({
+              type: "success",
+              message: "비밀번호가 성공적으로 변경되었습니다.",
+            });
+            setFormData(passwordFormData);
+
+            // 모달 닫기
+            modalRef.current?.closeModal();
+          }
+          break;
+      }
+    } catch (error) {
+      console.error("정보 업데이트 실패", error);
+      setFeedbackMessage({
+        type: "error",
+        message: "정보 업데이트에 실패했습니다. 다시 시도해주세요.",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
+    console.log("바뀐 데이터:", formData);
+    modalRef.current?.closeModal();
   };
 
   return (
@@ -161,7 +243,9 @@ const MyProfile = ({ myInfo }) => {
         ref={modalRef}
         title={modalTitle}
         onConfirm={handleConfirm}
-        children={modalContent} // 또는 그냥 {modalContent}
+        isLoading={isSubmitting}
+        feedbackMessage={feedbackMessage}
+        children={modalContent}
       />
     </div>
   );
