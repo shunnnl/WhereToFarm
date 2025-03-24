@@ -32,7 +32,7 @@ public class SecurityConfig {
      * @param http HttpSecurity 객체 (스프링이 자동으로 주입)
      * @return 구성된 SecurityFilterChain 객체
      * @throws Exception 보안 설정 중 에러 발생 시 예외 처리
-     *                   HttpSecurity 객체를 통해 보안 설정을 구성하고, 최종적으로 SecurityFilterChain을 반환
+     * HttpSecurity 객체를 통해 보안 설정을 구성하고, 최종적으로 SecurityFilterChain을 반환
      */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {

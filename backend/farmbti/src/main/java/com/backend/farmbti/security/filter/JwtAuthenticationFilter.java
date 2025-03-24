@@ -30,6 +30,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String uri = request.getRequestURI();
+
+        // ✅ Actuator 요청인지 확인하고 필터 통과
+        if (uri.startsWith("/actuator")) {
+            log.info("✅ [JwtAuthenticationFilter] Actuator 엔드포인트 요청 - 필터 건너뜀");
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String method = request.getMethod();
         log.info("[JwtAuthenticationFilter] 요청 시작: {} {}", method, uri);
 
@@ -107,6 +115,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     //사용자 정의 path 통과
     private boolean isPermitAllEndpoint(String uri) {
+        log.info(uri);
         boolean matches = SecurityPath.matches(uri);
         log.debug("[JwtAuthenticationFilter] SecurityPath.matches 결과: {}, URI: {}", matches, uri);
         return matches;
