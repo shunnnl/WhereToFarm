@@ -61,6 +61,9 @@ public class CropsService {
         // 5. 월별 예상 매출액 그래프
         String monthlyPrice = crops.getMonthlyPrice(); // JSON 문자열
 
+        // 월별 과거 그래프
+        String pastPrice = crops.getPastPrice();
+
         // 6. db 저장 (예상 수익 그래프 넣기)
         CropsReport cropsReport = CropsReport.builder()
                 .myAreaVolume(request.getMyAreaVolume())
@@ -79,6 +82,9 @@ public class CropsService {
         // monthlyPrice JSON 문자열을 파싱하여 객체로 변환
         Object parsedMonthlyPrice = objectMapper.readValue(monthlyPrice, Object.class);
 
+        // pastPrice JSON 문자열을 파싱하여 객체로 변환
+        Object parsedPastPrice = objectMapper.readValue(pastPrice, Object.class);
+
         return CropsEstimateResponse.builder()
                 .reportId(cropsReport.getId())  // 저장 후 생성된 ID 사용
                 .cropsName(request.getCropsName())
@@ -91,6 +97,7 @@ public class CropsService {
                 .myRate(rate)
                 .house(crops.isHouse())
                 .myMonthlyPrice(parsedMonthlyPrice)
+                .myPastPrice(parsedPastPrice)
                 .build();
     }
 
@@ -159,6 +166,12 @@ public class CropsService {
         // monthlyPrice JSON 문자열을 파싱하여 객체로 변환
         Object parsedMonthlyPrice = objectMapper.readValue(monthlyPrice, Object.class);
 
+
+        String pastPrice = crops.getPastPrice(); // JSON 문자열
+
+        // monthlyPrice JSON 문자열을 파싱하여 객체로 변환
+        Object parsedPastPrice = objectMapper.readValue(pastPrice, Object.class);
+
         return CropsDetailReponse.builder()
                 .cropsName(crops.getName())
                 .myAreaVolume(cropsReport.getMyAreaVolume())
@@ -169,6 +182,7 @@ public class CropsService {
                 .myTotalRealPrice(cropsReport.getMyTotalRealPrice())
                 .myRate(cropsReport.getMyRate())
                 .myMonthlyPrice(parsedMonthlyPrice)
+                .myPastPrice(parsedPastPrice)
                 .house(crops.isHouse())
                 .build();
     }

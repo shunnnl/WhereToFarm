@@ -41,5 +41,8 @@ public class Crops {
     @Column(name = "monthly_price", columnDefinition = "TEXT")
     private String monthlyPrice;
 
+    @Column(name = "past_price", columnDefinition = "TEXT")
+    private String pastPrice;
+
 
 }
