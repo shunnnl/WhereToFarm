@@ -2,11 +2,12 @@ pipeline {
     agent any
 
     environment {
+        DOCKER_HUB_USERNAME = "nageum"  // Docker Hub 계정명 추가
         IMAGE_NAME = "farmbti_backend"
         CONTAINER_NAME = "farmbti-backend"
         PORT = "8081"
         GIT_CREDENTIALS_ID = 'gitlab-credentials'
-        DOCKER_CREDENTIALS_ID = 'docker-hub'
+        DOCKER_CREDENTIALS_ID = 'docker-hub'  // Docker Hub Credentials ID 추가
     }
 
     stages {
@@ -16,8 +17,8 @@ pipeline {
                     $class: 'GitSCM',
                     branches: [[name: '*/backend']],
                     userRemoteConfigs: [[
-                        url: 'https://lab.ssafy.com/s12-bigdata-dist-sub1/S12P21D209.git',
-                        credentialsId: 'gitlab-credentials'
+                    url: 'https://lab.ssafy.com/s12-bigdata-dist-sub1/S12P21D209.git',
+                    credentialsId: 'gitlab-credentials'
                     ]]
                 ])
             }
@@ -27,7 +28,13 @@ pipeline {
             steps {
                 configFileProvider([configFile(fileId: 'env-config', targetLocation: 'backend/farmbti/.env')]) {
                     script {
-                        echo "✅ .env 파일 로드 완료"
+                        sh '''
+                        #!/bin/bash
+                        set -e
+                        echo "✅ .env 파일 로드 중..."
+                        cat backend/farmbti/.env
+                        export $(grep -v '^#' backend/farmbti/.env | xargs)
+                        '''
                     }
                 }
             }
@@ -41,28 +48,10 @@ pipeline {
                     set -e
                     echo "✅ 백엔드 빌드 시작"
                     export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF-8"
+                    export $(grep -v '^#' .env | xargs)
                     ./gradlew clean build
                     echo "✅ 빌드 완료"
                     '''
-                }
-            }
-        }
-
-        stage('Build & Push Docker Image') {
-            steps {
-                script {
-                    withCredentials([usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_HUB_USERNAME', passwordVariable: 'DOCKER_HUB_PASSWORD')]) {
-                        echo "✅ Docker Hub 로그인"
-                        sh "echo '${DOCKER_HUB_PASSWORD}' | docker login -u '${DOCKER_HUB_USERNAME}' --password-stdin"
-
-                        echo "✅ Docker 이미지 빌드 및 태그 지정"
-                        sh "docker build -t ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:latest backend/farmbti"
-
-                        echo "✅ Docker Hub에 푸시"
-                        sh "docker push ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:latest"
-
-                        echo "✅ Docker 이미지 푸시 완료!"
-                    }
                 }
             }
         }
@@ -71,18 +60,13 @@ pipeline {
             steps {
                 script {
                     echo "✅ 기존 컨테이너 종료 및 삭제"
-                    sh "docker stop ${CONTAINER_NAME} || true"
-                    sh "docker rm ${CONTAINER_NAME} || true"
+                    sh 'docker stop ${CONTAINER_NAME} || true'
+                    sh 'docker rm ${CONTAINER_NAME} || true'
 
-                    echo "✅ 최신 이미지 가져오기"
-                    sh "docker pull ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:latest"
-
-                    echo "✅ 컨테이너 실행"
-                    sh '''
-                    docker run -d --name ${CONTAINER_NAME} \
-                    --env-file=backend/farmbti/.env \
-                    -p ${PORT}:8080 ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:latest
-                    '''
+                    echo "✅ 배포 시작"
+                    sh 'docker-compose -f backend/farmbti/docker-compose.yml down || true'
+                    sh 'docker-compose -f backend/farmbti/docker-compose.yml build --no-cache'
+                    sh 'docker-compose -f backend/farmbti/docker-compose.yml up -d'
 
                     echo "✅ 배포 완료!!"
                     sh 'docker ps -a | grep ${CONTAINER_NAME}'
