@@ -94,7 +94,7 @@ pipeline {
                         cd /var/jenkins_home/app/backend/farmbti/
                         $DOCKER_COMPOSE_PATH --env-file ${ENV_FILE} down || true
                         $DOCKER_COMPOSE_PATH --env-file ${ENV_FILE} up -d --force-recreate
-                    ''''
+                    '''
 
                     echo "✅ 배포 완료!!"
                     sh 'docker ps -a | grep farmbti-backend'
