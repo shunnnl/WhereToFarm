@@ -2,6 +2,22 @@ import leaveIcon from "../../asset/mypage/leaves.svg";
 import { Camera, MessageSquare, User, Settings, Lock } from "lucide-react";
 
 const MyProfile = ({ myInfo }) => {
+  const handleChatting = () => {
+    return;
+  };
+
+  const handleMetorSetting = () => {
+    return;
+  };
+
+  const handleMyInfoSetting = () => {
+    return;
+  };
+
+  const handleMyPasswordSetting = () => {
+    return;
+  };
+
   return (
     <div>
       <div className="flex flex-col items-center pt-10">
@@ -71,31 +87,43 @@ const MyProfile = ({ myInfo }) => {
       </div>
       <div className="profile-modify grid grid-cols-2 gap-6 mx-10 mt-4 p-2">
         <div className="flex flex-col items-center">
-          <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mb-2">
+          <button
+            className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mb-2"
+            onClick={handleChatting}
+          >
             <MessageSquare size={20} />
-          </div>
-          <p className="text-sm">채팅</p>
+          </button>
+          <p className="text-sm text-textColor-black">채팅 보러가기</p>
         </div>
 
         <div className="flex flex-col items-center">
-          <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mb-2">
+          <button
+            className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mb-2"
+            onClick={handleMetorSetting}
+          >
             <Settings size={20} />
-          </div>
-          <p className="text-sm">멘토 정보 수정</p>
+          </button>
+          <p className="text-sm text-textColor-black">멘토 정보 수정</p>
         </div>
 
         <div className="flex flex-col items-center">
-          <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mb-2">
+          <button
+            className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mb-2"
+            onClick={handleMyInfoSetting}
+          >
             <User size={20} />
-          </div>
-          <p className="text-sm">회원 정보 수정</p>
+          </button>
+          <p className="text-sm text-textColor-black">회원 정보 수정</p>
         </div>
 
         <div className="flex flex-col items-center">
-          <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mb-2">
+          <button
+            className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mb-2"
+            onClick={handleMyPasswordSetting}
+          >
             <Lock size={20} />
-          </div>
-          <p className="text-sm">비밀번호 수정</p>
+          </button>
+          <p className="text-sm text-textColor-black">비밀번호 수정</p>
         </div>
       </div>
     </div>
