@@ -59,39 +59,32 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    echo "✅ 기존 컨테이너 종료 및 삭제"
-                    sh 'docker stop ${CONTAINER_NAME} || true'
-                    sh 'docker rm ${CONTAINER_NAME} || true'
-
-                    echo "✅ 배포 시작"
-                    sh 'docker-compose -f backend/farmbti/docker-compose.yml down || true'
-                    sh 'docker-compose -f backend/farmbti/docker-compose.yml build --no-cache'
-                    sh 'docker-compose -f backend/farmbti/docker-compose.yml up -d'
-
-                    echo "✅ 자동 업데이트 스크립트 실행"
+                    // 빌드된 JAR 파일을 찾아서 복사
                     sh '''
                     #!/bin/bash
-                    # 자동 업데이트 스크립트 생성
-                    cat > update_app.sh << 'EOF'
-                    #!/bin/bash
-                    # 애플리케이션 디렉토리로 이동
-                    cd /home/ubuntu/app/backend/farmbti
+                    set -e
+                    echo "✅ 빌드 결과물 찾기"
+                    JAR_FILE=$(find backend/farmbti/build/libs -name "*.jar" | head -n 1)
+                    echo "JAR 파일: $JAR_FILE"
 
-                    # 최신 코드 가져오기
-                    git fetch origin
-                    git reset --hard origin/backend
+                    # docker-compose.yml 파일도 복사
+                    echo "✅ Docker 설정 파일 복사"
+                    cp backend/farmbti/docker-compose.yml /tmp/docker-compose.yml
+                    cp backend/farmbti/Dockerfile /tmp/Dockerfile
 
-                    # Docker 재시작
-                    docker-compose down
-                    docker-compose build --no-cache
-                    docker-compose up -d
-                    EOF
+                    # JAR 파일을 지정된 위치로 복사
+                    echo "✅ JAR 파일 복사"
+                    sudo mkdir -p /home/ubuntu/app/backend/deploy
+                    sudo cp $JAR_FILE /home/ubuntu/app/backend/deploy/app.jar
+                    sudo cp /tmp/docker-compose.yml /home/ubuntu/app/backend/deploy/
+                    sudo cp /tmp/Dockerfile /home/ubuntu/app/backend/deploy/
 
-                    # 스크립트에 실행 권한 부여
-                    chmod +x update_app.sh
-
-                    # 스크립트 실행 (sudo 필요시)
-                    sudo ./update_app.sh
+                    # 도커 컨테이너 재시작
+                    echo "✅ Docker 컨테이너 재시작"
+                    cd /home/ubuntu/app/backend/deploy
+                    sudo docker-compose down || true
+                    sudo docker-compose build --no-cache
+                    sudo docker-compose up -d
                     '''
 
                     echo "✅ 배포 완료!!"
