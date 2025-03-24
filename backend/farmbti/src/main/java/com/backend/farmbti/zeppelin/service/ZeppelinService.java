@@ -21,7 +21,7 @@ public class ZeppelinService {
         List<String> paragraphIds = zeppelinClient.getParagraphIds(noteId);
         if (paragraphIds.isEmpty()) return "Paragraph가 없습니다.";
 
-        // 모든 paragraph에 파라미터 설정
+        // 모든 paragraph에 파라미터 설정(all 실행 시 param 적용 x)
         for (String paragraphId : paragraphIds) {
             // 1. 각 단락에 파라미터 설정
             zeppelinClient.setParagraphParams(noteId, paragraphId, params);

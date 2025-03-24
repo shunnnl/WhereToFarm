@@ -104,7 +104,6 @@ public class ZeppelinClient {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return paragraphIds;
     }
 }
