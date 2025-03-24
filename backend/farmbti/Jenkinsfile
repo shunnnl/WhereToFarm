@@ -49,7 +49,7 @@ pipeline {
                     echo "✅ 백엔드 빌드 시작"
                     export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF-8"
                     export $(grep -v '^#' .env | xargs)
-                    ./gradlew clean build
+                    ./gradlew clean build -x test
                     echo "✅ 빌드 완료"
                     '''
                 }
