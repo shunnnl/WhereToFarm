@@ -1,21 +1,51 @@
+import { useRef, useState } from "react";
 import leaveIcon from "../../asset/mypage/leaves.svg";
 import { Camera, MessageSquare, User, Settings, Lock } from "lucide-react";
+import MyPageModal from "./MyPageModal";
+import MentorSettingForm from "./MentorSettingContent";
+import { useSearchParams } from "react-router";
 
 const MyProfile = ({ myInfo }) => {
+  const modalRef = useRef(null);
+  const [modalType, setModalType] = useState("")
+  const [modalContent, setModalContent] = useState(null);
+  const [modalTitle, setModalTitle] = useState("");
+
   const handleChatting = () => {
+    // chat 페이지로 넘어가기
     return;
   };
 
   const handleMetorSetting = () => {
+    setModalType("mentor")
+    setModalContent(<MentorSettingForm />);
+    setModalTitle("멘토 정보 수정");
+    modalRef.current?.openModal();
     return;
   };
 
   const handleMyInfoSetting = () => {
+    setModalType("user-info");
     return;
   };
 
   const handleMyPasswordSetting = () => {
+    setModalType("password")
     return;
+  };
+
+  // 폼 제출 처리 함수 추가
+  const handleConfirm = () => {
+    // 여기서 API 호출 등의 폼 제출 로직 처리
+    console.log("변경사항 저장");
+    // 모달의 타입에 따라 다른 처리 로직 구현 가능
+    if (modalType === "mentor") {
+      // 멘토 정보 수정 API 호출
+    } else if (modalType === "user-info") {
+      // 회원 정보 수정 API 호출
+    } else if (modalType === "password") {
+      // 비밀번호 수정 API 호출
+    }
   };
 
   return (
@@ -126,6 +156,13 @@ const MyProfile = ({ myInfo }) => {
           <p className="text-sm text-textColor-black">비밀번호 수정</p>
         </div>
       </div>
+
+      <MyPageModal
+        ref={modalRef}
+        title={modalTitle}
+        onConfirm={handleConfirm}
+        children={modalContent} // 또는 그냥 {modalContent}
+      />
     </div>
   );
 };
