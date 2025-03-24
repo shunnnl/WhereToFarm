@@ -59,10 +59,18 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
+                    echo "✅ 기존 컨테이너 종료 및 삭제"
                     sh '''
-                    docker stop backend_container || true
-                    docker rm backend_container || true
-                    docker run -d --name backend_container -p 8080:8080 s12p21d209_backend
+                    #!/bin/bash
+                    docker-compose -f backend/farmbti/docker-compose.yml down || true
+                    docker stop ${CONTAINER_NAME} || true
+                    docker rm ${CONTAINER_NAME} || true
+                    '''
+
+                    echo "✅ 새로운 컨테이너 실행"
+                    sh '''
+                    #!/bin/bash
+                    docker-compose -f backend/farmbti/docker-compose.yml up -d --force-recreate
                     '''
                 }
             }
