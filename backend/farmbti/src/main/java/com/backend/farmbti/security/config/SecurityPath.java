@@ -24,14 +24,7 @@ public enum SecurityPath {
 
     // Auth 관련 경로
     SIGNUP("/auth/signUp"),
-<<<<<<< HEAD
     LOGIN("/auth/login");
-=======
-    LOGIN("/auth/login"),
-
-    // API 문서 경로
-    API_DOCS("/api/v3/api-docs/**");
->>>>>>> 686fc7f2c45d5d0d20c3e1a63dfdde66fef220ce
 
     // 각 Enum 상수가 가지는 경로 문자열
     private final String path;
@@ -39,21 +32,21 @@ public enum SecurityPath {
     //SecurityPath enum에 정의된 모든 공개 경로를 String 배열로 변환해주는 메서드
     public static String[] getAllPublicPaths() {
         return java.util.Arrays.stream(values())
-            .map(SecurityPath::getPath)
-            .toArray(String[]::new);
+                .map(SecurityPath::getPath)
+                .toArray(String[]::new);
     }
 
     public static boolean matches(String uri) {
         return java.util.Arrays.stream(values())
-            .anyMatch(securityPath -> {
-                String pattern = securityPath.getPath();
-                // /** 패턴 처리
-                if (pattern.endsWith("/**")) {
-                    String basePattern = pattern.substring(0, pattern.length() - 2);
-                    return uri.startsWith(basePattern);
-                }
-                // 정확한 경로 매칭
-                return pattern.equals(uri);
-            });
+                .anyMatch(securityPath -> {
+                    String pattern = securityPath.getPath();
+                    // /** 패턴 처리
+                    if (pattern.endsWith("/**")) {
+                        String basePattern = pattern.substring(0, pattern.length() - 2);
+                        return uri.startsWith(basePattern);
+                    }
+                    // 정확한 경로 매칭
+                    return pattern.equals(uri);
+                });
     }
 }
