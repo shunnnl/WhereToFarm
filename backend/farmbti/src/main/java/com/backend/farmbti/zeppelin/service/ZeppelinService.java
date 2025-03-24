@@ -2,9 +2,12 @@ package com.backend.farmbti.zeppelin.service;
 
 import com.backend.farmbti.zeppelin.client.ZeppelinClient;
 import com.backend.farmbti.zeppelin.exception.ZeppelinErrorCode;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import com.backend.farmbti.common.exception.GlobalException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -111,4 +114,30 @@ public class ZeppelinService {
             throw new GlobalException(ZeppelinErrorCode.TIMEOUT);
         }
     }
+
+    public List<String> extractTopRegions(String rawZeppelinResult) {
+        List<String> regionList = new ArrayList<>();
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(rawZeppelinResult);
+            String data = root.path("body").path("results").path("msg").get(0).path("data").asText();
+
+            String[] lines = data.split("\n");
+
+            for (String line : lines) {
+                if (line.startsWith("|") && !line.contains("full_region")) {
+                    // |전라북도 정읍시|0.87159306|  → ["", "전라북도 정읍시", "0.87159306", ""]
+                    String[] parts = line.split("\\|");
+                    if (parts.length > 1) {
+                        String region = parts[1].trim(); // 전라북도 정읍시
+                        regionList.add(region);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return regionList;
+    }
+
 }
