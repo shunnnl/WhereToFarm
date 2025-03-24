@@ -70,7 +70,7 @@ pipeline {
                     sh 'mkdir -p /var/jenkins_home/app/backend/farmbti/build/libs/'
 
                     echo "✅ 빌드 파일 복사"
-                    sh 'cp -f ${env.WORKSPACE}/backend/farmbti/build/libs/*.jar /var/jenkins_home/app/backend/farmbti/build/libs/'
+                    sh 'cp -f "$WORKSPACE/backend/farmbti/build/libs/"*.jar /var/jenkins_home/app/backend/farmbti/build/libs/'
                     sh 'cp -f backend/farmbti/docker-compose.yml ~/app/backend/farmbti/'
                     sh 'cp -f backend/farmbti/Dockerfile ~/app/backend/farmbti/'
 
