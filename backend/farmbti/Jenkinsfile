@@ -74,9 +74,6 @@ pipeline {
                     sh 'cp -f backend/farmbti/docker-compose.yml ~/app/backend/farmbti/'
                     sh 'cp -f backend/farmbti/Dockerfile ~/app/backend/farmbti/'
 
-                    echo "PATH is: $PATH"
-                    sh "/usr/bin/docker-compose up --build -d"
-
                     echo "✅ 배포 시작"
                     sh 'cd ~/app/backend/farmbti/ && /var/jenkins_home/bin/docker-compose down || true'
                     sh 'cd ~/app/backend/farmbti/ && /var/jenkins_home/bin/docker-compose build --no-cache'
