@@ -173,6 +173,19 @@ const CropCalculatorPage = () => {
     }
   };
 
+  const handleSaveResult = () => {
+    // 저장 api 
+    return null;
+  }
+
+  const handleresetCalculate = () => {
+    setStep(1);
+    setArea(null);
+    setConvertedARea(0);
+    setSelectedCrop(null);
+    // setResult(null);
+  }
+
   return (
     <div>
       <PageHeader
@@ -202,6 +215,8 @@ const CropCalculatorPage = () => {
           result={result}
           userName={userName}
           isLoading={isLoding}
+          onSaveReport={handleSaveResult}
+          onResetResult={handleresetCalculate}
         />
       </div>
     </div>
