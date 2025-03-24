@@ -1,4 +1,5 @@
 HELP.md
+.env
 .gradle
 .env
 build/
