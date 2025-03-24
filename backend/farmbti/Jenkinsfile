@@ -2,12 +2,12 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HUB_USERNAME = "nageum"  // Docker Hub 계정명 추가
+        DOCKER_HUB_USERNAME = "nageum"
         IMAGE_NAME = "farmbti_backend"
         CONTAINER_NAME = "farmbti-backend"
         PORT = "8081"
         GIT_CREDENTIALS_ID = 'gitlab-credentials'
-        DOCKER_CREDENTIALS_ID = 'docker-hub'  // Docker Hub Credentials ID 추가
+        DOCKER_CREDENTIALS_ID = 'docker-hub'
     }
 
     stages {
@@ -63,13 +63,36 @@ pipeline {
                     sh 'docker stop ${CONTAINER_NAME} || true'
                     sh 'docker rm ${CONTAINER_NAME} || true'
 
-                    echo "✅ 앱 디렉토리 코드 업데이트"
-                    sh 'sudo rsync -av --delete backend/farmbti/ /home/ubuntu/app/backend/farmbti/ --exclude .git --exclude .env'
-
                     echo "✅ 배포 시작"
-                    sh 'cd /home/ubuntu/app/backend/farmbti && docker-compose down || true'
-                    sh 'cd /home/ubuntu/app/backend/farmbti && docker-compose build --no-cache'
-                    sh 'cd /home/ubuntu/app/backend/farmbti && docker-compose up -d'
+                    sh 'docker-compose -f backend/farmbti/docker-compose.yml down || true'
+                    sh 'docker-compose -f backend/farmbti/docker-compose.yml build --no-cache'
+                    sh 'docker-compose -f backend/farmbti/docker-compose.yml up -d'
+
+                    echo "✅ 자동 업데이트 스크립트 실행"
+                    sh '''
+                    #!/bin/bash
+                    # 자동 업데이트 스크립트 생성
+                    cat > update_app.sh << 'EOF'
+                    #!/bin/bash
+                    # 애플리케이션 디렉토리로 이동
+                    cd /home/ubuntu/app/backend/farmbti
+
+                    # 최신 코드 가져오기
+                    git fetch origin
+                    git reset --hard origin/backend
+
+                    # Docker 재시작
+                    docker-compose down
+                    docker-compose build --no-cache
+                    docker-compose up -d
+                    EOF
+
+                    # 스크립트에 실행 권한 부여
+                    chmod +x update_app.sh
+
+                    # 스크립트 실행 (sudo 필요시)
+                    sudo ./update_app.sh
+                    '''
 
                     echo "✅ 배포 완료!!"
                     sh 'docker ps -a | grep ${CONTAINER_NAME}'
