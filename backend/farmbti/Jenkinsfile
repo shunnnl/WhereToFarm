@@ -63,10 +63,13 @@ pipeline {
                     sh 'docker stop ${CONTAINER_NAME} || true'
                     sh 'docker rm ${CONTAINER_NAME} || true'
 
+                    echo "✅ 앱 디렉토리 코드 업데이트"
+                    sh 'rsync -av --delete backend/farmbti/ /home/ubuntu/app/backend/farmbti/ --exclude .git --exclude .env'
+
                     echo "✅ 배포 시작"
-                    sh 'docker-compose -f backend/farmbti/docker-compose.yml down || true'
-                    sh 'docker-compose -f backend/farmbti/docker-compose.yml build --no-cache'
-                    sh 'docker-compose -f backend/farmbti/docker-compose.yml up -d'
+                    sh 'cd /home/ubuntu/app/backend/farmbti && docker-compose down || true'
+                    sh 'cd /home/ubuntu/app/backend/farmbti && docker-compose build --no-cache'
+                    sh 'cd /home/ubuntu/app/backend/farmbti && docker-compose up -d'
 
                     echo "✅ 배포 완료!!"
                     sh 'docker ps -a | grep ${CONTAINER_NAME}'
