@@ -116,6 +116,9 @@ pipeline {
                     echo "✅ 실행 중인 컨테이너 확인"
                     sh 'docker ps -a'
 
+                    echo "✅ 백엔드 컨테이너 내부 환경 변수 확인"
+                    sh 'docker exec farmbti-backend env | grep SPRING_DATASOURCE || true'
+
                     echo "✅ 백엔드 컨테이너 로그 출력"
                     sh 'docker logs --tail=100 farmbti-backend || true'
                 }
