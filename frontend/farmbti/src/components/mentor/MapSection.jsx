@@ -11,133 +11,160 @@ const MapSection = () => {
     const [selectedRegion, setSelectedRegion] = useState(null);
     const [displayRegion, setDisplayRegion] = useState(null);
     const [candidate, setCandidate] = useState(null);
+    // 원래 색상을 저장할 객체 추가
+    const originalFillsRef = useRef({});
 
     console.log("selectedRegion = ", selectedRegion)
 
-        const [activePage, setActivePage] = useState(1);
-        const itemsPerPage = 12;
+    const [activePage, setActivePage] = useState(1);
+    const itemsPerPage = 12;
       
-        // 페이지 변경 핸들러
-        const handlePageChange = (pageNumber) => {
-          setActivePage(pageNumber);
-        };
+    // 페이지 변경 핸들러
+    const handlePageChange = (pageNumber) => {
+        setActivePage(pageNumber);
+    };
       
-        // 현재 페이지에 표시할 항목 계산
-        const startIndex = (activePage - 1) * itemsPerPage;
-        const currentItems = candidate?.slice(startIndex, startIndex + itemsPerPage) || []
+    // 현재 페이지에 표시할 항목 계산
+    const startIndex = (activePage - 1) * itemsPerPage;
+    const currentItems = candidate?.slice(startIndex, startIndex + itemsPerPage) || [];
 
-
-
-
+    // 후보 지역리스트 가져오기
+    const findCandidateRegion = (regionName) => {
+        console.log(regionName);
+        for(const candidate of regionData.candidate) {
+            console.log("for문 candidate = ", candidate);
+            if(candidate.name.includes(regionName)) {
+                console.log("리턴값 candidate = ", candidate);
+                return candidate.region;
+            }
+        }
+        return null;
+    };
 
     // SVG 파일을 직접 로드한 후 paths 요소들에 이벤트 리스너 추가
     useEffect(() => {
-      if (svgRef.current) {
-        // SVG 내의 모든 path 요소 선택
-        const paths = svgRef.current.querySelectorAll('path');
+        if (svgRef.current) {
+            // SVG 내의 모든 path 요소 선택
+            const paths = svgRef.current.querySelectorAll('path');
+            
+            // 각 path에 이벤트 리스너 추가
+            paths.forEach(path => {
+                const pathId = path.getAttribute('id');
+                // 기본 스타일 저장
+                const originalFill = path.getAttribute('fill') || '#e0e0e0';
+                originalFillsRef.current[pathId] = originalFill;
+                path.setAttribute('fill', originalFill);
+                
+                console.log('Path ID:', pathId, 'Name:', path.getAttribute('name'));
+                
+                // Hover 이벤트
+                path.addEventListener('mouseenter', () => {
+                    console.log('mouseenter 이벤트 발생:', pathId);
+                    
+                    // hover 색상으로 변경 (이미 선택된 것이 아닌 경우에만)
+                    if (!selectedRegion || selectedRegion.id !== pathId) {
+                        path.setAttribute('fill', getHoverColor(pathId));
+                    }
+                    
+                    // 지역 이름 표시
+                    const region = {
+                        id: pathId,
+                        name: path.getAttribute('name') || pathId
+                    };
 
-        // 후보 지역리스트 가져오기기
-        const findCandidateRegion = (regionName) => {
-            console.log(regionName)
-            for(const candidate of regionData.candidate) {
-                console.log("for문 candidate = ", candidate)
-                if(candidate.name.includes(regionName)) {
-                    console.log("리턴값 candidate = ", candidate)
-                    return candidate.region;
-                }
-            }
-            return null
+                    setHoveredRegion(region);
+                    setDisplayRegion(region);
+                });
+                
+                // Hover 해제 이벤트
+                path.addEventListener('mouseleave', () => {
+                    console.log('mouseleave 이벤트 발생:', pathId);
+                    
+                    // 선택된 지역이 아닌 경우에만 원래 색상으로 되돌림
+                    if (!selectedRegion || selectedRegion.id !== pathId) {
+                        path.setAttribute('fill', originalFillsRef.current[pathId]);
+                    }
+                    
+                    setHoveredRegion(null);
+                    
+                    // 호버가 해제될 때 선택된 지역 정보로 표시 정보 돌려놓기
+                    if (selectedRegion) {
+                        setDisplayRegion(selectedRegion);
+                    } else {
+                        setDisplayRegion(null);
+                    }
+                });
+
+                // Click 이벤트
+                path.addEventListener('click', () => {
+                    const region = {
+                        id: pathId,
+                        name: path.getAttribute('name') || pathId  
+                    };
+                    
+                    console.log("region.name = ", region.name);
+                    const candidateList = findCandidateRegion(region.name);
+                    setCandidate(candidateList);
+                    console.log("candidate = ", candidateList);
+                    
+                    // 이전에 선택한 지역이 있으면 원래 색상으로 복원
+                    if (selectedRegion && selectedRegion.id !== region.id) {
+                        const prevSelectedPath = svgRef.current.querySelector(`path[id="${selectedRegion.id}"]`);
+                        if (prevSelectedPath) {
+                            prevSelectedPath.setAttribute('fill', originalFillsRef.current[selectedRegion.id]);
+                        }
+                    }
+                    
+                    // 같은 지역을 다시 클릭한 경우
+                    if (selectedRegion && selectedRegion.id === region.id) {
+                        // 선택 해제
+                        path.setAttribute('fill', originalFillsRef.current[pathId]);
+                        setSelectedRegion(null);
+                        setDisplayRegion(null);
+                    } else {
+                        // 새로운 지역 선택
+                        path.setAttribute('fill', getHoverColor(pathId));
+                        setSelectedRegion(region);
+                        setDisplayRegion(region);
+                    }
+                });
+                
+                // 커서 스타일 추가
+                path.style.cursor = 'pointer';
+                path.style.transition = 'fill 0.3s ease';
+            });
         }
         
-        // 각 path에 이벤트 리스너 추가
-        paths.forEach(path => {
-          // 기본 스타일 저장
-          const originalFill = path.getAttribute('fill') || '#e0e0e0';
-          path.setAttribute('fill', originalFill);
-          path.setAttribute('data-original-fill', originalFill);
-
-          console.log('Path ID:', path.getAttribute('id'), 'Name:', path.getAttribute('name'));
-
-          
-          // Hover 이벤트
-          path.addEventListener('mouseenter', () => {
-            console.log('mouseenter 이벤트 발생:', path.getAttribute('id'));
-
-            // 이전 상태 저장
-            path.setAttribute('data-original-fill', path.getAttribute('fill'));
-            
-            // hover 색상으로 변경
-            path.setAttribute('fill', getHoverColor(path.getAttribute('id')));
-            
-            // 지역 이름 표시
-            const region = {
-              id: path.getAttribute('id'),
-              name: path.getAttribute('name') || path.getAttribute('id')
-            };
-
-            setHoveredRegion(region)
-            setDisplayRegion(region)
-          });
-          
-          // Hover 해제 이벤트
-          path.addEventListener('mouseleave', () => {
-            const pathId = path.getAttribute('id');
-            const origFill = path.getAttribute('data-original-fill');
-
-            console.log('mouseleave 이벤트 발생:', pathId);
-            console.log('selectedRegion:', selectedRegion);
-            console.log('data-original-fill:', origFill);
-
-
-            // 선택된 지역이 아닌 경우에만 원래 색상으로 되돌림
-            if (selectedRegion && selectedRegion.id === pathId) {
-                console.log('선택된 지역 유지, 색상:', getHoverColor(pathId));
-
-                // 선택된 지역은 선택 색상 유지
-                path.setAttribute('fill', getHoverColor(pathId));
-            } else {
-                                        console.log('원래 색상으로 복원:', origFill);
-
-                // 선택되지 않은 지역은 원래 색상으로 복원
-                path.setAttribute('fill', path.getAttribute('data-original-fill'));
-            }      
-            setHoveredRegion(null);
-            setDisplayRegion(selectedRegion)
-          }
-        );
-
-          // Click 이벤트
-          path.addEventListener('click', () => {
-            
-
-            const region = {
-                id: path.getAttribute('id'),
-                name: path.getAttribute('name') || path.getAttribute('id')  
+        // 컴포넌트 언마운트 시 이벤트 리스너 정리
+        return () => {
+            if (svgRef.current) {
+                const paths = svgRef.current.querySelectorAll('path');
+                paths.forEach(path => {
+                    path.removeEventListener('mouseenter', () => {});
+                    path.removeEventListener('mouseleave', () => {});
+                    path.removeEventListener('click', () => {});
+                });
             }
+        };
+    }, []); // 의존성 배열에서 selectedRegion 제거 (마운트 시에만 실행)
 
-
-            path.setAttribute('data-original-fill', getHoverColor(path.getAttribute('id')));
-
-            console.log("region.name = ", region.name)
-            const candidateList = findCandidateRegion(region.name)
-            setCandidate(candidateList)
-            console.log("candidate = ",candidateList)
-            setSelectedRegion(region)
-            setHoveredRegion(region)
-
-            })
-          
-          // 커서 스타일 추가
-          path.style.cursor = 'pointer';
-          path.style.transition = 'fill 0.3s ease';
-        });
-      }
-
-      
-
-      
-
-    }, [selectedRegion]);
+    // 컴포넌트가 마운트된 후 선택된 지역이 있으면 색상 적용
+    useEffect(() => {
+        if (svgRef.current && selectedRegion) {
+            const paths = svgRef.current.querySelectorAll('path');
+            paths.forEach(path => {
+                const pathId = path.getAttribute('id');
+                
+                if (pathId === selectedRegion.id) {
+                    // 선택된 지역은 선택 색상 유지
+                    path.setAttribute('fill', getHoverColor(pathId));
+                } else if (!hoveredRegion || hoveredRegion.id !== pathId) {
+                    // 선택되지 않고 호버 중이지 않은 지역은 원래 색상 유지
+                    path.setAttribute('fill', originalFillsRef.current[pathId]);
+                }
+            });
+        }
+    }, [selectedRegion, hoveredRegion]);
 
 
 
