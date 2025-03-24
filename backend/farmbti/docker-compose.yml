@@ -4,7 +4,7 @@ services:
   backend:
     container_name: farmbti-backend
     build: .
-    image: ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}
+    image: nageum/farmbti_backend
     ports:
       - "8081:8081"
     env_file:
