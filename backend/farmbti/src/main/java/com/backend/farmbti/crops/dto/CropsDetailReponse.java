@@ -16,4 +16,5 @@ public class CropsDetailReponse {
     private float myRate;
     private boolean house;
     private Object myMonthlyPrice;
+    private Object myPastPrice;
 }
