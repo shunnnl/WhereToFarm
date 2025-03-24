@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKER_HUB_USERNAME = "nageum"  // Docker Hub 계정명 추가
-        IMAGE_NAME = "s12p21d209_backend"
+        IMAGE_NAME = "farmbti_backend"
         CONTAINER_NAME = "farmbti-backend"
         PORT = "8081"
         GIT_CREDENTIALS_ID = 'gitlab-credentials'
@@ -60,12 +60,16 @@ pipeline {
             steps {
                 script {
                     echo "✅ 기존 컨테이너 종료 및 삭제"
-                    sh 'docker-compose -f backend/farmbti/docker-compose.yml down || true'
+                    sh 'docker stop ${CONTAINER_NAME} || true'
+                    sh 'docker rm ${CONTAINER_NAME} || true'
 
-                    echo "✅ 새로운 컨테이너 실행"
+                    echo "✅ 배포 시작"
+                    sh 'docker-compose -f backend/farmbti/docker-compose.yml down || true'
+                    sh 'docker-compose -f backend/farmbti/docker-compose.yml build --no-cache'
                     sh 'docker-compose -f backend/farmbti/docker-compose.yml up -d'
 
                     echo "✅ 배포 완료!!"
+                    sh 'docker ps -a | grep ${CONTAINER_NAME}'
                 }
             }
         }
