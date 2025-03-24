@@ -79,16 +79,16 @@ const MyProfile = ({ myInfo }) => {
 
         <div className="flex flex-col items-center">
           <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mb-2">
-            <User size={20} />
+            <Settings size={20} />
           </div>
-          <p className="text-sm">회원 정보 수정</p>
+          <p className="text-sm">멘토 정보 수정</p>
         </div>
 
         <div className="flex flex-col items-center">
           <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mb-2">
-            <Settings size={20} />
+            <User size={20} />
           </div>
-          <p className="text-sm">멘토 정보 수정</p>
+          <p className="text-sm">회원 정보 수정</p>
         </div>
 
         <div className="flex flex-col items-center">
