@@ -12,19 +12,6 @@ pipeline {
     }
 
     stages {
-        stage('Load Secrets from Jenkins') {
-             steps {
-                  script {
-                       echo "✅ Jenkins 환경 변수 로드"
-                       env.DB_URL = credentials('DB_URL')
-                       env.DB_USERNAME = credentials('DB_USERNAME')
-                       env.DB_PASSWORD = credentials('DB_PASSWORD')
-                       env.REDIS_HOST = credentials('REDIS_HOST')
-                       env.REDIS_PORT = credentials('REDIS_PORT')
-                  }
-             }
-        }
-
         stage('Checkout Code') {
             steps {
                 checkout([
@@ -85,29 +72,33 @@ pipeline {
         }
 
         stage('Deploy') {
-             steps {
-                  script {
-                       echo "✅ 빌드된 파일 확인"
-                       sh 'ls -la backend/farmbti/build/libs/'
+            steps {
+                script {
+                    echo "✅ 빌드된 파일 확인"
+                    sh 'ls -la backend/farmbti/build/libs/'
 
-                       echo "✅ 배포 경로 확인 및 생성"
-                       sh 'mkdir -p ~/app/backend/farmbti/build/libs/'
+                    echo "✅ 배포 경로 확인 및 생성"
+                    sh 'mkdir -p /var/jenkins_home/app/backend/farmbti/build/libs/'
 
-                       echo "✅ 빌드 파일 복사"
-                       sh 'cp -f backend/farmbti/build/libs/*.jar ~/app/backend/farmbti/build/libs/'
-                       sh 'cp -f backend/farmbti/docker-compose.yml ~/app/backend/farmbti/'
-                       sh 'cp -f backend/farmbti/Dockerfile ~/app/backend/farmbti/'
+                    echo "✅ 빌드 파일 복사"
+                    sh 'cp -f "$WORKSPACE/backend/farmbti/build/libs/"*.jar /var/jenkins_home/app/backend/farmbti/build/libs/'
+                    sh 'cp -f backend/farmbti/docker-compose.yml ~/app/backend/farmbti/'
+                    sh 'cp -f backend/farmbti/Dockerfile ~/app/backend/farmbti/'
 
-                       echo "✅ 배포 시작"
-                       sh 'cd ~/app/backend/farmbti/ && /var/jenkins_home/bin/docker-compose down || true'
-                       sh 'cd ~/app/backend/farmbti/ && /var/jenkins_home/bin/docker-compose build --no-cache'
-                       sh 'cd ~/app/backend/farmbti/ && /var/jenkins_home/bin/docker-compose up -d'
+                    echo "✅ Docker 최신 이미지 Pull"
+                    sh "docker pull ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:latest"
 
-                       echo "✅ 배포 완료!!"
-                       sh 'docker ps -a | grep farmbti-backend'
-                  }
-             }
+                    echo "✅ 배포 시작"
+                    sh 'cd /var/jenkins_home/app/backend/farmbti/ && $DOCKER_COMPOSE_PATH down || true'
+                    sh 'cd /var/jenkins_home/app/backend/farmbti/ && $DOCKER_COMPOSE_PATH up -d --force-recreate'
+
+                    echo "✅ 배포 완료!!"
+                    sh 'docker ps -a | grep farmbti-backend'
+
+                    echo "✅ 실행 중인 컨테이너 확인"
+                    sh 'docker ps -a'
+                }
+            }
         }
     }
-
 }
