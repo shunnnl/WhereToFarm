@@ -4,7 +4,7 @@ services:
   backend:
     container_name: farmbti-backend
     build: .
-    image: farmbti_backend
+    image: ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}
     ports:
       - "8081:8081"
     environment:
