@@ -109,6 +109,12 @@ pipeline {
 
                     echo "✅ 배포 완료!!"
                     sh 'docker ps -a | grep farmbti-backend'
+
+                    echo "✅ 실행 중인 컨테이너 확인"
+                    sh 'docker ps -a'
+
+                    echo "✅ 백엔드 컨테이너 로그 출력"
+                    sh 'docker logs --tail=100 farmbti-backend || true'
                 }
             }
         }
