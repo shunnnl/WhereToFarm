@@ -1,4 +1,7 @@
-const CalculateResultCard = ({ crop, area, date, totalProfit }) => {
+import { useRef } from "react";
+import CalculateResultModal from "./CalaulateResultModal";
+
+const CalculateResultCard = ({ id, crop, area, date, totalProfit }) => {
   const formattedDate = new Date(date)
     .toLocaleDateString("ko-KR", {
       year: "numeric",
@@ -11,6 +14,12 @@ const CalculateResultCard = ({ crop, area, date, totalProfit }) => {
   const totalProfitWon = totalProfit.toLocaleString("ko-KR", {
     maximumFractionDigits: 0,
   });
+
+  const modalRef = useRef(null);
+
+  const openModal = () => {
+    modalRef.current?.showModal();
+  };
 
   return (
     <div className="w-full max-w-md rounded-lg overflow-hidden shadow-md bg-gradient-to-br to-primaryGreen from-supportGreen">
@@ -32,12 +41,14 @@ const CalculateResultCard = ({ crop, area, date, totalProfit }) => {
           </div>
           <button
             className="bg-primaryGreen text-white px-4 py-1 rounded-md text-sm"
-            onClick={() => handleNavigate(id)}
+            onClick={openModal}
           >
             상세
           </button>
         </div>
       </div>
+
+      <CalculateResultModal ref={modalRef} reportId={id} />
     </div>
   );
 };
