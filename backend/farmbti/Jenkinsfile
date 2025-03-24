@@ -67,10 +67,10 @@ pipeline {
                     sh 'ls -la backend/farmbti/build/libs/'
 
                     echo "✅ 배포 경로 확인 및 생성"
-                    sh 'mkdir -p ~/app/backend/farmbti/build/libs/'
+                    sh 'mkdir -p /var/jenkins_home/app/backend/farmbti/build/libs/'
 
                     echo "✅ 빌드 파일 복사"
-                    sh 'cp -f backend/farmbti/build/libs/*.jar ~/app/backend/farmbti/build/libs/'
+                    sh 'cp -f ${env.WORKSPACE}/backend/farmbti/build/libs/*.jar /var/jenkins_home/app/backend/farmbti/build/libs/'
                     sh 'cp -f backend/farmbti/docker-compose.yml ~/app/backend/farmbti/'
                     sh 'cp -f backend/farmbti/Dockerfile ~/app/backend/farmbti/'
 
