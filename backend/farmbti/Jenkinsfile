@@ -8,6 +8,7 @@ pipeline {
         PORT = "8081"
         GIT_CREDENTIALS_ID = 'gitlab_token'
         DOCKER_CREDENTIALS_ID = 'docker-hub'  // Docker Hub Credentials ID 추가
+        DOCKER_COMPOSE_PATH = "/var/jenkins_home/bin/docker-compose"
     }
 
     stages {
@@ -72,7 +73,6 @@ pipeline {
                     sh 'cp -f backend/farmbti/build/libs/*.jar ~/app/backend/farmbti/build/libs/'
                     sh 'cp -f backend/farmbti/docker-compose.yml ~/app/backend/farmbti/'
                     sh 'cp -f backend/farmbti/Dockerfile ~/app/backend/farmbti/'
-                    sh 'cp -f backend/farmbti/.env ~/app/backend/farmbti/'
 
                     echo "✅ 배포 시작"
                     sh 'cd ~/app/backend/farmbti/ && docker-compose down || true'
