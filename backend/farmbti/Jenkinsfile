@@ -9,6 +9,7 @@ pipeline {
         GIT_CREDENTIALS_ID = 'gitlab-credentials'
         DOCKER_CREDENTIALS_ID = 'docker-hub'  // Docker Hub Credentials ID 추가
         DOCKER_COMPOSE_PATH = "/usr/local/bin/docker-compose"
+        ENV_FILE = "/home/ubuntu/env/backend/.env"
     }
 
     stages {
@@ -89,8 +90,11 @@ pipeline {
                     sh "docker pull ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:latest"
 
                     echo "✅ 배포 시작"
-                    sh 'cd /var/jenkins_home/app/backend/farmbti/ && $DOCKER_COMPOSE_PATH down || true'
-                    sh 'cd /var/jenkins_home/app/backend/farmbti/ && $DOCKER_COMPOSE_PATH up -d --force-recreate'
+                    sh '''
+                        cd /var/jenkins_home/app/backend/farmbti/
+                        $DOCKER_COMPOSE_PATH --env-file ${ENV_FILE} down || true
+                        $DOCKER_COMPOSE_PATH --env-file ${ENV_FILE} up -d --force-recreate
+                    ''''
 
                     echo "✅ 배포 완료!!"
                     sh 'docker ps -a | grep farmbti-backend'
