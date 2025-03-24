@@ -1,4 +1,4 @@
-import leaveIcon from "../../asset/mypage/leaves.svg"
+import leaveIcon from "../../asset/mypage/leaves.svg";
 
 const MyProfile = ({ myInfo }) => {
   return (
@@ -22,13 +22,19 @@ const MyProfile = ({ myInfo }) => {
           {myInfo.isMentor ? "멘토" : "멘티"}
         </div>
       </div>
-      <div className="greeting mx-10 p-2 border-b-2 border-b-gray-300">
-        <span className="text-xl text-textColor-black">{myInfo.userName} </span>
-        <span className="text-lg text-textColor-black">님,</span>
-        <span className="text-xl text-textColor-black">
-          오늘도 안녕하세요 :)
-        </span>
-        <img src={leaveIcon} alt="잎사귀" />
+      <div className="greeting mx-10 p-2 border-b-2 border-b-gray-300 flex">
+        <div>
+          <span className="text-2xl text-textColor-black font-medium">
+            {myInfo.userName}{" "}
+          </span>
+          <span className="text-lg text-textColor-black">님,</span>
+          <p className="text-xl text-textColor-black">
+            오늘도 안녕하세요 :)
+          </p>
+        </div>
+        <div>
+          <img src={leaveIcon} alt="잎사귀" className="w-16" />
+        </div>
       </div>
       <div className="my-info mx-10 px-2 py-4 border-b-2 border-b-gray-300">
         <div className="flex justify-between mb-1">
