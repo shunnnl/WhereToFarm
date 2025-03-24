@@ -59,25 +59,17 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    echo "✅ 빌드된 파일 확인"
-                    sh 'ls -la backend/farmbti/build/libs/'
-
-                    echo "✅ 배포 경로 확인 및 생성"
-                    sh 'mkdir -p ~/app/backend/farmbti/build/libs/'
-
-                    echo "✅ 빌드 파일 복사"
-                    sh 'cp -f backend/farmbti/build/libs/*.jar ~/app/backend/farmbti/build/libs/'
-                    sh 'cp -f backend/farmbti/docker-compose.yml ~/app/backend/farmbti/'
-                    sh 'cp -f backend/farmbti/Dockerfile ~/app/backend/farmbti/'
-                    sh 'cp -f backend/farmbti/.env ~/app/backend/farmbti/'
+                    echo "✅ 기존 컨테이너 종료 및 삭제"
+                    sh 'docker stop ${CONTAINER_NAME} || true'
+                    sh 'docker rm ${CONTAINER_NAME} || true'
 
                     echo "✅ 배포 시작"
-                    sh 'cd ~/app/backend/farmbti/ && docker-compose down || true'
-                    sh 'cd ~/app/backend/farmbti/ && docker-compose build --no-cache'
-                    sh 'cd ~/app/backend/farmbti/ && docker-compose up -d'
+                    sh 'docker-compose -f backend/farmbti/docker-compose.yml down || true'
+                    sh 'docker-compose -f backend/farmbti/docker-compose.yml build --no-cache'
+                    sh 'docker-compose -f backend/farmbti/docker-compose.yml up -d'
 
                     echo "✅ 배포 완료!!"
-                    sh 'docker ps -a | grep farmbti-backend'
+                    sh 'docker ps -a | grep ${CONTAINER_NAME}'
                 }
             }
         }
