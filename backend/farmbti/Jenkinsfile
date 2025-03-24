@@ -40,7 +40,7 @@ pipeline {
                 }
             }
         }
-
+        
         stage('Build Backend') {
             steps {
                 dir("${env.WORKSPACE}") {
@@ -49,7 +49,7 @@ pipeline {
                     set -e
                     echo "✅ 백엔드 빌드 시작"
                     export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF-8"
-                    export $(grep -v '^#' .env | xargs)
+                    export $(grep -v '^#' backend/farmbti/.env | xargs)  # .env 경로 수정
                     chmod +x gradlew  # 실행 권한 추가
                     ./gradlew clean build -x test
                     echo "✅ 빌드 완료"
@@ -57,6 +57,7 @@ pipeline {
                 }
             }
         }
+
 
         stage('Deploy') {
             steps {
