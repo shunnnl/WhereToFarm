@@ -16,7 +16,7 @@ const MentorSettingContent = ({ onChange, initialData }) => {
 
   // 날짜 옵션 생성
   const currentYear = new Date().getFullYear();
-  const yearOptions = Array.from({ length: 10 }, (_, i) => currentYear - i);
+  const yearOptions = Array.from({ length: 50 }, (_, i) => currentYear - i);
 
   // 작물 데이터
   const topFood = [
