@@ -3,7 +3,14 @@ import BenefitForecastGraph from "./BenefitForecastGraph";
 
 import ResultSummary from "./ResultSummary";
 
-const ResultSection = ({ step, result, userName, isLoading }) => {
+const ResultSection = ({
+  step,
+  result,
+  userName,
+  isLoading,
+  onSaveReport,
+  onResetResult,
+}) => {
   return (
     <div className="bg-accentGreen-light min-h-screen mx-5 flex felx-col items-center justify-center">
       {step === 1 && (
@@ -44,6 +51,20 @@ const ResultSection = ({ step, result, userName, isLoading }) => {
             isHouse={result.house}
           />
           <BenefitForecastGraph myForecast={result.myMonthlyPrice} />
+          <div className="flex justify-center items-center gap-4 mb-5">
+            <button
+              className="bg-primaryGreen px-3 py-1 text-sm text-white font-light rounded-md"
+              onClick={onSaveReport}
+            >
+              수익 계산 보고서 저장하기
+            </button>
+            <button
+              className="bg-textColor-lightgray px-3 py-1 text-sm text-white font-light rounded-md"
+              onClick={onResetResult}
+            >
+              다시 계산하기
+            </button>
+          </div>
         </div>
       )}
     </div>

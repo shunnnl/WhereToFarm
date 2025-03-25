@@ -38,7 +38,7 @@ const AreaInputSection = ({
             type="number"
             className="border border-textColor-gray rounded-lg px-3 py-2 w-48 mr-2"
             placeholder="평수 입력(100~1500)"
-            value={area}
+            value={area === null ? "" : area}
             onChange={handleAreaChange}
             disabled={!isActive}
             step={100}
