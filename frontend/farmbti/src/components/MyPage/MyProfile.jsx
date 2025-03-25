@@ -30,11 +30,6 @@ const MyProfile = ({ myInfo }) => {
 
   // 상태, 예외 처리
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [feedbackMessage, setFeedbackMessage] = useState({
-    type: "",
-    message: "",
-  });
-
   const handleChatting = () => {
     // chat 페이지로 넘어가기
     return;
@@ -64,7 +59,6 @@ const MyProfile = ({ myInfo }) => {
 
     try {
       setIsSubmitting(true);
-      setFeedbackMessage({ type: "", message: "" });
 
       switch (modalType) {
         case "mentor":
@@ -73,15 +67,11 @@ const MyProfile = ({ myInfo }) => {
             // 멘토 정보 수정 로직
             // 여기서 실제 API 호출이 이루어질 것입니다
             console.log("멘토 정보 업데이트 성공!");
-
-            setFeedbackMessage({
-              type: "success",
-              message: "멘토 정보가 성공적으로 업데이트되었습니다.",
-            });
             setFormData(mentorFormData);
 
             // 데이터 확인
             console.log("업데이트 후 formData:", mentorFormData);
+            toast.success("멘토 정보가 수정 되었습니다.")
           }
           break;
 
@@ -90,15 +80,11 @@ const MyProfile = ({ myInfo }) => {
           if (myInfoFormData) {
             // 회원 정보 수정 로직
             console.log("회원 정보 업데이트 성공!");
-
-            setFeedbackMessage({
-              type: "success",
-              message: "회원 정보가 성공적으로 업데이트되었습니다.",
-            });
             setFormData(myInfoFormData);
 
             // 데이터 확인
             console.log("업데이트 후 formData:", myInfoFormData);
+            toast.success("회원 정보가 수정 되었습니다.");
           }
           break;
 
@@ -107,15 +93,11 @@ const MyProfile = ({ myInfo }) => {
           if (passwordFormData) {
             // 비밀번호 수정 로직
             console.log("비밀번호 변경 성공!");
-
-            setFeedbackMessage({
-              type: "success",
-              message: "비밀번호가 성공적으로 변경되었습니다.",
-            });
             setFormData(passwordFormData);
 
             // 데이터 확인
             console.log("업데이트 후 formData:", passwordFormData);
+            toast.success("비밀번호가 수정 되었습니다.");
           }
           break;
 
@@ -126,12 +108,7 @@ const MyProfile = ({ myInfo }) => {
     } catch (error) {
       console.error("정보 업데이트 실패", error);
       console.log("에러 세부 정보:", error.message);
-
-      setFeedbackMessage({
-        type: "error",
-        message: "정보 업데이트에 실패했습니다. 다시 시도해주세요.",
-      });
-      toast.error(`${feedbackMessage.message}`);
+      toast.error("정보 수정에 실패했습니다.");
     } finally {
       setIsSubmitting(false);
       console.log("제출 프로세스 완료");
@@ -139,7 +116,6 @@ const MyProfile = ({ myInfo }) => {
 
     // 최종 데이터 확인 (모든 경우에 실행)
     console.log("모달 닫기");
-    toast.success(`${feedbackMessage.message}`);
     modalRef.current?.closeModal();
   };
 
@@ -257,7 +233,6 @@ const MyProfile = ({ myInfo }) => {
         ref={modalRef}
         title={modalTitle}
         isLoading={isSubmitting}
-        feedbackMessage={feedbackMessage}
         onConfirm={handleConfirm}
         onCancel={() => setFeedbackMessage({ type: "", message: "" })}
       >
