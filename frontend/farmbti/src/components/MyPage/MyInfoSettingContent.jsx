@@ -165,7 +165,7 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
         </div>
       </form>
       <div className="mt-3 flex justify-end px-6 text-textColor-gray underline hover:text-textColor-darkgray hover:underline">
-        <Link>회원 탈퇴 하기</Link>
+        <Link to={"/account/delete"}>회원 탈퇴 하기</Link>
       </div>
     </>
   );

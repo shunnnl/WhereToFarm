@@ -14,6 +14,7 @@ import MyPage from "./pages/mypage/MyPage";
 import FarmbtiReport from "./components/MyPage/FarmbtiReport";
 import CropCalculateReport from "./components/MyPage/CropCalculateReport";
 import Estate from "./pages/estate/Estate";
+import UserDeletePage from "./pages/auth/UserDeletePage";
 
 function App() {
   return (
@@ -37,13 +38,17 @@ function App() {
           <Route path="/mypage" element={<MyPage />}>
             {/* 중첩 라우트 정의 */}
             <Route path="farmbti-report" element={<FarmbtiReport />} />
-            <Route path="crop-calculate-report" element={<CropCalculateReport />} />
+            <Route
+              path="crop-calculate-report"
+              element={<CropCalculateReport />}
+            />
             {/* 기본 리다이렉트 */}
             <Route
               index
               element={<Navigate to="/mypage/farmbti-report" replace />}
             />
           </Route>
+          <Route path="/account/delete" element={<UserDeletePage/>}/>
         </Routes>
 
         {/* 푸터가 있다면 여기에 추가 */}
