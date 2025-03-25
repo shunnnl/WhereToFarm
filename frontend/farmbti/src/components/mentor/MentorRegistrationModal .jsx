@@ -119,7 +119,7 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
                     <option key={year} value={year}>{year}</option>
                   ))}
                 </select>
-                <select
+                {/* <select
                   name="Month"
                   value={formData.Month}
                   onChange={handleChange}
@@ -142,7 +142,7 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
                   {dayOptions.map(day => (
                     <option key={day} value={day}>{day}</option>
                   ))}
-                </select>
+                </select> */}
               </div>
             </div>
 
@@ -166,7 +166,7 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
                   className="cursor-pointer pl-6"
                 >
                   <div className="w-16 h-16 bg-green-700 rounded-full flex items-center justify-center text-white">
-                    <img src={food.iconSrc} alt={food.label} className="w-14 h-14" />
+                    <img src={food.iconSrc} alt={food.label} className="w-16 h-16 rounded-full" />
                   </div>
                 </label>
                 <div className="absolute -top-1 -left-1">
@@ -190,7 +190,7 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
               value={description}
               onChange={handleDescriptionChange}
               className="w-full max-w-4xl px-3 py-2 border border-gray-300 rounded-lg 
-              focus:outline-none focus:ring-2 focus:ring--500 
+              focus:outline-none focus:ring-2 focus:ring-green-500
               focus:border-transparent resize-y"
               placeholder="여기에 텍스트를 입력하세요"
             />

@@ -37,8 +37,8 @@ authAxios.interceptors.response.use(
 // 인증이 필요없는 api
 const publicAxios = axios.create({
   // baseURL: import.meta.env.VITE_BASE_URL,
-  baseURL: import.meta.env.VITE_BASE_URL,
-  withCredentials: true,
+  baseURL: "http://localhost:3001",
+  // withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },

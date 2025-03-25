@@ -58,7 +58,7 @@ export const serviceIcons = [
   {
     icon: icon_2, // 실제로는 icon_2.svg로 변경해야 함
     title: "매물",
-    link: "/reservation"
+    link: "/estate"
   },
   {
     icon: icon_3, // 실제로는 icon_3.svg로 변경해야 함
@@ -68,7 +68,7 @@ export const serviceIcons = [
   {
     icon: icon_4, 
     title: "작물_계산기",
-    link: "/calculator"
+    link: "/crop-calculator"
   }
 ];
 
