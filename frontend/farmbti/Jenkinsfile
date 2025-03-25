@@ -47,19 +47,8 @@ pipeline {
                 mkdir -p ${TARGET_DEPLOY_DIR}
                 rm -rf ${TARGET_DEPLOY_DIR}/dist
                 cp -r frontend/farmbti/dist ${TARGET_DEPLOY_DIR}/
+                echo "✅ dist 복사 완료"
                 '''
-            }
-        }
-
-        stage('Reload Nginx') {
-            steps {
-                dir('infra/nginx') {
-                    sh '''
-                    echo "✅ Nginx 컨테이너 재시작"
-                    $DOCKER_COMPOSE_PATH down || true
-                    $DOCKER_COMPOSE_PATH up -d
-                    '''
-                }
             }
         }
     }
