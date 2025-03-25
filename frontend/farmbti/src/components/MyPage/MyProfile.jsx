@@ -88,7 +88,6 @@ const MyProfile = ({ myInfo }) => {
             const errorMessage =
               Object.values(mentorFormData.errors).find((msg) => msg) ||
               "멘토 정보를 확인해주세요";
-            toast.error(errorMessage);
             return;
           }
 
@@ -104,7 +103,6 @@ const MyProfile = ({ myInfo }) => {
             const errorMessage =
               Object.values(myInfoFormData.errors).find((msg) => msg) ||
               "멘토 정보를 확인해주세요";
-            toast.error(errorMessage);
             return;
           }
 
@@ -120,7 +118,6 @@ const MyProfile = ({ myInfo }) => {
             const errorMessage =
               Object.values(passwordFormData.errors).find((msg) => msg) ||
               "멘토 정보를 확인해주세요";
-            toast.error(passwordFormData);
             return;
           }
 
