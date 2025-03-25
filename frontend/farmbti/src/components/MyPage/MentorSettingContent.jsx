@@ -1,34 +1,22 @@
 import { useState, useEffect } from "react";
 
-const MentorSettingForm = ({ onSubmit, initialData }) => {
+const MentorSettingContent = ({ onChange, initialData }) => {
   const [formData, setFormData] = useState({
     Year: initialData?.Year || "",
-    Month: initialData?.Month || "",
-    Day: initialData?.Day || "",
     foodType: initialData?.foodType || "",
     description: initialData?.description || "",
   });
 
-  const [selectedFoods, setSelectedFoods] = useState([]);
-  const [description, setDescription] = useState("");
+  const [selectedFoods, setSelectedFoods] = useState(
+    initialData?.foodType ? initialData.foodType.split(",") : []
+  );
+  const [description, setDescription] = useState(
+    initialData?.description || ""
+  );
 
   // 날짜 옵션 생성
   const currentYear = new Date().getFullYear();
-  const yearOptions = Array.from({ length: 10 }, (_, i) => currentYear - i);
-  const monthOptions = Array.from({ length: 12 }, (_, i) => i + 1);
-
-  // 선택한 연도와 월에 따라 일 옵션 계산
-  const getDaysInMonth = (year, month) => {
-    return new Date(year, month, 0).getDate();
-  };
-
-  const dayOptions =
-    formData.Year && formData.Month
-      ? Array.from(
-          { length: getDaysInMonth(formData.Year, formData.Month) },
-          (_, i) => i + 1
-        )
-      : Array.from({ length: 31 }, (_, i) => i + 1);
+  const yearOptions = Array.from({ length: 50 }, (_, i) => currentYear - i);
 
   // 작물 데이터
   const topFood = [
@@ -108,15 +96,6 @@ const MentorSettingForm = ({ onSubmit, initialData }) => {
   // 폼 제출 핸들러
   const handleSubmit = (e) => {
     e.preventDefault();
-    const submitData = {
-      ...formData,
-      selectedFoods,
-      description,
-    };
-
-    if (onSubmit) {
-      onSubmit(submitData);
-    }
   };
 
   // 선택된 작물과 설명을 formData에 반영
@@ -127,6 +106,13 @@ const MentorSettingForm = ({ onSubmit, initialData }) => {
       description,
     }));
   }, [selectedFoods, description]);
+
+  // formData가 변경될 때마다 부모에게 알림
+  useEffect(() => {
+    if (onChange) {
+      onChange(formData);
+    }
+  }, [formData, onChange]);
 
   return (
     <form onSubmit={handleSubmit} className="mb-4 space-y-4">
@@ -145,34 +131,6 @@ const MentorSettingForm = ({ onSubmit, initialData }) => {
             {yearOptions.map((year) => (
               <option key={year} value={year}>
                 {year}
-              </option>
-            ))}
-          </select>
-          <select
-            name="Month"
-            value={formData.Month}
-            onChange={handleChange}
-            required
-            className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-          >
-            <option value="">월</option>
-            {monthOptions.map((month) => (
-              <option key={month} value={month}>
-                {month}
-              </option>
-            ))}
-          </select>
-          <select
-            name="Day"
-            value={formData.Day}
-            onChange={handleChange}
-            required
-            className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-          >
-            <option value="">일</option>
-            {dayOptions.map((day) => (
-              <option key={day} value={day}>
-                {day}
               </option>
             ))}
           </select>
@@ -231,4 +189,4 @@ const MentorSettingForm = ({ onSubmit, initialData }) => {
   );
 };
 
-export default MentorSettingForm;
+export default MentorSettingContent;

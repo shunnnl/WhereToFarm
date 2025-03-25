@@ -2,29 +2,34 @@ import { useRef, useState } from "react";
 import leaveIcon from "../../asset/mypage/leaves.svg";
 import { Camera, MessageSquare, User, Settings, Lock } from "lucide-react";
 import MyPageModal from "./MyPageModal";
-import MentorSettingForm from "./MentorSettingContent";
+import MentorSettingContent from "./MentorSettingContent";
 import MyInfoSettingContent from "./MyInfoSettingContent";
+import { toast } from "react-toastify";
 
 const MyProfile = ({ myInfo }) => {
   const modalRef = useRef(null);
   const [modalType, setModalType] = useState("");
-  const [modalContent, setModalContent] = useState(null);
   const [modalTitle, setModalTitle] = useState("");
 
   // 모달 타입 별 상태 분리
-  const [mentorFormData, setMentorFormData] = useState(null);
-  const [userInfoFormData, setUserInfoFormData] = useState(null);
+  const [mentorFormData, setMentorFormData] = useState({
+    Year: "",
+    foodType: "",
+    description: "",
+  });
+  const [myInfoFormData, setMyInfoFormData] = useState({
+    gender: "",
+    Year: "",
+    Month: "",
+    Day: "",
+    address: "",
+  });
   const [passwordFormData, setPasswordFormData] = useState(null);
-  // 디버깅용 데이테 출력
+  // 디버깅용 데이터 출력
   const [formData, setFormData] = useState(null);
 
   // 상태, 예외 처리
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [feedbackMessage, setFeedbackMessage] = useState({
-    type: "",
-    message: "",
-  });
-
   const handleChatting = () => {
     // chat 페이지로 넘어가기
     return;
@@ -32,101 +37,85 @@ const MyProfile = ({ myInfo }) => {
 
   const handleMetorSetting = () => {
     setModalType("mentor");
-    setModalContent(
-      <MentorSettingForm
-        initialData={myInfo}
-        onSubmit={(data) => {
-          console.log("멘토 데이터 수신:", data);
-          setMentorFormData(data);
-        }}
-      />
-    );
     setModalTitle("멘토 정보 수정");
     modalRef.current?.openModal();
-    return;
   };
 
   const handleMyInfoSetting = () => {
-    setModalType("user-info");
-    setModalContent(
-      <MyInfoSettingContent
-        initialData={myInfo}
-        onSubmit={(data) => {
-          console.log("정보 수정 데이터 수신:", data);
-          console.log("함수 호출")
-          setUserInfoFormData(data);
-        }}
-      />
-    );
+    setModalType("myInfo");
     setModalTitle("회원 정보 수정");
     modalRef.current?.openModal();
-    return;
   };
 
   const handleMyPasswordSetting = () => {
     setModalType("password");
-    return;
+    setModalTitle("비밀번호 수정");
+    modalRef.current?.openModal();
   };
 
   const handleConfirm = async () => {
-    console.log("수정 중...");
+    console.log("수정 시작...");
+    console.log("현재 modalType:", modalType);
+
     try {
       setIsSubmitting(true);
-      setFeedbackMessage({ type: "", message: "" });
 
       switch (modalType) {
         case "mentor":
+          console.log("멘토 모드 - 제출 전 데이터:", mentorFormData);
           if (mentorFormData) {
             // 멘토 정보 수정 로직
-            setFeedbackMessage({
-              type: "success",
-              message: "멘토 정보가 성공적으로 업데이트되었습니다.",
-            });
+            // 여기서 실제 API 호출이 이루어질 것입니다
+            console.log("멘토 정보 업데이트 성공!");
             setFormData(mentorFormData);
 
-            // 모달 닫기
-            modalRef.current?.closeModal();
+            // 데이터 확인
+            console.log("업데이트 후 formData:", mentorFormData);
+            toast.success("멘토 정보가 수정 되었습니다.")
           }
           break;
 
-        case "user-info":
-          if (userInfoFormData) {
+        case "myInfo":
+          console.log("내 정보 모드 - 제출 전 데이터:", myInfoFormData);
+          if (myInfoFormData) {
             // 회원 정보 수정 로직
-            setFeedbackMessage({
-              type: "success",
-              message: "회원 정보가 성공적으로 업데이트되었습니다.",
-            });
-            setFormData(userInfoFormData);
+            console.log("회원 정보 업데이트 성공!");
+            setFormData(myInfoFormData);
 
-            // 모달 닫기
-            modalRef.current?.closeModal();
+            // 데이터 확인
+            console.log("업데이트 후 formData:", myInfoFormData);
+            toast.success("회원 정보가 수정 되었습니다.");
           }
           break;
 
         case "password":
+          console.log("비밀번호 모드 - 제출 전 데이터:", passwordFormData);
           if (passwordFormData) {
             // 비밀번호 수정 로직
-            setFeedbackMessage({
-              type: "success",
-              message: "비밀번호가 성공적으로 변경되었습니다.",
-            });
+            console.log("비밀번호 변경 성공!");
             setFormData(passwordFormData);
 
-            // 모달 닫기
-            modalRef.current?.closeModal();
+            // 데이터 확인
+            console.log("업데이트 후 formData:", passwordFormData);
+            toast.success("비밀번호가 수정 되었습니다.");
           }
+          break;
+
+        default:
+          console.log("알 수 없는 modalType:", modalType);
           break;
       }
     } catch (error) {
       console.error("정보 업데이트 실패", error);
-      setFeedbackMessage({
-        type: "error",
-        message: "정보 업데이트에 실패했습니다. 다시 시도해주세요.",
-      });
+      console.log("에러 세부 정보:", error.message);
+      toast.error("정보 수정에 실패했습니다.");
     } finally {
       setIsSubmitting(false);
+      console.log("제출 프로세스 완료");
     }
-    console.log("바뀐 데이터:", formData);
+
+    // 최종 데이터 확인 (모든 경우에 실행)
+    console.log("모달 닫기");
     modalRef.current?.closeModal();
   };
 
@@ -239,14 +228,28 @@ const MyProfile = ({ myInfo }) => {
         </div>
       </div>
 
+      {/* 재사용 가능한 모달 */}
       <MyPageModal
         ref={modalRef}
         title={modalTitle}
-        onConfirm={handleConfirm}
         isLoading={isSubmitting}
-        feedbackMessage={feedbackMessage}
-        children={modalContent}
-      />
+        onConfirm={handleConfirm}
+        onCancel={() => setFeedbackMessage({ type: "", message: "" })}
+      >
+        {/* 조건부 콘텐츠 렌더링 */}
+        {modalType === "mentor" && (
+          <MentorSettingContent
+            initialData={mentorFormData}
+            onChange={setMentorFormData}
+          />
+        )}
+        {modalType === "myInfo" && (
+          <MyInfoSettingContent
+            initialData={myInfoFormData}
+            onChange={setMyInfoFormData}
+          />
+        )}
+      </MyPageModal>
     </div>
   );
 };

@@ -1,5 +1,8 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate} from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "./styles/toast-custom.css"
 
 // 컴포넌트 import
 import Navbar from "./components/common/NavBar";
@@ -14,6 +17,7 @@ import MyPage from "./pages/mypage/MyPage";
 import FarmbtiReport from "./components/MyPage/FarmbtiReport";
 import CropCalculateReport from "./components/MyPage/CropCalculateReport";
 import Estate from "./pages/estate/Estate";
+import UserDeletePage from "./pages/auth/UserDeletePage";
 
 function App() {
   return (
@@ -37,19 +41,35 @@ function App() {
           <Route path="/mypage" element={<MyPage />}>
             {/* 중첩 라우트 정의 */}
             <Route path="farmbti-report" element={<FarmbtiReport />} />
-            <Route path="crop-calculate-report" element={<CropCalculateReport />} />
+            <Route
+              path="crop-calculate-report"
+              element={<CropCalculateReport />}
+            />
             {/* 기본 리다이렉트 */}
             <Route
               index
               element={<Navigate to="/mypage/farmbti-report" replace />}
             />
           </Route>
+          <Route path="/account/delete" element={<UserDeletePage />} />
         </Routes>
 
         {/* 푸터가 있다면 여기에 추가 */}
         <div className="mt-24">
           <Footer />
         </div>
+
+        {/* ToastContainer 추가 */}
+        <ToastContainer
+          position="top-center"
+          autoClose={2000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+        />
       </div>
     </BrowserRouter>
   );

@@ -1,0 +1,90 @@
+/* src/styles/toast-custom.css */
+
+/* 컨테이너와 토스트 크기 설정 */
+.Toastify__toast-container {
+  width: 400px;
+}
+
+.Toastify__toast {
+  font-size: 14px;
+  border-radius: 8px;
+  background-color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 12px 16px;
+  color: #333333;
+}
+
+.Toastify__toast-body {
+  white-space: normal;
+  word-wrap: break-word;
+  padding: 4px 0;
+}
+
+/* 성공 토스트 */
+.Toastify__toast--success {
+  border-left: 4px solid #4CAF50;
+}
+
+.Toastify__progress-bar--success {
+  background-color: #4CAF50;
+}
+
+.Toastify__toast--success .Toastify__toast-icon {
+  color: #4CAF50;
+}
+
+/* 에러 토스트 */
+.Toastify__toast--error {
+  border-left: 4px solid #E54F50;
+}
+
+.Toastify__progress-bar--error {
+  background-color: #E54F50;
+}
+
+.Toastify__toast--error .Toastify__toast-icon {
+  color: #E54F50;
+}
+
+/* 정보 토스트 */
+.Toastify__toast--info {
+  border-left: 4px solid #348CF6;
+}
+
+.Toastify__progress-bar--info {
+  background-color: #348CF6;
+}
+
+.Toastify__toast--info .Toastify__toast-icon {
+  color: #348CF6;
+}
+
+/* 경고 토스트 */
+.Toastify__toast--warning {
+  border-left: 4px solid #FF9800;
+}
+
+.Toastify__progress-bar--warning {
+  background-color: #FF9800;
+}
+
+.Toastify__toast--warning .Toastify__toast-icon {
+  color: #FF9800;
+}
+
+/* 토스트 아이콘 크기 조정 */
+.Toastify__toast-icon {
+  width: 22px;
+  margin-right: 10px;
+}
+
+/* 닫기 버튼 스타일 */
+.Toastify__close-button {
+  color: #999999;
+  opacity: 0.7;
+}
+
+.Toastify__close-button:hover {
+  opacity: 1;
+  color: #666666;
+}
