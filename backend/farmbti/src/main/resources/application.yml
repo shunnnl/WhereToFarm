@@ -35,9 +35,9 @@ zeppelin:
   base-url: "http://3.39.65.150:18888"
 
 springdoc:
+  api-docs:
+    path: /v3/api-docs
   swagger-ui:
     path: /swagger-ui.html
     config-url: /v3/api-docs/swagger-config
     url: /v3/api-docs
-  api-docs:
-    path: /v3/api-docs
