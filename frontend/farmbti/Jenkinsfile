@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    tools {
+        nodejs 'node18'
+    }
+
     environment {
         GIT_CREDENTIALS_ID = 'gitlab-credentials'
         TARGET_DEPLOY_DIR = "/var/jenkins_home/app/frontend/farmbti"
