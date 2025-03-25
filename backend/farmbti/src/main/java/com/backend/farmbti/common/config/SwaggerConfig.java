@@ -1,5 +1,7 @@
 package com.backend.farmbti.common.config;
 
+import java.util.List;
+
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -31,6 +33,8 @@ public class SwaggerConfig {
             .info(new Info()
                 .title("FarmBTI API")
                 .description("FarmBTI 서비스의 API 문서")
-                .version("1.0.0"));
+                .version("1.0.0"))
+            .servers(List.of(new Server().url("/api")));
+
     }
 }
