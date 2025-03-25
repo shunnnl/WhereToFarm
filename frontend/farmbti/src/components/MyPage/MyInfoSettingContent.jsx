@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 
 const MyInfoSettingContent = ({ onChange, initialData }) => {
   const [formData, setFormData] = useState({
+    name: initialData?.name || "",
     gender: initialData?.gender || "",
     Year: initialData?.Year || "",
     Month: initialData?.Month || "",
@@ -58,6 +59,18 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8 w-full max-w-xl mx-auto">
+      {/* 이름 */}
+      <div className="space-y-2">
+        <h2 className="text-lg font-medium">이름</h2>
+        <input
+          type="text"
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+          placeholder="이름를 입력하세요"
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-supportGreen"
+        />
+      </div>
       {/* 성별 */}
       <div className="space-y-2">
         <h2 className="text-lg font-medium">성별</h2>
@@ -95,8 +108,7 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
             name="Year"
             value={formData.Year}
             onChange={handleChange}
-            required
-            className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-supportGreen"
           >
             <option value="">연도</option>
             {yearOptions.map((year) => (
@@ -109,8 +121,7 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
             name="Month"
             value={formData.Month}
             onChange={handleChange}
-            required
-            className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-supportGreen"
           >
             <option value="">월</option>
             {monthOptions.map((month) => (
@@ -123,8 +134,7 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
             name="Day"
             value={formData.Day}
             onChange={handleChange}
-            required
-            className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-supportGreen"
           >
             <option value="">일</option>
             {dayOptions.map((day) => (
@@ -145,8 +155,7 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
           value={formData.address}
           onChange={handleChange}
           placeholder="주소를 입력하세요"
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-supportGreen"
         />
       </div>
     </form>
