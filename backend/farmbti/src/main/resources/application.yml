@@ -36,8 +36,8 @@ zeppelin:
 
 springdoc:
   api-docs:
-    path: /v3/api-docs
+    path: /api/v3/api-docs
   swagger-ui:
-    path: /swagger-ui.html
-    config-url: /v3/api-docs/swagger-config
-    url: /v3/api-docs
+    path: /api/swagger-ui.html
+    config-url: /api/v3/api-docs/swagger-config
+    url: /api/v3/api-docs
