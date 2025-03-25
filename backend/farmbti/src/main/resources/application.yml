@@ -33,4 +33,9 @@ logging:
     com.backend.farmbti.security.filter: DEBUG
 zeppelin:
   base-url: "http://3.39.65.150:18888"
-# 제발 성공하게 해주세요
+# application.yml
+springdoc:
+  swagger-ui:
+    path: /api/swagger-ui.html
+  api-docs:
+    path: /api/v3/api-docs
