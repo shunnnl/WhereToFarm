@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-const MyInfoSettingContent = ({ onSubmit, initialData }) => {
+const MyInfoSettingContent = ({ onChange, initialData }) => {
   const [formData, setFormData] = useState({
     gender: initialData?.gender || "",
     Year: initialData?.Year || "",
@@ -54,7 +54,6 @@ const MyInfoSettingContent = ({ onSubmit, initialData }) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8 w-full max-w-xl mx-auto">
-
       {/* 성별 */}
       <div className="space-y-2">
         <h2 className="text-lg font-medium">성별</h2>

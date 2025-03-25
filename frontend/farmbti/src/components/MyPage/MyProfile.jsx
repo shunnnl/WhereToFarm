@@ -13,8 +13,6 @@ const MyProfile = ({ myInfo }) => {
   // 모달 타입 별 상태 분리
   const [mentorFormData, setMentorFormData] = useState({
     Year: "",
-    Month: "",
-    Day: "",
     foodType: "",
     description: "",
   });
