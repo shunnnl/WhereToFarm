@@ -54,7 +54,12 @@ public class Users extends TimeStampEntity {
 
     public void updatePassword(String newPassword) {this.password = newPassword;}
 
-
+    public void updateUserInfo(String name, Date birth, String address, Byte gender) {
+        this.name = name;
+        this.birth = birth;
+        this.address = address;
+        this.gender = gender;
+    }
 
 //    public enum Role {
 //        MENTEE,

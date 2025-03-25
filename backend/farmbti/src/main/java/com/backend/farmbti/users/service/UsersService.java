@@ -6,6 +6,7 @@ import com.backend.farmbti.auth.repository.UsersRepository;
 import com.backend.farmbti.common.exception.GlobalException;
 import com.backend.farmbti.users.dto.PasswordChangeRequest;
 import com.backend.farmbti.users.dto.UserDeleteRequest;
+import com.backend.farmbti.users.dto.UserUpdateRequest;
 import com.backend.farmbti.users.exception.UsersErrorCode;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,6 @@ public class UsersService {
      */
     @Transactional
     public void changePassword(PasswordChangeRequest request, Long userId) {
-
         Users user = usersRepository.findById(userId)
                 .orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
 
@@ -47,7 +47,6 @@ public class UsersService {
      */
     @Transactional
     public void deleteUser(UserDeleteRequest request, Long userId) {
-        // 사용자 조회
         Users user = usersRepository.findById(userId)
                 .orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
 
@@ -58,6 +57,49 @@ public class UsersService {
 
         // 회원 삭제
         usersRepository.delete(user);
+    }
+
+    /**
+     * 회원 정보 수정
+     */
+    @Transactional
+    public void updateUserInfo(UserUpdateRequest request, Long userId) {
+        Users user = usersRepository.findById(userId)
+                .orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
+
+        // 입력값 검증
+        validateUserUpdateRequest(request);
+
+        // 회원 정보 업데이트
+        user.updateUserInfo(request.getName(), request.getBirth(), request.getAddress(), request.getGender());
+
+        usersRepository.save(user);
+    }
+
+
+    /**
+     * 사용자 업데이트 요청 검증 메소드
+     */
+    private void validateUserUpdateRequest(UserUpdateRequest request) {
+        // 이름 검증
+        if (request.getName() == null || request.getName().trim().isEmpty()) {
+            throw new GlobalException(UsersErrorCode.INVALID_USER_NAME);
+        }
+
+        // 주소 검증
+        if (request.getAddress() == null || request.getAddress().trim().isEmpty()) {
+            throw new GlobalException(UsersErrorCode.INVALID_USER_ADDRESS);
+        }
+
+        // 생년월일 검증
+        if (request.getBirth() == null) {
+            throw new GlobalException(UsersErrorCode.INVALID_USER_BIRTH);
+        }
+
+        // 성별 검증
+        if (request.getGender() == null) {
+            throw new GlobalException(UsersErrorCode.INVALID_USER_GENDER);
+        }
     }
 
 }
