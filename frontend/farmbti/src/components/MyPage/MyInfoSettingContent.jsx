@@ -47,10 +47,14 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
   // 폼 제출 핸들러
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (onSubmit) {
-      onSubmit(formData);
-    }
   };
+
+  // formData가 변경될 때마다 부모에게 알림
+  useEffect(() => {
+    if (onChange) {
+      onChange(formData);
+    }
+  }, [formData, onChange]);
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8 w-full max-w-xl mx-auto">
