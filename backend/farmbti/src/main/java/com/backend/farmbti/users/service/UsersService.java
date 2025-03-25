@@ -4,11 +4,12 @@ import com.backend.farmbti.auth.domain.Users;
 import com.backend.farmbti.auth.exception.AuthErrorCode;
 import com.backend.farmbti.auth.repository.UsersRepository;
 import com.backend.farmbti.common.exception.GlobalException;
+import com.backend.farmbti.users.dto.CurrentUserResponse;
 import com.backend.farmbti.users.dto.PasswordChangeRequest;
 import com.backend.farmbti.users.dto.UserDeleteRequest;
 import com.backend.farmbti.users.dto.UserUpdateRequest;
 import com.backend.farmbti.users.exception.UsersErrorCode;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -76,6 +77,25 @@ public class UsersService {
         usersRepository.save(user);
     }
 
+
+    /**
+     * 현재 로그인한 사용자 정보 조회
+     */
+    @Transactional(readOnly = true)
+    public CurrentUserResponse getCurrentUserInfo(Long userId) {
+        Users user = usersRepository.findById(userId)
+                .orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
+
+        return new CurrentUserResponse(
+                user.getId(),
+                user.getEmail(),
+                user.getName(),
+                user.getAddress(),
+                user.getBirth(),
+                user.getGender(),
+                user.getProfileImage()
+        );
+    }
 
     /**
      * 사용자 업데이트 요청 검증 메소드

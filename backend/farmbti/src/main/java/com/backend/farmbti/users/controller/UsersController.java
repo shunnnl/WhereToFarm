@@ -2,6 +2,7 @@ package com.backend.farmbti.users.controller;
 
 import com.backend.farmbti.common.dto.CommonResponseDto;
 import com.backend.farmbti.security.util.SecurityUtils;
+import com.backend.farmbti.users.dto.CurrentUserResponse;
 import com.backend.farmbti.users.dto.PasswordChangeRequest;
 import com.backend.farmbti.users.dto.UserDeleteRequest;
 import com.backend.farmbti.users.dto.UserUpdateRequest;
@@ -36,12 +37,20 @@ public class UsersController {
         return CommonResponseDto.ok();
     }
 
-    @PutMapping("/info")
+    @PutMapping("/modify")
     @Operation(summary = "회원 정보 수정", description = "사용자 정보(이름, 생년월일, 주소, 성별)을 수정합니다.")
     public CommonResponseDto updateUserInfo(@RequestBody UserUpdateRequest request) {
         Long userId = securityUtils.getCurrentUsersId();
         usersService.updateUserInfo(request, userId);
         return CommonResponseDto.ok();
+    }
+
+    @GetMapping("/me")
+    @Operation(summary = "로그인 사용자 정보 조회", description = "현재 로그인한 사용자의 정보를 조회합니다.")
+    public CommonResponseDto<CurrentUserResponse> getCurrentUser() {
+        Long userId = securityUtils.getCurrentUsersId();
+        CurrentUserResponse userInfo = usersService.getCurrentUserInfo(userId);
+        return CommonResponseDto.ok(userInfo);
     }
 
 }
