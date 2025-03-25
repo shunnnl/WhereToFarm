@@ -225,7 +225,7 @@ const MyProfile = ({ myInfo }) => {
         isLoading={isSubmitting}
         feedbackMessage={feedbackMessage}
         onConfirm={handleConfirm}
-        onCancel={() => setFeedback({ type: "", message: "" })}
+        onCancel={() => setFeedbackMessage({ type: "", message: "" })}
       >
         {/* 조건부 콘텐츠 렌더링 */}
         {modalType === "mentor" && (
