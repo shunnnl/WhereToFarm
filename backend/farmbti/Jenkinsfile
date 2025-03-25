@@ -100,6 +100,7 @@ pipeline {
                         cp -f backend/farmbti/build/libs/*.jar /var/jenkins_home/app/backend/farmbti/build/libs/
                         cp -f backend/farmbti/docker-compose.yml /var/jenkins_home/app/backend/farmbti/
                         cp -f backend/farmbti/Dockerfile /var/jenkins_home/app/backend/farmbti/
+                        cp -f backend/farmbti/.env /var/jenkins_home/app/backend/farmbti/
                     '''
 
                     echo "✅ 배포 시작"
