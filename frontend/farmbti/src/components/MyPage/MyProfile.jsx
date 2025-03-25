@@ -4,6 +4,7 @@ import { Camera, MessageSquare, User, Settings, Lock } from "lucide-react";
 import MyPageModal from "./MyPageModal";
 import MentorSettingContent from "./MentorSettingContent";
 import MyInfoSettingContent from "./MyInfoSettingContent";
+import { toast } from "react-toastify";
 
 const MyProfile = ({ myInfo }) => {
   const modalRef = useRef(null);
@@ -57,88 +58,90 @@ const MyProfile = ({ myInfo }) => {
     modalRef.current?.openModal();
   };
 
- const handleConfirm = async () => {
-   console.log("수정 시작...");
-   console.log("현재 modalType:", modalType);
+  const handleConfirm = async () => {
+    console.log("수정 시작...");
+    console.log("현재 modalType:", modalType);
 
-   try {
-     setIsSubmitting(true);
-     setFeedbackMessage({ type: "", message: "" });
+    try {
+      setIsSubmitting(true);
+      setFeedbackMessage({ type: "", message: "" });
 
-     switch (modalType) {
-       case "mentor":
-         console.log("멘토 모드 - 제출 전 데이터:", mentorFormData);
-         if (mentorFormData) {
-           // 멘토 정보 수정 로직
-           // 여기서 실제 API 호출이 이루어질 것입니다
-           console.log("멘토 정보 업데이트 성공!");
+      switch (modalType) {
+        case "mentor":
+          console.log("멘토 모드 - 제출 전 데이터:", mentorFormData);
+          if (mentorFormData) {
+            // 멘토 정보 수정 로직
+            // 여기서 실제 API 호출이 이루어질 것입니다
+            console.log("멘토 정보 업데이트 성공!");
 
-           setFeedbackMessage({
-             type: "success",
-             message: "멘토 정보가 성공적으로 업데이트되었습니다.",
-           });
-           setFormData(mentorFormData);
+            setFeedbackMessage({
+              type: "success",
+              message: "멘토 정보가 성공적으로 업데이트되었습니다.",
+            });
+            setFormData(mentorFormData);
 
-           // 데이터 확인
-           console.log("업데이트 후 formData:", mentorFormData);
-         }
-         break;
+            // 데이터 확인
+            console.log("업데이트 후 formData:", mentorFormData);
+          }
+          break;
 
-       case "myInfo":
-         console.log("내 정보 모드 - 제출 전 데이터:", myInfoFormData);
-         if (myInfoFormData) {
-           // 회원 정보 수정 로직
-           console.log("회원 정보 업데이트 성공!");
+        case "myInfo":
+          console.log("내 정보 모드 - 제출 전 데이터:", myInfoFormData);
+          if (myInfoFormData) {
+            // 회원 정보 수정 로직
+            console.log("회원 정보 업데이트 성공!");
 
-           setFeedbackMessage({
-             type: "success",
-             message: "회원 정보가 성공적으로 업데이트되었습니다.",
-           });
-           setFormData(myInfoFormData);
+            setFeedbackMessage({
+              type: "success",
+              message: "회원 정보가 성공적으로 업데이트되었습니다.",
+            });
+            setFormData(myInfoFormData);
 
-           // 데이터 확인
-           console.log("업데이트 후 formData:", myInfoFormData);
-         }
-         break;
+            // 데이터 확인
+            console.log("업데이트 후 formData:", myInfoFormData);
+          }
+          break;
 
-       case "password":
-         console.log("비밀번호 모드 - 제출 전 데이터:", passwordFormData);
-         if (passwordFormData) {
-           // 비밀번호 수정 로직
-           console.log("비밀번호 변경 성공!");
+        case "password":
+          console.log("비밀번호 모드 - 제출 전 데이터:", passwordFormData);
+          if (passwordFormData) {
+            // 비밀번호 수정 로직
+            console.log("비밀번호 변경 성공!");
 
-           setFeedbackMessage({
-             type: "success",
-             message: "비밀번호가 성공적으로 변경되었습니다.",
-           });
-           setFormData(passwordFormData);
+            setFeedbackMessage({
+              type: "success",
+              message: "비밀번호가 성공적으로 변경되었습니다.",
+            });
+            setFormData(passwordFormData);
 
-           // 데이터 확인
-           console.log("업데이트 후 formData:", passwordFormData);
-         }
-         break;
+            // 데이터 확인
+            console.log("업데이트 후 formData:", passwordFormData);
+          }
+          break;
 
-       default:
-         console.log("알 수 없는 modalType:", modalType);
-         break;
-     }
-   } catch (error) {
-     console.error("정보 업데이트 실패", error);
-     console.log("에러 세부 정보:", error.message);
+        default:
+          console.log("알 수 없는 modalType:", modalType);
+          break;
+      }
+    } catch (error) {
+      console.error("정보 업데이트 실패", error);
+      console.log("에러 세부 정보:", error.message);
 
-     setFeedbackMessage({
-       type: "error",
-       message: "정보 업데이트에 실패했습니다. 다시 시도해주세요.",
-     });
-   } finally {
-     setIsSubmitting(false);
-     console.log("제출 프로세스 완료");
-   }
+      setFeedbackMessage({
+        type: "error",
+        message: "정보 업데이트에 실패했습니다. 다시 시도해주세요.",
+      });
+      toast.error(`${feedbackMessage.message}`);
+    } finally {
+      setIsSubmitting(false);
+      console.log("제출 프로세스 완료");
+    }
 
-   // 최종 데이터 확인 (모든 경우에 실행)
-   console.log("모달 닫기");
-   modalRef.current?.closeModal();
- };
+    // 최종 데이터 확인 (모든 경우에 실행)
+    console.log("모달 닫기");
+    toast.success(`${feedbackMessage.message}`);
+    modalRef.current?.closeModal();
+  };
 
   return (
     <div>

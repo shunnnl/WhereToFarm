@@ -1,5 +1,8 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate} from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "./styles/toast-custom.css"
 
 // 컴포넌트 import
 import Navbar from "./components/common/NavBar";
@@ -48,13 +51,25 @@ function App() {
               element={<Navigate to="/mypage/farmbti-report" replace />}
             />
           </Route>
-          <Route path="/account/delete" element={<UserDeletePage/>}/>
+          <Route path="/account/delete" element={<UserDeletePage />} />
         </Routes>
 
         {/* 푸터가 있다면 여기에 추가 */}
         <div className="mt-24">
           <Footer />
         </div>
+
+        {/* ToastContainer 추가 */}
+        <ToastContainer
+          position="top-center"
+          autoClose={2000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+        />
       </div>
     </BrowserRouter>
   );
