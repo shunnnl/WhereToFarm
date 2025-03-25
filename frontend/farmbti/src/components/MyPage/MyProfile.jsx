@@ -13,18 +13,21 @@ const MyProfile = ({ myInfo }) => {
 
   // 모달 타입 별 상태 분리
   const [mentorFormData, setMentorFormData] = useState({
-    Year: "",
-    foodType: "",
-    description: "",
+    data: { Year: "", foodType: "", description: "" },
+    isValid: true,
+    errors: {},
   });
   const [myInfoFormData, setMyInfoFormData] = useState({
-    gender: "",
-    Year: "",
-    Month: "",
-    Day: "",
-    address: "",
+    data: { gender: "", Year: "", Month: "", Day: "", address: "" },
+    isValid: true,
+    errors: {},
   });
-  const [passwordFormData, setPasswordFormData] = useState(null);
+
+  const [passwordFormData, setPasswordFormData] = useState({
+    data: { currentPassword: "", newPassword: "", confirmPassword: "" },
+    isValid: true,
+    errors: {},
+  });
   // 디버깅용 데이터 출력
   const [formData, setFormData] = useState(null);
 
@@ -53,52 +56,77 @@ const MyProfile = ({ myInfo }) => {
     modalRef.current?.openModal();
   };
 
+  // 현재 모달 타입에 따라 폼의 유효성을 확인하는 함수
+  const isCurrentFormValid = () => {
+    switch (modalType) {
+      case "mentor":
+        return mentorFormData.isValid;
+      case "myInfo":
+        return myInfoFormData.isValid;
+      case "password":
+        return passwordFormData.isValid;
+      default:
+        return false;
+    }
+  };
+
   const handleConfirm = async () => {
     console.log("수정 시작...");
     console.log("현재 modalType:", modalType);
+    // handleConfirm 함수 내부
+    console.log("mentorFormData 전체:", mentorFormData);
+    console.log("isValid 값:", mentorFormData.isValid);
+    console.log("errors 객체:", mentorFormData.errors);
 
     try {
       setIsSubmitting(true);
 
       switch (modalType) {
         case "mentor":
-          console.log("멘토 모드 - 제출 전 데이터:", mentorFormData);
-          if (mentorFormData) {
-            // 멘토 정보 수정 로직
-            // 여기서 실제 API 호출이 이루어질 것입니다
-            console.log("멘토 정보 업데이트 성공!");
-            setFormData(mentorFormData);
-
-            // 데이터 확인
-            console.log("업데이트 후 formData:", mentorFormData);
-            toast.success("멘토 정보가 수정 되었습니다.")
+          if (!mentorFormData.isValid) {
+            // 첫 번째 오류 메시지 또는 기본 메시지 표시
+            const errorMessage =
+              Object.values(mentorFormData.errors).find((msg) => msg) ||
+              "멘토 정보를 확인해주세요";
+            toast.error(errorMessage);
+            return;
           }
+
+          // 유효한 경우 API 호출 및 처리
+          console.log("멘토 정보 업데이트:", mentorFormData.data);
+          toast.success("멘토 정보가 수정 되었습니다.");
           break;
 
         case "myInfo":
-          console.log("내 정보 모드 - 제출 전 데이터:", myInfoFormData);
-          if (myInfoFormData) {
-            // 회원 정보 수정 로직
-            console.log("회원 정보 업데이트 성공!");
-            setFormData(myInfoFormData);
-
-            // 데이터 확인
-            console.log("업데이트 후 formData:", myInfoFormData);
-            toast.success("회원 정보가 수정 되었습니다.");
+          console.log("내 정보 모드 - 제출 전 데이터:", myInfoFormData.data);
+          if (!myInfoFormData.isValid) {
+            // 첫 번째 오류 메시지 또는 기본 메시지 표시
+            const errorMessage =
+              Object.values(myInfoFormData.errors).find((msg) => msg) ||
+              "멘토 정보를 확인해주세요";
+            toast.error(errorMessage);
+            return;
           }
+
+          // 유효한 경우 API 호출 및 처리
+          console.log("멘토 정보 업데이트:", myInfoFormData.data);
+          toast.success("멘토 정보가 수정 되었습니다.");
           break;
 
         case "password":
-          console.log("비밀번호 모드 - 제출 전 데이터:", passwordFormData);
-          if (passwordFormData) {
-            // 비밀번호 수정 로직
-            console.log("비밀번호 변경 성공!");
-            setFormData(passwordFormData);
-
-            // 데이터 확인
-            console.log("업데이트 후 formData:", passwordFormData);
-            toast.success("비밀번호가 수정 되었습니다.");
+          console.log("비밀번호 모드 - 제출 전 데이터:", passwordFormData.data);
+          if (!passwordFormData.isValid) {
+            // 첫 번째 오류 메시지 또는 기본 메시지 표시
+            const errorMessage =
+              Object.values(passwordFormData.errors).find((msg) => msg) ||
+              "멘토 정보를 확인해주세요";
+            toast.error(passwordFormData);
+            return;
           }
+
+          // 유효한 경우 API 호출 및 처리
+          console.log("멘토 정보 업데이트:", passwordFormData.data);
+          toast.success("멘토 정보가 수정 되었습니다.");
           break;
 
         default:
@@ -233,19 +261,19 @@ const MyProfile = ({ myInfo }) => {
         ref={modalRef}
         title={modalTitle}
         isLoading={isSubmitting}
+        isFormValid={isCurrentFormValid()}
         onConfirm={handleConfirm}
-        onCancel={() => setFeedbackMessage({ type: "", message: "" })}
       >
         {/* 조건부 콘텐츠 렌더링 */}
         {modalType === "mentor" && (
           <MentorSettingContent
-            initialData={mentorFormData}
+            initialData={mentorFormData.data}
             onChange={setMentorFormData}
           />
         )}
         {modalType === "myInfo" && (
           <MyInfoSettingContent
-            initialData={myInfoFormData}
+            initialData={myInfoFormData.data}
             onChange={setMyInfoFormData}
           />
         )}

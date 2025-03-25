@@ -14,6 +14,8 @@ const MentorSettingContent = ({ onChange, initialData }) => {
     initialData?.description || ""
   );
 
+  const [errors, setErrors] = useState({});
+
   // 날짜 옵션 생성
   const currentYear = new Date().getFullYear();
   const yearOptions = Array.from({ length: 50 }, (_, i) => currentYear - i);
@@ -68,6 +70,16 @@ const MentorSettingContent = ({ onChange, initialData }) => {
     },
   ];
 
+  // 유효성 검사 함수
+  const validateField = (name, value) => {
+    // 오류 메시지 또는 빈 문자열 반환
+    if (name === "Year" && !value) return "연도를 선택해주세요";
+    if (name === "description" && value.length < 10)
+      return "10자 이상 입력해주세요";
+    if (name === "description" && value.length > 100)
+      return "100자 이내로 입력해주세요";
+  };
+
   // 폼 데이터 변경 핸들러
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -75,22 +87,47 @@ const MentorSettingContent = ({ onChange, initialData }) => {
       ...prev,
       [name]: value,
     }));
+    // 유효성 검사 실행 및 오류 상태 업데이트
+    const errorMessage = validateField(name, value);
+    setErrors((prev) => ({
+      ...prev,
+      [name]: errorMessage,
+    }));
   };
 
   // 작물 선택 토글
   const toggleFood = (foodId) => {
-    setSelectedFoods((prev) => {
-      if (prev.includes(foodId)) {
-        return prev.filter((id) => id !== foodId);
-      } else {
-        return [...prev, foodId];
-      }
-    });
+    // 새로운 선택된 작물 배열 계산
+    const newSelectedFoods = selectedFoods.includes(foodId)
+      ? selectedFoods.filter((id) => id !== foodId)
+      : [...selectedFoods, foodId];
+
+    // 상태 업데이트
+    setSelectedFoods(newSelectedFoods);
+
+    // 유효성 검사 수행: 최소 1개 이상의 작물이 선택되어야 함
+    const errorMessage =
+      newSelectedFoods.length === 0
+        ? "최소 1개 이상의 작물을 선택해주세요"
+        : "";
+
+    // 오류 상태 업데이트
+    setErrors((prev) => ({
+      ...prev,
+      foodType: errorMessage,
+    }));
   };
 
   // 소개 텍스트 핸들러
   const handleDescriptionChange = (e) => {
+    const { name, value } = e.target;
     setDescription(e.target.value);
+    // 유효성 검사 실행 및 오류 상태 업데이트
+    const errorMessage = validateField(name, value);
+    setErrors((prev) => ({
+      ...prev,
+      [name]: errorMessage,
+    }));
   };
 
   // 폼 제출 핸들러
@@ -107,12 +144,17 @@ const MentorSettingContent = ({ onChange, initialData }) => {
     }));
   }, [selectedFoods, description]);
 
-  // formData가 변경될 때마다 부모에게 알림
+  // onChange 콜백 수정
   useEffect(() => {
     if (onChange) {
-      onChange(formData);
+      // 폼 데이터와 함께 유효성 검사 상태 포함
+      onChange({
+        data: formData,
+        isValid: Object.values(errors).every((error) => !error),
+        errors,
+      });
     }
-  }, [formData, onChange]);
+  }, [formData, errors, onChange]);
 
   return (
     <form onSubmit={handleSubmit} className="mb-4 space-y-4">
@@ -136,6 +178,9 @@ const MentorSettingContent = ({ onChange, initialData }) => {
           </select>
         </div>
       </div>
+      {errors.Year && (
+        <p className="ml-24 text-red-500 text-sm mt-1">{errors.Year}</p>
+      )}
 
       <div className="flex items-center space-x-4">
         <h3 className="text-xl font-medium whitespace-nowrap">재배 작물</h3>
@@ -167,6 +212,9 @@ const MentorSettingContent = ({ onChange, initialData }) => {
           ))}
         </div>
       </div>
+      {errors.foodType && (
+        <div className="ml-24 text-red-500 text-sm mt-1">{errors.foodType}</div>
+      )}
 
       {/* 텍스트입력 */}
       <div className="flex items-center space-x-4">
@@ -185,6 +233,11 @@ const MentorSettingContent = ({ onChange, initialData }) => {
           />
         </div>
       </div>
+      {errors.description && (
+        <div className="ml-24 text-red-500 text-sm mt-1">
+          {errors.description}
+        </div>
+      )}
     </form>
   );
 };
