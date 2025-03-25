@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-const MentorSettingContent = ({ onSubmit, initialData }) => {
+const MentorSettingContent = ({ onChange, initialData }) => {
   const [formData, setFormData] = useState({
     Year: initialData?.Year || "",
     Month: initialData?.Month || "",
@@ -9,8 +9,12 @@ const MentorSettingContent = ({ onSubmit, initialData }) => {
     description: initialData?.description || "",
   });
 
-  const [selectedFoods, setSelectedFoods] = useState([]);
-  const [description, setDescription] = useState("");
+  const [selectedFoods, setSelectedFoods] = useState(
+    initialData?.foodType ? initialData.foodType.split(",") : []
+  );
+  const [description, setDescription] = useState(
+    initialData?.description || ""
+  );
 
   // 날짜 옵션 생성
   const currentYear = new Date().getFullYear();
@@ -108,15 +112,6 @@ const MentorSettingContent = ({ onSubmit, initialData }) => {
   // 폼 제출 핸들러
   const handleSubmit = (e) => {
     e.preventDefault();
-    const submitData = {
-      ...formData,
-      selectedFoods,
-      description,
-    };
-
-    if (onSubmit) {
-      onSubmit(submitData);
-    }
   };
 
   // 선택된 작물과 설명을 formData에 반영
@@ -127,6 +122,13 @@ const MentorSettingContent = ({ onSubmit, initialData }) => {
       description,
     }));
   }, [selectedFoods, description]);
+
+  // formData가 변경될 때마다 부모에게 알림
+  useEffect(() => {
+    if (onChange) {
+      onChange(formData);
+    }
+  }, [formData, onChange]);
 
   return (
     <form onSubmit={handleSubmit} className="mb-4 space-y-4">
