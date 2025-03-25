@@ -3,14 +3,12 @@ package com.backend.farmbti.users.controller;
 import com.backend.farmbti.common.dto.CommonResponseDto;
 import com.backend.farmbti.security.util.SecurityUtils;
 import com.backend.farmbti.users.dto.PasswordChangeRequest;
+import com.backend.farmbti.users.dto.UserDeleteRequest;
 import com.backend.farmbti.users.service.UsersService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,4 +26,13 @@ public class UsersController {
         usersService.changePassword(request, userId);
         return CommonResponseDto.ok();
     }
+
+    @DeleteMapping("/delete")
+    @Operation(summary = "회원 탈퇴", description = "현재 비밀번호 확인 후 회원 탈퇴를 진행합니다.")
+    public CommonResponseDto deleteUser(@RequestBody UserDeleteRequest request) {
+        Long userId = securityUtils.getCurrentUsersId();
+        usersService.deleteUser(request, userId);
+        return CommonResponseDto.ok();
+    }
+
 }
