@@ -52,6 +52,7 @@ public class Users extends TimeStampEntity {
         this.refreshToken = refreshToken;
     }
 
+    public void updatePassword(String newPassword) {this.password = newPassword;}
 
 //    public enum Role {
 //        MENTEE,

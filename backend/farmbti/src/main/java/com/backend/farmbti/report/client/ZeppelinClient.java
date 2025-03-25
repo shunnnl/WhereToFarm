@@ -1,4 +1,4 @@
-package com.backend.farmbti.zeppelin.client;
+package com.backend.farmbti.report.client;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
