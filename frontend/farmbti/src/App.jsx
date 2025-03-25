@@ -13,6 +13,7 @@ import Chat from "./pages/chat/Chat";
 import MyPage from "./pages/mypage/MyPage";
 import FarmbtiReport from "./components/MyPage/FarmbtiReport";
 import CropCalculateReport from "./components/MyPage/CropCalculateReport";
+import Estate from "./pages/estate/Estate";
 
 function App() {
   return (
@@ -31,6 +32,8 @@ function App() {
           <Route path="/mentors" element={<MentorPage />} />
           <Route path="/crop-calculator" element={<CropCalculatorPage />} />
           <Route path="/chat" element={<Chat />} />
+          <Route path="/estate" element={<Estate />} />
+
           <Route path="/mypage" element={<MyPage />}>
             {/* 중첩 라우트 정의 */}
             <Route path="farmbti-report" element={<FarmbtiReport />} />

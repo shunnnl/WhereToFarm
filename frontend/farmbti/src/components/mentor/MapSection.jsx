@@ -3,6 +3,7 @@ import {regionData} from './regionData.js';
 import RegionCard from './RegionCard.jsx';
 import Pagination from 'react-js-pagination';
 import PaginationComponent from './Pagination.jsx';
+import MentorSelect from './MentorSelect'; 
 
 import { useRef, useEffect, useState } from 'react';
 const MapSection = () => {
@@ -189,6 +190,7 @@ const MapSection = () => {
     };
   
     return (
+<div className="w-full">
     <div className="flex gap-4">
       <div className="w-1/2 bg-green-800 flex items-center justify-center p-4 rounded-xl">
       <svg 
@@ -322,6 +324,17 @@ const MapSection = () => {
              
             </div>
         </div>
+        
+    </div>
+           {/* 멘토 선택 영역 - 지도/지역 목록 아래에 배치 */}
+           {selectedRegion && (
+            <div className="mt-8 w-full">
+                <MentorSelect 
+                    candidateList={findCandidateRegion(selectedRegion.name)} 
+                    regionName={selectedRegion.name || ''}
+                />
+            </div>
+        )}
     </div>
   )
 };
