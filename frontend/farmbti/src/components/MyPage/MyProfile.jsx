@@ -2,20 +2,19 @@ import { useRef, useState } from "react";
 import leaveIcon from "../../asset/mypage/leaves.svg";
 import { Camera, MessageSquare, User, Settings, Lock } from "lucide-react";
 import MyPageModal from "./MyPageModal";
-import MentorSettingForm from "./MentorSettingContent";
+import MentorSettingContent from "./MentorSettingContent";
 import MyInfoSettingContent from "./MyInfoSettingContent";
 
 const MyProfile = ({ myInfo }) => {
   const modalRef = useRef(null);
   const [modalType, setModalType] = useState("");
-  const [modalContent, setModalContent] = useState(null);
   const [modalTitle, setModalTitle] = useState("");
 
   // 모달 타입 별 상태 분리
   const [mentorFormData, setMentorFormData] = useState(null);
-  const [userInfoFormData, setUserInfoFormData] = useState(null);
+  const [myInfoFormData, setMyInfoFormData] = useState(null);
   const [passwordFormData, setPasswordFormData] = useState(null);
-  // 디버깅용 데이테 출력
+  // 디버깅용 데이터 출력
   const [formData, setFormData] = useState(null);
 
   // 상태, 예외 처리
@@ -32,40 +31,20 @@ const MyProfile = ({ myInfo }) => {
 
   const handleMetorSetting = () => {
     setModalType("mentor");
-    setModalContent(
-      <MentorSettingForm
-        initialData={myInfo}
-        onSubmit={(data) => {
-          console.log("멘토 데이터 수신:", data);
-          setMentorFormData(data);
-        }}
-      />
-    );
     setModalTitle("멘토 정보 수정");
     modalRef.current?.openModal();
-    return;
   };
 
   const handleMyInfoSetting = () => {
-    setModalType("user-info");
-    setModalContent(
-      <MyInfoSettingContent
-        initialData={myInfo}
-        onSubmit={(data) => {
-          console.log("정보 수정 데이터 수신:", data);
-          console.log("함수 호출")
-          setUserInfoFormData(data);
-        }}
-      />
-    );
+    setModalType("myInfo");
     setModalTitle("회원 정보 수정");
     modalRef.current?.openModal();
-    return;
   };
 
   const handleMyPasswordSetting = () => {
     setModalType("password");
-    return;
+    setModalTitle("비밀번호 수정");
+    modalRef.current?.openModal();
   };
 
   const handleConfirm = async () => {
@@ -89,14 +68,14 @@ const MyProfile = ({ myInfo }) => {
           }
           break;
 
-        case "user-info":
-          if (userInfoFormData) {
+        case "myInfo":
+          if (myInfoFormData) {
             // 회원 정보 수정 로직
             setFeedbackMessage({
               type: "success",
               message: "회원 정보가 성공적으로 업데이트되었습니다.",
             });
-            setFormData(userInfoFormData);
+            setFormData(myInfoFormData);
 
             // 모달 닫기
             modalRef.current?.closeModal();
@@ -239,14 +218,29 @@ const MyProfile = ({ myInfo }) => {
         </div>
       </div>
 
+      {/* 재사용 가능한 모달 */}
       <MyPageModal
         ref={modalRef}
         title={modalTitle}
-        onConfirm={handleConfirm}
         isLoading={isSubmitting}
         feedbackMessage={feedbackMessage}
-        children={modalContent}
-      />
+        onConfirm={handleConfirm}
+        onCancel={() => setFeedback({ type: "", message: "" })}
+      >
+        {/* 조건부 콘텐츠 렌더링 */}
+        {modalType === "mentor" && (
+          <MentorSettingContent
+            initialData={mentorFormData}
+            onChange={setMentorFormData}
+          />
+        )}
+        {modalType === "myInfo" && (
+          <MyInfoSettingContent
+            initialData={myInfoFormData}
+            onChange={setMyInfoFormData}
+          />
+        )}
+      </MyPageModal>
     </div>
   );
 };
