@@ -18,7 +18,14 @@ const MyProfile = ({ myInfo }) => {
     errors: {},
   });
   const [myInfoFormData, setMyInfoFormData] = useState({
-    data: { gender: "", Year: "", Month: "", Day: "", address: "" },
+    data: {
+      name: myInfo.userName || "",
+      gender: myInfo.gender || "",
+      Year: myInfo.birthYear || "",
+      Month: myInfo.birthMonth || "",
+      Day: myInfo.birthDay || "",
+      address: myInfo.region || "",
+    },
     isValid: true,
     errors: {},
   });
@@ -45,6 +52,7 @@ const MyProfile = ({ myInfo }) => {
   };
 
   const handleMyInfoSetting = () => {
+    // 현재 사용자 정보로 폼 초기화
     setModalType("myInfo");
     setModalTitle("회원 정보 수정");
     modalRef.current?.openModal();
@@ -102,13 +110,13 @@ const MyProfile = ({ myInfo }) => {
             // 첫 번째 오류 메시지 또는 기본 메시지 표시
             const errorMessage =
               Object.values(myInfoFormData.errors).find((msg) => msg) ||
-              "멘토 정보를 확인해주세요";
+              "나의 정보를 확인해주세요";
             return;
           }
 
           // 유효한 경우 API 호출 및 처리
-          console.log("멘토 정보 업데이트:", myInfoFormData.data);
-          toast.success("멘토 정보가 수정 되었습니다.");
+          console.log("회원 정보 업데이트:", myInfoFormData.data);
+          toast.success("회원 정보가 수정 되었습니다.");
           break;
 
         case "password":
@@ -117,13 +125,13 @@ const MyProfile = ({ myInfo }) => {
             // 첫 번째 오류 메시지 또는 기본 메시지 표시
             const errorMessage =
               Object.values(passwordFormData.errors).find((msg) => msg) ||
-              "멘토 정보를 확인해주세요";
+              "비밀번호 정보를 확인해주세요";
             return;
           }
 
           // 유효한 경우 API 호출 및 처리
-          console.log("멘토 정보 업데이트:", passwordFormData.data);
-          toast.success("멘토 정보가 수정 되었습니다.");
+          console.log("비밀번호 정보 업데이트:", passwordFormData.data);
+          toast.success("비밀번호 정보가 수정 되었습니다.");
           break;
 
         default:
