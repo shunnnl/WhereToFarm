@@ -58,6 +58,34 @@ pipeline {
             }
         }
 
+        stage('Build Docker Image') {
+            steps {
+                dir('backend/farmbti') {
+                    sh '''
+                    #!/bin/bash
+                    set -e
+                    echo "✅ Docker 이미지 빌드 시작"
+                    docker build -t ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:latest .
+                    echo "✅ Docker 이미지 빌드 완료"
+                    '''
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                withDockerRegistry([credentialsId: DOCKER_CREDENTIALS_ID, url: 'https://index.docker.io/v1/']) {
+                    sh '''
+                    #!/bin/bash
+                    set -e
+                    echo "✅ Docker Hub에 이미지 푸시 중..."
+                    docker push ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:latest
+                    echo "✅ Docker 이미지 푸시 완료"
+                    '''
+                }
+            }
+        }
+
 
         stage('Deploy') {
             steps {
