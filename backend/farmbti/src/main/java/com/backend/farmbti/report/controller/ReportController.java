@@ -1,10 +1,9 @@
-package com.backend.farmbti.zeppelin.controller;
+package com.backend.farmbti.report.controller;
 
-import com.backend.farmbti.zeppelin.dto.ZeppelinRequestDto;
-import com.backend.farmbti.zeppelin.service.ZeppelinService;
+import com.backend.farmbti.report.dto.ZeppelinRequestDto;
+import com.backend.farmbti.report.service.ZeppelinService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.backend.farmbti.common.dto.CommonResponseDto;
 
@@ -12,11 +11,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/zeppelin")
-@Tag(name = "Zeppelin 컨트롤러", description = "Zeppelin 노트 실행, 결과 조회, 특정 정보 전달하는 등 Zeppelin 관리하는 컨트롤러")
-public class ZeppelinController {
+@Tag(name = "Report 컨트롤러", description = "Report 관련 컨트롤러")
+public class ReportController {
     private final ZeppelinService zeppelinService;
 
-    public ZeppelinController(ZeppelinService zeppelinService) {
+    public ReportController(ZeppelinService zeppelinService) {
         this.zeppelinService = zeppelinService;
     }
 
@@ -33,5 +32,6 @@ public class ZeppelinController {
         List<String> regionList = zeppelinService.extractTopRegions(raw); // 지역 리스트만 뽑아옴
         return CommonResponseDto.ok(regionList);
     }
+
 
 }

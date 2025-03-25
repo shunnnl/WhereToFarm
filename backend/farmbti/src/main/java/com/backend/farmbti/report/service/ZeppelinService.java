@@ -1,7 +1,7 @@
-package com.backend.farmbti.zeppelin.service;
+package com.backend.farmbti.report.service;
 
-import com.backend.farmbti.zeppelin.client.ZeppelinClient;
-import com.backend.farmbti.zeppelin.exception.ZeppelinErrorCode;
+import com.backend.farmbti.report.client.ZeppelinClient;
+import com.backend.farmbti.report.exception.ZeppelinErrorCode;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
