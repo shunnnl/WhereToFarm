@@ -19,16 +19,16 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
   
 
   const topFood = [
-    { id: 'apple', label: 'apple', iconSrc: 'src/asset/mentor/icons/apple.png' },
-    { id: 'cucumber', label: 'cucumber', iconSrc: 'src/asset/mentor/icons/cucumber.png' },
-    { id: 'grape', label: 'grape', iconSrc: 'src/asset/mentor/icons/grape.png' },
-    { id: 'greenonion', label: 'greenonion', iconSrc: 'src/asset/mentor/icons/greenonion.png' },
-    { id: 'lettuce', label: 'lettuce', iconSrc: 'src/asset/mentor/icons/lettuce.png' },
-    { id: 'onion', label: 'onion', iconSrc: 'src/asset/mentor/icons/onion.png' },
-    { id: 'pear', label: 'pear', iconSrc: 'src/asset/mentor/icons/pear.png' },
-    { id: 'sweetpotato', label: 'sweetpotato', iconSrc: 'src/asset/mentor/icons/sweetpotato.png' },
-    { id: 'tangerine', label: 'tangerine', iconSrc: 'src/asset/mentor/icons/tangerine.png' },
-    { id: 'watermelon', label: 'watermelon', iconSrc: 'src/asset/mentor/icons/watermelon.png' }
+    { id: 'apple', label: '사과', iconSrc: 'src/asset/mentor/icons/apple.png' },
+    { id: 'cucumber', label: '오이', iconSrc: 'src/asset/mentor/icons/cucumber.png' },
+    { id: 'grape', label: '포도', iconSrc: 'src/asset/mentor/icons/grape.png' },
+    { id: 'greenonion', label: '파', iconSrc: 'src/asset/mentor/icons/greenonion.png' },
+    { id: 'lettuce', label: '상추', iconSrc: 'src/asset/mentor/icons/lettuce.png' },
+    { id: 'onion', label: '양파', iconSrc: 'src/asset/mentor/icons/onion.png' },
+    { id: 'pear', label: '배', iconSrc: 'src/asset/mentor/icons/pear.png' },
+    { id: 'sweetpotato', label: '고구마', iconSrc: 'src/asset/mentor/icons/sweetpotato.png' },
+    { id: 'tangerine', label: '귤', iconSrc: 'src/asset/mentor/icons/tangerine.png' },
+    { id: 'watermelon', label: '수박', iconSrc: 'src/asset/mentor/icons/watermelon.png' }
   ];
 
   const toggleFood = (id) => {
@@ -93,7 +93,7 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
     >
 
 
-      <div className='mb-4'>
+      <div className='mb-4 text-center w-full'>
         <h2 className="text-2xl font-bold mb-2">멘토 등록</h2>
         <p className="text-gray-600 text-sm">성공적인 자신의 귀농 스토리를 들려주고 싶지 않나요?</p>
           <p className="text-gray-600 text-sm">멘토로 등록한 후, 멘티들과 많은 이야기를 나누어보세요!</p>
@@ -154,7 +154,7 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
             <div key={food.id} className="w-1/5 p-2 flex flex-col items-center">
               <div className="relative flex items-center">
                 <input
-                  type="radio"
+                  type="checkbox"
                   id={food.id}
                   name="foodType"
                   checked={selectedFoods.includes(food.id)}
@@ -190,7 +190,7 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
               value={description}
               onChange={handleDescriptionChange}
               className="w-full max-w-4xl px-3 py-2 border border-gray-300 rounded-lg 
-              focus:outline-none focus:ring-2 focus:ring-blue-500 
+              focus:outline-none focus:ring-2 focus:ring--500 
               focus:border-transparent resize-y"
               placeholder="여기에 텍스트를 입력하세요"
             />
@@ -202,9 +202,9 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
       </div>
 
 
-      <div className="flex justify-end gap-4">
+      <div className="flex justify-center gap-4">
         <button
-          className="mt-8 bg-red-500 text-white py-2 px-4 rounded"
+          className="mt-8 bg-gray-100 text-black py-2 px-4 rounded"
           onClick={onRequestClose}
         >
           닫기

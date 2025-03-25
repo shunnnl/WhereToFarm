@@ -25,6 +25,7 @@ function App() {
         <Routes>
           {/* 기본 페이지 */}
           <Route path="/" element={<Home />} />
+
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/mentors" element={<MentorPage />} />
