@@ -1,4 +1,4 @@
-package com.backend.farmbti.zeppelin.dto;
+package com.backend.farmbti.report.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;

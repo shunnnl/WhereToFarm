@@ -1,4 +1,4 @@
-package com.backend.farmbti.zeppelin.exception;
+package com.backend.farmbti.report.exception;
 
 import com.backend.farmbti.common.exception.ErrorCode;
 import lombok.Getter;
