@@ -1,25 +1,18 @@
 version: '3.8'
 
 services:
-  frontend:
-    build:
-      context: ../../frontend/farmbti
-      dockerfile: Dockerfile
-    container_name: farmbti-frontend
-    restart: always
-    networks:
-      - farmbti
-
   nginx:
-    image: nginx:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: farmbti-nginx
     ports:
       - "80:80"
     volumes:
       - ./default.conf:/etc/nginx/conf.d/default.conf
-      - ../../frontend/farmbti/dist:/usr/share/nginx/html
     networks:
       - farmbti
+    restart: always
 
 networks:
   farmbti:

@@ -2,12 +2,12 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HUB_USERNAME = "nageum"  // Docker Hub 계정명 추가
+        DOCKER_HUB_USERNAME = "nageum"
         IMAGE_NAME = "farmbti_backend"
         CONTAINER_NAME = "farmbti-backend"
         PORT = "8081"
         GIT_CREDENTIALS_ID = 'gitlab-credentials'
-        DOCKER_CREDENTIALS_ID = 'docker-hub'  // Docker Hub Credentials ID 추가
+        DOCKER_CREDENTIALS_ID = 'docker-hub'
         DOCKER_COMPOSE_PATH = "/usr/local/bin/docker-compose"
     }
 
@@ -18,8 +18,8 @@ pipeline {
                     $class: 'GitSCM',
                     branches: [[name: 'backend']],
                     userRemoteConfigs: [[
-                    url: 'https://lab.ssafy.com/s12-bigdata-dist-sub1/S12P21D209.git',
-                    credentialsId: 'gitlab-credentials'
+                        url: 'https://lab.ssafy.com/s12-bigdata-dist-sub1/S12P21D209.git',
+                        credentialsId: 'gitlab-credentials'
                     ]]
                 ])
                 sh 'echo "✅ 코드 체크아웃 완료"'
@@ -34,7 +34,7 @@ pipeline {
                         #!/bin/bash
                         set -e
                         echo "✅ .env 파일 로드 중..."
-                        export $(grep -v '^#' backend/farmbti/.env | xargs)  # ✅ 환경 변수로 설정
+                        export $(grep -v '^#' backend/farmbti/.env | xargs)
                         '''
                     }
                 }
@@ -50,7 +50,7 @@ pipeline {
                     echo "✅ 백엔드 빌드 시작"
                     export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF-8"
                     export $(grep -v '^#' .env | xargs)
-                    chmod +x gradlew  # 실행 권한 추가
+                    chmod +x gradlew
                     ./gradlew clean build -x test
                     echo "✅ 빌드 완료"
                     '''
@@ -58,6 +58,33 @@ pipeline {
             }
         }
 
+        stage('Build Docker Image') {
+            steps {
+                dir('backend/farmbti') {
+                    sh """
+                    #!/bin/bash
+                    set -e
+                    echo "✅ Docker 이미지 빌드 시작"
+                    docker build -t ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:latest .
+                    echo "✅ Docker 이미지 빌드 완료"
+                    """
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                withDockerRegistry([credentialsId: DOCKER_CREDENTIALS_ID, url: 'https://index.docker.io/v1/']) {
+                    sh """
+                    #!/bin/bash
+                    set -e
+                    echo "✅ Docker Hub에 이미지 푸시 중..."
+                    docker push ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:latest
+                    echo "✅ Docker 이미지 푸시 완료"
+                    """
+                }
+            }
+        }
 
         stage('Deploy') {
             steps {
@@ -69,9 +96,15 @@ pipeline {
                     sh 'mkdir -p /var/jenkins_home/app/backend/farmbti/build/libs/'
 
                     echo "✅ 빌드 파일 복사"
-                    sh 'cp -f "$WORKSPACE/backend/farmbti/build/libs/"*.jar /var/jenkins_home/app/backend/farmbti/build/libs/'
-                    sh 'cp -f backend/farmbti/docker-compose.yml ~/app/backend/farmbti/'
-                    sh 'cp -f backend/farmbti/Dockerfile ~/app/backend/farmbti/'
+                    sh '''
+                        cp -f backend/farmbti/build/libs/*.jar /var/jenkins_home/app/backend/farmbti/build/libs/
+                        cp -f backend/farmbti/docker-compose.yml /var/jenkins_home/app/backend/farmbti/
+                        cp -f backend/farmbti/Dockerfile /var/jenkins_home/app/backend/farmbti/
+                        cp -f backend/farmbti/.env /var/jenkins_home/app/backend/farmbti/
+                    '''
+
+                    echo "✅ 기존 postgres 컨테이너 제거 시도"
+                    sh 'docker rm -f postgres || true'
 
                     echo "✅ 배포 시작"
                     sh 'cd /var/jenkins_home/app/backend/farmbti/ && $DOCKER_COMPOSE_PATH down || true'

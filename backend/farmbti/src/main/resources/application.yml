@@ -18,7 +18,7 @@ spring:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT:6379}
 server:
-  port: 8080
+  port: 8081
 jwt:
   secret-key: ${JWT_SECRET}
   expiration-time: 3600000
@@ -33,3 +33,13 @@ logging:
     com.backend.farmbti.security.filter: DEBUG
 zeppelin:
   base-url: "http://3.39.65.150:18888"
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    config-url: /v3/api-docs/swagger-config
+    url: /v3/api-docs
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
