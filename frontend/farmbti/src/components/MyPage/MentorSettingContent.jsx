@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-const MentorSettingForm = ({ onSubmit, initialData }) => {
+const MentorSettingContent = ({ onSubmit, initialData }) => {
   const [formData, setFormData] = useState({
     Year: initialData?.Year || "",
     Month: initialData?.Month || "",
@@ -231,4 +231,4 @@ const MentorSettingForm = ({ onSubmit, initialData }) => {
   );
 };
 
-export default MentorSettingForm;
+export default MentorSettingContent;
