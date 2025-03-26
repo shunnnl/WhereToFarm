@@ -1,13 +1,13 @@
 package com.backend.farmbti.users.dto;
 
 import java.util.Date;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import java.util.List;
+import lombok.*;
 
 @Getter
-@AllArgsConstructor
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class CurrentUserResponse {
     private String email;
     private String name;
@@ -15,4 +15,12 @@ public class CurrentUserResponse {
     private Date birth;
     private Byte gender;
     private String profileImage;
+
+    @Builder.Default
+    private Boolean isMentor = false;
+
+    // 멘토 정보
+    private String bio;
+    private Integer farmingYears;
+    private List<String> cropNames;
 }
