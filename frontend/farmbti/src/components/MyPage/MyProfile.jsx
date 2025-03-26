@@ -1,16 +1,18 @@
 import { useRef, useState } from "react";
 import leaveIcon from "../../asset/mypage/leaves.svg";
-import { Camera, MessageSquare, User, Settings, Lock } from "lucide-react";
+import { MessageSquare, User, Settings, Lock } from "lucide-react";
 import MyPageModal from "./MyPageModal";
 import MentorSettingContent from "./MentorSettingContent";
 import MyInfoSettingContent from "./MyInfoSettingContent";
 import { toast } from "react-toastify";
 import MyPasswordContent from "./MyPasswordContent";
+import MyProfileImage from "./MyProfileImage";
 
 const MyProfile = ({ myInfo }) => {
   const modalRef = useRef(null);
   const [modalType, setModalType] = useState("");
   const [modalTitle, setModalTitle] = useState("");
+
 
   // 모달 타입 별 상태 분리
   const [mentorFormData, setMentorFormData] = useState({
@@ -36,11 +38,10 @@ const MyProfile = ({ myInfo }) => {
     isValid: true,
     errors: {},
   });
-  // 디버깅용 데이터 출력
-  const [formData, setFormData] = useState(null);
 
   // 상태, 예외 처리
   const [isSubmitting, setIsSubmitting] = useState(false);
+
   const handleChatting = () => {
     // chat 페이지로 넘어가기
     return;
@@ -156,20 +157,7 @@ const MyProfile = ({ myInfo }) => {
   return (
     <div>
       <div className="flex flex-col items-center pt-10">
-        <div className="profile-image">
-          <div className="relative mb-2">
-            <div className="w-32 h-32 rounded-full bg-background flex items-center justify-center overflow-hidden border-4 border-accentGreen">
-              <img
-                src="/api/placeholder/200/200"
-                alt="Profile"
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <button className="absolute bottom-0 right-0 bg-primaryGreen text-white p-1 rounded-full w-10 h-10">
-              <Camera size={32} strokeWidth={0.75} />
-            </button>
-          </div>
-        </div>
+        <MyProfileImage/>
         <div className="mentor-menti-button my-2">
           {myInfo.isMentor ? (
             <div className="px-4 py-1 bg-primaryGreen text-textColor-white rounded-full text-sm w-16 text-center">
