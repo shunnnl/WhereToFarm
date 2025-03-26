@@ -34,43 +34,42 @@ public class ChatController {
         return CommonResponseDto.ok(chatService.getAllRooms(userId));
     }
 
-//    @GetMapping("/get/{roomId}/detail")
-//    @Operation(summary = "해당 채팅방 프로필 상세 조회", description = "해당 체팅방의 프로필을 상세 조회합니다.")
-//    public CommonResponseDto getChatRoomsDatail() {
-//        return CommonResponseDto.ok();
-//    }
-
     @DeleteMapping("/delete/{roomId}")
     @Operation(summary = "채팅방 삭제", description = "특정 채팅방을 삭제합니다.")
     public CommonResponseDto deleteRoom(@PathVariable Long roomId) {
-        Long id = securityUtils.getCurrentUsersId();
-        chatService.deleteRoom(roomId);
+        Long usersId = securityUtils.getCurrentUsersId();
+        chatService.deleteRoom(usersId, roomId);
         return CommonResponseDto.ok();
     }
+    //endOfChat
 
-    @GetMapping("/{roomId}/messages/detail")
-    @Operation(summary = "메시지 목록 조회", description = "특정 채팅방의 메시지들을 조회합니다.")
-    public CommonResponseDto sendMessage(@PathVariable Long roomId) {
-        return CommonResponseDto.ok();
-    }
-
-    @DeleteMapping("/{roomId}/messages/{messageId}")
-    @Operation(summary = "메시지 삭제", description = "특정 메시지를 삭제합니다.")
-    public CommonResponseDto deleteMessage() {
-        return CommonResponseDto.ok();
-    }
-
-
-    @GetMapping("/notifications")
-    @Operation(summary = "채팅 알림 조회", description = "사용자의 읽지 않은 채팅 알림을 조회합니다.")
-    public CommonResponseDto getNotifications() {
-        return CommonResponseDto.ok();
-    }
-
-    @PutMapping("/{roomId}/read")
-    @Operation(summary = "채팅방 읽음 처리", description = "특정 채팅방의 모든 메시지를 읽음 처리합니다.")
-    public CommonResponseDto markAsRead(@PathVariable Long roomId) {
-        return CommonResponseDto.ok();
-    }
+//    @GetMapping("/{roomId}/messages/detail")
+//    @Operation(summary = "메시지 목록 조회", description = "특정 채팅방의 메시지들을 조회합니다.")
+//    public CommonResponseDto sendMessage(@PathVariable Long roomId) {
+//
+//
+//        return CommonResponseDto.ok();
+//    }
+//
+//    @DeleteMapping("/{roomId}/messages/{messageId}")
+//    @Operation(summary = "메시지 삭제", description = "특정 메시지를 삭제합니다.")
+//    public CommonResponseDto deleteMessage() {
+//
+//
+//        return CommonResponseDto.ok();
+//    }
+//
+//
+//    @GetMapping("/notifications")
+//    @Operation(summary = "채팅 알림 조회", description = "사용자의 읽지 않은 채팅 알림을 조회합니다.")
+//    public CommonResponseDto getNotifications() {
+//        return CommonResponseDto.ok();
+//    }
+//
+//    @PutMapping("/{roomId}/read")
+//    @Operation(summary = "채팅방 읽음 처리", description = "특정 채팅방의 모든 메시지를 읽음 처리합니다.")
+//    public CommonResponseDto markAsRead(@PathVariable Long roomId) {
+//        return CommonResponseDto.ok();
+//    }
 
 }

@@ -12,8 +12,17 @@ import org.springframework.stereotype.Controller;
 @RequiredArgsConstructor
 public class WebSocketController {
 
-    @MessageMapping("/room/{roomId}/typing")
-    @SendTo("/topic/room/{roomId}/typing")
+    @MessageMapping("/{roomId}/send")
+    @SendTo("/topic/chat/{roomId}")
+    public ChatMessageDto sendMessage(@DestinationVariable Long roomId, ChatMessageDto message) {
+        message.setTimestamp(LocalDateTime.now());
+        // 메시지 저장 로직 추가
+        return message;
+    }
+
+
+    @MessageMapping("/{roomId}/typing")
+    @SendTo("/topic/chat/{roomId}/typing")
     public void sendTypingStatus() {
 
     }

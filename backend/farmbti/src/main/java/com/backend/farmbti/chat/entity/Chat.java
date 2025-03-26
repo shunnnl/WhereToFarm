@@ -2,6 +2,7 @@ package com.backend.farmbti.chat.entity;
 
 import com.backend.farmbti.auth.domain.Users;
 import com.backend.farmbti.common.entity.TimeStampEntity;
+import com.backend.farmbti.mentors.domain.Mentors;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,7 +12,7 @@ import lombok.*;
 @Entity
 @Table(name = "chat",
         uniqueConstraints = @UniqueConstraint(
-                columnNames = {"user_id_1", "user_id_2"}
+                columnNames = {"users_id", "mentors_id"}
         ))
 @NoArgsConstructor(access = AccessLevel.PROTECTED) // 기본 생성자 접근 제한 설정 (JPA 요구사항)
 public class Chat extends TimeStampEntity {
@@ -22,11 +23,12 @@ public class Chat extends TimeStampEntity {
     private Long roomId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "mentee")
+    @JoinColumn(name = "users_id")
     private Users mentee;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "mentor")
-    private Users mentor;
+    @JoinColumn(name = "mentors_id")
+    private Mentors mentor;
+
 
 }
