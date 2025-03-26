@@ -51,15 +51,15 @@ const ResultSection = ({
             isHouse={result.house}
           />
           <BenefitForecastGraph myForecast={result.myMonthlyPrice} />
-          <div className="flex justify-center items-center gap-4 mb-5">
+          <div className="flex justify-center items-center gap-4 mb-6">
             <button
-              className="bg-primaryGreen px-3 py-1 text-sm text-white font-light rounded-md"
+              className="bg-primaryGreen hover:bg-green-600 px-4 py-2 text-sm text-white font-light rounded-md shadow-lg transition-colors duration-200"
               onClick={onSaveReport}
             >
               수익 계산 보고서 저장하기
             </button>
             <button
-              className="bg-textColor-lightgray px-3 py-1 text-sm text-white font-light rounded-md"
+              className="bg-textColor-lightgray hover:bg-gray-300 px-4 py-2 text-sm text-white font-light rounded-md shadow-lg transition-colors duration-200"
               onClick={onResetResult}
             >
               다시 계산하기
