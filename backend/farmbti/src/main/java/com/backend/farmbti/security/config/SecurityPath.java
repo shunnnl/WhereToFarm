@@ -15,12 +15,6 @@ public enum SecurityPath {
     SWAGGER_RESOURCES("/swagger-resources/**"),  // 추가된 부분
     SWAGGER_HTML("/swagger-ui.html"),
 
-    SWAGGER_UI_API_DOCS("/v3/api-docs"),
-    SWAGGER_UI_API_DOCS_ALL("/v3/api-docs/**"),
-    SWAGGER_UI_RESOURCES("/swagger-resources/**"),
-    SWAGGER_UI("/swagger-ui/**"),
-    SWAGGER_UI_HTML("/api/swagger-ui.html"),
-
     // Auth 관련 경로
     SIGNUP("/auth/signUp"),
     LOGIN("/auth/login"),
