@@ -36,12 +36,15 @@ zeppelin:
 
 springdoc:
   api-docs:
-    path: /v3/api-docs
+    path: /api/v3/api-docs
   swagger-ui:
-    path: /swagger-ui.html
+    path: /api/swagger-ui.html
     config-url: /api/v3/api-docs/swagger-config
     url: /api/v3/api-docs
     disable-swagger-default-url: true
+  default-produces-media-type: application/json
+  default-consumes-media-type: application/json
+
 
 cloud:
   aws:
