@@ -19,7 +19,6 @@ spring:
       port: ${REDIS_PORT:6379}
 server:
   port: 8080
-  address: 0.0.0.0 # 주소추가
 jwt:
   secret-key: ${JWT_SECRET}
   expiration-time: 3600000
@@ -36,10 +35,10 @@ zeppelin:
   base-url: "http://3.39.65.150:18888"
 
 springdoc:
-  api-docs:
-    path: /v3/api-docs
   swagger-ui:
-    path: /swagger-ui.html
+    path: /api/swagger-ui.html
+  api-docs:
+    path: /api/v3/api-docs
 
 cloud:
   aws:
