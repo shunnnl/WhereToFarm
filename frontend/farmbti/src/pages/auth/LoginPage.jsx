@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import login_image from '../../asset/auth/login.svg'
 import { Link } from 'react-router-dom'; 
+import { publicAxios } from '../../API/common/AxiosInstance'
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');

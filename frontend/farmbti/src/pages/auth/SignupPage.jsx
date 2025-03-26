@@ -157,14 +157,14 @@ const SignupPage = () => {
         password: formData.password,
         name: formData.name,
         address: formData.address,
-        gender: formData.gender,
+        gender: formData.gender === 'male' ? "0" : "1",
         birth: birthDate
       };
       console.log("요청할 데이터:", userData);
 
       
       // axios를 사용하여 회원가입 API 호출
-      const response = await publicAxios.post('/api/users/signup', userData);
+      const response = await publicAxios.post('/auth/signUp', userData);
       
       console.log('회원가입 성공:', response);
       

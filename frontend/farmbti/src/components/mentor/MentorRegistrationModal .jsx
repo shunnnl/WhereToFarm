@@ -2,6 +2,7 @@
 import React from 'react';
 import Modal from 'react-modal';
 import { useState } from 'react';
+import { publicAxios } from '../../API/common/TestJsonServer';
 
 const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
 
@@ -15,7 +16,9 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
     Month: '',
     Day: ''
   });
-  
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitResult, setSubmitResult] = useState(null);
+
   
 
   const topFood = [
@@ -56,6 +59,45 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
 
     console.log("formData = ", formData)
 };
+
+  // 멘토 등록 데이터 제출 함수
+  const handleSubmit = async () => {
+    try {
+      setIsSubmitting(true);
+      
+      // 전송할 데이터 구성
+      const mentorData = {
+        farmingStartDate: formData.Year, // 귀농 연도
+        crops: selectedFoods, // 선택한 작물 목록
+        description: description, // 멘토 소개
+        createdAt: new Date().toISOString() // 생성 시간
+      };
+      
+      // POST 요청 보내기
+      const response = await publicAxios.post('/mentors', mentorData);
+      
+      console.log('멘토 등록 성공:', response);
+      setSubmitResult({ success: true, message: '멘토 등록이 성공적으로 완료되었습니다.' });
+      
+      // 성공 시 폼 초기화 (선택적)
+      setFormData({ Year: '', Month: '', Day: '' });
+      setSelectedFoods([]);
+      setDescription('');
+      
+      // 모달 닫기 (선택적)
+      // onRequestClose();
+      
+    } catch (error) {
+      console.error('멘토 등록 실패:', error);
+      setSubmitResult({ success: false, message: `멘토 등록에 실패했습니다: ${error.message || '알 수 없는 오류'}` });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+
+
+
 
 
   // 연도 옵션 생성 (현재 연도부터 100년 전까지)
@@ -210,9 +252,20 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
           닫기
         </button>
 
-        <button className="mt-8 bg-green-800 text-white py-2 px-4 rounded"
+        <button 
+          className={`mt-8 ${isSubmitting ? 'bg-green-600' : 'bg-green-800 hover:bg-green-700'} text-white py-2 px-4 rounded transition-colors flex items-center justify-center`}
+          onClick={handleSubmit}
+          disabled={isSubmitting}
         >
-          등록
+          {isSubmitting ? (
+            <>
+              <svg className="animate-spin h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              처리 중...
+            </>
+          ) : "등록"}
         </button>
       </div>
     </Modal>
