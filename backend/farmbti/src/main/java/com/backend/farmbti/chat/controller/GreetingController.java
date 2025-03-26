@@ -9,7 +9,7 @@ import org.springframework.web.util.HtmlUtils;
 
 @Controller
 public class GreetingController {
-    @MessageMapping("/hello")  // '/api/chat/hello'로 들어오는 메시지 처리
+    @MessageMapping("/hello")  // '/chat/hello'로 들어오는 메시지 처리
     @SendTo("/topic/greetings")  // 처리 결과를 '/topic/greetings'로 전송
     public Greeting greeting(HelloMessage message) throws Exception {
         Thread.sleep(1000);  // 처리 지연 시간 시뮬레이션 (1초)

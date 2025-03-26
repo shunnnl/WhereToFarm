@@ -19,7 +19,7 @@
         document.getElementById('response').innerHTML += "연결 시도 중...<br>";
 
         stompClient = new StompJs.Client({
-            brokerURL: 'ws://localhost:8080/gs-guide-websocket'
+            brokerURL: 'ws://localhost:18081/gs-guide-websocket'
         });
 
         stompClient.onConnect = function (frame) {
@@ -47,7 +47,7 @@
                 "메시지 전송: " + JSON.stringify(message) + "<br>";
 
             stompClient.publish({
-                destination: '/app/hello',
+                destination: '/chat/hello',
                 body: JSON.stringify(message)
             });
         } else {

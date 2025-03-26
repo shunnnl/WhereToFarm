@@ -64,5 +64,4 @@ public class AuthController {
         return CommonResponseDto.ok();
     }
 
-
 }

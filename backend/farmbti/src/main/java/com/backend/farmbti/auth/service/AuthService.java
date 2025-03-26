@@ -80,6 +80,7 @@ public class AuthService {
                 .birth(users.getBirth())
                 .profileImage(users.getProfileImage())
                 .token(token)
+                .createdAt(users.getCreatedAt())
                 .build();
     }
 
