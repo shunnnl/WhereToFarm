@@ -18,7 +18,7 @@ spring:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT:6379}
 server:
-  port: 8081
+  port: 8080
 jwt:
   secret-key: ${JWT_SECRET}
   expiration-time: 3600000
@@ -43,3 +43,16 @@ springdoc:
     url: /v3/api-docs
   default-consumes-media-type: application/json
   default-produces-media-type: application/json
+
+cloud:
+  aws:
+    s3:
+      bucket: ${S3_BUCKET}
+    credentials:
+      access-key: ${S3_ACCESS}
+      secret-key: ${S3_SECRET}
+    region:
+      static: ap-northeast-2
+      auto: false
+    stack:
+      auto: false

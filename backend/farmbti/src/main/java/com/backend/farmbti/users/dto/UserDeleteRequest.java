@@ -9,6 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserDeleteRequest {
-
     private String password; // 현재 비밀번호
 }
