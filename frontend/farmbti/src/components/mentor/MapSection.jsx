@@ -2,7 +2,7 @@ import React from 'react';
 import {regionData} from './regionData.js';
 import RegionCard from './RegionCard.jsx';
 import Pagination from 'react-js-pagination';
-import PaginationComponent from './Pagination.jsx';
+import PaginationComponent from '../common/Pagination.jsx';
 import MentorSelect from './MentorSelect'; 
 
 import { useRef, useEffect, useState } from 'react';

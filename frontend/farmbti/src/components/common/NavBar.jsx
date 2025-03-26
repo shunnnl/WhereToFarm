@@ -3,10 +3,14 @@ import { Link } from 'react-router-dom';
 import logo from "../../asset/navbar/main_logo.svg"; 
 import userIcon from "../../asset/navbar/user_icon.svg"; 
 import bellIcon from "../../asset/navbar/bell_icon.svg";   
+import { useSelector } from 'react-redux';
 
 const Navbar = () => {   
   const menuItemClass = "py-1 px-4 text-gray-900 hover:text-green-700 dark:text-white dark:hover:text-blue-500";    
   
+  // Redux 스토어에서 로그인 상태 가져오기
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+
   return (     
     <nav className="bg-white border-gray-200 dark:bg-gray-900">       
       <div className="max-w-screen-2xl flex items-center justify-between mx-auto px-24 py-4">         
@@ -35,10 +39,9 @@ const Navbar = () => {
         </div>          
         
         <div className="flex items-center">         
-          <button className="p-2 hover:bg-gray-100 rounded-full">             
               <Link 
-                  to="/login" 
-                  className="p-2 hover:bg-gray-100 rounded-full"
+                to={isLoggedIn ? "/mypage" : "/login"}
+                className="p-2 hover:bg-gray-100 rounded-full"
               >
                   <img
                       src={userIcon}
@@ -46,7 +49,6 @@ const Navbar = () => {
                       className="h-6 w-6"
                   />
               </Link>           
-          </button>           
           <button className="p-2 hover:bg-gray-100 rounded-full">             
             <img                
               src={bellIcon}                

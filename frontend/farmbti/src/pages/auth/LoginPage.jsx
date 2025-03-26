@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+
 import login_image from '../../asset/auth/login.svg'
 import { Link, useNavigate } from 'react-router-dom'; 
 import { publicAxios } from '../../API/common/AxiosInstance'
 import { useEffect } from 'react';
+import { login } from '../../store/slices/authSlice';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -12,6 +15,7 @@ const LoginPage = () => {
     password: ''
   });
   const navigate = useNavigate();
+  const dispatch = useDispatch(); // Redux dispatch 추가
 
   console.log("errors = ", errors)
   // 이메일 유효성 검사
@@ -63,21 +67,27 @@ const LoginPage = () => {
       
       // 응답 성공 확인
       if (response.success && response.data && response.data.token) {
-        // 액세스 토큰 저장
+        // 액세스 토큰만 localStorage에 저장
         localStorage.setItem('accessToken', response.data.token.accessToken);
         // 리프레시 토큰 저장
         localStorage.setItem('refreshToken', response.data.token.refreshToken);
         // 만료 시간 저장
         localStorage.setItem('tokenExpires', response.data.token.accessTokenExpiresInForHour);
-        // 사용자 정보 저장
-        localStorage.setItem('user', JSON.stringify({
+        // 사용자 정보 객체 생성
+        const userData = {
           id: response.data.id,
           email: response.data.email,
           name: response.data.name,
           address: response.data.address,
           gender: response.data.gender,
           profileImage: response.data.profileImage
-        }));
+        };
+        
+        // 사용자 정보 저장
+        localStorage.setItem('user', JSON.stringify(userData));
+        
+        // Redux 스토어에 로그인 상태 업데이트 - 이 부분이 추가됨
+        dispatch(login(userData));
         
         // 로그인 후 메인 페이지나 대시보드로 이동
         navigate('/');
