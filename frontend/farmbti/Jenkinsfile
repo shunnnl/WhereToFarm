@@ -7,8 +7,9 @@ pipeline {
 
     environment {
         GIT_CREDENTIALS_ID = 'gitlab-credentials'
-        TARGET_DEPLOY_DIR = "/var/jenkins_home/app/frontend/farmbti"
-        DOCKER_COMPOSE_PATH = "/usr/local/bin/docker-compose"
+        FRONT_PROJECT_DIR = "frontend/farmbti"
+        DIST_DIR = "frontend/farmbti/dist"
+        NGINX_DIR = "backend/infra/nginx"
     }
 
     stages {
@@ -40,15 +41,19 @@ pipeline {
             }
         }
 
-        stage('Copy dist to Nginx target') {
+        stage('Copy dist to Nginx') {
             steps {
-                sh '''
-                echo "✅ 배포 디렉토리 준비"
-                mkdir -p ${TARGET_DEPLOY_DIR}
-                rm -rf ${TARGET_DEPLOY_DIR}/dist
-                cp -r frontend/farmbti/dist ${TARGET_DEPLOY_DIR}/
-                echo "✅ dist 복사 완료"
-                '''
+                script {
+                    sh '''
+                    echo "[INFO] 기존 dist 삭제 중..."
+                    rm -rf /home/ubuntu/nginx/dist
+
+                    echo "[INFO] 새로운 dist 복사 중..."
+                    cp -r frontend/farmbti/dist /home/ubuntu/nginx/dist
+
+                    echo "[INFO] dist 복사 완료 ✅"
+                    '''
+                }
             }
         }
     }

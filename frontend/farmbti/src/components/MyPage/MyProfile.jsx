@@ -1,35 +1,47 @@
 import { useRef, useState } from "react";
 import leaveIcon from "../../asset/mypage/leaves.svg";
-import { Camera, MessageSquare, User, Settings, Lock } from "lucide-react";
+import { MessageSquare, User, Settings, Lock } from "lucide-react";
 import MyPageModal from "./MyPageModal";
 import MentorSettingContent from "./MentorSettingContent";
 import MyInfoSettingContent from "./MyInfoSettingContent";
 import { toast } from "react-toastify";
+import MyPasswordContent from "./MyPasswordContent";
+import MyProfileImage from "./MyProfileImage";
 
 const MyProfile = ({ myInfo }) => {
   const modalRef = useRef(null);
   const [modalType, setModalType] = useState("");
   const [modalTitle, setModalTitle] = useState("");
 
+
   // 모달 타입 별 상태 분리
   const [mentorFormData, setMentorFormData] = useState({
-    Year: "",
-    foodType: "",
-    description: "",
+    data: { Year: "", foodType: "", description: "" },
+    isValid: true,
+    errors: {},
   });
   const [myInfoFormData, setMyInfoFormData] = useState({
-    gender: "",
-    Year: "",
-    Month: "",
-    Day: "",
-    address: "",
+    data: {
+      name: myInfo.userName || "",
+      gender: myInfo.gender || "",
+      Year: myInfo.birthYear || "",
+      Month: myInfo.birthMonth || "",
+      Day: myInfo.birthDay || "",
+      address: myInfo.region || "",
+    },
+    isValid: true,
+    errors: {},
   });
-  const [passwordFormData, setPasswordFormData] = useState(null);
-  // 디버깅용 데이터 출력
-  const [formData, setFormData] = useState(null);
+
+  const [passwordFormData, setPasswordFormData] = useState({
+    data: { currentPassword: "", newPassword: "", confirmPassword: "" },
+    isValid: true,
+    errors: {},
+  });
 
   // 상태, 예외 처리
   const [isSubmitting, setIsSubmitting] = useState(false);
+
   const handleChatting = () => {
     // chat 페이지로 넘어가기
     return;
@@ -42,6 +54,7 @@ const MyProfile = ({ myInfo }) => {
   };
 
   const handleMyInfoSetting = () => {
+    // 현재 사용자 정보로 폼 초기화
     setModalType("myInfo");
     setModalTitle("회원 정보 수정");
     modalRef.current?.openModal();
@@ -53,52 +66,74 @@ const MyProfile = ({ myInfo }) => {
     modalRef.current?.openModal();
   };
 
+  // 현재 모달 타입에 따라 폼의 유효성을 확인하는 함수
+  const isCurrentFormValid = () => {
+    switch (modalType) {
+      case "mentor":
+        return mentorFormData.isValid;
+      case "myInfo":
+        return myInfoFormData.isValid;
+      case "password":
+        return passwordFormData.isValid;
+      default:
+        return false;
+    }
+  };
+
   const handleConfirm = async () => {
     console.log("수정 시작...");
     console.log("현재 modalType:", modalType);
+    // handleConfirm 함수 내부
+    console.log("mentorFormData 전체:", mentorFormData);
+    console.log("isValid 값:", mentorFormData.isValid);
+    console.log("errors 객체:", mentorFormData.errors);
 
     try {
       setIsSubmitting(true);
 
       switch (modalType) {
         case "mentor":
-          console.log("멘토 모드 - 제출 전 데이터:", mentorFormData);
-          if (mentorFormData) {
-            // 멘토 정보 수정 로직
-            // 여기서 실제 API 호출이 이루어질 것입니다
-            console.log("멘토 정보 업데이트 성공!");
-            setFormData(mentorFormData);
-
-            // 데이터 확인
-            console.log("업데이트 후 formData:", mentorFormData);
-            toast.success("멘토 정보가 수정 되었습니다.")
+          if (!mentorFormData.isValid) {
+            // 첫 번째 오류 메시지 또는 기본 메시지 표시
+            const errorMessage =
+              Object.values(mentorFormData.errors).find((msg) => msg) ||
+              "멘토 정보를 확인해주세요";
+            return;
           }
+
+          // 유효한 경우 API 호출 및 처리
+          console.log("멘토 정보 업데이트:", mentorFormData.data);
+          toast.success("멘토 정보가 수정 되었습니다.");
           break;
 
         case "myInfo":
-          console.log("내 정보 모드 - 제출 전 데이터:", myInfoFormData);
-          if (myInfoFormData) {
-            // 회원 정보 수정 로직
-            console.log("회원 정보 업데이트 성공!");
-            setFormData(myInfoFormData);
-
-            // 데이터 확인
-            console.log("업데이트 후 formData:", myInfoFormData);
-            toast.success("회원 정보가 수정 되었습니다.");
+          console.log("내 정보 모드 - 제출 전 데이터:", myInfoFormData.data);
+          if (!myInfoFormData.isValid) {
+            // 첫 번째 오류 메시지 또는 기본 메시지 표시
+            const errorMessage =
+              Object.values(myInfoFormData.errors).find((msg) => msg) ||
+              "나의 정보를 확인해주세요";
+            return;
           }
+
+          // 유효한 경우 API 호출 및 처리
+          console.log("회원 정보 업데이트:", myInfoFormData.data);
+          toast.success("회원 정보가 수정 되었습니다.");
           break;
 
         case "password":
-          console.log("비밀번호 모드 - 제출 전 데이터:", passwordFormData);
-          if (passwordFormData) {
-            // 비밀번호 수정 로직
-            console.log("비밀번호 변경 성공!");
-            setFormData(passwordFormData);
-
-            // 데이터 확인
-            console.log("업데이트 후 formData:", passwordFormData);
-            toast.success("비밀번호가 수정 되었습니다.");
+          console.log("비밀번호 모드 - 제출 전 데이터:", passwordFormData.data);
+          if (!passwordFormData.isValid) {
+            // 첫 번째 오류 메시지 또는 기본 메시지 표시
+            const errorMessage =
+              Object.values(passwordFormData.errors).find((msg) => msg) ||
+              "비밀번호 정보를 확인해주세요";
+            return;
           }
+
+          // 유효한 경우 API 호출 및 처리
+          console.log("비밀번호 정보 업데이트:", passwordFormData.data);
+          toast.success("비밀번호 정보가 수정 되었습니다.");
           break;
 
         default:
@@ -122,20 +157,7 @@ const MyProfile = ({ myInfo }) => {
   return (
     <div>
       <div className="flex flex-col items-center pt-10">
-        <div className="profile-image">
-          <div className="relative mb-2">
-            <div className="w-32 h-32 rounded-full bg-background flex items-center justify-center overflow-hidden border-4 border-accentGreen">
-              <img
-                src="/api/placeholder/200/200"
-                alt="Profile"
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <button className="absolute bottom-0 right-0 bg-primaryGreen text-white p-1 rounded-full w-10 h-10">
-              <Camera size={32} strokeWidth={0.75} />
-            </button>
-          </div>
-        </div>
+        <MyProfileImage />
         <div className="mentor-menti-button my-2">
           {myInfo.isMentor ? (
             <div className="px-4 py-1 bg-primaryGreen text-textColor-white rounded-full text-sm w-16 text-center">
@@ -179,14 +201,20 @@ const MyProfile = ({ myInfo }) => {
             {myInfo.region}
           </p>
         </div>
-        <div className="flex justify-between mb-1">
-          <p className="text-md text-textColor-gray text-start">재배 작물</p>
-          <p className="text-lg text-textColor-black text-end">
-            {myInfo.crops.join(", ")}
-          </p>
-        </div>
+        {myInfo.isMentor && (
+          <div className="flex justify-between mb-1">
+            <p className="text-md text-textColor-gray text-start">재배 작물</p>
+            <p className="text-lg text-textColor-black text-end">
+              {myInfo.crops.join(", ")}
+            </p>
+          </div>
+        )}
       </div>
-      <div className="profile-modify grid grid-cols-2 gap-6 mx-10 mt-4 p-2">
+      <div
+        className={`profile-modify ${
+          myInfo.isMentor ? "grid grid-cols-2 gap-6" : "flex justify-around"
+        } mx-10 mt-4 p-2`}
+      >
         <div className="flex flex-col items-center">
           <button
             className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mb-2"
@@ -197,15 +225,17 @@ const MyProfile = ({ myInfo }) => {
           <p className="text-sm text-textColor-black">채팅 보러가기</p>
         </div>
 
-        <div className="flex flex-col items-center">
-          <button
-            className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mb-2"
-            onClick={handleMetorSetting}
-          >
-            <Settings size={20} />
-          </button>
-          <p className="text-sm text-textColor-black">멘토 정보 수정</p>
-        </div>
+        {myInfo.isMentor && (
+          <div className="flex flex-col items-center">
+            <button
+              className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mb-2"
+              onClick={handleMetorSetting}
+            >
+              <Settings size={20} />
+            </button>
+            <p className="text-sm text-textColor-black">멘토 정보 수정</p>
+          </div>
+        )}
 
         <div className="flex flex-col items-center">
           <button
@@ -233,20 +263,26 @@ const MyProfile = ({ myInfo }) => {
         ref={modalRef}
         title={modalTitle}
         isLoading={isSubmitting}
+        isFormValid={isCurrentFormValid()}
         onConfirm={handleConfirm}
-        onCancel={() => setFeedbackMessage({ type: "", message: "" })}
       >
         {/* 조건부 콘텐츠 렌더링 */}
         {modalType === "mentor" && (
           <MentorSettingContent
-            initialData={mentorFormData}
+            initialData={mentorFormData.data}
             onChange={setMentorFormData}
           />
         )}
         {modalType === "myInfo" && (
           <MyInfoSettingContent
-            initialData={myInfoFormData}
+            initialData={myInfoFormData.data}
             onChange={setMyInfoFormData}
+          />
+        )}
+        {modalType === "password" && (
+          <MyPasswordContent
+            initialData={passwordFormData.data}
+            onChange={setPasswordFormData}
           />
         )}
       </MyPageModal>

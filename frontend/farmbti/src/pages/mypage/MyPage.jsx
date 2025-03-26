@@ -1,7 +1,7 @@
 import { useState } from "react";
 import MyProfile from "../../components/MyPage/MyProfile";
 
-import { Outlet, NavLink, useSearchParams } from "react-router";
+import { Outlet, NavLink } from "react-router";
 
 const MyPage = () => {
   const [myInfo, setMyInfo] = useState({
@@ -11,14 +11,14 @@ const MyPage = () => {
     email: "subi@naver.com",
     region: "경상남도 진주시",
     crops: ["미나리", "고구마"],
-    isMentor: true
+    isMentor: false
   });
   return (
     <div className="mypage-container bg-gradient-to-b from-[#FFFCF2] to-secondaryYellow-light flex">
       <div className="w-1/3 h-screen bg-white mx-5 my-10 rounded-lg shadow-lg border-2">
         <MyProfile myInfo={myInfo} />
       </div>
-      <div className="w-2/3 bg-white mx-5 my-10 rounded-lg shadow-lg border-2">
+      <div className="w-2/3 h-screen bg-white mx-5 my-10 rounded-lg shadow-lg border-2">
         <div className="flex justify-between text-center m-7">
           <div className="w-1/2 text-xl font-medium">
             <NavLink

@@ -25,18 +25,70 @@ authAxios.interceptors.request.use(
   }
 );
 
+
+// refreshToken을 이용한 토큰 갱신 함수
+const refreshAccessToken = async () => {
+  try {
+    const refreshToken = localStorage.getItem("refreshToken");
+    if (!refreshToken) {
+      throw new Error("Refresh token not found");
+    }
+    
+    // 토큰 갱신 요청 (백엔드 엔드포인트에 맞게 수정 필요)
+    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/auth/refresh`, {
+      refreshToken
+    });
+    
+    if (response.data.success && response.data.data && response.data.data.token) {
+      localStorage.setItem("accessToken", response.data.data.token.accessToken);
+      localStorage.setItem("refreshToken", response.data.data.token.refreshToken);
+      localStorage.setItem("tokenExpires", response.data.data.token.accessTokenExpiresInForHour);
+      return response.data.data.token.accessToken;
+    } else {
+      throw new Error("Failed to refresh token");
+    }
+  } catch (error) {
+    // 리프레시 토큰 실패 시 로그아웃 처리
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("tokenExpires");
+    localStorage.removeItem("user");
+    window.location.href = "/login";
+    return Promise.reject(error);
+  }
+};
+
+
+
+// 응답 인터셉터
 authAxios.interceptors.response.use(
   (response) => {
     return response.data;
   },
-  (error) => {
+  async (error) => {
+    const originalRequest = error.config;
+    
+    // 토큰 만료로 인한 401 에러이고, 이전에 재시도하지 않은 경우
+    if (error.response && error.response.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      
+      try {
+        const accessToken = await refreshAccessToken();
+        originalRequest.headers["Authorization"] = `Bearer ${accessToken}`;
+        return authAxios(originalRequest);
+      } catch (refreshError) {
+        return Promise.reject(refreshError);
+      }
+    }
+
+
+
     return Promise.reject(error.response?.data || error);
   }
 );
 
 // 인증이 필요없는 api
 const publicAxios = axios.create({
-  // baseURL: import.meta.env.VITE_BASE_URL,
   baseURL: import.meta.env.VITE_BASE_URL,
   withCredentials: true,
   headers: {
@@ -65,5 +117,10 @@ publicAxios.interceptors.response.use(
     return Promise.reject(error.response?.data || error);
   }
 );
+
+
+
+
+
 
 export { authAxios, publicAxios };

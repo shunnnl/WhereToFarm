@@ -53,8 +53,10 @@ const SignupPage = () => {
 
    // Name validation function
     const isValidName = (name) => {
-        return name && name.trim() !== "";
-    };
+      if (!name || name.trim() === "") return false;
+      const trimmedName = name.trim();
+      return trimmedName.length >= 2 && trimmedName.length <= 20;
+      };
    // Email validation function
     const isValidEmail = (email) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -86,10 +88,12 @@ const SignupPage = () => {
         const newErrors = {};
 
         // 이름 검증
-        if (!formData.name || formData.name.trim() === "") {
-          newErrors.name = '이름은 필수 입력 항목입니다.';
+          if (!formData.name || formData.name.trim() === "") {
+            newErrors.name = '이름은 필수 입력 항목입니다.';
+        } else if (!isValidName(formData.name)) {
+            newErrors.name = '이름은 2자 이상 20자 이하로 입력해주세요.';
         }
-      
+    
         // 이메일 검증
         if (!formData.email) {
           newErrors.email = '이메일은 필수 입력 항목입니다.';
@@ -157,14 +161,14 @@ const SignupPage = () => {
         password: formData.password,
         name: formData.name,
         address: formData.address,
-        gender: formData.gender,
+        gender: formData.gender === 'male' ? "0" : "1",
         birth: birthDate
       };
       console.log("요청할 데이터:", userData);
 
       
       // axios를 사용하여 회원가입 API 호출
-      const response = await publicAxios.post('/api/users/signup', userData);
+      const response = await publicAxios.post('/auth/signUp', userData);
       
       console.log('회원가입 성공:', response);
       

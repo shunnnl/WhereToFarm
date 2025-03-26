@@ -17,47 +17,48 @@ const MyPageModal = forwardRef(
       isLoading,
       onConfirm = () => {}, // 확인 시 수정 api 요청
       onCancel = () => {}, // 취소 시 창 닫김
+      isFormValid = true,
     },
     ref
   ) => {
-  const dialogRef = useRef(null);
+    const dialogRef = useRef(null);
 
-  useImperativeHandle(ref, () => ({
-    openModal: () => {
-      dialogRef.current?.showModal();
-    },
-    closeModal: () => {
+    useImperativeHandle(ref, () => ({
+      openModal: () => {
+        dialogRef.current?.showModal();
+      },
+      closeModal: () => {
+        dialogRef.current?.close();
+      },
+    }));
+
+    // 확인 버튼 핸들러
+    const handleConfirm = () => {
+      onConfirm();
+    };
+
+    // 취소 버튼 핸들러
+    const handleCancel = () => {
+      onCancel();
       dialogRef.current?.close();
-    },
-  }));
-
-  // 확인 버튼 핸들러
-  const handleConfirm = () => {
-    onConfirm();
-  };
-
-  // 취소 버튼 핸들러
-  const handleCancel = () => {
-    onCancel();
-    dialogRef.current?.close();
-  };
-
-  // 백드롭 클릭 처리
-  useEffect(() => {
-    const dialog = dialogRef.current;
-
-    const handleBackdropClick = (event) => {
-      if (event.target === dialog) {
-        dialog.close();
-      }
     };
 
-    dialog?.addEventListener("click", handleBackdropClick);
+    // 백드롭 클릭 처리
+    useEffect(() => {
+      const dialog = dialogRef.current;
 
-    return () => {
-      dialog?.removeEventListener("click", handleBackdropClick);
-    };
-  }, []);
+      const handleBackdropClick = (event) => {
+        if (event.target === dialog) {
+          dialog.close();
+        }
+      };
+
+      dialog?.addEventListener("click", handleBackdropClick);
+
+      return () => {
+        dialog?.removeEventListener("click", handleBackdropClick);
+      };
+    }, []);
 
     return (
       <dialog
@@ -87,8 +88,8 @@ const MyPageModal = forwardRef(
             </button>
             <button
               onClick={handleConfirm}
-              className="px-8 py-3 bg-green-700 text-white rounded-lg hover:bg-green-800 transition-colors"
-              disabled={isLoading}
+              className="px-8 py-3 bg-green-700 text-white rounded-lg hover:bg-green-800 transition-colors disabled:opacity-50 disabled:bg-gray-400 disabled:cursor-not-allowed"
+              disabled={isLoading || !isFormValid}
             >
               {isLoading ? "처리중..." : confrimText}
             </button>
