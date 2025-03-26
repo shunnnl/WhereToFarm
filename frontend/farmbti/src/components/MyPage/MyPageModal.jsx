@@ -14,63 +14,51 @@ const MyPageModal = forwardRef(
       children,
       confrimText = "수정",
       cancelText = "취소",
-      isLoading = false,
-      feedbackMessage = { type: "", message: "" },
+      isLoading,
       onConfirm = () => {}, // 확인 시 수정 api 요청
       onCancel = () => {}, // 취소 시 창 닫김
+      isFormValid = true,
     },
     ref
   ) => {
-   const dialogRef = useRef(null);
-   const [isOpen, setIsOpen] = useState(false);
+    const dialogRef = useRef(null);
 
-   useImperativeHandle(ref, () => ({
-     openModal: () => {
-       setIsOpen(true);
-       dialogRef.current?.showModal();
-     },
-     closeModal: () => {
-       setIsOpen(false);
-       dialogRef.current?.close();
-     },
-   }));
+    useImperativeHandle(ref, () => ({
+      openModal: () => {
+        dialogRef.current?.showModal();
+      },
+      closeModal: () => {
+        dialogRef.current?.close();
+      },
+    }));
 
-   useEffect(() => {
-     if (isOpen) {
-       dialogRef.current?.showModal();
-     } else {
-       dialogRef.current?.close();
-     }
-   }, [isOpen]);
+    // 확인 버튼 핸들러
+    const handleConfirm = () => {
+      onConfirm();
+    };
 
-   // 확인 버튼 핸들러
-   const handleConfirm = () => {
-     onConfirm();
-     // 참고: API 호출 결과에 따라 모달을 닫을지 말지는 onConfirm 내부에서 결정
-   };
+    // 취소 버튼 핸들러
+    const handleCancel = () => {
+      onCancel();
+      dialogRef.current?.close();
+    };
 
-   // 취소 버튼 핸들러
-   const handleCancel = () => {
-     onCancel();
-     setIsOpen(false);
-   };
+    // 백드롭 클릭 처리
+    useEffect(() => {
+      const dialog = dialogRef.current;
 
-   // dialog 요소의 close 이벤트 처리
-   useEffect(() => {
-     const dialog = dialogRef.current;
+      const handleBackdropClick = (event) => {
+        if (event.target === dialog) {
+          dialog.close();
+        }
+      };
 
-     const handleDialogClose = () => {
-       setIsOpen(false);
-     };
+      dialog?.addEventListener("click", handleBackdropClick);
 
-     dialog?.addEventListener("close", handleDialogClose);
-
-     return () => {
-       dialog?.removeEventListener("close", handleDialogClose);
-     };
-   }, []);
-
-   if (!isOpen) return null;
+      return () => {
+        dialog?.removeEventListener("click", handleBackdropClick);
+      };
+    }, []);
 
     return (
       <dialog
@@ -100,8 +88,8 @@ const MyPageModal = forwardRef(
             </button>
             <button
               onClick={handleConfirm}
-              className="px-8 py-3 bg-green-700 text-white rounded-lg hover:bg-green-800 transition-colors"
-              disabled={isLoading}
+              className="px-8 py-3 bg-green-700 text-white rounded-lg hover:bg-green-800 transition-colors disabled:opacity-50 disabled:bg-gray-400 disabled:cursor-not-allowed"
+              disabled={isLoading || !isFormValid}
             >
               {isLoading ? "처리중..." : confrimText}
             </button>
