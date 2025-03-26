@@ -9,8 +9,7 @@ pipeline {
         GIT_CREDENTIALS_ID = 'gitlab-credentials'
         FRONT_PROJECT_DIR = "frontend/farmbti"
         DIST_DIR = "frontend/farmbti/dist"
-        DIST_SHARE_DIR = "/home/ubuntu/dist-share"
-        NGINX_HTML_DIR = "/usr/share/nginx/html"
+        NGINX_DIR = "backend/infra/nginx"
     }
 
     stages {
@@ -30,7 +29,7 @@ pipeline {
 
         stage('Build Frontend') {
             steps {
-                dir("${FRONT_PROJECT_DIR}") {
+                dir("frontend/farmbti") {
                     sh '''
                     echo "✅ 프론트엔드 빌드 시작"
                     rm -rf node_modules dist
@@ -42,31 +41,20 @@ pipeline {
             }
         }
 
-        stage('Deploy to Nginx') {
+        stage('Copy dist to Nginx') {
             steps {
                 script {
-                    try {
-                        sh '''
-                        echo "✅ Nginx 배포 시작"
-                        mkdir -p /usr/share/nginx/html
-                        cp -rf frontend/farmbti/dist/* /usr/share/nginx/html/
-                        echo "✅ Nginx 배포 완료"
-                        '''
-                    } catch (Exception e) {
-                        echo "❌ Nginx 배포 중 오류 발생: ${e.getMessage()}"
-                        currentBuild.result = 'FAILURE'
-                    }
+                    sh '''
+                    echo "[INFO] 기존 dist 삭제 중..."
+                    rm -rf /home/ubuntu/nginx/dist
+
+                    echo "[INFO] 새로운 dist 복사 중..."
+                    cp -r frontend/farmbti/dist /home/ubuntu/nginx/dist
+
+                    echo "[INFO] dist 복사 완료 ✅"
+                    '''
                 }
             }
-        }
-    }
-
-    post {
-        success {
-            echo "✅ 프론트엔드 빌드 및 배포 성공"
-        }
-        failure {
-            echo "❌ 프론트엔드 빌드 또는 배포 실패"
         }
     }
 }
