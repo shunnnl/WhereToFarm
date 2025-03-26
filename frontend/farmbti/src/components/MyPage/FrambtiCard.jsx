@@ -22,7 +22,7 @@ const FarmbtiCard = ({ id, reportName, farmerType, date, matchRate }) => {
       <div className="text-md">{farmerType}</div>
       </div>
 
-      <div className="bg-white p-6 rounded-t-lg">
+      <div className="bg-white px-6 py-4 rounded-t-lg">
         <h2 className="font-bold text-lg mb-1">{reportName}</h2>
 
         <div className="text-sm text-gray-500 mb-4">
