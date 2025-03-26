@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import login_image from '../../asset/auth/login.svg'
-import { Link } from 'react-router-dom'; 
+import { Link, useNavigate } from 'react-router-dom'; 
 import { publicAxios } from '../../API/common/AxiosInstance'
+import { useEffect } from 'react';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -10,6 +11,7 @@ const LoginPage = () => {
     email: '',
     password: ''
   });
+  const navigate = useNavigate();
 
   console.log("errors = ", errors)
   // 이메일 유효성 검사
@@ -19,7 +21,7 @@ const LoginPage = () => {
     return emailRegex.test(email);
   };
 
-  const handleLogin = (e) => {
+  const handleLogin =async (e) => {
     e.preventDefault();
        // 이전 오류 초기화
        const newErrors = {
@@ -49,6 +51,49 @@ const LoginPage = () => {
     // 유효성 검사 통과 시 로그인 시도
     console.log('로그인 시도:', { email, password });
     // 여기서 백엔드 API 호출을 진행합니다
+
+    // 유효성 검사 통과 시 로그인 시도
+    try {
+      const response = await publicAxios.post('/auth/login', {
+        email,
+        password
+      });
+      
+      console.log('로그인 성공:', response);
+      
+      // 응답 성공 확인
+      if (response.success && response.data && response.data.token) {
+        // 액세스 토큰 저장
+        localStorage.setItem('accessToken', response.data.token.accessToken);
+        // 리프레시 토큰 저장
+        localStorage.setItem('refreshToken', response.data.token.refreshToken);
+        // 만료 시간 저장
+        localStorage.setItem('tokenExpires', response.data.token.accessTokenExpiresInForHour);
+        // 사용자 정보 저장
+        localStorage.setItem('user', JSON.stringify({
+          id: response.data.id,
+          email: response.data.email,
+          name: response.data.name,
+          address: response.data.address,
+          gender: response.data.gender,
+          profileImage: response.data.profileImage
+        }));
+        
+        // 로그인 후 메인 페이지나 대시보드로 이동
+        navigate('/');
+      } else {
+        // 토큰이 없는 경우 처리
+        newErrors.server = '로그인 응답에 토큰 정보가 없습니다.';
+        setErrors(newErrors);
+      }
+    } catch (error) {
+      console.error('로그인 실패:', error);
+      newErrors.server = error.message || '로그인에 실패했습니다. 다시 시도해주세요.';
+      setErrors(newErrors);
+    }
+  
+
+
   };
 
   return (
