@@ -18,7 +18,7 @@ const MyPage = () => {
       <div className="w-1/3 h-screen bg-white mx-5 my-10 rounded-lg shadow-lg border-2">
         <MyProfile myInfo={myInfo} />
       </div>
-      <div className="w-2/3 bg-white mx-5 my-10 rounded-lg shadow-lg border-2">
+      <div className="w-2/3 h-screen bg-white mx-5 my-10 rounded-lg shadow-lg border-2">
         <div className="flex justify-between text-center m-7">
           <div className="w-1/2 text-xl font-medium">
             <NavLink
