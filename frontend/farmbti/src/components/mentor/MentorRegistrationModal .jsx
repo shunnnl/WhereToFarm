@@ -22,16 +22,16 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
   
 
   const topFood = [
-    { id: 'apple', label: '사과', iconSrc: 'src/asset/mentor/icons/apple.png' },
-    { id: 'cucumber', label: '오이', iconSrc: 'src/asset/mentor/icons/cucumber.png' },
-    { id: 'grape', label: '포도', iconSrc: 'src/asset/mentor/icons/grape.png' },
-    { id: 'greenonion', label: '파', iconSrc: 'src/asset/mentor/icons/greenonion.png' },
-    { id: 'lettuce', label: '상추', iconSrc: 'src/asset/mentor/icons/lettuce.png' },
-    { id: 'onion', label: '양파', iconSrc: 'src/asset/mentor/icons/onion.png' },
-    { id: 'pear', label: '배', iconSrc: 'src/asset/mentor/icons/pear.png' },
-    { id: 'sweetpotato', label: '고구마', iconSrc: 'src/asset/mentor/icons/sweetpotato.png' },
-    { id: 'tangerine', label: '귤', iconSrc: 'src/asset/mentor/icons/tangerine.png' },
-    { id: 'watermelon', label: '수박', iconSrc: 'src/asset/mentor/icons/watermelon.png' }
+    { id: '사과', label: '사과', iconSrc: 'src/asset/mentor/icons/apple.png' },
+    { id: '오이', label: '오이', iconSrc: 'src/asset/mentor/icons/cucumber.png' },
+    { id: '포도', label: '포도', iconSrc: 'src/asset/mentor/icons/grape.png' },
+    { id: '파', label: '파', iconSrc: 'src/asset/mentor/icons/greenonion.png' },
+    { id: '상추', label: '상추', iconSrc: 'src/asset/mentor/icons/lettuce.png' },
+    { id: '양파', label: '양파', iconSrc: 'src/asset/mentor/icons/onion.png' },
+    { id: '배', label: '배', iconSrc: 'src/asset/mentor/icons/pear.png' },
+    { id: '고구마', label: '고구마', iconSrc: 'src/asset/mentor/icons/sweetpotato.png' },
+    { id: '귤', label: '귤', iconSrc: 'src/asset/mentor/icons/tangerine.png' },
+    { id: '수박', label: '수박', iconSrc: 'src/asset/mentor/icons/watermelon.png' }
   ];
 
   const toggleFood = (id) => {
@@ -67,12 +67,12 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
       
       // 전송할 데이터 구성
       const mentorData = {
-        farmingStartDate: formData.Year, // 귀농 연도
-        crops: selectedFoods, // 선택한 작물 목록
-        description: description, // 멘토 소개
-        createdAt: new Date().toISOString() // 생성 시간
-      };
+        bio: description, // description을 bio로 매핑
+        farmingYears: parseInt(formData.Year), // 귀농 연도를 숫자로 변환
+        cropNames: selectedFoods // 선택한 작물 목록
+        };
       
+      console.log("mentorData = ", mentorData)
       // POST 요청 보내기
       const response = await publicAxios.post('/mentors', mentorData);
       

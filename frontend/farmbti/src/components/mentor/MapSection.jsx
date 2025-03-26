@@ -10,10 +10,12 @@ const MapSection = () => {
     const [hoveredRegion, setHoveredRegion] = useState(null);
     const svgRef = useRef(null);
     const [selectedRegion, setSelectedRegion] = useState(null);
+    const [selectedCity, setSelectedCity] = useState(null);
     const [displayRegion, setDisplayRegion] = useState(null);
     const [candidate, setCandidate] = useState(null);
     // 원래 색상을 저장할 객체 추가
     const originalFillsRef = useRef({});
+
 
     console.log("selectedRegion = ", selectedRegion)
 
@@ -41,6 +43,14 @@ const MapSection = () => {
         }
         return null;
     };
+
+
+    const handleCardSelect = (cityName) => {
+        console.log("선택된 도시:", cityName);
+        setSelectedCity(cityName);
+      };
+
+
 
     // SVG 파일을 직접 로드한 후 paths 요소들에 이벤트 리스너 추가
     useEffect(() => {
@@ -301,12 +311,14 @@ const MapSection = () => {
                         <>
                         {/* 카드 그리드 배치 */}
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mb-6">
-                            {currentItems.map((regionName, index) => (
-                            <RegionCard 
-                                key={startIndex + index} 
-                                regionName={regionName} 
-                                index={startIndex + index} 
-                            />
+                        {currentItems.map((regionName, index) => (
+                                  <RegionCard
+                                  key={startIndex + index}
+                                  regionName={regionName}
+                                  index={startIndex + index}
+                                  onSelectCard={handleCardSelect}
+                                  isSelected={selectedCity === regionName}
+                                />
                             ))}
                         </div>
                         
@@ -329,10 +341,11 @@ const MapSection = () => {
            {/* 멘토 선택 영역 - 지도/지역 목록 아래에 배치 */}
            {selectedRegion && (
             <div className="mt-8 w-full">
-                <MentorSelect 
-                    candidateList={findCandidateRegion(selectedRegion.name)} 
-                    regionName={selectedRegion.name || ''}
-                />
+                 <MentorSelect
+                    candidateList={selectedCity ? findCandidateRegion(selectedCity) : findCandidateRegion(selectedRegion.name)}
+                    regionName={selectedRegion.name} // 도 이름
+                    cityName={selectedCity || ''} // 시 이름
+                    />
             </div>
         )}
     </div>
