@@ -18,6 +18,9 @@ import FarmbtiReport from "./components/MyPage/FarmbtiReport";
 import CropCalculateReport from "./components/MyPage/CropCalculateReport";
 import Estate from "./pages/estate/Estate";
 import UserDeletePage from "./pages/auth/UserDeletePage";
+import GuideBookPage from "./pages/etc/guidebook/GuideBookPage";
+
+
 
 function App() {
   return (
@@ -37,6 +40,7 @@ function App() {
           <Route path="/crop-calculator" element={<CropCalculatorPage />} />
           <Route path="/chat" element={<Chat />} />
           <Route path="/estate" element={<Estate />} />
+          <Route path="/guidebook" element={<GuideBookPage />} />
 
           <Route path="/mypage" element={<MyPage />}>
             {/* 중첩 라우트 정의 */}
