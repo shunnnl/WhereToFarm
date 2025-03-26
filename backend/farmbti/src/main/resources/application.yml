@@ -39,6 +39,7 @@ springdoc:
     path: /api/swagger-ui.html
   api-docs:
     path: /api/v3/api-docs
+  base-url: /api
 
 cloud:
   aws:
