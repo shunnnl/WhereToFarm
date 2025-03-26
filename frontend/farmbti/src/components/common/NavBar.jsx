@@ -1,20 +1,26 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import logo from "../../asset/navbar/main_logo.svg";
 import userIcon from "../../asset/navbar/user_icon.svg";
 import bellIcon from "../../asset/navbar/bell_icon.svg";
 
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { logout } from '../../store/slices/authSlice'; // 로그아웃 액션 import 경로 수정
 
 const Navbar = () => {
     const menuItemClass = "py-1 px-4 text-gray-900 hover:text-green-700 dark:text-white dark:hover:text-blue-500";
     
     // Redux 스토어에서 로그인 상태 가져오기
     const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+    const dispatch = useDispatch(); // dispatch 추가
+    const navigate = useNavigate(); // 페이지 이동을 위한 훅 추가
     
     // 드롭다운 메뉴 상태 관리
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
+    
+    // 로그아웃 알림 상태 관리
+    const [showLogoutAlert, setShowLogoutAlert] = useState(false);
     
     // 드롭다운 외부 클릭 시 닫기
     useEffect(() => {
@@ -30,9 +36,43 @@ const Navbar = () => {
         };
     }, []);
 
+    // 로그아웃 핸들러 추가
+    const handleLogout = (e) => {
+        e.preventDefault();
+        
+        // 로컬 스토리지에서 토큰 삭제
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        
+        dispatch(logout()); // 로그아웃 액션 디스패치
+        setIsDropdownOpen(false);
+        setShowLogoutAlert(true); // 로그아웃 알림 표시
+        
+        // 3초 후 알림 자동 닫기
+        setTimeout(() => {
+            setShowLogoutAlert(false);
+        }, 3000);
+        
+        navigate('/'); // 홈페이지로 리다이렉트
+    };
+
     return (
-        <nav className="bg-white border-gray-200 dark:bg-gray-900 relative z-[100]">
-            <div className="max-w-screen-2xl flex items-center justify-between mx-auto px-24 py-4">
+        <>
+            {/* 로그아웃 알림 */}
+            {showLogoutAlert && (
+                <div className="fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded z-[200] shadow-lg flex items-center justify-between">
+                    <span>로그아웃되었습니다.</span>
+                    <button 
+                        onClick={() => setShowLogoutAlert(false)}
+                        className="ml-4 text-green-700 hover:text-green-900"
+                    >
+                        ✕
+                    </button>
+                </div>
+            )}
+            
+            <nav className="bg-white border-gray-200 dark:bg-gray-900 relative z-[100]">
+                <div className="max-w-screen-2xl flex items-center justify-between mx-auto px-24 py-4">
                 <div className="flex items-center ml-0">
                     <Link to="/">
                         <img
@@ -81,13 +121,13 @@ const Navbar = () => {
                                 >
                                     마이페이지
                                 </Link>
-                                <Link 
-                                    to="/logout" 
-                                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                    onClick={() => setIsDropdownOpen(false)}
+                                <a 
+                                    href="#" 
+                                    className="block px-4 py-2 text-sm text-red-500 hover:bg-gray-100"
+                                    onClick={handleLogout} // 로그아웃 핸들러 연결
                                 >
                                     로그아웃
-                                </Link>
+                                </a>
                             </div>
                         )}
                         
@@ -122,6 +162,7 @@ const Navbar = () => {
                 </div>
             </div>
         </nav>
+        </>
     );
 };
 
