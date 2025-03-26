@@ -30,4 +30,8 @@ public class Mentors extends TimeStampEntity {
     @Column(name = "farming_years")
     private Integer farmingYears;
 
+    public void updateMentorInfo(String bio, Integer farmingYears) {
+        this.bio = bio;
+        this.farmingYears = farmingYears;
+    }
 }

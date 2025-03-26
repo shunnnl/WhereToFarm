@@ -4,6 +4,10 @@ import com.backend.farmbti.auth.domain.Users;
 import com.backend.farmbti.auth.exception.AuthErrorCode;
 import com.backend.farmbti.auth.repository.UsersRepository;
 import com.backend.farmbti.common.exception.GlobalException;
+import com.backend.farmbti.mentors.domain.Mentors;
+import com.backend.farmbti.mentors.domain.MentorsCrops;
+import com.backend.farmbti.mentors.repository.MentorsCropsRepository;
+import com.backend.farmbti.mentors.repository.MentorsRepository;
 import com.backend.farmbti.users.dto.CurrentUserResponse;
 import com.backend.farmbti.users.dto.PasswordChangeRequest;
 import com.backend.farmbti.users.dto.UserDeleteRequest;
@@ -15,12 +19,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class UsersService {
 
     private final UsersRepository usersRepository;
+    private final MentorsRepository mentorsRepository;  // 멘토 리포지토리 추가
+    private final MentorsCropsRepository mentorsCropsRepository;  // 멘토-작물 리포지토리 추가
     private final PasswordEncoder passwordEncoder;
 
     /**
@@ -56,7 +66,19 @@ public class UsersService {
             throw new GlobalException(UsersErrorCode.PASSWORD_MISMATCH);
         }
 
-        // 회원 삭제
+        // 1. 멘토로 등록되어 있는지 확인
+        Optional<Mentors> mentorOptional = mentorsRepository.findByUserId(userId);
+
+        // 2. 멘토인 경우, 멘토-작물 관계 삭제 후 멘토 정보 삭제
+        if (mentorOptional.isPresent()) {
+            Mentors mentor = mentorOptional.get();
+            // 2-1. 먼저 멘토-작물 관계 삭제
+            mentorsCropsRepository.deleteByMentorId(mentor.getId());
+            // 2-2. 그 다음 멘토 정보 삭제
+            mentorsRepository.delete(mentor);
+        }
+
+        // 3. 마지막으로 사용자 정보 삭제
         usersRepository.delete(user);
     }
 
@@ -79,21 +101,42 @@ public class UsersService {
 
 
     /**
-     * 현재 로그인한 사용자 정보 조회
+     * 현재 로그인한 사용자 정보 조회 (멘토 정보 포함)
      */
     @Transactional(readOnly = true)
     public CurrentUserResponse getCurrentUserInfo(Long userId) {
+        // 1. 사용자 기본 정보 조회
         Users user = usersRepository.findById(userId)
                 .orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
 
-        return new CurrentUserResponse(
-                user.getEmail(),
-                user.getName(),
-                user.getAddress(),
-                user.getBirth(),
-                user.getGender(),
-                user.getProfileImage()
-        );
+        CurrentUserResponse.CurrentUserResponseBuilder builder = CurrentUserResponse.builder()
+                .email(user.getEmail())
+                .name(user.getName())
+                .address(user.getAddress())
+                .birth(user.getBirth())
+                .gender(user.getGender())
+                .profileImage(user.getProfileImage());
+
+        // 2. 사용자의 멘토 정보 조회
+        Optional<Mentors> mentorOptional = mentorsRepository.findByUserId(userId);
+
+        // 3. 멘토인 경우 추가 정보 설정
+        if (mentorOptional.isPresent()) {
+            Mentors mentor = mentorOptional.get();
+
+            // 멘토가 키우는 작물 조회
+            List<MentorsCrops> mentorsCrops = mentorsCropsRepository.findByMentorId(mentor.getId());
+            List<String> cropNames = mentorsCrops.stream()
+                    .map(mc -> mc.getCrop().getName())
+                    .collect(Collectors.toList());
+
+            builder.isMentor(true)
+                    .bio(mentor.getBio())
+                    .farmingYears(mentor.getFarmingYears())
+                    .cropNames(cropNames);
+        }
+
+        return builder.build();
     }
 
     /**

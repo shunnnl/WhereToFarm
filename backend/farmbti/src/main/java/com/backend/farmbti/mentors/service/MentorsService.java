@@ -74,6 +74,38 @@ public class MentorsService {
     }
 
     /**
+     * 멘토 정보 수정
+     */
+    @Transactional
+    public void updateMentorInfo(MentorRegisterRequest request, Long userId) {
+        // 1. 멘토 정보 조회
+        Mentors mentor = mentorsRepository.findByUserId(userId)
+                .orElseThrow(() -> new GlobalException(MentorsErrorCode.MENTOR_NOT_FOUND));
+
+        // 2. 입력값 검증 (기존 validateMentorRequest 메소드 재사용)
+        validateMentorRequest(request);
+
+        // 3. 작물 이름 유효성 검증 (기존 validateCropNames 메소드 재사용)
+        List<Crops> newCrops = validateCropNames(request.getCropNames());
+
+        // 4. 멘토 정보 업데이트
+        mentor.updateMentorInfo(request.getBio(), request.getFarmingYears());
+
+        // 5. 기존 멘토-작물 관계 삭제
+        mentorsCropsRepository.deleteByMentorId(mentor.getId());
+
+        // 6. 새로운 멘토-작물 관계 설정
+        List<MentorsCrops> mentorCrops = newCrops.stream()
+                .map(crop -> MentorsCrops.builder()
+                        .mentor(mentor)
+                        .crop(crop)
+                        .build())
+                .collect(Collectors.toList());
+
+        mentorsCropsRepository.saveAll(mentorCrops);
+    }
+
+    /**
      * 멘토 등록 요청 검증
      */
     private void validateMentorRequest(MentorRegisterRequest request) {

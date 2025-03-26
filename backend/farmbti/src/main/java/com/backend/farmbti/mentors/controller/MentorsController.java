@@ -25,4 +25,12 @@ public class MentorsController {
         mentorsService.registerMentor(request, userId);
         return CommonResponseDto.ok();
     }
+
+    @PutMapping("/modify")
+    @Operation(summary = "멘토 정보 수정", description = "로그인한 멘토의 정보(귀농시작년도, 소개, 키우는 작물)를 수정합니다.")
+    public CommonResponseDto updateMentorInfo(@RequestBody MentorRegisterRequest request) {
+        Long userId = securityUtils.getCurrentUsersId();
+        mentorsService.updateMentorInfo(request, userId);
+        return CommonResponseDto.ok();
+    }
 }

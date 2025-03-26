@@ -10,4 +10,5 @@ import java.util.List;
 public interface MentorsCropsRepository extends JpaRepository<MentorsCrops, Long> {
     List<MentorsCrops> findByMentorId(Long mentorId);
     void deleteByMentorId(Long mentorId);
+
 }
