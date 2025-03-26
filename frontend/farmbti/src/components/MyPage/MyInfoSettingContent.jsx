@@ -96,7 +96,6 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
       ...prev,
       gender: errorMessage,
     }));
-    ㅇㅇㅇㅇ;
   };
 
   // 주소가 선택되었을 때 호출될 함수
