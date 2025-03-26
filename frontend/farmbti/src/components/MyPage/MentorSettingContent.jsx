@@ -236,17 +236,26 @@ const MentorSettingContent = ({ onChange, initialData }) => {
       <div className="flex items-center space-x-4">
         <h3 className="text-xl font-medium whitespace-nowrap">멘토 소개</h3>
         <div className="flex flex-wrap justify-center w-full">
-          <textarea
-            id="description"
-            name="description"
-            value={description}
-            onChange={handleDescriptionChange}
-            className="w-full max-w-4xl px-3 py-2 border border-gray-300 rounded-lg 
+          <div className="w-full max-w-4xl relative">
+            <textarea
+              id="description"
+              name="description"
+              value={description}
+              onChange={handleDescriptionChange}
+              className="w-full max-w-4xl px-3 py-2 border border-gray-300 rounded-lg 
             focus:outline-none focus:ring-2 focus:ring-green-500 
             focus:border-transparent resize-y"
-            placeholder="여기에 텍스트를 입력하세요"
-            required
-          />
+              placeholder="여기에 텍스트를 입력하세요"
+              required
+            />
+            <div
+              className={`absolute bottom-2 right-2 text-sm ${
+                description.length > 100 || description.length < 10 ? "text-red-500" : "text-gray-500"
+              }`}
+            >
+              {description.length}/100
+            </div>
+          </div>
         </div>
       </div>
       {errors.description && (
