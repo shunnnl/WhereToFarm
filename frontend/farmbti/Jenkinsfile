@@ -8,8 +8,8 @@ pipeline {
     environment {
         GIT_CREDENTIALS_ID = 'gitlab-credentials'
         FRONT_PROJECT_DIR = "frontend/farmbti"
-        DIST_DIR = "frontend/farmbti/dist"
-        NGINX_DIR = "backend/infra/nginx"
+        DIST_DIR = "${WORKSPACE}/frontend/farmbti/dist"
+        NGINX_DIR = "/home/ubuntu/jenkins-data/workspace/farmbti-be/infra/nginx"
     }
 
     stages {
@@ -29,7 +29,7 @@ pipeline {
 
         stage('Build Frontend') {
             steps {
-                dir("frontend/farmbti") {
+                dir("${FRONT_PROJECT_DIR}") {
                     sh '''
                     echo "✅ 프론트엔드 빌드 시작"
                     rm -rf node_modules dist
@@ -46,7 +46,7 @@ pipeline {
                 sh '''
                 echo "✅ 프론트 dist 디렉토리 복사 시작"
                 rm -rf /home/ubuntu/jenkins-data/workspace/farmbti-be/infra/nginx/dist
-                cp -r /home/ubuntu/jenkins-data/workspace/farmbti-fe/frontend/farmbti/dist /home/ubuntu/jenkins-data/workspace/farmbti-be/infra/nginx/
+                cp -r ${WORKSPACE}/frontend/farmbti/dist /home/ubuntu/jenkins-data/workspace/farmbti-be/infra/nginx/
                 echo "✅ 복사 완료"
                 '''
             }
