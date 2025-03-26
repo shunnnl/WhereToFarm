@@ -1,7 +1,7 @@
 import { useState } from "react";
 import MyProfile from "../../components/MyPage/MyProfile";
 
-import { Outlet, NavLink, useSearchParams } from "react-router";
+import { Outlet, NavLink } from "react-router";
 
 const MyPage = () => {
   const [myInfo, setMyInfo] = useState({
