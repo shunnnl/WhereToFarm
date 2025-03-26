@@ -115,12 +115,13 @@ pipeline {
                     sh 'docker ps -a | grep farmbti-backend'
 
                     echo "✅ Nginx 배포 시작"
-                    sh '''
-                        cd backend/infra/nginx
-                        docker-compose down || true
-                        docker-compose build --no-cache
-                        docker-compose up -d
-                    '''
+                    dir("${env.WORKSPACE}/backend/infra/nginx") {
+                        sh '''
+                            docker-compose down || true
+                            docker-compose build --no-cache
+                            docker-compose up -d
+                        '''
+                    }
                     echo "✅ Nginx 배포 완료"
                 }
             }
