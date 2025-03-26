@@ -117,9 +117,9 @@ pipeline {
                     echo "✅ Nginx 배포 시작"
                     dir("${env.WORKSPACE}/backend/infra/nginx") {
                         sh '''
-                            docker compose down || true
-                            docker compose build --no-cache
-                            docker compose up -d
+                            docker compose -f docker-compose.yml down || true
+                            docker compose -f docker-compose.yml build --no-cache
+                            docker compose -f docker-compose.yml up -d
                         '''
                     }
                     echo "✅ Nginx 배포 완료"
