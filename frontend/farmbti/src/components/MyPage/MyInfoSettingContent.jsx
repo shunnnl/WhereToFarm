@@ -35,15 +35,32 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
   const validateField = (name, value) => {
     switch (name) {
       case "name":
-        return !value ? "이름을 입력해주세요" : "";
+        if (!value) return "이름을 입력해주세요";
+        if (value.length < 2) return "이름은 최소 2자 이상이어야 합니다";
+        if (value.length > 20) return "이름은 최대 20자까지 입력 가능합니다";
+        if (/[0-9!@#$%^&*(),.?":{}|<>]/.test(value))
+          return "이름에는 특수문자와 숫자를 사용할 수 없습니다";
+        return "";
+
       case "gender":
-        return !value ? "성별을 선택해주세요" : "";
+        if (!value) return "성별을 선택해주세요";
+        return "";
+
       case "Year":
+        if (!value) return "출생 연도를 선택해주세요";
+        return "";
+
       case "Month":
+        if (!value) return "출생 월을 선택해주세요";
+        return "";
+
       case "Day":
-        return !value ? "생년월일을 모두 선택해주세요" : "";
+        if (!value) return "출생일을 선택해주세요";
+        return "";
+
       case "address":
-        return !value ? "주소를 입력해주세요" : "";
+        if (!value) return "주소를 입력해주세요";
+        return "";
       default:
         return "";
     }

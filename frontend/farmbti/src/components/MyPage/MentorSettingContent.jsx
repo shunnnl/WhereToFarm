@@ -72,12 +72,28 @@ const MentorSettingContent = ({ onChange, initialData }) => {
 
   // 유효성 검사 함수
   const validateField = (name, value) => {
-    // 오류 메시지 또는 빈 문자열 반환
-    if (name === "Year" && !value) return "연도를 선택해주세요";
-    if (name === "description" && value.length < 10)
-      return "10자 이상 입력해주세요";
-    if (name === "description" && value.length > 100)
-      return "100자 이내로 입력해주세요";
+    switch (name) {
+      case "Year":
+        if (!value) return "연도를 선택해주세요";
+        if (value < 1980 || value > currentYear)
+          return "유효한 연도를 선택해주세요";
+        return "";
+
+      case "foodType":
+        if (!value || value.length === 0)
+          return "최소 한 개 이상의 작물을 선택해주세요";
+        if (value.length > 5) return "최대 5개까지 선택 가능합니다";
+        return "";
+
+      case "description":
+        if (!value) return "멘토 소개를 입력해주세요";
+        if (value.length < 10) return "10자 이상 입력해주세요";
+        if (value.length > 100) return "100자 이내로 입력해주세요";
+        return "";
+
+      default:
+        return "";
+    }
   };
 
   // 폼 데이터 변경 핸들러
