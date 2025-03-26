@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router";
+import useKakaoAddressService from "../../API/useKakaoAddressService";
 
 const MyInfoSettingContent = ({ onChange, initialData }) => {
   const [formData, setFormData] = useState({
@@ -95,7 +96,19 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
       ...prev,
       gender: errorMessage,
     }));
+    ㅇㅇㅇㅇ;
   };
+
+  // 주소가 선택되었을 때 호출될 함수
+  const handleAddressSelected = (addressData) => {
+    setFormData((prev) => ({
+      ...prev,
+      address: addressData.address,
+    }));
+  };
+
+  // 주소검색 서비스 훅 사용
+  const { openAddressSearch } = useKakaoAddressService(handleAddressSelected);
 
   // 폼 제출 핸들러
   const handleSubmit = (e) => {
@@ -230,20 +243,29 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
         {/* 주소 */}
         <div className="space-y-2">
           <h2 className="text-lg font-medium">주소</h2>
-          <input
-            type="text"
-            name="address"
-            value={formData.address}
-            onChange={handleChange}
-            placeholder="주소를 입력하세요"
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-supportGreen"
-          />
+          <div className="flex gap-2">
+            <input
+              type="text"
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              placeholder="주소를 입력하세요"
+              className="flex-grow px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-supportGreen"
+            />
+            <button
+              type="button"
+              onClick={openAddressSearch}
+              className="whitespace-nowrap px-4 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+            >
+              주소 검색
+            </button>
+          </div>
           {errors.address && (
             <div className="text-red-500 text-sm mt-1">{errors.address}</div>
           )}
         </div>
       </form>
-      <div className="mt-3 flex justify-end px-6 text-textColor-gray underline hover:text-textColor-darkgray hover:underline">
+      <div className="mt-5 flex justify-start px-6 text-textColor-gray underline hover:text-textColor-darkgray hover:underline">
         <Link to={"/account/delete"}>회원 탈퇴 하기</Link>
       </div>
     </>
