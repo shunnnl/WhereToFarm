@@ -1,7 +1,10 @@
 package com.backend.farmbti.chat.controller;
 
+import com.backend.farmbti.chat.dto.MessageResponse;
+import com.backend.farmbti.chat.service.WebSocketService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
@@ -12,12 +15,16 @@ import org.springframework.stereotype.Controller;
 @RequiredArgsConstructor
 public class WebSocketController {
 
+    private final WebSocketService webSocketService;
+
     @MessageMapping("/{roomId}/send")
     @SendTo("/topic/chat/{roomId}")
-    public ChatMessageDto sendMessage(@DestinationVariable Long roomId, ChatMessageDto message) {
-        message.setTimestamp(LocalDateTime.now());
-        // 메시지 저장 로직 추가
-        return message;
+    public MessageResponse sendMessage(@DestinationVariable Long roomId, String message) {
+
+        // 메시지 처리 로직
+        MessageResponse messageResponse = webSocketService.saveAndGetMessage(roomId, message);
+
+        return messageResponse;
     }
 
 

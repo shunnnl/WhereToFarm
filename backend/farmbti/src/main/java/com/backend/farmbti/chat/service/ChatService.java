@@ -7,7 +7,9 @@ import com.backend.farmbti.chat.dto.ChatListResponse;
 import com.backend.farmbti.chat.dto.ChatRequest;
 import com.backend.farmbti.chat.dto.ChatResponse;
 import com.backend.farmbti.chat.entity.Chat;
+import com.backend.farmbti.chat.entity.ChatMessage;
 import com.backend.farmbti.chat.exception.ChatErrorCode;
+import com.backend.farmbti.chat.repository.ChatMessageRepository;
 import com.backend.farmbti.chat.repository.ChatRepository;
 import com.backend.farmbti.common.exception.GlobalErrorCode;
 import com.backend.farmbti.common.exception.GlobalException;
@@ -30,6 +32,7 @@ public class ChatService {
     private final ChatRepository chatRepository;
     private final UsersRepository usersRepository;
     private final MentorsRepository mentorsRepository;
+    private final ChatMessageRepository chatMessageRepository;
 
     @Transactional
     public ChatResponse create(Long userId, ChatRequest chatRequest) {
@@ -98,11 +101,15 @@ public class ChatService {
                     ? chat.getMentor().getUser().getProfileImage()
                     : chat.getMentee().getProfileImage();
 
+            ChatMessage latestMessageObj = chatMessageRepository.findTopByChat_RoomIdOrderBySendAtDesc(chat.getRoomId());
+            String latestMessage = latestMessageObj != null ? latestMessageObj.getContent() : null;
+
             return ChatListResponse.builder()
                     .roomId(chat.getRoomId())
                     .otherUserId(otherUserId)
                     .otherUserName(otherUserName)
                     .otherUserProfile(otherUserProfile)
+                    .lastMessage(latestMessage)
                     .build();
 
         }).collect(Collectors.toList());

@@ -24,6 +24,10 @@ public enum SecurityPath {
     //WebSocket 관련 경로
     WEB_SOCKET("/websocket-test.html"),
     WEB_SOCKET_CONNECTION("/gs-guide-websocket"),
+    WEB_SOCKET_INFO("/ws/**"),
+
+    //static icon
+    STATIC("/favicon.ico"),
 
     // Auth 관련 경로
     SIGNUP("/auth/signUp"),

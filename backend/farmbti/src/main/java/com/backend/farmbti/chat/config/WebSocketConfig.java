@@ -12,7 +12,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/topic");  // '/topic'으로 시작하는 메시지를 메모리 기반 메시지 브로커가 처리
+        config.enableSimpleBroker("/topic");  // '/topic'으로 시작하는 메시지를 메시지 브로커가 처리
         config.setApplicationDestinationPrefixes("/chat");  // 클라이언트에서 서버로 메시지 전송 시 사용할 접두사
     }
 
