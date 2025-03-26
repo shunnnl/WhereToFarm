@@ -1,13 +1,14 @@
 package com.backend.farmbti.chat.controller;
 
 import com.backend.farmbti.chat.dto.MessageResponse;
+import com.backend.farmbti.chat.exception.ChatErrorCode;
 import com.backend.farmbti.chat.service.WebSocketService;
+import com.backend.farmbti.common.exception.GlobalException;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.stereotype.Controller;
 
 @Controller
@@ -21,34 +22,14 @@ public class WebSocketController {
     @SendTo("/topic/chat/{roomId}")
     public MessageResponse sendMessage(@DestinationVariable Long roomId, String message) {
 
+        if (message.length() >= 1000) {
+            throw new GlobalException(ChatErrorCode.MESSAGE_TO_LONG);
+        }
+
         // 메시지 처리 로직
         MessageResponse messageResponse = webSocketService.saveAndGetMessage(roomId, message);
 
         return messageResponse;
-    }
-
-
-    @MessageMapping("/{roomId}/typing")
-    @SendTo("/topic/chat/{roomId}/typing")
-    public void sendTypingStatus() {
-
-    }
-
-    @MessageMapping("/room/{roomId}/read")
-    @SendTo("/topic/room/{roomId}/read")
-    public void sendReadReceipt() {
-
-    }
-
-    @SubscribeMapping("/room/{roomId}")
-    public void subscribeRoom() {
-
-    }
-
-    @MessageMapping("/status")
-    @SendTo("/topic/status")
-    public void updateUserStatus() {
-
     }
 
 }

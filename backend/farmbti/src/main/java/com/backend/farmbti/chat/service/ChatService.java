@@ -6,6 +6,7 @@ import com.backend.farmbti.auth.repository.UsersRepository;
 import com.backend.farmbti.chat.dto.ChatListResponse;
 import com.backend.farmbti.chat.dto.ChatRequest;
 import com.backend.farmbti.chat.dto.ChatResponse;
+import com.backend.farmbti.chat.dto.MessageResponse;
 import com.backend.farmbti.chat.entity.Chat;
 import com.backend.farmbti.chat.entity.ChatMessage;
 import com.backend.farmbti.chat.exception.ChatErrorCode;
@@ -130,6 +131,23 @@ public class ChatService {
         }
 
         chatRepository.deleteById(roomId);
+
+    }
+
+    public List<MessageResponse> getMessageDetail(Long roomId) {
+
+        List<ChatMessage> chatMessages = chatMessageRepository.findByChat_RoomId(roomId);
+
+        return chatMessages.stream().map(
+                messages -> {
+
+                    return MessageResponse.builder()
+                            .messageId(messages.getMessageId())
+                            .content(messages.getContent())
+                            .sentAt(messages.getSendAt())
+                            .build();
+
+                }).collect(Collectors.toList());
 
     }
 }

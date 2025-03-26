@@ -6,7 +6,6 @@ import lombok.Getter;
 @Builder
 @Getter
 public class ChatResponse {
-
     private Long roomId;
     private Long currentUserId;
     private Long otherUserId;

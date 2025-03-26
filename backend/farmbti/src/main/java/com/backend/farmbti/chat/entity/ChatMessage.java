@@ -17,8 +17,7 @@ public class ChatMessage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "message_id")
     private Long messageId;
-
-    @Column(length = 1000)
+    
     private String content;
 
     @Column(name = "send_at")

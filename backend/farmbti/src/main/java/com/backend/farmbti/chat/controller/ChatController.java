@@ -43,13 +43,12 @@ public class ChatController {
     }
     //endOfChat
 
-//    @GetMapping("/{roomId}/messages/detail")
-//    @Operation(summary = "메시지 목록 조회", description = "특정 채팅방의 메시지들을 조회합니다.")
-//    public CommonResponseDto sendMessage(@PathVariable Long roomId) {
-//
-//
-//        return CommonResponseDto.ok();
-//    }
+    @GetMapping("/{roomId}/messages/detail")
+    @Operation(summary = "메시지 목록 조회", description = "특정 채팅방의 메시지들을 조회합니다.")
+    public CommonResponseDto sendMessage(@PathVariable Long roomId) {
+
+        return CommonResponseDto.ok(chatService.getMessageDetail(roomId));
+    }
 //
 //    @DeleteMapping("/{roomId}/messages/{messageId}")
 //    @Operation(summary = "메시지 삭제", description = "특정 메시지를 삭제합니다.")
@@ -63,12 +62,6 @@ public class ChatController {
 //    @GetMapping("/notifications")
 //    @Operation(summary = "채팅 알림 조회", description = "사용자의 읽지 않은 채팅 알림을 조회합니다.")
 //    public CommonResponseDto getNotifications() {
-//        return CommonResponseDto.ok();
-//    }
-//
-//    @PutMapping("/{roomId}/read")
-//    @Operation(summary = "채팅방 읽음 처리", description = "특정 채팅방의 모든 메시지를 읽음 처리합니다.")
-//    public CommonResponseDto markAsRead(@PathVariable Long roomId) {
 //        return CommonResponseDto.ok();
 //    }
 
