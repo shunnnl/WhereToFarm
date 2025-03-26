@@ -11,7 +11,7 @@ const MyPage = () => {
     email: "subi@naver.com",
     region: "경상남도 진주시",
     crops: ["미나리", "고구마"],
-    isMentor: true
+    isMentor: false
   });
   return (
     <div className="mypage-container bg-gradient-to-b from-[#FFFCF2] to-secondaryYellow-light flex">

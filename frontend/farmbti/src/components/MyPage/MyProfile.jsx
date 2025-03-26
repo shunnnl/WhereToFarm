@@ -157,7 +157,7 @@ const MyProfile = ({ myInfo }) => {
   return (
     <div>
       <div className="flex flex-col items-center pt-10">
-        <MyProfileImage/>
+        <MyProfileImage />
         <div className="mentor-menti-button my-2">
           {myInfo.isMentor ? (
             <div className="px-4 py-1 bg-primaryGreen text-textColor-white rounded-full text-sm w-16 text-center">
@@ -201,14 +201,20 @@ const MyProfile = ({ myInfo }) => {
             {myInfo.region}
           </p>
         </div>
-        <div className="flex justify-between mb-1">
-          <p className="text-md text-textColor-gray text-start">재배 작물</p>
-          <p className="text-lg text-textColor-black text-end">
-            {myInfo.crops.join(", ")}
-          </p>
-        </div>
+        {myInfo.isMentor && (
+          <div className="flex justify-between mb-1">
+            <p className="text-md text-textColor-gray text-start">재배 작물</p>
+            <p className="text-lg text-textColor-black text-end">
+              {myInfo.crops.join(", ")}
+            </p>
+          </div>
+        )}
       </div>
-      <div className="profile-modify grid grid-cols-2 gap-6 mx-10 mt-4 p-2">
+      <div
+        className={`profile-modify ${
+          myInfo.isMentor ? "grid grid-cols-2 gap-6" : "flex justify-around"
+        } mx-10 mt-4 p-2`}
+      >
         <div className="flex flex-col items-center">
           <button
             className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mb-2"
@@ -219,15 +225,17 @@ const MyProfile = ({ myInfo }) => {
           <p className="text-sm text-textColor-black">채팅 보러가기</p>
         </div>
 
-        <div className="flex flex-col items-center">
-          <button
-            className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mb-2"
-            onClick={handleMetorSetting}
-          >
-            <Settings size={20} />
-          </button>
-          <p className="text-sm text-textColor-black">멘토 정보 수정</p>
-        </div>
+        {myInfo.isMentor && (
+          <div className="flex flex-col items-center">
+            <button
+              className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mb-2"
+              onClick={handleMetorSetting}
+            >
+              <Settings size={20} />
+            </button>
+            <p className="text-sm text-textColor-black">멘토 정보 수정</p>
+          </div>
+        )}
 
         <div className="flex flex-col items-center">
           <button
