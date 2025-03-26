@@ -19,7 +19,7 @@ spring:
       port: ${REDIS_PORT:6379}
 server:
   port: 8080
-  address: 0.0.0.0
+  address: 0.0.0.0 # 주소추가
 jwt:
   secret-key: ${JWT_SECRET}
   expiration-time: 3600000
