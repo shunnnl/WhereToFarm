@@ -5,6 +5,7 @@ import MyPageModal from "./MyPageModal";
 import MentorSettingContent from "./MentorSettingContent";
 import MyInfoSettingContent from "./MyInfoSettingContent";
 import { toast } from "react-toastify";
+import MyPasswordContent from "./MyPasswordContent";
 
 const MyProfile = ({ myInfo }) => {
   const modalRef = useRef(null);
@@ -280,6 +281,12 @@ const MyProfile = ({ myInfo }) => {
           <MyInfoSettingContent
             initialData={myInfoFormData.data}
             onChange={setMyInfoFormData}
+          />
+        )}
+        {modalType === "password" && (
+          <MyPasswordContent
+            initialData={passwordFormData.data}
+            onChange={setPasswordFormData}
           />
         )}
       </MyPageModal>
