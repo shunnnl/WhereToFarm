@@ -48,9 +48,7 @@ pipeline {
                     try {
                         sh '''
                         echo "✅ Nginx 배포 시작"
-                        ssh ubuntu@localhost "rm -rf /usr/share/nginx/html/*"
-                        scp -r frontend/farmbti/dist/* ubuntu@localhost:/usr/share/nginx/html/
-                        ssh ubuntu@localhost "systemctl restart nginx"
+                        cp -rf frontend/farmbti/dist/* /usr/share/nginx/html/
                         echo "✅ Nginx 배포 완료"
                         '''
                     } catch (Exception e) {
