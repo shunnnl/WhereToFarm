@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import CalculateResultCard from "./CalculateResultCard";
-import PaginationComponent from "../mentor/Pagination";
+import PaginationComponent from "../common/Pagination";
 
 const CropCalculateReport = () => {
   // 예시 데이터
