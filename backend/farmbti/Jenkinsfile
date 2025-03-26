@@ -115,7 +115,7 @@ pipeline {
                     sh 'docker ps -a | grep farmbti-backend'
 
                     echo "✅ Nginx 배포 시작"
-                    dir("${env.WORKSPACE}/backend/infra/nginx") {
+                    dir("${env.WORKSPACE}/infra/nginx") {
                         sh '''
                             docker compose -f docker-compose.yml down || true
                             docker compose -f docker-compose.yml build --no-cache
