@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 
 const MyProfileImage = () => {
   const [selectedImage, setSelectedImage] = useState(null);
-  
+
   // 파일 유효성 검사 함수
   const validateFile = (file) => {
     // 1. 파일 확장자 확인
@@ -147,6 +147,7 @@ const MyProfileImage = () => {
         <button
           className="absolute bottom-0 right-0 bg-primaryGreen text-white p-1 rounded-full w-10 h-10"
           onClick={handleButtonClick}
+          title="5MB 이하의 JPG, PNG, GIF 형식만 가능합니다."
         >
           <Camera size={32} strokeWidth={0.75} />
         </button>
