@@ -48,6 +48,7 @@ pipeline {
                     try {
                         sh '''
                         echo "✅ Nginx 배포 시작"
+                        mkdir -p /usr/share/nginx/html
                         cp -rf frontend/farmbti/dist/* /usr/share/nginx/html/
                         echo "✅ Nginx 배포 완료"
                         '''
