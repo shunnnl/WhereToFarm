@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import FarmbtiCard from "./FrambtiCard";
-import PaginationComponent from "../mentor/Pagination";
+import PaginationComponent from "../common/Pagination";
 
 const FarmbtiReport = () => {
   const [myFarmbtiReports, setMyFarmbtiReports] = useState([
