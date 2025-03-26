@@ -13,6 +13,13 @@ public enum SecurityPath {
     SWAGGER_API_DOCS("/v3/api-docs"),
     SWAGGER_API_DOCS_ALL("/v3/api-docs/**"),  // 추가된 부분
     SWAGGER_RESOURCES("/swagger-resources/**"),  // 추가된 부분
+    SWAGGER_HTML("/swagger-ui.html"),
+
+    SWAGGER_UI_API_DOCS("/v3/api-docs"),
+    SWAGGER_UI_API_DOCS_ALL("/v3/api-docs/**"),
+    SWAGGER_UI_RESOURCES("/swagger-resources/**"),
+    SWAGGER_UI("/swagger-ui/**"),
+    SWAGGER_UI_HTML("/api/swagger-ui.html"),
 
     //WebSocket 관련 경로
     WEB_SOCKET("/websocket-test.html"),
@@ -20,7 +27,8 @@ public enum SecurityPath {
 
     // Auth 관련 경로
     SIGNUP("/auth/signUp"),
-    LOGIN("/auth/login");
+    LOGIN("/auth/login"),
+    ZEPPELIN("/zeppelin/**");
 
     // 각 Enum 상수가 가지는 경로 문자열
     private final String path;

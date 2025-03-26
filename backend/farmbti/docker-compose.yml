@@ -1,12 +1,28 @@
 version: '3.8'
 
 services:
+  postgres:
+    image: postgres:14
+    container_name: postgres
+    environment:
+      POSTGRES_DB: farmbti_db
+      POSTGRES_USER: ssafy
+      POSTGRES_PASSWORD: ssafy209!@
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - farmbti
+
   backend:
     container_name: farmbti-backend
     build: .
-    image: farmbti_backend:latest
+    image: nageum/farmbti_backend
     ports:
       - "8081:8081"
+    depends_on:
+      - postgres
     env_file:
       - .env
     volumes:
@@ -17,3 +33,6 @@ services:
 networks:
   farmbti:
     external: true
+
+volumes:
+  postgres-data:
