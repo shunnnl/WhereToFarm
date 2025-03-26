@@ -1,5 +1,6 @@
 package com.backend.farmbti.mentors.domain;
 
+import com.backend.farmbti.common.entity.TimeStampEntity;
 import com.backend.farmbti.crops.domain.Crops;
 import jakarta.persistence.*;
 import lombok.*;
@@ -7,12 +8,12 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Getter
 @Builder
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "mentors_crops")
-public class MentorsCrops {
+public class MentorsCrops extends TimeStampEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,8 +27,5 @@ public class MentorsCrops {
     @ManyToOne
     @JoinColumn(name = "crops_id")
     private Crops crop;
-
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
 
 }

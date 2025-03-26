@@ -1,7 +1,7 @@
 package com.backend.farmbti.mentors.domain;
 
-
 import com.backend.farmbti.auth.domain.Users;
+import com.backend.farmbti.common.entity.TimeStampEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,11 +13,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "mentors")
-public class Mentors {
+public class Mentors extends TimeStampEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "mentor_id")
+    @Column(name = "mentors_id")
     private Long id;
 
     @OneToOne
@@ -30,9 +30,4 @@ public class Mentors {
     @Column(name = "farming_years")
     private Integer farmingYears;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
 }
