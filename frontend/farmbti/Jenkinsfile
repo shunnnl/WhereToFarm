@@ -44,10 +44,10 @@ pipeline {
         stage('Copy dist to Nginx target') {
             steps {
                 sh '''
-                echo "✅ dist 디렉토리 복사 시작"
+                echo "✅ 프론트 dist 디렉토리 복사 시작"
                 rm -rf /home/ubuntu/jenkins-data/workspace/farmbti-be/infra/nginx/dist
-                cp -r dist /home/ubuntu/jenkins-data/workspace/farmbti-be/infra/nginx/
-                echo "✅ dist 복사 완료"
+                cp -r /home/ubuntu/jenkins-data/workspace/farmbti-fe/frontend/farmbti/dist /home/ubuntu/jenkins-data/workspace/farmbti-be/infra/nginx/
+                echo "✅ 복사 완료"
                 '''
             }
         }
