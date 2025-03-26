@@ -42,6 +42,7 @@ springdoc:
     config-url: /api/v3/api-docs/swagger-config
     url: /api/v3/api-docs
     disable-swagger-default-url: true
+    #엥?
 
 cloud:
   aws:
