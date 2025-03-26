@@ -8,8 +8,9 @@ pipeline {
     environment {
         GIT_CREDENTIALS_ID = 'gitlab-credentials'
         FRONT_PROJECT_DIR = "frontend/farmbti"
-        DIST_DIR = "${WORKSPACE}/frontend/farmbti/dist"
-        NGINX_DIR = "/home/ubuntu/jenkins-data/workspace/farmbti-be/infra/nginx"
+        DIST_DIR = "frontend/farmbti/dist"
+        DIST_SHARE_DIR = "/home/ubuntu/dist-share"
+        NGINX_HTML_DIR = "/usr/share/nginx/html"
     }
 
     stages {
@@ -41,15 +42,44 @@ pipeline {
             }
         }
 
-        stage('Copy dist to Nginx target') {
+        stage('Copy dist to Shared Directory') {
             steps {
                 sh '''
-                echo "✅ 프론트 dist 디렉토리 복사 시작"
-                rm -rf /home/ubuntu/jenkins-data/workspace/farmbti-be/infra/nginx/dist
-                cp -r ${WORKSPACE}/frontend/farmbti/dist /home/ubuntu/jenkins-data/workspace/farmbti-be/infra/nginx/
+                echo "✅ dist 공유 디렉토리 복사 시작"
+                rm -rf /home/ubuntu/dist-share
+                mkdir -p /home/ubuntu/dist-share
+                cp -r frontend/farmbti/dist/* /home/ubuntu/dist-share/
                 echo "✅ 복사 완료"
                 '''
             }
+        }
+
+        stage('Deploy to Nginx') {
+            steps {
+                script {
+                    try {
+                        sh '''
+                        echo "✅ Nginx 배포 시작"
+                        sudo rm -rf /usr/share/nginx/html/*
+                        sudo cp -r frontend/farmbti/dist/* /usr/share/nginx/html/
+                        sudo systemctl restart nginx
+                        echo "✅ Nginx 배포 완료"
+                        '''
+                    } catch (Exception e) {
+                        echo "❌ Nginx 배포 중 오류 발생: ${e.getMessage()}"
+                        currentBuild.result = 'FAILURE'
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "✅ 프론트엔드 빌드 및 배포 성공"
+        }
+        failure {
+            echo "❌ 프론트엔드 빌드 또는 배포 실패"
         }
     }
 }
