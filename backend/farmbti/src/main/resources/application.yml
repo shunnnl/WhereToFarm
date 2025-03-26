@@ -34,11 +34,25 @@ logging:
 zeppelin:
   base-url: "http://3.39.65.150:18888"
 
-# application.yml
 springdoc:
-  swagger-ui:
-    path: /api/swagger-ui.html
   api-docs:
-    path: /api/v3/api-docs
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    config-url: /v3/api-docs/swagger-config
+    url: /v3/api-docs
+  default-consumes-media-type: application/json
   default-produces-media-type: application/json
-  paths-to-match: /**
+
+cloud:
+  aws:
+    s3:
+      bucket: ${S3_BUCKET}
+    credentials:
+      access-key: ${S3_ACCESS}
+      secret-key: ${S3_SECRET}
+    region:
+      static: ap-northeast-2
+      auto: false
+    stack:
+      auto: false

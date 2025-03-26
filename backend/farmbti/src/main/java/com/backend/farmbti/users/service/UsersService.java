@@ -87,7 +87,6 @@ public class UsersService {
                 .orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
 
         return new CurrentUserResponse(
-                user.getId(),
                 user.getEmail(),
                 user.getName(),
                 user.getAddress(),

@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CurrentUserResponse {
-    private Long id;
     private String email;
     private String name;
     private String address;
