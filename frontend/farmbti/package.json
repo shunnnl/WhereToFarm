@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^2.6.1",
     "@svg-maps/south-korea": "^1.0.1",
     "axios": "^1.8.2",
     "d3": "^7.9.0",
