@@ -9,6 +9,12 @@ import lombok.Getter;
 public enum SecurityPath {
 
     //Swagger 관련 경로
+    SWAGGER("/swagger-ui/**"),
+    SWAGGER_API_DOCS("/v3/api-docs"),
+    SWAGGER_API_DOCS_ALL("/v3/api-docs/**"),
+    SWAGGER_RESOURCES("/swagger-resources/**"),
+    SWAGGER_HTML("/swagger-ui.html"),
+
     SWAGGER_UI("/api/swagger-ui/**"),
     SWAGGER_UI_API_DOCS("/api/v3/api-docs"),
     SWAGGER_UI_API_DOCS_ALL("/api/v3/api-docs/**"),
