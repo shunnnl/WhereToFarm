@@ -6,6 +6,7 @@ import MentorRegistrationModal from './MentorRegistrationModal ';
 import together from '../../asset/mentor/together.svg';
 import { Link } from 'react-router-dom'; 
 import { useRef, useEffect, useState } from 'react';
+import { toast } from 'react-toastify'; // 추가: toast 알림 import
 
 Modal.setAppElement("#root");
 
@@ -13,10 +14,18 @@ Modal.setAppElement("#root");
 const TogetherSection = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const { isLoggedIn } = useSelector(state => state.auth);
+
   // 멘토 등록 버튼 클릭 핸들러
   const handleOpenModal = async () => {
     if (!isLoggedIn) {
-      alert('멘토 등록을 위해 로그인이 필요합니다.');
+      toast.warning('멘토 등록을 위해 로그인이 필요합니다.', {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true
+      });
       return;
     }
 
@@ -37,7 +46,14 @@ const TogetherSection = () => {
       // 상세 디버깅을 위한 엄격한 검사
       if (userData && userData.isMentor === true) {
         console.log('멘토 조건 확인됨 - 이미 멘토입니다');
-        alert('이미 멘토로 등록되어 있습니다.');
+        toast.info('이미 멘토로 등록되어 있습니다.', {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true
+        });
         return;
       } else {
         console.log('멘토 아님 - 모달 열기 진행');
@@ -50,11 +66,25 @@ const TogetherSection = () => {
       console.error('멘토 상태 확인 중 오류 발생:', error);
       
       if (error.response && error.response.status === 401) {
-        alert('로그인이 필요합니다.');
+        toast.error('로그인이 필요합니다.', {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true
+        });
       } else {
         // 서버 오류 발생 시 사용자에게 알림
         console.error('상세 에러 정보:', error.response || error);
-        alert('서버 오류가 발생했습니다. 다시 시도해주세요.');
+        toast.error('서버 오류가 발생했습니다. 다시 시도해주세요.', {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true
+        });
       }
     }
   };
