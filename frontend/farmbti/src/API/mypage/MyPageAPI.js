@@ -16,16 +16,29 @@ export const getMyPage = async () => {
 };
 
 export const getCalculateReports = async () => {
-    try {
-      const response = await authAxios.get("/crops/get/all");
+  try {
+    const response = await authAxios.get("/crops/get/all");
 
-      if (!response.success) {
-        throw response.error;
-      }
-
-      return response.data;
-    } catch (error) {
-      console.log(error);
-      throw error.error;
+    if (!response.success) {
+      throw response.error;
     }
-}
+
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    throw error.error;
+  }
+};
+
+export const putMyInfo = async (data) => {
+  try {
+    const response = await authAxios.put("/users/modify", data);
+    if (!response.success) {
+      throw response.error;
+    }
+    return response.success; // 응답에 데이터 null 성공 여부만 가져오기
+  } catch (error) {
+    console.log(error);
+    throw error.error;
+  }
+};

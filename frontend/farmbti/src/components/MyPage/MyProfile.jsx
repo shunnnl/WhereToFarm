@@ -1,17 +1,21 @@
 import { useEffect, useRef, useState } from "react";
 import leaveIcon from "../../asset/mypage/leaves.svg";
 import { MessageSquare, User, Settings, Lock } from "lucide-react";
+import { toast } from "react-toastify";
+
+import { putMyInfo } from "../../API/mypage/MyPageAPI";
+
 import MyPageModal from "./MyPageModal";
 import MentorSettingContent from "./MentorSettingContent";
 import MyInfoSettingContent from "./MyInfoSettingContent";
-import { toast } from "react-toastify";
 import MyPasswordContent from "./MyPasswordContent";
 import MyProfileImage from "./MyProfileImage";
 
-const MyProfile = ({ myInfo }) => {
+const MyProfile = ({ myInfo: initialMyInfo }) => {
   const modalRef = useRef(null);
   const [modalType, setModalType] = useState("");
   const [modalTitle, setModalTitle] = useState("");
+  const [myInfo, setMyInfo] = useState(initialMyInfo);
   const [birth, setBirth] = useState(
     useState({ year: "", month: "", day: "" })
   );
@@ -53,7 +57,7 @@ const MyProfile = ({ myInfo }) => {
       addressString.split(" ")[1]
     }`;
 
-    return address
+    return address;
   };
 
   useEffect(() => {
@@ -65,7 +69,7 @@ const MyProfile = ({ myInfo }) => {
     setBirth(birth);
 
     const address = formatAddress(myInfo.address);
-    setAddress(address)
+    setAddress(address);
 
     setMyInfoFormData({
       data: {
@@ -132,13 +136,24 @@ const MyProfile = ({ myInfo }) => {
     }
   };
 
+  const createISODate = (
+    year,
+    month,
+    day,
+    hours = 0,
+    min = 0,
+    sec = 0,
+    milisec = 0
+  ) => {
+    const date = new Date(
+      Date.UTC(year, month - 1, day, hours, min, sec, milisec)
+    );
+    return date.toISOString();
+  };
+
   const handleConfirm = async () => {
     console.log("수정 시작...");
     console.log("현재 modalType:", modalType);
-    // handleConfirm 함수 내부
-    console.log("mentorFormData 전체:", mentorFormData);
-    console.log("isValid 값:", mentorFormData.isValid);
-    console.log("errors 객체:", mentorFormData.errors);
 
     try {
       setIsSubmitting(true);
@@ -155,11 +170,19 @@ const MyProfile = ({ myInfo }) => {
 
           // 유효한 경우 API 호출 및 처리
           console.log("멘토 정보 업데이트:", mentorFormData.data);
+
+          // 멘토 정보 업데이트 후 상태 업데이트
+          setMyInfo((prevInfo) => ({
+            ...prevInfo,
+            farmingYears: mentorFormData.data.farmingYears,
+            cropNames: mentorFormData.data.cropNames,
+            bio: mentorFormData.data.bio,
+          }));
+
           toast.success("멘토 정보가 수정 되었습니다.");
           break;
 
         case "myInfo":
-          console.log("내 정보 모드 - 제출 전 데이터:", myInfoFormData.data);
           if (!myInfoFormData.isValid) {
             // 첫 번째 오류 메시지 또는 기본 메시지 표시
             const errorMessage =
@@ -170,7 +193,40 @@ const MyProfile = ({ myInfo }) => {
 
           // 유효한 경우 API 호출 및 처리
           console.log("회원 정보 업데이트:", myInfoFormData.data);
-          toast.success("회원 정보가 수정 되었습니다.");
+          const birth = createISODate(
+            myInfoFormData.data.year,
+            myInfoFormData.data.month,
+            myInfoFormData.data.day
+          );
+          const name = myInfoFormData.data.name;
+          const address = myInfoFormData.data.address;
+          const gender = myInfoFormData.data.gender;
+
+          // API 호출
+          const response = await putMyInfo({
+            name,
+            address,
+            birth,
+            gender,
+          });
+
+          // 성공했다면 로컬 상태 업데이트
+          if (response) {
+            // UI에 즉시 반영하기 위해 상태 업데이트
+            setMyInfo((prevInfo) => ({
+              ...prevInfo,
+              name,
+              address,
+              birth,
+              gender,
+            }));
+
+            // 추가로 필요한 상태 업데이트
+            setBirth(formatBirthDate(birth));
+            setAddress(formatAddress(address));
+
+            toast.success("회원 정보가 수정 되었습니다.");
+          }
           break;
 
         case "password":
@@ -198,7 +254,6 @@ const MyProfile = ({ myInfo }) => {
       toast.error("정보 수정에 실패했습니다.");
     } finally {
       setIsSubmitting(false);
-      console.log("제출 프로세스 완료");
     }
 
     // 최종 데이터 확인 (모든 경우에 실행)
