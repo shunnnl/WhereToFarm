@@ -39,6 +39,21 @@ const CropCalculateReport = () => {
     indexOfLastItem
   );
 
+  // 삭제 모드 토글 상태
+  const [deleteMode, setDeleteMode] = useState(false);
+
+  // 삭제 모드 토글 핸들러
+  const toggleDeleteMode = () => {
+    setDeleteMode(!deleteMode);
+  };
+
+  // 리포트 삭제 핸들러
+  const handleDeleteReport = (reportId) => {
+    setMyFarmbtiReports((prevReports) =>
+      prevReports.filter((report) => report.id !== reportId)
+    );
+  };
+
   return (
     <div className="relative pb-20">
       <p className="text-xl font-semibold mt-4">작물 예상 계산 리포트</p>
@@ -57,6 +72,8 @@ const CropCalculateReport = () => {
                 area={report.area}
                 date={report.date}
                 totalProfit={report.totalProfit}
+                deleteMode={deleteMode}
+                onDelete={handleDeleteReport}
               />
             ))}
           </div>
