@@ -45,22 +45,24 @@ public class WebSocketService {
     }
 
     @Transactional
-    public String getRecevierName(Long roomId, String currentUserName, Long usersId) {
+    public String getRecevierName(Long roomId, String currentUserName) {
 
         Chat chatRoom = chatRepository.findById(roomId)
                 .orElseThrow(() -> new GlobalException(ChatErrorCode.CHAT_ROOM_NOT_FOUND));
 
-        Long otherUserId;
-        if (usersId.equals(chatRoom.getMentee().getId())) { // 현재 사용자가 멘티면
-            otherUserId = chatRoom.getMentor().getUser().getId();
-        } else {
-            otherUserId = chatRoom.getMentee().getId();
-        }
+        // 채팅방에서 멘토와 멘티 이름 가져오기
+        String mentorName = chatRoom.getMentor().getUser().getName();
 
-        Users users = usersRepository.findById(otherUserId)
+        Users mentee = usersRepository.findById(chatRoom.getMentee().getId())
                 .orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
+        String menteeName = mentee.getName();
 
-        return users.getName();
+        // 보낸 사람이 멘토면 멘티에게, 멘티면 멘토에게
+        if (currentUserName.equals(mentorName)) {
+            return menteeName;
+        } else {
+            return mentorName;
+        }
 
     }
 }

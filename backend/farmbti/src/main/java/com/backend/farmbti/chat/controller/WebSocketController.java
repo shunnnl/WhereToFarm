@@ -1,5 +1,6 @@
 package com.backend.farmbti.chat.controller;
 
+import com.backend.farmbti.chat.dto.MessageRequest;
 import com.backend.farmbti.chat.dto.MessageResponse;
 import com.backend.farmbti.chat.exception.ChatErrorCode;
 import com.backend.farmbti.chat.service.WebSocketService;
@@ -28,21 +29,20 @@ public class WebSocketController {
 
     @MessageMapping("/{roomId}/send")
     @SendTo("/topic/chat/{roomId}")
-    public MessageResponse sendMessage(@DestinationVariable Long roomId, String message) {
+    public MessageResponse sendMessage(@DestinationVariable Long roomId, MessageRequest messageRequest) {
 
-        if (message.length() >= 1000) {
+        if (messageRequest.getMessage().length() >= 1000) {
             throw new GlobalException(ChatErrorCode.MESSAGE_TO_LONG);
         }
 
         // 메시지 처리 로직
-        MessageResponse messageResponse = webSocketService.saveAndGetMessage(roomId, message);
+        MessageResponse messageResponse = webSocketService.saveAndGetMessage(roomId, messageRequest.getMessage());
 
         //메시지 보내는 사람 즉, 로그인 한 사람
-        String currentUserName = "테스터";
+        String currentUserName = messageRequest.getSenderName();
 
         //메시지를 받는 사람 즉, 상대방
-        Long usersId = securityUtils.getCurrentUsersId();
-        String receiverUsername = webSocketService.getRecevierName(roomId, currentUserName, usersId);
+        String receiverUsername = webSocketService.getRecevierName(roomId, currentUserName);
 
         System.out.println("보내는 사람: " + currentUserName);
         System.out.println("받는 사람: " + receiverUsername);

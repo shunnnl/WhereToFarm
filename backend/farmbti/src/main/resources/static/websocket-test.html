@@ -385,22 +385,14 @@
             return;
         }
 
-        // WebSocket 연결 (토큰이 있으면 URL 파라미터로 추가)
-        // SockJS는 URL이 'http://' 또는 'https://'로 시작해야 합니다
-        let socketUrl = '/gs-guide-websocket';  // 상대 경로 사용
-        if (token) {
-            socketUrl += '?access_token=' + encodeURIComponent(token);
-        }
-        const socket = new SockJs(socketUrl);
+        // SockJS 객체 생성 (올바른 대소문자 사용)
+        const socket = new SockJS('http://localhost:18081/gs-guide-websocket');
         stompClient = Stomp.over(socket);
 
         // 연결 시 헤더에 인증 정보 추가
-        const headers = {};
-
-        // JWT 토큰 추가 (Bearer 형식으로)
-        if (token) {
-            headers['Authorization'] = 'Bearer ' + token;
-        }
+        const headers = {
+            'Authorization': 'Bearer ' + token
+        };
 
         stompClient.connect(headers, function (frame) {
             console.log('Connected: ' + frame);
@@ -458,8 +450,8 @@
         if (messageContent && stompClient) {
             // 테스트를 위해 메시지에 사용자 이름을 추가
             const messageWithUsername = JSON.stringify({
-                content: messageContent,
-                username: currentUsername  // 백엔드에서 사용할 수 있는 사용자 식별자
+                message: messageContent,
+                senderName: currentUsername  // 백엔드에서 사용할 수 있는 사용자 식별자
             });
 
             const destination = `/chat/${currentRoomId}/send`;
