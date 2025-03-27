@@ -4,6 +4,7 @@ import com.backend.farmbti.security.dto.Token;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Getter
@@ -17,4 +18,5 @@ public class LoginResponse {
     private Date birth;
     private String profileImage;
     private Token token;
+    private LocalDateTime createdAt;
 }

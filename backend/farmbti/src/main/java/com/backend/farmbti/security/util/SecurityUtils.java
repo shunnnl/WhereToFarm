@@ -42,7 +42,7 @@ public class SecurityUtils {
      *
      * @return 사용자 이메일 (인증 정보가 없을 경우 null)
      */
-    public String getCurrentUsersEmail() {
+    public String getCurrentUsersName() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
             throw new GlobalException(JwtErrorCode.TOKEN_NOT_FOUND);
@@ -50,7 +50,7 @@ public class SecurityUtils {
 
         try {
             String token = extractToken(authentication);
-            return jwtTokenProvider.getEmail(token);
+            return jwtTokenProvider.getName(token);
         } catch (Exception e) {
             log.warn("토큰에서 이메일을 추출할 수 없습니다.");
             return null;

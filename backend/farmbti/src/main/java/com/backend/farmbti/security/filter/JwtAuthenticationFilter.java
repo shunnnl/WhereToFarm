@@ -75,9 +75,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 //토큰에서 사용자 id, email, address 가져와서 Authentication 객체 생성
                 Long userId = jwtTokenProvider.getUserId(token);
+                String name = jwtTokenProvider.getName(token);
                 String email = jwtTokenProvider.getEmail(token);
                 String address = jwtTokenProvider.getAddress(token);
-                log.info("[JwtAuthenticationFilter] 토큰에서 추출한 정보 - userId: {}, email: {}", userId, email);
+                log.info("[JwtAuthenticationFilter] 토큰에서 추출한 정보 - userId: {}, email: {}, name: {}", userId, email, name);
 
                 // 사용자 권한 설정 (일반적으로 DB에서 가져오지만, 여기서는 간단히 구현)
                 List<SimpleGrantedAuthority> authorities =
@@ -85,7 +86,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 // 사용자 인증 객체 생성 및 SecurityContext에 설정
                 Authentication authentication = new UsernamePasswordAuthenticationToken(
-                        email,                  // principal (보통 username이나 email)
+                        email,
                         token,                   // securityUtil에서 추출힘
                         authorities            // 권한 목록
                 );
@@ -95,6 +96,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 log.info("[JwtAuthenticationFilter] 인증 정보 설정 완료");
 
                 // 추가 정보를 요청 속성에 저장하여 컨트롤러에서 사용할 수 있게 함
+                request.setAttribute("name", name);
                 request.setAttribute("userId", userId);
                 request.setAttribute("userEmail", email);
                 request.setAttribute("userAddress", address);

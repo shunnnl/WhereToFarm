@@ -1,4 +1,3 @@
-
 package com.backend.farmbti.mentors.exception;
 
 import com.backend.farmbti.common.exception.ErrorCode;
