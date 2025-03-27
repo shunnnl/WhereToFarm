@@ -1,3 +1,4 @@
+import LoadingSpinner from "../common/LoadingSpinner";
 import AnnualBenefitResult from "./AnnualBenefitResult";
 import BenefitForecastGraph from "./BenefitForecastGraph";
 
@@ -23,6 +24,7 @@ const ResultSection = ({
           작물을 선택해 예상 수익을 계산해보세요.
         </p>
       )}
+      {isLoading && step === 3 && (<LoadingSpinner text="계산 중..."/>)}
       {!isLoading && result && step === 3 && (
         <div className="m-5 bg-white w-full h-full shadow-md">
           <div className="report-name mx-14 my-8">

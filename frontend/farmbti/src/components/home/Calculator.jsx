@@ -16,9 +16,9 @@ const Mentor = () => {
                 <h2 className="text-4xl font-bold mb-4">
                   내 작물로 얻는 수익은 얼마일까?
                 </h2>
-                <h className="text-white text-2xl py-2 font-semibold">
+                <h3 className="text-white text-2xl py-2 font-semibold">
                   '작물 계산기'로 바로가기기 ↗️
-                </h>
+                </h3>
               </div>
               
               {/* Farmer Illustration */}
