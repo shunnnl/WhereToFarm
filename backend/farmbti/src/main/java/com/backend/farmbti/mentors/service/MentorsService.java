@@ -111,7 +111,17 @@ public class MentorsService {
      */
     @Transactional(readOnly = true)
     public List<MentorListResponse> getMentorsByLocation(String city) {
+        // 입력값 검증
+        if (city == null || city.trim().isEmpty()) {
+            throw new GlobalException(MentorsErrorCode.INVALID_LOCATION_PARAMETER);
+        }
+
         List<Mentors> mentors = mentorsRepository.findByUser_AddressContaining(city);
+
+        // 검색 결과가 없을 경우 예외 발생
+        if (mentors.isEmpty()) {
+            throw new GlobalException(MentorsErrorCode.NO_MENTORS_IN_LOCATION);
+        }
 
         return mentors.stream()
                 .map(mentor -> {
