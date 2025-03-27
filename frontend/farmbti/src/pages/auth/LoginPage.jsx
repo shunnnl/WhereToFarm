@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-
+import { toast } from 'react-toastify'; // 추가: 토스트 알림 import
 import login_image from '../../asset/auth/login.svg'
 import { Link, useNavigate } from 'react-router-dom'; 
 import { publicAxios } from '../../API/common/AxiosInstance'
@@ -25,14 +25,13 @@ const LoginPage = () => {
     return emailRegex.test(email);
   };
 
-  const handleLogin =async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-       // 이전 오류 초기화
-       const newErrors = {
-        email: '',
-        password: ''
-      };
-
+    // 이전 오류 초기화
+    const newErrors = {
+      email: '',
+      password: ''
+    };
 
     // 이메일 유효성 검사
     if (!email.trim()) {
@@ -54,9 +53,7 @@ const LoginPage = () => {
 
     // 유효성 검사 통과 시 로그인 시도
     console.log('로그인 시도:', { email, password });
-    // 여기서 백엔드 API 호출을 진행합니다
-
-    // 유효성 검사 통과 시 로그인 시도
+    
     try {
       const response = await publicAxios.post('/auth/login', {
         email,
@@ -89,34 +86,42 @@ const LoginPage = () => {
         // Redux 스토어에 로그인 상태 업데이트 - 이 부분이 추가됨
         dispatch(login(userData));
         
+        // 추가: 로그인 성공 토스트 메시지 표시
+        toast.success('로그인 성공!', {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true
+        });
+        
         // 로그인 후 메인 페이지나 대시보드로 이동
         navigate('/');
       } else {
         // 토큰이 없는 경우 처리
-        newErrors.server = '로그인 응답에 토큰 정보가 없습니다.';
+        newErrors.server = '로그인에 실패했습니다. 다시 시도해주세요.';
         setErrors(newErrors);
+        // toast.error('로그인에 실패했습니다. 다시 시도해주세요.');
       }
     } catch (error) {
       console.error('로그인 실패:', error);
       newErrors.server = error.message || '로그인에 실패했습니다. 다시 시도해주세요.';
       setErrors(newErrors);
+      
+      // 추가: 오류 시 토스트 메시지 표시
+      // toast.error(error.response?.data?.message || '로그인에 실패했습니다. 다시 시도해주세요.');
     }
-  
-
-
   };
 
   return (
-  
-  
     <div className="w-full h-screen flex">
       {/* 좌측 이미지 섹션 */}
       <div className="w-1/2 bg-cover bg-center bg-no-repeat rounded-tr-2xl rounded-br-2xl"
- 
-      style={{
-        backgroundImage: `url(${login_image})`,
-        backgroundSize: 'cover'
-    }}>
+        style={{
+          backgroundImage: `url(${login_image})`,
+          backgroundSize: 'cover'
+        }}>
       </div>
 
       {/* 우측 로그인 섹션 */}
@@ -138,8 +143,7 @@ const LoginPage = () => {
                 placeholder="이메일을 입력해주세요"
                 className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
               />
-            {errors.email && (<p className="mt-1 text-sm text-red-600">{errors.email}</p>)}
-
+              {errors.email && (<p className="mt-1 text-sm text-red-600">{errors.email}</p>)}
             </div>
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
@@ -154,8 +158,8 @@ const LoginPage = () => {
                 placeholder="비밀번호를 입력해주세요"
                 className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
               />
-            {errors.password && (<p className="mt-1 text-sm text-red-600">{errors.password}</p>)}
-
+              {errors.password && (<p className="mt-1 text-sm text-red-600">{errors.password}</p>)}
+              {errors.server && (<p className="mt-1 text-sm text-red-600">{errors.server}</p>)}
             </div>
             <div className="flex items-center justify-between">
               <div className="flex items-center">
@@ -186,7 +190,7 @@ const LoginPage = () => {
               <p className="text-sm text-gray-600">
                 계정이 없으신가요? {' '}
                 <Link to="/signup" className="font-medium text-green-600 hover:text-green-500">
-                    회원가입
+                  회원가입
                 </Link>
               </p>
             </div>
@@ -194,7 +198,6 @@ const LoginPage = () => {
         </div>
       </div>
     </div>
-
   );
 };
 

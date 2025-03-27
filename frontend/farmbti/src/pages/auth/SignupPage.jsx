@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // 추가: 라우팅을 위한 import
+import { toast } from 'react-toastify'; // 추가: 토스트 알림을 위한 import
 import signup_image from '../../asset/auth/login.svg';
 import useKakaoAddressService from '../../API/useKakaoAddressService';
-import { publicAxios } from '../../API/common/AxiosInstance'
+import { publicAxios } from '../../API/common/AxiosInstance';
 
 const SignupPage = () => {
+  const navigate = useNavigate(); // 추가: 페이지 이동을 위한 navigate 함수
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -16,195 +19,187 @@ const SignupPage = () => {
     address: ''
   });
 
-    const [errors, setErrors] = useState({});
-    console.log("errors = ", errors)
+  const [errors, setErrors] = useState({});
+  console.log("errors = ", errors);
 
-    // 주소가 선택되었을 때 호출될 함수
-    const handleAddressSelected = (addressData) => {
-        setFormData(prev => ({
-            ...prev,
-            address: addressData.address,
-        }));
-    };
-    
-    // 주소검색 서비스 훅 사용
-    const { openAddressSearch } = useKakaoAddressService(handleAddressSelected);
+  // 주소가 선택되었을 때 호출될 함수
+  const handleAddressSelected = (addressData) => {
+    setFormData(prev => ({
+      ...prev,
+      address: addressData.address,
+    }));
+  };
+  
+  // 주소검색 서비스 훅 사용
+  const { openAddressSearch } = useKakaoAddressService(handleAddressSelected);
 
-
-
-    
-
-
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prevState => ({
-        ...prevState,
-        [name]: value
-        }));
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prevState => ({
+      ...prevState,
+      [name]: value
+    }));
 
     if (errors[name]) {
-        setErrors(prev => ({
-          ...prev,
-          [name]: ''
-        }));
-      }
+      setErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
   };
 
-   // Name validation function
-    const isValidName = (name) => {
-      if (!name || name.trim() === "") return false;
-      const trimmedName = name.trim();
-      return trimmedName.length >= 2 && trimmedName.length <= 20;
-      };
-   // Email validation function
-    const isValidEmail = (email) => {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(email);
-    };
+  // Name validation function
+  const isValidName = (name) => {
+    if (!name || name.trim() === "") return false;
+    const trimmedName = name.trim();
+    return trimmedName.length >= 2 && trimmedName.length <= 20;
+  };
 
-    // Password validation (minimum 8 characters, at least one letter and one number)
-    const isValidPassword = (password) => {
-        return password.length >= 8 && /[A-Za-z]/.test(password) && /\d/.test(password);
-    };
+  // Email validation function
+  const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
+  // Password validation (minimum 8 characters, at least one letter and one number)
+  const isValidPassword = (password) => {
+    return password.length >= 8 && /[A-Za-z]/.test(password) && /\d/.test(password);
+  };
 
-      // Date validation
-    const isValidDate = (year, month, day) => {
+  // Date validation
+  const isValidDate = (year, month, day) => {
     // Check if all date parts exist
-        if (!year || !month || !day) return false;
+    if (!year || !month || !day) return false;
     
-        // Create date objects for comparison
-        const birthDate = new Date(year, month - 1, day);
-        const currentDate = new Date();
+    // Create date objects for comparison
+    const birthDate = new Date(year, month - 1, day);
+    const currentDate = new Date();
     
-        // Check if birth date is valid and in the past
-        return birthDate instanceof Date && 
-            !isNaN(birthDate) && 
-            birthDate < currentDate;
-    };
+    // Check if birth date is valid and in the past
+    return birthDate instanceof Date && 
+      !isNaN(birthDate) && 
+      birthDate < currentDate;
+  };
 
-    const validateForm = () => {
-        const newErrors = {};
+  const validateForm = () => {
+    const newErrors = {};
 
-        // 이름 검증
-          if (!formData.name || formData.name.trim() === "") {
-            newErrors.name = '이름은 필수 입력 항목입니다.';
-        } else if (!isValidName(formData.name)) {
-            newErrors.name = '이름은 2자 이상 20자 이하로 입력해주세요.';
-        }
+    // 이름 검증
+    if (!formData.name || formData.name.trim() === "") {
+      newErrors.name = '이름은 필수 입력 항목입니다.';
+    } else if (!isValidName(formData.name)) {
+      newErrors.name = '이름은 2자 이상 20자 이하로 입력해주세요.';
+    }
     
-        // 이메일 검증
-        if (!formData.email) {
-          newErrors.email = '이메일은 필수 입력 항목입니다.';
-        } else if (!isValidEmail(formData.email)) {
-          newErrors.email = '유효한 이메일 주소를 입력해주세요.';
-        }
-      
-        // 비밀번호 검증
-        if (!formData.password) {
-          newErrors.password = '비밀번호는 필수 입력 항목입니다.';
-        } else if (!isValidPassword(formData.password)) {
-          newErrors.password = '비밀번호는 최소 8자 이상이며, 문자와 숫자를 포함해야 합니다.';
-        }
-      
-        // 비밀번호 확인 검증
-        if (!formData.confirmPassword) {
-          newErrors.confirmPassword = '비밀번호 확인은 필수 입력 항목입니다.';
-        } else if (formData.password !== formData.confirmPassword) {
-          newErrors.confirmPassword = '비밀번호가 일치하지 않습니다.';
-        }
-      
-        // 성별 검증
-        if (!formData.gender) {
-          newErrors.gender = '성별은 필수 선택 항목입니다.';
-        }
-      
-        // 생년월일 검증
-        if (!formData.birthYear || !formData.birthMonth || !formData.birthDay) {
-          newErrors.birthDate = '생년월일은 필수 입력 항목입니다.';
-        } else if (!isValidDate(formData.birthYear, formData.birthMonth, formData.birthDay)) {
-          newErrors.birthDate = '유효한 생년월일을 선택해주세요.';
-        }
-      
-        // 주소 검증
-        if (!formData.address) {
-          newErrors.address = '주소는 필수 입력 항목입니다.';
-        }
-      
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-        };
+    // 이메일 검증
+    if (!formData.email) {
+      newErrors.email = '이메일은 필수 입력 항목입니다.';
+    } else if (!isValidEmail(formData.email)) {
+      newErrors.email = '유효한 이메일 주소를 입력해주세요.';
+    }
+    
+    // 비밀번호 검증
+    if (!formData.password) {
+      newErrors.password = '비밀번호는 필수 입력 항목입니다.';
+    } else if (!isValidPassword(formData.password)) {
+      newErrors.password = '비밀번호는 최소 8자 이상이며, 문자와 숫자를 포함해야 합니다.';
+    }
+    
+    // 비밀번호 확인 검증
+    if (!formData.confirmPassword) {
+      newErrors.confirmPassword = '비밀번호 확인은 필수 입력 항목입니다.';
+    } else if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = '비밀번호가 일치하지 않습니다.';
+    }
+    
+    // 성별 검증
+    if (!formData.gender) {
+      newErrors.gender = '성별은 필수 선택 항목입니다.';
+    }
+    
+    // 생년월일 검증
+    if (!formData.birthYear || !formData.birthMonth || !formData.birthDay) {
+      newErrors.birthDate = '생년월일은 필수 입력 항목입니다.';
+    } else if (!isValidDate(formData.birthYear, formData.birthMonth, formData.birthDay)) {
+      newErrors.birthDate = '유효한 생년월일을 선택해주세요.';
+    }
+    
+    // 주소 검증
+    if (!formData.address) {
+      newErrors.address = '주소는 필수 입력 항목입니다.';
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // 회원가입 로직 구현 (예: API 호출)
-    console.log('Signup attempt with:', formData);
     
-  // 폼 유효성 검사 실행
+    // 폼 유효성 검사 실행
     const isValid = validateForm();
   
     if (isValid) {
-    // 회원가입 로직 구현 (예: API 호출)
-    console.log('Signup attempt with:', formData);
-    try {
+      console.log('Signup attempt with:', formData);
+      try {
+        const birthDate = new Date(
+          formData.birthYear,
+          formData.birthMonth - 1, // JavaScript에서 월은 0부터 시작
+          formData.birthDay
+        ).toISOString(); // ISO 8601 형식으로 변환
 
-      const birthDate = new Date(
-        formData.birthYear,
-        formData.birthMonth - 1, // JavaScript에서 월은 0부터 시작
-        formData.birthDay
-      ).toISOString(); // ISO 8601 형식으로 변환
+        // 백엔드에 전송할 데이터 구조화
+        const userData = {
+          email: formData.email,
+          password: formData.password,
+          name: formData.name,
+          address: formData.address,
+          gender: formData.gender === 'male' ? "0" : "1",
+          birth: birthDate
+        };
+        console.log("요청할 데이터:", userData);
 
-      // 백엔드에 전송할 데이터 구조화
-      const userData = {
-        email: formData.email,
-        password: formData.password,
-        name: formData.name,
-        address: formData.address,
-        gender: formData.gender === 'male' ? "0" : "1",
-        birth: birthDate
-      };
-      console.log("요청할 데이터:", userData);
-
-      
-      // axios를 사용하여 회원가입 API 호출
-      const response = await publicAxios.post('/auth/signUp', userData);
-      
-      console.log('회원가입 성공:', response);
-      
-      // 회원가입 성공 후 처리
-      alert('회원가입이 완료되었습니다!');
-      // 로그인 페이지로 리다이렉트 (React Router 사용 시)
-      // navigate('/login');
-      
-    } catch (error) {
-      console.error('회원가입 실패:', error);
-      
-      // 서버에서 받은 오류 메시지 처리
-      if (error.response?.data) {
-        const errorData = error.response.data;
+        // axios를 사용하여 회원가입 API 호출
+        const response = await publicAxios.post('/auth/signUp', userData);
         
-        // 필드별 오류 메시지가 있을 경우
-        if (errorData.errors) {
-          setErrors(prev => ({
-            ...prev,
-            ...errorData.errors
-          }));
-        } 
-        // 일반 오류 메시지
-        else if (errorData.message) {
-          alert(`회원가입 실패: ${errorData.message}`);
+        console.log('회원가입 성공:', response);
+        
+        // 변경된 부분: 토스트 알림 표시 및 메인 페이지로 이동
+        toast.success('회원가입이 완료되었습니다!', {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true
+        });
+        
+        // 홈페이지(메인 화면)으로 리다이렉트
+        navigate('/');
+        
+      } catch (error) {
+        console.error('회원가입 실패:', error);
+        
+        // 서버에서 받은 오류 메시지 처리
+        if (error.response?.data) {
+          const errorData = error.response.data;
+          
+          // 필드별 오류 메시지가 있을 경우
+          if (errorData.errors) {
+            setErrors(prev => ({
+              ...prev,
+              ...errorData.errors
+            }));
+          } 
+          // 일반 오류 메시지
+          else if (errorData.message) {
+            toast.error(`회원가입 실패: ${errorData.message}`);
+          }
+        } else {
+          toast.error('서버 연결 오류가 발생했습니다. 다시 시도해주세요.');
         }
-      } else {
-        alert('서버 연결 오류가 발생했습니다. 다시 시도해주세요.');
       }
     }
-
-    
-      
-
-  }
-
   };
 
   // 연도 옵션 생성 (현재 연도부터 100년 전까지)
@@ -267,8 +262,6 @@ const SignupPage = () => {
                   className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 />
                 {errors.email && (<p className="mt-1 text-sm text-red-600">{errors.email}</p>)}
-
-
               </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -287,7 +280,6 @@ const SignupPage = () => {
                   className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 />
                 {errors.password && (<p className="mt-1 text-sm text-red-600">{errors.password}</p>)}
-
               </div>
               <div>
                 <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
@@ -304,7 +296,6 @@ const SignupPage = () => {
                   className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 />
                 {errors.confirmPassword && (<p className="mt-1 text-sm text-red-600">{errors.confirmPassword}</p>)}
-
               </div>
             </div>
 
@@ -323,7 +314,6 @@ const SignupPage = () => {
                   className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 />
                 {errors.name && (<p className="mt-1 text-sm text-red-600">{errors.name}</p>)}
-
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -353,7 +343,7 @@ const SignupPage = () => {
                     <span className="ml-2">여성</span>
                   </label>
                 </div>
-                  {errors.gender && (<p className="mt-1 text-sm text-red-600">{errors.gender}</p>)}
+                {errors.gender && (<p className="mt-1 text-sm text-red-600">{errors.gender}</p>)}
               </div>
             </div>
 
@@ -399,7 +389,7 @@ const SignupPage = () => {
                   ))}
                 </select>
               </div>
-                {errors.birthDate && (<p className="mt-1 text-sm text-red-600">{errors.birthDate}</p>)}
+              {errors.birthDate && (<p className="mt-1 text-sm text-red-600">{errors.birthDate}</p>)}
             </div>
 
             <div>
@@ -417,17 +407,16 @@ const SignupPage = () => {
                   className="col-span-2 block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   readOnly
                 />
-                          {/* 주소검색 버튼 - 직접 Signup.jsx에 구현 */}
+                {/* 주소검색 버튼 - 직접 Signup.jsx에 구현 */}
                 <button
-                    type="button"
-                    onClick={openAddressSearch}
-                    className="px-4 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+                  type="button"
+                  onClick={openAddressSearch}
+                  className="px-4 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
                 >
-                    주소 검색
+                  주소 검색
                 </button>
               </div>
               {errors.address && (<p className="mt-1 text-sm text-red-600">{errors.address}</p>)}
-
             </div>
 
             <div>
