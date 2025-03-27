@@ -23,7 +23,7 @@ import UserDeletePage from "./pages/auth/UserDeletePage";
 import AuthRequiredPage from "./pages/etc/AuthRequiredPage";
 
 const isAuthenticated = () => {
-  return localStorage.getItem("token") !== null;
+  return localStorage.getItem("accessToken") !== null;
 };
 
 const ProtectedRoute = ({ children }) => {
