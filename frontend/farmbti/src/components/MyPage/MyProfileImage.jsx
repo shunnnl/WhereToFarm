@@ -2,40 +2,34 @@ import { useState, useEffect } from "react";
 import { Camera, RefreshCw } from "lucide-react";
 import { toast } from "react-toastify";
 
-const MyProfileImage = () => {
+const MyProfileImage = ({ imageUrl }) => {
   const [profileData, setProfileData] = useState({
     hasCustomImage: false,
-    imageUrl: "/api/placeholder/200/200", // 기본 이미지 경로
+    imageUrl: null, // 초기값은 null로 설정
   });
 
   const [isLoading, setIsLoading] = useState(true);
 
   // API에서 프로필 정보 가져오기
   useEffect(() => {
-    const fetchProfileData = async () => {
-      try {
-        setIsLoading(true);
-        // API 호출 예시 - 실제 엔드포인트로 변경 필요
-        // const response = await fetch('/api/myprofile');
-        // const data = await response.json();
+    // 이미지 URL이 들어오면 프로필 데이터 설정
+    if (imageUrl) {
+      setProfileData({
+        hasCustomImage: true,
+        imageUrl: imageUrl,
+      });
+      console.log(imageUrl)
+    } else {
+      // 이미지 URL이 없으면 기본 이미지 설정
+      setProfileData({
+        hasCustomImage: false,
+        imageUrl: "/api/placeholder/200/200", // 기본 이미지 경로
+      });
+    }
 
-        // 데이터 받아왔다고 가정
-        const data = {
-          hasCustomImage: false, // 사용자가 업로드한 이미지가 있는지 여부
-          imageUrl: "/api/placeholder/200/200", // 이미지 URL (기본 이미지 또는 사용자 이미지)
-        };
-
-        setProfileData(data);
-      } catch (error) {
-        console.error("프로필 정보 로딩 실패:", error);
-        toast.error("프로필 정보를 불러오는데 실패했습니다.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchProfileData();
-  }, []);
+    // 로딩 상태 해제
+    setIsLoading(false);
+  }, [imageUrl]);
 
   // 파일 유효성 검사 함수
   const validateFile = (file) => {
@@ -142,7 +136,7 @@ const MyProfileImage = () => {
       img.onload = async () => {
         try {
           // 로딩 상태 시작
-          setIsLoading(true);
+          // setIsLoading(true);
 
           // 이미지 업로드 API 호출
           const formData = new FormData();
@@ -167,7 +161,7 @@ const MyProfileImage = () => {
           toast.error("이미지 업로드에 실패했습니다.");
           URL.revokeObjectURL(imageUrl);
         } finally {
-          setIsLoading(false);
+          // setIsLoading(false);
           e.target.value = "";
         }
       };
@@ -224,14 +218,22 @@ const MyProfileImage = () => {
             </div>
           ) : (
             <img
-              src={profileData.imageUrl}
+              src={profileData.imageUrl || "/api/placeholder/200/200"} // 기본 이미지 폴백 추가
               alt="Profile"
               className="w-full h-full object-cover"
+              onError={(e) => {
+                // 이미지 로드 실패 시 기본 이미지로 대체
+                // e.target.src = "/api/placeholder/200/200";
+                if (profileData.hasCustomImage) {
+                  // 사용자 이미지가 로드 실패한 경우만 알림
+                  toast.error("프로필 이미지를 불러올 수 없습니다.");
+                }
+              }}
             />
           )}
         </div>
 
-        {/* 조건부 버튼 렌더링 */}
+        {/* 조건부 버튼 렌더링 - 로딩 중이 아닐 때만 표시 */}
         {!isLoading &&
           (profileData.hasCustomImage ? (
             <div className="absolute bottom-0 right-0 flex">

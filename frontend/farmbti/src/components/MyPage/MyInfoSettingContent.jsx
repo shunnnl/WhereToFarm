@@ -6,9 +6,9 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
   const [formData, setFormData] = useState({
     name: initialData?.name || "",
     gender: initialData?.gender || "",
-    Year: initialData?.Year || "",
-    Month: initialData?.Month || "",
-    Day: initialData?.Day || "",
+    year: initialData?.year || "",
+    month: initialData?.month || "",
+    day: initialData?.day || "",
     address: initialData?.address || "",
   });
 
@@ -25,9 +25,9 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
   };
 
   const dayOptions =
-    formData.Year && formData.Month
+    formData.year && formData.month
       ? Array.from(
-          { length: getDaysInMonth(formData.Year, formData.Month) },
+          { length: getDaysInMonth(formData.year, formData.month) },
           (_, i) => i + 1
         )
       : Array.from({ length: 31 }, (_, i) => i + 1);
@@ -47,15 +47,15 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
         if (!value) return "성별을 선택해주세요";
         return "";
 
-      case "Year":
+      case "year":
         if (!value) return "출생 연도를 선택해주세요";
         return "";
 
-      case "Month":
+      case "month":
         if (!value) return "출생 월을 선택해주세요";
         return "";
 
-      case "Day":
+      case "day":
         if (!value) return "출생일을 선택해주세요";
         return "";
 
@@ -165,7 +165,7 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
                 type="radio"
                 name="gender"
                 value="남성"
-                checked={formData.gender === "남성"}
+                checked={formData.gender === 0}
                 onChange={() => handleGenderChange("남성")}
                 className="w-5 h-5 text-blue-500"
               />
@@ -176,7 +176,7 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
                 type="radio"
                 name="gender"
                 value="여성"
-                checked={formData.gender === "여성"}
+                checked={formData.gender === 1}
                 onChange={() => handleGenderChange("여성")}
                 className="w-5 h-5 text-blue-500"
               />
@@ -193,8 +193,8 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
           <h2 className="text-lg font-medium">생년월일</h2>
           <div className="grid grid-cols-3 gap-4">
             <select
-              name="Year"
-              value={formData.Year}
+              name="year"
+              value={formData.year}
               onChange={handleChange}
               className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-supportGreen"
             >
@@ -206,8 +206,8 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
               ))}
             </select>
             <select
-              name="Month"
-              value={formData.Month}
+              name="month"
+              value={formData.month}
               onChange={handleChange}
               className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-supportGreen"
             >
@@ -219,8 +219,8 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
               ))}
             </select>
             <select
-              name="Day"
-              value={formData.Day}
+              name="day"
+              value={formData.day}
               onChange={handleChange}
               className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-supportGreen"
             >
@@ -232,7 +232,7 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
               ))}
             </select>
           </div>
-          {(errors.Year || errors.Month || errors.Day) && (
+          {(errors.year || errors.month || errors.day) && (
             <div className="text-red-500 text-sm mt-1">
               생년월일을 모두 선택해주세요
             </div>

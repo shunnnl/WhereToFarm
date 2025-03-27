@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import leaveIcon from "../../asset/mypage/leaves.svg";
 import { MessageSquare, User, Settings, Lock } from "lucide-react";
 import MyPageModal from "./MyPageModal";
@@ -12,27 +12,22 @@ const MyProfile = ({ myInfo }) => {
   const modalRef = useRef(null);
   const [modalType, setModalType] = useState("");
   const [modalTitle, setModalTitle] = useState("");
-
+  const [birth, setBirth] = useState(
+    useState({ year: "", month: "", day: "" })
+  );
+  const [address, setAddress] = useState("");
 
   // 모달 타입 별 상태 분리
   const [mentorFormData, setMentorFormData] = useState({
-    data: { Year: "", foodType: "", description: "" },
+    data: {},
     isValid: true,
     errors: {},
   });
   const [myInfoFormData, setMyInfoFormData] = useState({
-    data: {
-      name: myInfo.userName || "",
-      gender: myInfo.gender || "",
-      Year: myInfo.birthYear || "",
-      Month: myInfo.birthMonth || "",
-      Day: myInfo.birthDay || "",
-      address: myInfo.region || "",
-    },
+    data: {},
     isValid: true,
     errors: {},
   });
-
   const [passwordFormData, setPasswordFormData] = useState({
     data: { currentPassword: "", newPassword: "", confirmPassword: "" },
     isValid: true,
@@ -41,6 +36,63 @@ const MyProfile = ({ myInfo }) => {
 
   // 상태, 예외 처리
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const formatBirthDate = (birthString) => {
+    if (!birthString) return { year: "", month: "", day: "" };
+    const birthDate = new Date(birthString);
+    return {
+      year: birthDate.getFullYear().toString(),
+      month: (birthDate.getMonth() + 1).toString().padStart(2, "0"),
+      day: birthDate.getDate().toString().padStart(2, "0"),
+    };
+  };
+
+  const formatAddress = (addressString) => {
+    if (!addressString) return "";
+    const address = `${addressString.split(" ")[0]} ${
+      addressString.split(" ")[1]
+    }`;
+
+    return address
+  };
+
+  useEffect(() => {
+    if (!myInfo) {
+      return;
+    }
+
+    const birth = formatBirthDate(myInfo.birth);
+    setBirth(birth);
+
+    const address = formatAddress(myInfo.address);
+    setAddress(address)
+
+    setMyInfoFormData({
+      data: {
+        name: myInfo.name || "",
+        gender: myInfo.gender || 0,
+        year: birth.year,
+        month: birth.month,
+        day: birth.day,
+        address: myInfo.address || "",
+      },
+      isValid: true,
+      errors: {},
+    });
+
+    // 멘토 정보도 초기화
+    if (myInfo.isMentor) {
+      setMentorFormData({
+        data: {
+          farmingYears: myInfo.farmingYears,
+          cropNames: myInfo.cropNames,
+          bio: myInfo.bio,
+        },
+        isValid: true,
+        errors: {},
+      });
+    }
+  }, [myInfo]);
 
   const handleChatting = () => {
     // chat 페이지로 넘어가기
@@ -157,7 +209,7 @@ const MyProfile = ({ myInfo }) => {
   return (
     <div>
       <div className="flex flex-col items-center pt-10">
-        <MyProfileImage userProfileImage={myInfo}/>
+        <MyProfileImage imageUrl={myInfo.profileImage} />
         <div className="mentor-menti-button my-2">
           {myInfo.isMentor ? (
             <div className="px-4 py-1 bg-primaryGreen text-textColor-white rounded-full text-sm w-16 text-center">
@@ -173,7 +225,7 @@ const MyProfile = ({ myInfo }) => {
       <div className="greeting mx-10 p-2 border-b-2 border-b-gray-300 flex">
         <div>
           <span className="text-2xl text-textColor-black font-medium">
-            {myInfo.userName}{" "}
+            {myInfo.name}{" "}
           </span>
           <span className="text-lg text-textColor-black">님,</span>
           <p className="text-xl text-textColor-black">오늘도 안녕하세요 :)</p>
@@ -186,7 +238,7 @@ const MyProfile = ({ myInfo }) => {
         <div className="flex justify-between mb-1">
           <p className="text-md text-textColor-gray text-start">생년월일</p>
           <p className="text-lg text-textColor-black text-end">
-            {myInfo.birthDate}
+            {birth.year}년 {birth.month}월 {birth.day}일
           </p>
         </div>
         <div className="flex justify-between mb-1">
@@ -197,15 +249,13 @@ const MyProfile = ({ myInfo }) => {
         </div>
         <div className="flex justify-between mb-1">
           <p className="text-md text-textColor-gray text-start">지역</p>
-          <p className="text-lg text-textColor-black text-end">
-            {myInfo.region}
-          </p>
+          <p className="text-lg text-textColor-black text-end">{address}</p>
         </div>
         {myInfo.isMentor && (
           <div className="flex justify-between mb-1">
             <p className="text-md text-textColor-gray text-start">재배 작물</p>
             <p className="text-lg text-textColor-black text-end">
-              {myInfo.crops.join(", ")}
+              {myInfo.cropNames.join(", ")}
             </p>
           </div>
         )}

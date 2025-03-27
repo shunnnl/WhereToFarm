@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import MyProfile from "../../components/mypage/MyProfile";
+import { getMyPage } from "../../API/mypage/MyPageAPI";
 
 import { Outlet, NavLink } from "react-router";
 
@@ -11,8 +12,21 @@ const MyPage = () => {
     email: "subi@naver.com",
     region: "경상남도 진주시",
     crops: ["미나리", "고구마"],
-    isMentor: false
+    isMentor: false,
   });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const userInfo = await getMyPage();
+        setMyInfo(userInfo)
+        console.log(userInfo);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, []);
   return (
     <div className="mypage-container bg-gradient-to-b from-[#FFFCF2] to-secondaryYellow-light flex">
       <div className="w-1/3 h-screen bg-white mx-5 my-10 rounded-lg shadow-lg border-2">
