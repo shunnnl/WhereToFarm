@@ -1,6 +1,6 @@
-import React, { Children } from "react";
 import { Provider } from "react-redux";
 import { store } from "./store";
+import { Provider } from "react-redux";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -21,6 +21,8 @@ import CropCalculateReport from "./components/MyPage/CropCalculateReport";
 import Estate from "./pages/estate/Estate";
 import UserDeletePage from "./pages/auth/UserDeletePage";
 import AuthRequiredPage from "./pages/etc/AuthRequiredPage";
+import GuideBookPage from "./pages/etc/guidebook/GuideBookPage";
+import NewsPage from "./pages/news/NewsPage";
 
 const isAuthenticated = () => {
   return localStorage.getItem("accessToken") !== null;
@@ -40,12 +42,10 @@ function App() {
     <Provider store={store}>
       <BrowserRouter>
         <div className="App">
-          {/* 네비게이션 바는 동일한 너비와 패딩 사용 */}
           <Navbar />
 
           {/* 페이지 내용 */}
           <Routes>
-            {/* 기본 페이지 */}
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
@@ -66,6 +66,8 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route path="/guidebook" element={<GuideBookPage />} />
+            <Route path="/news" element={<NewsPage />} />
             <Route path="/estate" element={<Estate />} />
             <Route
               path="/account/delete"
@@ -96,14 +98,11 @@ function App() {
                 element={<Navigate to="/mypage/farmbti-report" replace />}
               />
             </Route>
+            <Route path="/account/delete" element={<UserDeletePage />} />
           </Routes>
-
-          {/* 푸터가 있다면 여기에 추가 */}
           <div className="mt-24">
             <Footer />
           </div>
-
-          {/* ToastContainer 추가 */}
           <ToastContainer
             position="top-center"
             autoClose={2000}
