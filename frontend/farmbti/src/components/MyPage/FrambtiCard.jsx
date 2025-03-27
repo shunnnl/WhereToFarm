@@ -1,6 +1,15 @@
 import { useNavigate } from "react-router";
+import { Trash2 } from "lucide-react";
 
-const FarmbtiCard = ({ id, reportName, farmerType, date, matchRate }) => {
+const FarmbtiCard = ({
+  id,
+  reportName,
+  farmerType,
+  date,
+  matchRate,
+  deleteMode,
+  onDelete,
+}) => {
   const formattedDate = new Date(date)
     .toLocaleDateString("ko-KR", {
       year: "numeric",
@@ -13,13 +22,28 @@ const FarmbtiCard = ({ id, reportName, farmerType, date, matchRate }) => {
   const progressWidth = `${matchRate}%`;
 
   const handleNavigate = (reportId) => {
-    useNavigate(`/report/${reportId}`)
+    useNavigate(`/report/${reportId}`);
   };
+
+  const handleDelete = (e) => {
+    e.stopPropagation(); // 이벤트 버블링 방지
+    onDelete(id);
+  };
+
   return (
-    <div className="w-full max-w-md rounded-lg overflow-hidden shadow-md bg-gradient-to-br to-primaryGreen from-supportGreen">
+    <div className="w-full max-w-md rounded-lg overflow-hidden shadow-md bg-gradient-to-br to-primaryGreen from-supportGreen relative">
+      {deleteMode && (
+        <button
+          className="absolute top-12 right-4 z-10 text-red-500 w-6 h-6 flex items-center justify-center"
+          onClick={handleDelete}
+        >
+          <Trash2/>
+        </button>
+      )}
+
       <div className="px-6 py-2 text-white flex justify-between items-center">
-      <div className="font-medium text-sm">귀농 유형</div>
-      <div className="text-md">{farmerType}</div>
+        <div className="font-medium text-sm">귀농 유형</div>
+        <div className="text-md">{farmerType}</div>
       </div>
 
       <div className="bg-white px-6 py-4 rounded-t-lg">
@@ -41,7 +65,7 @@ const FarmbtiCard = ({ id, reportName, farmerType, date, matchRate }) => {
 
         <button
           className="bg-primaryGreen text-white px-4 py-1 rounded-md text-sm"
-          onClick={() => handleNavigate(id)} 
+          onClick={() => handleNavigate(id)}
         >
           상세
         </button>
