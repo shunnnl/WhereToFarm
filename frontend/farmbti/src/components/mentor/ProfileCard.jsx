@@ -1,78 +1,113 @@
-import React from 'react';
-import tmpimage from './tmp/하치와레.jpg'
-import { useState } from 'react';
+import React, { useState } from 'react';
 
-const ProfileCard = ({ 
-  name, 
-  title, 
-  imageSrc = "", 
-  tag,
-  className = ''
-}) => {
+const ProfileCard = ({ mentor, className = '' }) => {
   const [isHovered, setIsHovered] = useState(false);
-
-
+  
+  // 멘토 객체에서 필요한 정보 추출
+  const {
+    name,
+    profileImage,
+    address,
+    cropNames = [],
+    farmingYears,
+    bio
+  } = mentor || {};
+  
+  // 프로필 이미지가 없는 경우 기본 이미지 사용
+  const imageSrc = profileImage || "/default-profile.png";
+  
+  // 농사 경력 계산 (현재 연도 - farmingYears)
+  const currentYear = new Date().getFullYear();
+  const experience = farmingYears ? (currentYear - farmingYears) : 0;
+  
   return (
-    <div className={`
-      bg-white 
-      rounded-2xl 
-      shadow-md 
-      p-6 
-      flex 
-      flex-col 
-      items-center 
-      w-1/3
-      h-96
-      ${className}
-    `}>
+    <div 
+      className={`
+        bg-white 
+        rounded-2xl
+        shadow-md
+        p-6
+        flex
+        flex-col
+        items-center
+        transition-all
+        duration-300
+        hover:shadow-lg
+        w-full
+        ${className}
+      `}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       {/* 원형 이미지 */}
-      <div className="w-48 h-48 rounded-full border-4 border-green-100 overflow-hidden bg-green-100 mt-4">
-        <img 
-          src={imageSrc} 
-          alt={name} 
+      <div className="w-32 h-32 rounded-full border-4 border-green-100 overflow-hidden bg-green-100 mt-4">
+        <img
+          src={imageSrc}
+          alt={name}
           className="w-full h-full object-cover"
         />
       </div>
       
-      {/* 이름과 직함 */}
+      {/* 이름 */}
       <div className="mt-4 text-center">
-        <p className="text-2xl font-bold">
-          {name} 
-          {title && <span className="text-gray-500 text-lg ml-1">{title}</span>}
+        <p className="text-xl font-bold">
+          {name}
+          <span className="text-gray-500 text-lg ml-1">멘토</span>
         </p>
       </div>
       
-      {/* 태그 */}
-      {tag && (
+      {/* 지역 태그 */}
+      {address && (
         <div className="mt-3">
           <span className="
-            bg-green-100 
-            text-green-800 
-            px-3 
-            py-1 
-            rounded-full 
-            text-xl
+            bg-green-100
+            text-green-800
+            px-3
+            py-1
+            rounded-full
+            text-sm
           ">
-            # {tag}
+            # {address}
           </span>
+        </div>
+      )}
+      
+      {/* 작물 정보 */}
+      {cropNames && cropNames.length > 0 && (
+        <div className="mt-3 flex flex-wrap justify-center gap-2">
+          {cropNames.map((crop, index) => (
+            <span 
+              key={index}
+              className="
+                bg-green-50
+                text-green-700
+                px-2
+                py-1
+                rounded-full
+                text-xs
+              "
+            >
+              {crop}
+            </span>
+          ))}
+        </div>
+      )}
+      
+      {/* 경력 정보 */}
+      {experience > 0 && (
+        <div className="mt-2 text-gray-600 text-sm">
+          <span>농사 경력 {experience}년</span>
+        </div>
+      )}
+      
+      {/* 짧은 소개 */}
+      {bio && (
+        <div className="mt-3 text-center text-gray-700 text-sm overflow-hidden line-clamp-2">
+          {bio}
         </div>
       )}
     </div>
   );
 };
 
-// 예시 렌더링
-const ExampleCard = () => {
-  return (
-    <div className="p-4 flex justify-center">
-      <ProfileCard 
-        name="하치와레" 
-        title="멘토" 
-        tag="서울 용산구"
-        imageSrc={tmpimage}
-      />
-    </div>
-  );
-};
-
-export default ExampleCard;
+export default ProfileCard;
