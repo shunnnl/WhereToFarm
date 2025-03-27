@@ -14,3 +14,18 @@ export const getMyPage = async () => {
     throw error;
   }
 };
+
+export const getCalculateReports = async () => {
+    try {
+      const response = await authAxios.get("/crops/get/all");
+
+      if (!response.success) {
+        throw response.error;
+      }
+
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      throw error.error;
+    }
+}

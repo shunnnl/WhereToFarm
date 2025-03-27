@@ -16,7 +16,7 @@ const MyPage = () => {
   });
 
   useEffect(() => {
-    const fetchData = async () => {
+    const getMyInfo = async () => {
       try {
         const userInfo = await getMyPage();
         setMyInfo(userInfo)
@@ -25,7 +25,7 @@ const MyPage = () => {
         console.log(error);
       }
     };
-    fetchData();
+    getMyInfo();
   }, []);
   return (
     <div className="mypage-container bg-gradient-to-b from-[#FFFCF2] to-secondaryYellow-light flex">
