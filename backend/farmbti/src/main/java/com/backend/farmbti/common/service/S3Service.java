@@ -3,15 +3,21 @@ package com.backend.farmbti.common.service;
 import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.Date;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class S3Service {
 
     private final AmazonS3 amazonS3;
@@ -23,7 +29,7 @@ public class S3Service {
     public String getSignedUrl(String objectKey) {
         Date expiration = new Date();
         long expTimeMillis = expiration.getTime();
-        expTimeMillis += 7 * 60 * 60 * 24 * 365; // 1년 유효
+        expTimeMillis += 1000 * 60 * 60 * 24 * 7; // 7일 유효
         expiration.setTime(expTimeMillis);
 
         GeneratePresignedUrlRequest generatePresignedUrlRequest =
@@ -35,9 +41,45 @@ public class S3Service {
         return url.toString();
     }
 
-    // 기본 프로필 이미지 URL 가져오기
-    public String getDefaultProfileImageUrl(Byte gender) {
-        String objectKey = gender == 1 ? "basic_1.jpg" : "basic_0.jpg";
-        return getSignedUrl(objectKey);
+    // 기본 프로필 이미지 객체 키 가져오기
+    public String getDefaultProfileImageKey(Byte gender) {
+        return gender == 1 ? "basic_1.jpg" : "basic_0.jpg";
+    }
+
+    // 파일 업로드 메소드
+    public String uploadFile(MultipartFile file, String dirName) {
+        try {
+            // 파일 메타데이터 설정
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentType(file.getContentType());
+            metadata.setContentLength(file.getSize());
+
+            // 파일명 중복 방지를 위한 UUID 사용
+            String fileName = dirName + "/" + UUID.randomUUID() + "_" + file.getOriginalFilename();
+
+            // S3에 업로드
+            amazonS3.putObject(
+                    bucket,
+                    fileName,
+                    file.getInputStream(),
+                    metadata
+            );
+
+            log.info("파일 업로드 성공: {}", fileName);
+            return fileName; // 객체 키 반환
+        } catch (IOException e) {
+            log.error("파일 업로드 실패: {}", e.getMessage());
+            throw new RuntimeException("파일 업로드 중 오류 발생: " + e.getMessage());
+        }
+    }
+
+    // 파일 삭제 메소드
+    public void deleteFile(String objectKey) {
+        try {
+            amazonS3.deleteObject(bucket, objectKey);
+            log.info("파일 삭제 성공: {}", objectKey);
+        } catch (Exception e) {
+            log.error("파일 삭제 실패: {}", e.getMessage());
+        }
     }
 }

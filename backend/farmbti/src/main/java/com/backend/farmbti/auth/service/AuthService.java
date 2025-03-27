@@ -23,10 +23,7 @@ public class AuthService {
     private final UsersRepository usersRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
-
-    // 고정 URL 사용
-    private static final String MALE_DEFAULT_IMAGE_URL = "https://farmbtibucket.s3.ap-northeast-2.amazonaws.com/basic_0.jpg";
-    private static final String FEMALE_DEFAULT_IMAGE_URL = "https://farmbtibucket.s3.ap-northeast-2.amazonaws.com/basic_1.jpg";
+    private final S3Service s3Service;
 
     public void signUp(SignUpRequest request) {
         //1. 에러 검증
@@ -35,10 +32,8 @@ public class AuthService {
         //2. 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(request.getPassword());
 
-        //3. 성별에 따른 기본 프로필 이미지 URL 설정
-        String defaultProfileImage = request.getGender() == 1
-                ? FEMALE_DEFAULT_IMAGE_URL
-                : MALE_DEFAULT_IMAGE_URL;
+        // 성별에 따른 기본 프로필 이미지 키 설정
+        String profileImageKey = s3Service.getDefaultProfileImageKey(request.getGender());
 
         //3. User 엔터티 생성
         Users users = Users.builder()
@@ -48,7 +43,7 @@ public class AuthService {
                 .birth(request.getBirth())
                 .address(request.getAddress())
                 .gender(request.getGender())
-                .profileImage(defaultProfileImage)
+                .profileImage(profileImageKey)
                 .build();
 
         //4. db에 저장
