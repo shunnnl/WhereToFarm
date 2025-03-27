@@ -3,106 +3,39 @@ import AreaInputSection from "../../components/crop-calculator/AreaInputSection"
 import CropSelectSection from "../../components/crop-calculator/CropSelectSection";
 import ProgressIndicator from "../../components/crop-calculator/ProgressIndicator";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
 import ResultSection from "../../components/crop-calculator/ResultSection";
+import {
+  estimateCrops,
+  saveResult,
+} from "../../API/crop-calculator/CropCalculatorAPI";
+import { toast } from "react-toastify";
 
 const CropCalculatorPage = () => {
   const [step, setStep] = useState(1);
   const [area, setArea] = useState(null);
-  const [convertedArea, setConvertedARea] = useState(0);
+  const [convertedArea, setConvertedArea] = useState(0);
   const [selectedCrop, setSelectedCrop] = useState(null);
-  // api로 받아올 것 (현재 dummydata)
-  const [result, setResult] = useState({
-    id: 1,
-    cropsName: "고구마",
-    myAreaVolume: 100,
-    myAreaField: 330.58,
-    myTotalQuantity: 599.01096,
-    myTotalPrice: 1358222.31032,
-    myTotalOperatingPrice: 668901.19186,
-    myTotalRealPrice: 689321.1184599999,
-    myRate: 50.8,
-    house: false,
-    myMonthlyPrice: {
-      monthly_data: [
-        {
-          date: "2025-01-01",
-          price_forecast: 2024.573974609375,
-          year: 2025,
-          month: 1,
-        },
-        {
-          date: "2025-02-01",
-          price_forecast: 2052.865478515625,
-          year: 2025,
-          month: 2,
-        },
-        {
-          date: "2025-03-01",
-          price_forecast: 2039.0390625,
-          year: 2025,
-          month: 3,
-        },
-        {
-          date: "2025-04-01",
-          price_forecast: 2261.031982421875,
-          year: 2025,
-          month: 4,
-        },
-        {
-          date: "2025-05-01",
-          price_forecast: 2295.0732421875,
-          year: 2025,
-          month: 5,
-        },
-        {
-          date: "2025-06-01",
-          price_forecast: 2334.068115234375,
-          year: 2025,
-          month: 6,
-        },
-        {
-          date: "2025-07-01",
-          price_forecast: 2397.01904296875,
-          year: 2025,
-          month: 7,
-        },
-        {
-          date: "2025-08-01",
-          price_forecast: 2145.0546875,
-          year: 2025,
-          month: 8,
-        },
-        {
-          date: "2025-09-01",
-          price_forecast: 1960.308349609375,
-          year: 2025,
-          month: 9,
-        },
-        {
-          date: "2025-10-01",
-          price_forecast: 2210.23828125,
-          year: 2025,
-          month: 10,
-        },
-        {
-          date: "2025-11-01",
-          price_forecast: 2260.0625,
-          year: 2025,
-          month: 11,
-        },
-        {
-          date: "2025-12-01",
-          price_forecast: 2268.335205078125,
-          year: 2025,
-          month: 12,
-        },
-      ],
-    },
-  });
-  const [userName, setUserName] = useState("곽두팔");
-  const [isLoding, setIsLoading] = useState(false);
+  const [result, setResult] = useState(null);
+  const [userName, setUserName] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  // 화면 렌더링 시 설정
+  useEffect(() => {
+    // 사용자 이름 가져오기
+    const user = localStorage.getItem("user");
+    if (user) {
+      try {
+        const userObj = JSON.parse(user);
+        setUserName(userObj.name);
+      } catch (error) {
+        console.error("사용자 정보 파싱 오류:", error);
+        setUserName("사용자");
+      }
+    }
+  }, []);
 
   const handleAreaSubmit = () => {
     // 평수 입력이 없을 경우
@@ -121,10 +54,18 @@ const CropCalculatorPage = () => {
       setError("평수는 100평과 1500평 사이의 값을 입력해주세요.");
       return;
     }
+
+    // 소숫점 두자리인지 판별
+    const strNum = area.toString();
+    const decimalPart = strNum.includes(".") ? strNum.split(".")[1] : "";
+    if (decimalPart.length > 2) {
+      setError("평수는 소수점 두 자리까지만 입력 가능합니다.");
+      return;
+    }
     setError(null);
     const convert = area * 3.3058;
     // 평을 제곱미터 변환
-    setConvertedARea(convert.toFixed(2));
+    setConvertedArea(convert.toFixed(2));
     // 변환 후 단계 넘어감
     setStep(2);
   };
@@ -149,42 +90,47 @@ const CropCalculatorPage = () => {
 
     setError(null);
     setStep(3);
-    console.log("Step changed to 3, selectedCrop:", selectedCrop.name);
 
     // API 호출 등 후속 작업 실행
-    calculateHarvest(area, convertedArea, selectedCrop);
+    calculateHarvest(area, selectedCrop.name);
   };
 
-  const calculateHarvest = async (area, convertedArea, selectedCrop) => {
-    // setIsLoading(true); // 로딩 시작
+  const calculateHarvest = async (area, selectedCropName) => {
+    setIsLoading(true); // 로딩 시작
     setError(null); // 에러 초기화
     try {
       // api  호출
-      console.log("API 호출 시작", { area, convertedArea, crop: selectedCrop });
-
-      // 임시 딜레이 (실제 API 호출로 대체)
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const data = await estimateCrops(area, selectedCropName);
+      setResult(data);
     } catch (error) {
-      // api 호출 실패
-      // 예외 처리 로직
-      setError("계산 중 오류가 발생했습니다.");
+      toast.error(error.message || "알 수 없는 오류가 발생했습니다.");
+      handleResetCalculate();
     } finally {
-      // setIsLoading(false); // 로딩 종료
+      setIsLoading(false); // 로딩 종료
     }
   };
 
-  const handleSaveResult = () => {
-    // 저장 api 
+  const handleSaveResult = async () => {
+    setIsLoading(true); // 로딩 시작
+    // 저장 api
+    try {
+      await saveResult(result.reportId);
+    } catch (error) {
+      toast.error(error.message || "알 수 없는 오류가 발생했습니다.");
+      handleResetCalculate();
+    } finally {
+      setIsLoading(false); // 로딩 종료
+    }
     return null;
-  }
+  };
 
-  const handleresetCalculate = () => {
+  const handleResetCalculate = () => {
     setStep(1);
     setArea(null);
-    setConvertedARea(0);
+    setConvertedArea(0);
     setSelectedCrop(null);
-    // setResult(null);
-  }
+    setResult(null);
+  };
 
   return (
     <div>
@@ -214,9 +160,9 @@ const CropCalculatorPage = () => {
           step={step}
           result={result}
           userName={userName}
-          isLoading={isLoding}
+          isLoading={isLoading}
           onSaveReport={handleSaveResult}
-          onResetResult={handleresetCalculate}
+          onResetResult={handleResetCalculate}
         />
       </div>
     </div>

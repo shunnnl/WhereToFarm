@@ -34,9 +34,15 @@ const refreshAccessToken = async () => {
       throw new Error("Refresh token not found");
     }
     
-    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/auth/refresh`, {
-      refreshToken
-    });
+    const response = await axios.post(
+      `${import.meta.env.VITE_BASE_URL}/auth/refresh`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${refreshToken}`,
+        },
+      }
+    );
     
     if (response.data.success && response.data.data && response.data.data.token) {
       localStorage.setItem("accessToken", response.data.data.token.accessToken);
@@ -44,7 +50,7 @@ const refreshAccessToken = async () => {
       localStorage.setItem("tokenExpires", response.data.data.token.accessTokenExpiresInForHour);
       
       // 'token' 키도 일관성을 위해 설정 (기존 코드와의 호환성 위해)
-      localStorage.setItem("token", response.data.data.token.accessToken);
+      localStorage.setItem("accessToken", response.data.data.token.accessToken);
       
       return response.data.data.token.accessToken;
     } else {
@@ -56,7 +62,6 @@ const refreshAccessToken = async () => {
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("tokenExpires");
     localStorage.removeItem("user");
-    localStorage.removeItem("token"); // 'token' 키도 제거
     
     return Promise.reject(error);
   }
@@ -84,8 +89,6 @@ authAxios.interceptors.response.use(
         return Promise.reject(refreshError);
       }
     }
-
-
 
     return Promise.reject(error.response?.data || error);
   }
