@@ -5,15 +5,7 @@ import { getMyPage } from "../../API/mypage/MyPageAPI";
 import { Outlet, NavLink } from "react-router";
 
 const MyPage = () => {
-  const [myInfo, setMyInfo] = useState({
-    userName: "황뚜비",
-    userImage: "파일 주소",
-    birthDate: "2002-11-05",
-    email: "subi@naver.com",
-    region: "경상남도 진주시",
-    crops: ["미나리", "고구마"],
-    isMentor: false,
-  });
+  const [myInfo, setMyInfo] = useState({});
 
   useEffect(() => {
     const getMyInfo = async () => {
