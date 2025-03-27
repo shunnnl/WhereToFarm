@@ -56,7 +56,17 @@ const CropCalculateReport = () => {
 
   return (
     <div className="relative pb-20">
-      <p className="text-xl font-semibold mt-4">작물 예상 계산 리포트</p>
+      <div className="flex justify-between items-center mt-4 mb-2">
+        <p className="text-xl font-semibold">나의 작물 계산 리포트</p>
+        <button
+          onClick={toggleDeleteMode}
+          className={`px-3 py-1 rounded-md text-sm ${
+            deleteMode ? "bg-red-500 text-white" : "bg-gray-200 text-gray-700"
+          }`}
+        >
+          {deleteMode ? "삭제 취소" : "삭제하기"}
+        </button>
+      </div>
       <p className="text-sm font-light text-primaryGreen mb-4">
         *모든 리포트는 최신순으로 정렬되어 있습니다.
       </p>
