@@ -10,6 +10,7 @@ import com.backend.farmbti.users.service.UsersService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -51,6 +52,16 @@ public class UsersController {
         Long userId = securityUtils.getCurrentUsersId();
         CurrentUserResponse userInfo = usersService.getCurrentUserInfo(userId);
         return CommonResponseDto.ok(userInfo);
+    }
+
+    /**
+     * 기본 프로필 이미지로 변경
+     */
+    @PutMapping("/reset-default")
+    public ResponseEntity<Void> resetToDefaultProfileImage() {
+        Long userId = securityUtils.getCurrentUsersId();
+        usersService.resetToDefaultProfileImage(userId);
+        return ResponseEntity.ok().build();
     }
 
 }

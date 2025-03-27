@@ -95,6 +95,12 @@ public class UsersService {
         // 입력값 검증
         validateUserUpdateRequest(request);
 
+        if (user.getProfileImage().startsWith("basic/") && !request.getGender().equals(user.getGender())) {
+            // 새로운 성별에 맞는 기본 프로필 이미지로 변경
+            String newDefaultProfileImageKey = s3Service.getDefaultProfileImageKey(request.getGender());
+            user.updateProfileImage(newDefaultProfileImageKey);
+        }
+
         // 회원 정보 업데이트
         user.updateUserInfo(request.getName(), request.getBirth(), request.getAddress(), request.getGender());
 
@@ -155,6 +161,29 @@ public class UsersService {
 
         return builder.build();
     }
+
+    /**
+     * 기본 프로필 이미지로 변경
+     */
+    @Transactional
+    public void resetToDefaultProfileImage(Long userId) {
+        // 1. 사용자 조회
+        Users user = usersRepository.findById(userId)
+                .orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
+
+        // 2. 기본 이미지 키 생성
+        String defaultProfileImageKey = s3Service.getDefaultProfileImageKey(user.getGender());
+
+        // 3. 이전 이미지 삭제 (기본 이미지가 아닌 경우)
+        if (!user.getProfileImage().startsWith("basic/")) {
+            s3Service.deleteFile(user.getProfileImage());
+        }
+
+        // 4. 프로필 이미지 업데이트
+        user.updateProfileImage(defaultProfileImageKey);
+        usersRepository.save(user);
+    }
+
 
     /**
      * 사용자 업데이트 요청 검증 메소드

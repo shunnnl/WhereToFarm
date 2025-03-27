@@ -14,7 +14,8 @@ public enum UsersErrorCode implements ErrorCode {
     INVALID_USER_BIRTH(400, "생년월일은 필수입니다."),
     INVALID_USER_GENDER(400, "성별은 필수입니다."),
     DEFAULT_PROFILE_IMAGE_NOT_FOUND(404, "성별에 맞는 기본 프로필 이미지를 찾을 수 없습니다."),
-    PROFILE_IMAGE_URL_GENERATION_FAILED(500, "프로필 이미지 URL 생성에 실패했습니다.");
+    PROFILE_IMAGE_URL_GENERATION_FAILED(500, "프로필 이미지 URL 생성에 실패했습니다."),
+    PROFILE_IMAGE_UPLOAD_FAILED(500, "프로필 이미지 업로드에 실패했습니다.");
 
     private final int status;
     private final String message;
