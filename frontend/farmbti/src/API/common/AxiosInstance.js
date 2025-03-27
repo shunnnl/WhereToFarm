@@ -11,12 +11,13 @@ const authAxios = axios.create({
 
 console.log("authAxios baseURL:", authAxios.defaults.baseURL);
 
-// 인증 요구 api 요청 가로채기
+// 인증 요구 API 요청 가로채기 (수정)
 authAxios.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers["Authorization"] = `Bearer ${token}`;
+    // 'token'이 아닌 'accessToken' 사용
+    const accessToken = localStorage.getItem("accessToken");
+    if (accessToken) {
+      config.headers["Authorization"] = `Bearer ${accessToken}`;
     }
     return config;
   },
@@ -24,7 +25,6 @@ authAxios.interceptors.request.use(
     return Promise.reject(error);
   }
 );
-
 
 // refreshToken을 이용한 토큰 갱신 함수
 const refreshAccessToken = async () => {
@@ -34,7 +34,6 @@ const refreshAccessToken = async () => {
       throw new Error("Refresh token not found");
     }
     
-    // 토큰 갱신 요청 (백엔드 엔드포인트에 맞게 수정 필요)
     const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/auth/refresh`, {
       refreshToken
     });
@@ -43,6 +42,10 @@ const refreshAccessToken = async () => {
       localStorage.setItem("accessToken", response.data.data.token.accessToken);
       localStorage.setItem("refreshToken", response.data.data.token.refreshToken);
       localStorage.setItem("tokenExpires", response.data.data.token.accessTokenExpiresInForHour);
+      
+      // 'token' 키도 일관성을 위해 설정 (기존 코드와의 호환성 위해)
+      localStorage.setItem("token", response.data.data.token.accessToken);
+      
       return response.data.data.token.accessToken;
     } else {
       throw new Error("Failed to refresh token");
@@ -53,7 +56,8 @@ const refreshAccessToken = async () => {
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("tokenExpires");
     localStorage.removeItem("user");
-    window.location.href = "/login";
+    localStorage.removeItem("token"); // 'token' 키도 제거
+    
     return Promise.reject(error);
   }
 };
