@@ -3,7 +3,7 @@ import leaveIcon from "../../asset/mypage/leaves.svg";
 import { MessageSquare, User, Settings, Lock } from "lucide-react";
 import { toast } from "react-toastify";
 
-import { putMyInfo } from "../../API/mypage/MyPageAPI";
+import { putMyInfo, changePassword } from "../../API/mypage/MyPageAPI";
 
 import MyPageModal from "./MyPageModal";
 import MentorSettingContent from "./MentorSettingContent";
@@ -33,7 +33,7 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
     errors: {},
   });
   const [passwordFormData, setPasswordFormData] = useState({
-    data: { currentPassword: "", newPassword: "", confirmPassword: "" },
+    data: { password: "", newPassword: "", confirmPassword: "" },
     isValid: true,
     errors: {},
   });
@@ -203,7 +203,7 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
           const gender = myInfoFormData.data.gender;
 
           // API 호출
-          const response = await putMyInfo({
+          const myInfoResponse = await putMyInfo({
             name,
             address,
             birth,
@@ -211,7 +211,7 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
           });
 
           // 성공했다면 로컬 상태 업데이트
-          if (response) {
+          if (myInfoResponse) {
             // UI에 즉시 반영하기 위해 상태 업데이트
             setMyInfo((prevInfo) => ({
               ...prevInfo,
@@ -241,7 +241,17 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
 
           // 유효한 경우 API 호출 및 처리
           console.log("비밀번호 정보 업데이트:", passwordFormData.data);
-          toast.success("비밀번호 정보가 수정 되었습니다.");
+          const currentPassword = passwordFormData.data.password;
+          const newPassword = passwordFormData.data.newPassword;
+          console.log("newPassword:", passwordFormData.data.newPassword);
+          const passwordResponse = await changePassword({
+            currentPassword,
+            newPassword,
+          });
+
+          if (passwordResponse) {
+            toast.success("비밀번호 정보가 수정 되었습니다.");
+          }
           break;
 
         default:

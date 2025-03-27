@@ -42,3 +42,16 @@ export const putMyInfo = async (data) => {
     throw error.error;
   }
 };
+
+export const changePassword = async (data) => {
+  try {
+    const response = await authAxios.post("/users/password", data);
+    if (!response.success) {
+      throw response.error;
+    }
+    return response.success; // 응답에 데이터 null 성공 여부만 가져오기
+  } catch (error) {
+    console.log(error);
+    throw error.error;
+  }
+};
