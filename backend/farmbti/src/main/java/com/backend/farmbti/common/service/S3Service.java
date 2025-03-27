@@ -23,7 +23,7 @@ public class S3Service {
     public String getSignedUrl(String objectKey) {
         Date expiration = new Date();
         long expTimeMillis = expiration.getTime();
-        expTimeMillis += 1000 * 60 * 60; // 1시간 유효
+        expTimeMillis += 7 * 60 * 60 * 24 * 365; // 1년 유효
         expiration.setTime(expTimeMillis);
 
         GeneratePresignedUrlRequest generatePresignedUrlRequest =

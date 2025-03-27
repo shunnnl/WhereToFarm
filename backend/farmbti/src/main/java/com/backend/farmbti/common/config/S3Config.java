@@ -26,10 +26,6 @@ public class S3Config {
 
     @Value("${cloud.aws.region.static}")
     private String region;
-
-    @Value("${cloud.aws.s3.bucket}")
-    private String bucket;
-
     @Bean
     public AmazonS3 amazonS3Client() {
         AWSCredentials credentials = new BasicAWSCredentials(accessKey, secretKey);
@@ -38,14 +34,6 @@ public class S3Config {
                 .withCredentials(new AWSStaticCredentialsProvider(credentials))
                 .withRegion(region)
                 .build();
-
-        // 버킷이 존재하지 않는다면 버킷 생성
-        if (!amazonS3Client.doesBucketExistV2(bucket)) {
-            amazonS3Client.createBucket(
-                    new CreateBucketRequest(bucket)
-                            .withCannedAcl(CannedAccessControlList.PublicRead)
-            );
-        }
 
         return amazonS3Client;
     }
