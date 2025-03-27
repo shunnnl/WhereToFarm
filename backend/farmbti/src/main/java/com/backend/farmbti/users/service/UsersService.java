@@ -110,6 +110,7 @@ public class UsersService {
                 .orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
 
         CurrentUserResponse.CurrentUserResponseBuilder builder = CurrentUserResponse.builder()
+                .userId(user.getId())
                 .email(user.getEmail())
                 .name(user.getName())
                 .address(user.getAddress())
@@ -131,6 +132,7 @@ public class UsersService {
                     .collect(Collectors.toList());
 
             builder.isMentor(true)
+                    .mentorId(mentor.getId())
                     .bio(mentor.getBio())
                     .farmingYears(mentor.getFarmingYears())
                     .cropNames(cropNames);

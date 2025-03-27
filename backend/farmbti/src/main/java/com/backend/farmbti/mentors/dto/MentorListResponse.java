@@ -1,14 +1,15 @@
-package com.backend.farmbti.users.dto;
+package com.backend.farmbti.mentors.dto;
 
-import java.util.Date;
-import java.util.List;
 import lombok.*;
+import java.util.List;
+import java.util.Date;
 
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CurrentUserResponse {
+public class MentorListResponse {
+    // 유저 정보
     private Long userId;
     private String email;
     private String name;
@@ -16,9 +17,6 @@ public class CurrentUserResponse {
     private Date birth;
     private Byte gender;
     private String profileImage;
-
-    @Builder.Default
-    private Boolean isMentor = false;
 
     // 멘토 정보
     private Long mentorId;
