@@ -1,5 +1,5 @@
 import { useState } from "react";
-import MyProfile from "../../components/mypage/MyProfile";
+import MyProfile from "../../components/MyPage/MyProfile";
 
 import { Outlet, NavLink } from "react-router";
 
