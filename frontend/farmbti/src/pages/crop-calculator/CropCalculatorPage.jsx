@@ -11,19 +11,26 @@ import { toast } from "react-toastify"
 const CropCalculatorPage = () => {
   const [step, setStep] = useState(1);
   const [area, setArea] = useState(null);
-  const [convertedArea, setConvertedARea] = useState(0);
+  const [convertedArea, setConvertedArea] = useState(0);
   const [selectedCrop, setSelectedCrop] = useState(null);
   const [result, setResult] = useState(null);
   const [userName, setUserName] = useState("");
-  const [isLoding, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
   // 화면 렌더링 시 설정
   useEffect(() => {
     // 사용자 이름 가져오기
     const user = localStorage.getItem("user");
-    const name = JSON.parse(user).name;
-    setUserName(name);
+    if (user) {
+      try {
+        const userObj = JSON.parse(user);
+        setUserName(userObj.name);
+      } catch (error) {
+        console.error("사용자 정보 파싱 오류:", error);
+        setUserName("사용자");
+      }
+    }
   }, []);
 
   const handleAreaSubmit = () => {
@@ -54,7 +61,7 @@ const CropCalculatorPage = () => {
     setError(null);
     const convert = area * 3.3058;
     // 평을 제곱미터 변환
-    setConvertedARea(convert.toFixed(2));
+    setConvertedArea(convert.toFixed(2));
     // 변환 후 단계 넘어감
     setStep(2);
   };
@@ -94,7 +101,7 @@ const CropCalculatorPage = () => {
 
     } catch (error) {
       toast.error(error.message || "알 수 없는 오류가 발생했습니다.");
-      handleresetCalculate();
+      handleResetCalculate();
     } finally {
       setIsLoading(false); // 로딩 종료
     }
@@ -105,10 +112,10 @@ const CropCalculatorPage = () => {
     return null;
   };
 
-  const handleresetCalculate = () => {
+  const handleResetCalculate = () => {
     setStep(1);
     setArea(null);
-    setConvertedARea(0);
+    setConvertedArea(0);
     setSelectedCrop(null);
     setResult(null);
   };
@@ -141,9 +148,9 @@ const CropCalculatorPage = () => {
           step={step}
           result={result}
           userName={userName}
-          isLoading={isLoding}
+          isLoading={isLoading}
           onSaveReport={handleSaveResult}
-          onResetResult={handleresetCalculate}
+          onResetResult={handleResetCalculate}
         />
       </div>
     </div>
