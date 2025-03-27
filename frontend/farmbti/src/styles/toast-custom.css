@@ -88,3 +88,16 @@
   opacity: 1;
   color: #666666;
 }
+
+/* 애니메이션 시간 단축 */
+.Toastify__toast-enter {
+  animation-duration: 0.2s !important;
+}
+
+.Toastify__toast-exit {
+  animation-duration: 0.2s !important;
+}
+
+.Toastify__progress-bar {
+  animation-duration: 1000ms !important; /* autoClose 값과 동일하게 */
+}
