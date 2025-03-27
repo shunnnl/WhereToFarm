@@ -6,8 +6,11 @@ import ProgressIndicator from "../../components/crop-calculator/ProgressIndicato
 import { useEffect, useState } from "react";
 
 import ResultSection from "../../components/crop-calculator/ResultSection";
-import { submit, saveResult } from "../../API/crop-calculator/CropCalculatorAPI";
-import { toast } from "react-toastify"
+import {
+  estimateCrops,
+  saveResult,
+} from "../../API/crop-calculator/CropCalculatorAPI";
+import { toast } from "react-toastify";
 
 const CropCalculatorPage = () => {
   const [step, setStep] = useState(1);
@@ -97,10 +100,8 @@ const CropCalculatorPage = () => {
     setError(null); // 에러 초기화
     try {
       // api  호출
-      const data = await submit(area, selectedCropName);
-      console.log(data)
-      setResult(data)
-
+      const data = await estimateCrops(area, selectedCropName);
+      setResult(data);
     } catch (error) {
       toast.error(error.message || "알 수 없는 오류가 발생했습니다.");
       handleResetCalculate();

@@ -1,6 +1,6 @@
 import { authAxios } from "../common/AxiosInstance";
 
-export const submit = async (myAreaVolume, cropsName) => {
+export const estimateCrops = async (myAreaVolume, cropsName) => {
   try {
     const response = await authAxios.post("/crops/estimate", {
       myAreaVolume,
