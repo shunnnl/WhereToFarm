@@ -16,6 +16,7 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitResult, setSubmitResult] = useState(null);
+  const [isCheckingMentorStatus, setIsCheckingMentorStatus] = useState(false);
 
   const topFood = [
     { id: '사과', label: '사과', iconSrc: 'src/asset/mentor/icons/apple.png' },
@@ -29,6 +30,62 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
     { id: '귤', label: '귤', iconSrc: 'src/asset/mentor/icons/tangerine.png' },
     { id: '수박', label: '수박', iconSrc: 'src/asset/mentor/icons/watermelon.png' }
   ];
+
+    // 사용자 정보 및 멘토 상태 확인
+    const checkUserStatus = async () => {
+      if (!isLoggedIn) return;
+      
+      try {
+        setIsCheckingMentorStatus(true);
+        // 사용자 정보를 가져오는 API 호출
+        const response = await authAxios.get('/users/me');
+        
+        // API 응답 구조에 맞게 확인
+        if (response.data && response.data.success && response.data.data) {
+          const userData = response.data.data;
+          
+          // isMentor 필드로 멘토 여부 확인
+          if (userData.isMentor) {
+            console.log('이미 멘토로 등록되어 있습니다:', userData);
+            setIsAlreadyMentor(true);
+            setMentorData({
+              bio: userData.bio || '',
+              farmingYears: userData.farmingYears || 0,
+              cropNames: userData.cropNames || []
+            });
+            setSubmitResult({ 
+              success: false, 
+              message: '이미 멘토로 등록되어 있습니다.' 
+            });
+          } else {
+            setIsAlreadyMentor(false);
+            setMentorData(null);
+          }
+        }
+      } catch (error) {
+        console.error('사용자 정보 확인 중 오류 발생:', error);
+        
+        // 인증 오류인 경우 로그아웃 처리
+        if (error.response && error.response.status === 401) {
+          console.error('인증 오류 - 로그아웃 처리');
+          dispatch(logout());
+          setSubmitResult({ 
+            success: false, 
+            message: '세션이 만료되었습니다. 다시 로그인해주세요.' 
+          });
+        }
+      } finally {
+        setIsCheckingMentorStatus(false);
+      }
+    };
+  
+    // 모달이 열릴 때마다 사용자 정보 확인
+    useEffect(() => {
+      if (isOpen && isLoggedIn) {
+        checkUserStatus();
+      }
+    }, [isOpen, isLoggedIn]);
+  
 
   // Redux 로그인 상태 및 토큰 확인
   useEffect(() => {
