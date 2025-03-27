@@ -61,9 +61,16 @@ const CropCalculateReport = () => {
             ))}
           </div>
         ) : (
-          <div className="flex flex-col justify-center items-center p-32">
-            <p className="text-center text-textColor-gray font-medium">계산 리포트가 없습니다.</p>
-            <Link to={"/crop-calculator"}>작물 수확 계산 하러 가기</Link>
+          <div className="flex flex-col justify-center items-center p-48">
+            <p className="text-center text-lg text-textColor-gray font-medium">
+              계산 리포트가 없습니다.
+            </p>
+            <Link
+              to={"/crop-calculator"}
+              className="text-center text-md text-primaryGreen hover:underline"
+            >
+              작물 수확 계산 하러 가기
+            </Link>
           </div>
         )}
       </div>
