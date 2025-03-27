@@ -11,5 +11,5 @@ import java.util.Optional;
 public interface MentorsRepository extends JpaRepository<Mentors, Long> {
     boolean existsByUserId(Long userId);
     Optional<Mentors> findByUserId(Long userId);
-    List<Mentors> findByUser_AddressContaining(String location);
+    List<Mentors> findByUser_AddressContaining(String city);
 }
