@@ -16,9 +16,7 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
   const [modalType, setModalType] = useState("");
   const [modalTitle, setModalTitle] = useState("");
   const [myInfo, setMyInfo] = useState(initialMyInfo);
-  const [birth, setBirth] = useState(
-    useState({ year: "", month: "", day: "" })
-  );
+  const [birth, setBirth] = useState({ year: "", month: "", day: "" });
   const [address, setAddress] = useState("");
 
   // 모달 타입 별 상태 분리
@@ -97,6 +95,14 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
       });
     }
   }, [myInfo]);
+
+   useEffect(() => {
+     console.log("initialMyInfo changed:", initialMyInfo);
+     if (initialMyInfo && Object.keys(initialMyInfo).length > 0) {
+       setMyInfo(initialMyInfo);
+     }
+   }, [initialMyInfo]);
+
 
   const handleChatting = () => {
     // chat 페이지로 넘어가기
