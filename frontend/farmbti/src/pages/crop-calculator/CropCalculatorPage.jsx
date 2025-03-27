@@ -4,8 +4,9 @@ import CropSelectSection from "../../components/crop-calculator/CropSelectSectio
 import ProgressIndicator from "../../components/crop-calculator/ProgressIndicator";
 
 import { useEffect, useState } from "react";
+
 import ResultSection from "../../components/crop-calculator/ResultSection";
-import { submit } from "../../API/crop-calculator/CropCalculatorAPI";
+import { submit, saveResult } from "../../API/crop-calculator/CropCalculatorAPI";
 import { toast } from "react-toastify"
 
 const CropCalculatorPage = () => {
@@ -97,6 +98,7 @@ const CropCalculatorPage = () => {
     try {
       // api  호출
       const data = await submit(area, selectedCropName);
+      console.log(data)
       setResult(data)
 
     } catch (error) {
@@ -107,8 +109,17 @@ const CropCalculatorPage = () => {
     }
   };
 
-  const handleSaveResult = () => {
+  const handleSaveResult = async () => {
+    setIsLoading(true); // 로딩 시작
     // 저장 api
+    try {
+      await saveResult(result.reportId);
+    } catch (error) {
+      toast.error(error.message || "알 수 없는 오류가 발생했습니다.");
+      handleResetCalculate();
+    } finally {
+      setIsLoading(false); // 로딩 종료
+    }
     return null;
   };
 
