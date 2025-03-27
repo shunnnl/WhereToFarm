@@ -1,3 +1,5 @@
+import { toast } from "react-toastify";
+import { deleteUser } from "../../API/mypage/MyPageAPI";
 import authImage from "../../asset/auth/login.svg";
 import { useState } from "react";
 
@@ -8,7 +10,6 @@ const UserDeletePage = () => {
   const [errors, setErrors] = useState({
     password: "",
     checkbox: "",
-    server: "",
   });
 
   const validateForm = () => {
@@ -16,7 +17,6 @@ const UserDeletePage = () => {
     const newErrors = {
       password: "",
       checkbox: "",
-      server: "",
     };
 
     // 비밀번호 검증
@@ -43,20 +43,28 @@ const UserDeletePage = () => {
     setIsLoading(true);
 
     try {
-      // API 호출 예시
-      // const response = await deleteUserAccount(password);
+      const data = {
+        password: password
+      }
+      const response = await deleteUser(data);
 
-      // 성공 처리
-      console.log("회원 탈퇴 진행 성공");
-      // 탈퇴 성공 후 리디렉션
-      // window.location.href = "/goodbye";
+      if (response) {
+        // 성공 처리
+        console.log("회원 탈퇴 진행 성공");
+        toast.success("회원 탈퇴가 성공적으로 처리되었습니다.");
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        localStorage.removeItem("tokenExpires");
+        localStorage.removeItem("user");
+        setTimeout(() => {
+          // 탈퇴 성공 후 리디렉션
+          window.location.href = "/";
+        }, 1500);
+      }
     } catch (error) {
-      // 서버 오류 처리
-      setErrors({
-        ...errors,
-        server:
-          error.response?.data?.message || "탈퇴 처리 중 오류가 발생했습니다",
-      });
+      const errorMessage =
+        error.message || "탈퇴 처리 중 오류가 발생했습니다";
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }

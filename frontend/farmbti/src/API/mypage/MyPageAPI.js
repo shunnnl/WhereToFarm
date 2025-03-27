@@ -55,3 +55,17 @@ export const changePassword = async (data) => {
     throw error.error;
   }
 };
+
+export const deleteUser = async (data) => {
+  try {
+    console.log(data);
+    const response = await authAxios.delete("/users/delete", { data: data });
+    if (!response.success) {
+      throw response.error;
+    }
+    return response.success; // 응답에 데이터 null 성공 여부만 가져오기
+  } catch (error) {
+    console.log(error);
+    throw error.error;
+  }
+};
