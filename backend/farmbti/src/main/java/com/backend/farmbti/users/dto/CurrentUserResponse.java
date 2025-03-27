@@ -20,6 +20,8 @@ public class CurrentUserResponse {
     @Builder.Default
     private Boolean isMentor = false;
 
+    private Boolean isDefaultImage;
+
     // 멘토 정보
     private Long mentorId;
     private String bio;

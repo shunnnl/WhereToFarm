@@ -4,6 +4,8 @@ import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.backend.farmbti.common.exception.GlobalException;
+import com.backend.farmbti.users.exception.UsersErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,7 +45,13 @@ public class S3Service {
 
     // 기본 프로필 이미지 객체 키 가져오기
     public String getDefaultProfileImageKey(Byte gender) {
-        return gender == 1 ? "basic_1.jpg" : "basic_0.jpg";
+        String objectKey = "basic/" + (gender == 1 ? "basic_1.jpg" : "basic_0.jpg");
+
+        if (!amazonS3.doesObjectExist(bucket, objectKey)) {
+            throw new GlobalException(UsersErrorCode.DEFAULT_PROFILE_IMAGE_NOT_FOUND);
+        }
+
+        return objectKey;
     }
 
     // 파일 업로드 메소드

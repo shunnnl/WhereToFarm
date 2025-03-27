@@ -111,8 +111,17 @@ public class UsersService {
         Users user = usersRepository.findById(userId)
                 .orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
 
-        // 저장된 객체 키를 사용하여 서명된 URL 생성
-        String profileImageUrl = s3Service.getSignedUrl(user.getProfileImage());
+        // 프로필 이미지 S3 객체 키 (예: "basic/male.jpg", "uploads/1/abc.jpg")
+        String profileImageKey = user.getProfileImage();
+
+        String profileImageUrl;
+        try {
+            profileImageUrl = s3Service.getSignedUrl(profileImageKey);
+        } catch (Exception e) {
+            throw new GlobalException(UsersErrorCode.PROFILE_IMAGE_URL_GENERATION_FAILED);
+        }
+
+        boolean isDefaultImage = profileImageKey.startsWith("basic/");
 
         CurrentUserResponse.CurrentUserResponseBuilder builder = CurrentUserResponse.builder()
                 .userId(user.getId())
@@ -121,7 +130,8 @@ public class UsersService {
                 .address(user.getAddress())
                 .birth(user.getBirth())
                 .gender(user.getGender())
-                .profileImage(profileImageUrl);
+                .profileImage(profileImageUrl)
+                .isDefaultImage(isDefaultImage);
 
         // 2. 사용자의 멘토 정보 조회
         Optional<Mentors> mentorOptional = mentorsRepository.findByUserId(userId);
