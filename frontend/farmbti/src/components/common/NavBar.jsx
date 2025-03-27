@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify'; // 추가: toast 알림 import
 import logo from "../../asset/navbar/main_logo.svg";
 import userIcon from "../../asset/navbar/user_icon.svg";
 import bellIcon from "../../asset/navbar/bell_icon.svg";
@@ -18,9 +19,6 @@ const Navbar = () => {
     // 드롭다운 메뉴 상태 관리
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
-    
-    // 로그아웃 알림 상태 관리
-    const [showLogoutAlert, setShowLogoutAlert] = useState(false);
     
     // 드롭다운 외부 클릭 시 닫기
     useEffect(() => {
@@ -43,36 +41,28 @@ const Navbar = () => {
         // 로컬 스토리지에서 토큰 삭제
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
+        localStorage.removeItem('tokenExpires');
+        localStorage.removeItem('user'); // 사용자 정보도 삭제
         
         dispatch(logout()); // 로그아웃 액션 디스패치
         setIsDropdownOpen(false);
-        setShowLogoutAlert(true); // 로그아웃 알림 표시
         
-        // 3초 후 알림 자동 닫기
-        setTimeout(() => {
-            setShowLogoutAlert(false);
-        }, 3000);
+        // 로그아웃 성공 토스트 메시지 표시
+        toast.success('로그아웃 성공!', {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true
+        });
         
         navigate('/'); // 홈페이지로 리다이렉트
     };
 
     return (
-        <>
-            {/* 로그아웃 알림 */}
-            {showLogoutAlert && (
-                <div className="fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded z-[200] shadow-lg flex items-center justify-between">
-                    <span>로그아웃되었습니다.</span>
-                    <button 
-                        onClick={() => setShowLogoutAlert(false)}
-                        className="ml-4 text-green-700 hover:text-green-900"
-                    >
-                        ✕
-                    </button>
-                </div>
-            )}
-            
-            <nav className="bg-white border-gray-200 dark:bg-gray-900 relative z-[100]">
-                <div className="max-w-screen-2xl flex items-center justify-between mx-auto px-24 py-4">
+        <nav className="bg-white border-gray-200 dark:bg-gray-900 relative z-[100]">
+            <div className="max-w-screen-2xl flex items-center justify-between mx-auto px-24 py-4">
                 <div className="flex items-center ml-0">
                     <Link to="/">
                         <img
@@ -162,7 +152,6 @@ const Navbar = () => {
                 </div>
             </div>
         </nav>
-        </>
     );
 };
 
