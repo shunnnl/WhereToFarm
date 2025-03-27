@@ -1,5 +1,8 @@
 package com.backend.farmbti.chat.service;
 
+import com.backend.farmbti.auth.domain.Users;
+import com.backend.farmbti.auth.exception.AuthErrorCode;
+import com.backend.farmbti.auth.repository.UsersRepository;
 import com.backend.farmbti.chat.dto.MessageResponse;
 import com.backend.farmbti.chat.entity.Chat;
 import com.backend.farmbti.chat.entity.ChatMessage;
@@ -9,6 +12,7 @@ import com.backend.farmbti.chat.repository.ChatRepository;
 import com.backend.farmbti.common.exception.GlobalException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -18,6 +22,7 @@ public class WebSocketService {
 
     private final ChatRepository chatRepository;
     private final ChatMessageRepository chatMessageRepository;
+    private final UsersRepository usersRepository;
 
     public MessageResponse saveAndGetMessage(Long roomId, String message) {
 
@@ -37,5 +42,25 @@ public class WebSocketService {
                 .content(chatMessage.getContent())
                 .sentAt(chatMessage.getSendAt())
                 .build();
+    }
+
+    @Transactional
+    public String getRecevierName(Long roomId, String currentUserName, Long usersId) {
+
+        Chat chatRoom = chatRepository.findById(roomId)
+                .orElseThrow(() -> new GlobalException(ChatErrorCode.CHAT_ROOM_NOT_FOUND));
+
+        Long otherUserId;
+        if (usersId.equals(chatRoom.getMentee().getId())) { // 현재 사용자가 멘티면
+            otherUserId = chatRoom.getMentor().getUser().getId();
+        } else {
+            otherUserId = chatRoom.getMentee().getId();
+        }
+
+        Users users = usersRepository.findById(otherUserId)
+                .orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
+
+        return users.getName();
+
     }
 }

@@ -83,6 +83,7 @@ public class JwtTokenProvider {
                 .setSubject(String.valueOf(users.getId()))
                 .claim("id", users.getId())
                 .claim("email", users.getEmail())
+                .claim("name", users.getName())
                 .claim("address", users.getAddress())
                 .claim("tokenType", "access") // 토큰 타입 표시
                 .setIssuedAt(now) // 발행 시간
@@ -222,6 +223,22 @@ public class JwtTokenProvider {
         try {
             Claims claims = getClaims(token);
             return claims.get("address", String.class);
+        } catch (Exception e) {
+            log.error("토큰에서 address 추출 오류: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * 토큰에서 사용자 주소 추출
+     *
+     * @param token JWT 토큰
+     * @return 사용자 주소
+     */
+    public String getName(String token) {
+        try {
+            Claims claims = getClaims(token);
+            return claims.get("name", String.class);
         } catch (Exception e) {
             log.error("토큰에서 address 추출 오류: {}", e.getMessage());
             return null;
