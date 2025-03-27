@@ -4,6 +4,7 @@ import com.backend.farmbti.auth.domain.Users;
 import com.backend.farmbti.auth.exception.AuthErrorCode;
 import com.backend.farmbti.auth.repository.UsersRepository;
 import com.backend.farmbti.common.exception.GlobalException;
+import com.backend.farmbti.common.service.S3Service;
 import com.backend.farmbti.mentors.domain.Mentors;
 import com.backend.farmbti.mentors.domain.MentorsCrops;
 import com.backend.farmbti.mentors.repository.MentorsCropsRepository;
@@ -32,6 +33,7 @@ public class UsersService {
     private final MentorsRepository mentorsRepository;  // 멘토 리포지토리 추가
     private final MentorsCropsRepository mentorsCropsRepository;  // 멘토-작물 리포지토리 추가
     private final PasswordEncoder passwordEncoder;
+    private final S3Service s3Service;
 
     /**
      * 비밀번호 변경
@@ -109,6 +111,9 @@ public class UsersService {
         Users user = usersRepository.findById(userId)
                 .orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
 
+        // 저장된 객체 키를 사용하여 서명된 URL 생성
+        String profileImageUrl = s3Service.getSignedUrl(user.getProfileImage());
+
         CurrentUserResponse.CurrentUserResponseBuilder builder = CurrentUserResponse.builder()
                 .userId(user.getId())
                 .email(user.getEmail())
@@ -116,7 +121,7 @@ public class UsersService {
                 .address(user.getAddress())
                 .birth(user.getBirth())
                 .gender(user.getGender())
-                .profileImage(user.getProfileImage());
+                .profileImage(profileImageUrl);
 
         // 2. 사용자의 멘토 정보 조회
         Optional<Mentors> mentorOptional = mentorsRepository.findByUserId(userId);

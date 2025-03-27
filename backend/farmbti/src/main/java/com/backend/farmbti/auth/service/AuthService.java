@@ -7,6 +7,7 @@ import com.backend.farmbti.auth.dto.SignUpRequest;
 import com.backend.farmbti.auth.exception.AuthErrorCode;
 import com.backend.farmbti.auth.repository.UsersRepository;
 import com.backend.farmbti.common.exception.GlobalException;
+import com.backend.farmbti.common.service.S3Service;
 import com.backend.farmbti.security.dto.Token;
 import com.backend.farmbti.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ public class AuthService {
     private final UsersRepository usersRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final S3Service s3Service;
 
     public void signUp(SignUpRequest request) {
         //1. 에러 검증
@@ -29,6 +31,9 @@ public class AuthService {
 
         //2. 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(request.getPassword());
+
+        // 성별에 따른 기본 프로필 이미지 키 설정
+        String profileImageKey = s3Service.getDefaultProfileImageKey(request.getGender());
 
         //3. User 엔터티 생성
         Users users = Users.builder()
@@ -38,7 +43,7 @@ public class AuthService {
                 .birth(request.getBirth())
                 .address(request.getAddress())
                 .gender(request.getGender())
-                .profileImage("")
+                .profileImage(profileImageKey)
                 .build();
 
         //4. db에 저장
