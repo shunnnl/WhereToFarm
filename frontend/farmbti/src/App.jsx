@@ -1,4 +1,5 @@
-import React from "react";
+import { Provider } from "react-redux";
+import { store } from "./store";
 import { Provider } from "react-redux";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -18,10 +19,21 @@ import MyPage from "./pages/mypage/MyPage";
 import FarmbtiReport from "./components/MyPage/FarmbtiReport";
 import CropCalculateReport from "./components/MyPage/CropCalculateReport";
 import Estate from "./pages/estate/Estate";
-import { store } from "./store";
 import UserDeletePage from "./pages/auth/UserDeletePage";
+import AuthRequiredPage from "./pages/etc/AuthRequiredPage";
 import GuideBookPage from "./pages/etc/guidebook/GuideBookPage";
 import NewsPage from "./pages/news/NewsPage";
+
+const isAuthenticated = () => {
+  return localStorage.getItem("accessToken") !== null;
+};
+
+const ProtectedRoute = ({ children }) => {
+  if (!isAuthenticated()) {
+    return <AuthRequiredPage />;
+  }
+  return children;
+};
 
 function App() {
   console.log("Store:", store);
@@ -31,28 +43,62 @@ function App() {
       <BrowserRouter>
         <div className="App">
           <Navbar />
+
+          {/* 페이지 내용 */}
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/mentors" element={<MentorPage />} />
-            <Route path="/crop-calculator" element={<CropCalculatorPage />} />
-            <Route path="/chat" element={<Chat />} />
-            <Route path="/estate" element={<Estate />} />
+            <Route
+              path="/crop-calculator"
+              element={
+                <ProtectedRoute>
+                  <CropCalculatorPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/chat"
+              element={
+                <ProtectedRoute>
+                  <Chat />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/guidebook" element={<GuideBookPage />} />
             <Route path="/news" element={<NewsPage />} />
-            <Route path="/account/delete" element={<UserDeletePage />} />
-            <Route path="/mypage" element={<MyPage />}>
+            <Route path="/estate" element={<Estate />} />
+            <Route
+              path="/account/delete"
+              element={
+                <ProtectedRoute>
+                  <UserDeletePage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* MyPage 중첩 라우트 */}
+            <Route
+              path="/mypage"
+              element={
+                <ProtectedRoute>
+                  <MyPage />
+                </ProtectedRoute>
+              }
+            >
               <Route path="farmbti-report" element={<FarmbtiReport />} />
               <Route
                 path="crop-calculate-report"
                 element={<CropCalculateReport />}
               />
+              {/* 기본 리다이렉트 */}
               <Route
                 index
                 element={<Navigate to="/mypage/farmbti-report" replace />}
               />
             </Route>
+            <Route path="/account/delete" element={<UserDeletePage />} />
           </Routes>
           <div className="mt-24">
             <Footer />
