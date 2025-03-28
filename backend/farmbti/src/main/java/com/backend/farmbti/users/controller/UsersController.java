@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -59,10 +60,17 @@ public class UsersController {
      */
     @PutMapping("/reset-default")
     @Operation(summary = "기본 프로필 이미지로 변경", description = "성별에 따라 기본 프로필 이미지로 변경합니다.")
-    public ResponseEntity<Void> resetToDefaultProfileImage() {
+    public CommonResponseDto resetToDefaultProfileImage() {
         Long userId = securityUtils.getCurrentUsersId();
         usersService.resetToDefaultProfileImage(userId);
-        return ResponseEntity.ok().build();
+        return CommonResponseDto.ok();
     }
 
+    @PutMapping("/upload-profile")
+    @Operation(summary = "프로필 이미지 업로드", description = "유저가 직접 업로드한 프로필 이미지로 변경합니다.")
+    public CommonResponseDto uploadProfileImage(@RequestPart MultipartFile file) {
+        Long userId = securityUtils.getCurrentUsersId();
+        usersService.uploadUserProfileImage(userId, file);
+        return CommonResponseDto.ok();
+    }
 }

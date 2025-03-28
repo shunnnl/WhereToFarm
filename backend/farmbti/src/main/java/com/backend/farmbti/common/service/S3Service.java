@@ -54,40 +54,4 @@ public class S3Service {
         return objectKey;
     }
 
-    // 파일 업로드 메소드
-    public String uploadFile(MultipartFile file, String dirName) {
-        try {
-            // 파일 메타데이터 설정
-            ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setContentType(file.getContentType());
-            metadata.setContentLength(file.getSize());
-
-            // 파일명 중복 방지를 위한 UUID 사용
-            String fileName = dirName + "/" + UUID.randomUUID() + "_" + file.getOriginalFilename();
-
-            // S3에 업로드
-            amazonS3.putObject(
-                    bucket,
-                    fileName,
-                    file.getInputStream(),
-                    metadata
-            );
-
-            log.info("파일 업로드 성공: {}", fileName);
-            return fileName; // 객체 키 반환
-        } catch (IOException e) {
-            log.error("파일 업로드 실패: {}", e.getMessage());
-            throw new RuntimeException("파일 업로드 중 오류 발생: " + e.getMessage());
-        }
-    }
-
-    // 파일 삭제 메소드
-    public void deleteFile(String objectKey) {
-        try {
-            amazonS3.deleteObject(bucket, objectKey);
-            log.info("파일 삭제 성공: {}", objectKey);
-        } catch (Exception e) {
-            log.error("파일 삭제 실패: {}", e.getMessage());
-        }
-    }
 }
