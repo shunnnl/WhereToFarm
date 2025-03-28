@@ -58,6 +58,7 @@ public class UsersController {
      * 기본 프로필 이미지로 변경
      */
     @PutMapping("/reset-default")
+    @Operation(summary = "기본 프로필 이미지로 변경", description = "성별에 따라 기본 프로필 이미지로 변경합니다.")
     public ResponseEntity<Void> resetToDefaultProfileImage() {
         Long userId = securityUtils.getCurrentUsersId();
         usersService.resetToDefaultProfileImage(userId);
