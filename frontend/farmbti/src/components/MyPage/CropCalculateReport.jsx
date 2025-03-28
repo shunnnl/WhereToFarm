@@ -76,8 +76,8 @@ const CropCalculateReport = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {currentItems.map((report) => (
               <CalculateResultCard
-                key={report.id}
-                id={report.id}
+                key={report.reportId}
+                id={report.reportId}
                 crop={report.cropsName}
                 area={report.myAreaVolume}
                 date={report.createdAt}
