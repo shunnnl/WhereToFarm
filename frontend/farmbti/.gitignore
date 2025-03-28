@@ -24,3 +24,11 @@ dist-ssr
 *.sw?
 
 .env
+
+
+# SSL 인증서 파일 제외
+localhost.pem
+localhost-key.pem
+
+# 또는 *.pem으로 모든 PEM 파일 제외
+*.pem
