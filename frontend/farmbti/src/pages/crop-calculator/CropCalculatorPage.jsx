@@ -114,7 +114,13 @@ const CropCalculatorPage = () => {
     setIsLoading(true); // 로딩 시작
     // 저장 api
     try {
-      await saveResult(result.reportId);
+      const response = await saveResult(result.reportId);
+      if (response) {
+        toast.success("저장에 성공했습니다.");
+        setTimeout(() => {
+          window.location.href = "/mypage/crop-calculate-report";
+        }, 1000);
+      }
     } catch (error) {
       toast.error(error.message || "알 수 없는 오류가 발생했습니다.");
       handleResetCalculate();

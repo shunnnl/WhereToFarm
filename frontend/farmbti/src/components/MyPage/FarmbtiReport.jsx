@@ -58,12 +58,37 @@ const FarmbtiReport = () => {
     indexOfLastItem
   );
 
+  // 삭제 모드 토글 상태
+  const [deleteMode, setDeleteMode] = useState(false);
+
+  // 삭제 모드 토글 핸들러
+  const toggleDeleteMode = () => {
+    setDeleteMode(!deleteMode);
+  };
+
+  // 리포트 삭제 핸들러
+  const handleDeleteReport = (reportId) => {
+    setMyFarmbtiReports((prevReports) =>
+      prevReports.filter((report) => report.id !== reportId)
+    );
+  };
+
   // 화면이 랜더링 되면서 api 요청
   useEffect(() => {}, []);
 
   return (
     <div className="relative pb-20">
-      <p className="text-xl font-semibold mt-4">나의 귀농 리포트 톡톡</p>
+      <div className="flex justify-between items-center mt-4 mb-2">
+        <p className="text-xl font-semibold">나의 귀농 리포트 톡톡</p>
+        <button
+          onClick={toggleDeleteMode}
+          className={`px-3 py-1 rounded-md text-sm ${
+            deleteMode ? "bg-red-500 text-white" : "bg-gray-200 text-gray-700"
+          }`}
+        >
+          {deleteMode ? "삭제 취소" : "삭제하기"}
+        </button>
+      </div>
       <p className="text-sm font-light text-primaryGreen mb-4">
         *모든 리포트는 최신순으로 정렬되어 있습니다.
       </p>
@@ -79,6 +104,8 @@ const FarmbtiReport = () => {
                 farmerType={report.farmerType}
                 date={report.date}
                 matchRate={report.matchRate}
+                deleteMode={deleteMode}
+                onDelete={handleDeleteReport}
               />
             );
           })}
