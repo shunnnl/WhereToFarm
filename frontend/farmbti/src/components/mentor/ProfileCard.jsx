@@ -47,6 +47,7 @@ const ProfileCard = ({ mentor, className = '' }) => {
           duration-300
           hover:shadow-lg
           w-full
+          h-[480px]
           ${className}
           cursor-pointer
         `}
@@ -125,11 +126,11 @@ const ProfileCard = ({ mentor, className = '' }) => {
       
       {/* 멘토 선택 모달 */}
       <MentorSelectModal 
-        isOpen={isModalOpen} 
-        onClose={closeModal} 
+        isOpen={isModalOpen}
+        onClose={closeModal}
         mentor={mentor}
       />
-    </>
+    </>  
   );
 };
 
