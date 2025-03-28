@@ -87,3 +87,16 @@ export const uploadImage = async (file) => {
     throw error.error;
   }
 };
+
+export default deleteImage = async () => {
+  try {
+    const response = await authAxios.put("/users/reset-default");
+    if (!response.success) {
+      throw response.error;
+    }
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    throw error.error;
+  }
+}

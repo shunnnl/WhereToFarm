@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Camera, RefreshCw } from "lucide-react";
 import { toast } from "react-toastify";
-import { uploadImage } from "../../API/mypage/MyPageAPI";
+import { uploadImage, deleteImage } from "../../API/mypage/MyPageAPI";
 
 const MyProfileImage = ({ imageUrl, isDefaultImage }) => {
   const [profileData, setProfileData] = useState({
@@ -175,16 +175,12 @@ const MyProfileImage = ({ imageUrl, isDefaultImage }) => {
     try {
       setIsLoading(true);
 
-      // 이미지 삭제 API 호출
-      // const response = await fetch('/api/myprofile/image', {
-      //   method: 'DELETE'
-      // });
+      const response = await deleteImage();
 
-      // 성공했다고 가정하고 상태 업데이트
-      setProfileData({
-        isDefaultImage: true, // 속성명 일치시킴
-        imageUrl: "/api/placeholder/200/200", // 기본 이미지 경로로 변경
-      });
+      // setProfileData({
+      //   isDefaultImage: true,
+      //   imageUrl: response.profileImage,
+      // });
 
       toast.info("기본 프로필 이미지로 변경되었습니다.");
     } catch (error) {
