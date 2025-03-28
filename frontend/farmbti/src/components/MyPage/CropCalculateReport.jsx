@@ -78,10 +78,10 @@ const CropCalculateReport = () => {
               <CalculateResultCard
                 key={report.id}
                 id={report.id}
-                crop={report.crop}
-                area={report.area}
-                date={report.date}
-                totalProfit={report.totalProfit}
+                crop={report.cropsName}
+                area={report.myAreaVolume}
+                date={report.createdAt}
+                totalProfit={report.myTotalPrice}
                 deleteMode={deleteMode}
                 onDelete={handleDeleteReport}
               />
