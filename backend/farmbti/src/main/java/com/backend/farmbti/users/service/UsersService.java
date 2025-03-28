@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -184,6 +185,27 @@ public class UsersService {
         usersRepository.save(user);
     }
 
+    /**
+     * 프로필 이미지 업로드
+     */
+    @Transactional
+    public void uploadUserProfileImage(Long userId, MultipartFile file) {
+        Users user = usersRepository.findById(userId)
+                .orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
+
+        // 1. 이전 이미지 삭제 (기본 이미지가 아니면)
+        String currentKey = user.getProfileImage();
+        if (currentKey != null && !currentKey.startsWith("basic/")) {
+            s3Service.deleteFile(currentKey);
+        }
+
+        // 2. 새 이미지 업로드
+        String newProfileImageKey = s3Service.uploadUserProfileImage(file, userId);
+
+        // 3. 사용자 프로필 이미지 키 업데이트
+        user.updateProfileImage(newProfileImageKey);
+        usersRepository.save(user);
+    }
 
     /**
      * 사용자 업데이트 요청 검증 메소드

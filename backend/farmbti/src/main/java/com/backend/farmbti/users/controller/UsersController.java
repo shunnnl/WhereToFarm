@@ -66,6 +66,9 @@ public class UsersController {
         return CommonResponseDto.ok();
     }
 
+    /**
+     * 프로필 이미지 업로드
+     */
     @PutMapping("/upload-profile")
     @Operation(summary = "프로필 이미지 업로드", description = "유저가 직접 업로드한 프로필 이미지로 변경합니다.")
     public CommonResponseDto uploadProfileImage(@RequestPart MultipartFile file) {
