@@ -16,6 +16,7 @@ import com.backend.farmbti.crops.repository.CropsReportRepository;
 import com.backend.farmbti.crops.repository.CropsRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -131,6 +132,7 @@ public class CropsService {
 
     }
 
+    @Transactional(readOnly = true)
     public List<CropsAllResponse> getCrops(Long usersId) {
 
         //userId에 해당하는 모든 리포트 객체를 리스트로 가져옴
