@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import CalculateResultCard from "./CalculateResultCard";
 import PaginationComponent from "../common/Pagination";
-import { getCalculateReports } from "../../API/mypage/MyPageAPI";
+import { getCalculateReports } from "../../API/mypage/MyReportsAPI";
 import { toast } from "react-toastify";
 import { Link } from "react-router";
 

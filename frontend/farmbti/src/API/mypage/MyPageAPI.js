@@ -15,25 +15,10 @@ export const getMyPage = async () => {
   }
 };
 
-export const getCalculateReports = async () => {
-  try {
-    const response = await authAxios.get("/crops/get/all");
-
-    if (!response.success) {
-      throw response.error;
-    }
-
-    return response.data;
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
-};
-
 export const putMyInfo = async (data) => {
   try {
     const response = await authAxios.put("/users/modify", data);
-    console.log(response)
+    console.log(response);
     if (!response.success) {
       throw response.error;
     }
@@ -45,19 +30,19 @@ export const putMyInfo = async (data) => {
 };
 
 export const putMentorInfo = async (data) => {
-   try {
-    console.log(data)
-     const response = await authAxios.put("/mentors/modify", data);
-     console.log(response);
-     if (!response.success) {
-       throw response.error;
-     }
-     return response;
-   } catch (error) {
-     console.log(error);
-     throw error;
-   }
-}
+  try {
+    console.log(data);
+    const response = await authAxios.put("/mentors/modify", data);
+    console.log(response);
+    if (!response.success) {
+      throw response.error;
+    }
+    return response;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
 
 export const changePassword = async (data) => {
   try {
@@ -65,7 +50,7 @@ export const changePassword = async (data) => {
     if (!response.success) {
       throw response.error;
     }
-    return response
+    return response;
   } catch (error) {
     console.log(error);
     throw error;
@@ -106,7 +91,7 @@ export const uploadImage = async (file) => {
 export const deleteImage = async () => {
   try {
     const response = await authAxios.put("/users/reset-default");
-    console.log(response)
+    console.log(response);
     if (!response.success) {
       throw response.error;
     }
@@ -115,4 +100,4 @@ export const deleteImage = async () => {
     console.log(error);
     throw error;
   }
-}
+};
