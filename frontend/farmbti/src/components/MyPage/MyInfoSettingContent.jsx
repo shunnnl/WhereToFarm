@@ -14,12 +14,10 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
 
   const [errors, setErrors] = useState({});
 
-  // 날짜 옵션 생성
   const currentYear = new Date().getFullYear();
   const yearOptions = Array.from({ length: 100 }, (_, i) => currentYear - i);
   const monthOptions = Array.from({ length: 12 }, (_, i) => i + 1);
 
-  // 선택한 연도와 월에 따라 일 옵션 계산
   const getDaysInMonth = (year, month) => {
     return new Date(year, month, 0).getDate();
   };
@@ -32,7 +30,6 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
         )
       : Array.from({ length: 31 }, (_, i) => i + 1);
 
-  // 유효성 검사 함수
   const validateField = (name, value) => {
     switch (name) {
       case "name":
@@ -67,7 +64,6 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
     }
   };
 
-  // 폼 데이터 변경 핸들러
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -75,7 +71,6 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
       [name]: value,
     }));
 
-    // 유효성 검사 실행 및 오류 상태 업데이트
     const errorMessage = validateField(name, value);
     setErrors((prev) => ({
       ...prev,
@@ -83,22 +78,21 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
     }));
   };
 
-  // 성별 선택 핸들러
   const handleGenderChange = (gender) => {
+    const genderValue = gender === "남성" ? 0 : 1;
+
     setFormData((prev) => ({
       ...prev,
-      gender,
+      gender: genderValue,
     }));
 
-    // 유효성 검사 업데이트
-    const errorMessage = validateField("gender", gender);
+    const errorMessage = validateField("gender", genderValue);
     setErrors((prev) => ({
       ...prev,
       gender: errorMessage,
     }));
   };
 
-  // 주소가 선택되었을 때 호출될 함수
   const handleAddressSelected = (addressData) => {
     setFormData((prev) => ({
       ...prev,
@@ -106,15 +100,12 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
     }));
   };
 
-  // 주소검색 서비스 훅 사용
   const { openAddressSearch } = useKakaoAddressService(handleAddressSelected);
 
-  // 폼 제출 핸들러
   const handleSubmit = (e) => {
     e.preventDefault();
   };
 
-  // 초기 마운트 시 유효성 검사
   useEffect(() => {
     const newErrors = {};
     Object.entries(formData).forEach(([key, value]) => {
@@ -123,7 +114,6 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
     setErrors(newErrors);
   }, []);
 
-  // formData가 변경될 때마다 부모에게 알림 (유효성 검사 결과 포함)
   useEffect(() => {
     if (onChange) {
       onChange({
