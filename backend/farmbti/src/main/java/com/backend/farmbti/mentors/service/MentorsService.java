@@ -4,6 +4,7 @@ import com.backend.farmbti.auth.domain.Users;
 import com.backend.farmbti.auth.exception.AuthErrorCode;
 import com.backend.farmbti.auth.repository.UsersRepository;
 import com.backend.farmbti.common.exception.GlobalException;
+import com.backend.farmbti.common.service.S3Service;
 import com.backend.farmbti.crops.domain.Crops;
 import com.backend.farmbti.crops.repository.CropsRepository;
 import com.backend.farmbti.mentors.domain.Mentors;
@@ -15,6 +16,7 @@ import com.backend.farmbti.mentors.exception.MentorsErrorCode;
 import com.backend.farmbti.mentors.repository.MentorsCropsRepository;
 import com.backend.farmbti.mentors.repository.MentorsRepository;
 import com.backend.farmbti.users.dto.CurrentUserResponse;
+import com.backend.farmbti.users.exception.UsersErrorCode;
 import com.backend.farmbti.users.service.UsersService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +38,7 @@ public class MentorsService {
     private final CropsRepository cropsRepository;
     private final MentorsCropsRepository mentorsCropsRepository;
     private final UsersService usersService;
+    private final S3Service s3Service;
 
     /**
      * 멘토 등록
@@ -133,6 +136,14 @@ public class MentorsService {
                 .map(mentor -> {
                     Users user = mentor.getUser();
 
+                    // 프로필 이미지 URL 생성
+                    String profileImageUrl;
+                    try {
+                        profileImageUrl = s3Service.getSignedUrl(user.getProfileImage());
+                    } catch (Exception e) {
+                        throw new GlobalException(UsersErrorCode.PROFILE_IMAGE_URL_GENERATION_FAILED);
+                    }
+
                     // 멘토가 키우는 작물 조회
                     List<MentorsCrops> mentorsCrops = mentorsCropsRepository.findByMentorId(mentor.getId());
                     List<String> cropNames = mentorsCrops.stream()
@@ -148,7 +159,7 @@ public class MentorsService {
                             .address(user.getAddress())
                             .birth(user.getBirth())
                             .gender(user.getGender())
-                            .profileImage(user.getProfileImage())
+                            .profileImage(profileImageUrl)
 
                             // 멘토 정보
                             .mentorId(mentor.getId())
