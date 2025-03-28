@@ -1,9 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 const Chat = () => {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const [currentTime, setCurrentTime] = useState('');
+  const [connected, setConnected] = useState(false);
+  const [roomId, setRoomId] = useState(1); // 기본 채팅방 ID
+  const stompClient = useRef(null);
+  const messagesEndRef = useRef(null);
 
   // 시간 형식 설정
   useEffect(() => {

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import Modal from 'react-modal';
 import ProfileCard from './ProfileCard';
 import { authAxios } from '../../API/common/AxiosInstance';
+import MentorSelectModal from './MentorSelectModal';
 
 const MentorSelect = ({ candidateList, regionName, cityName }) => {
   // 멘토 목록 상태 관리
@@ -13,6 +14,21 @@ const MentorSelect = ({ candidateList, regionName, cityName }) => {
   const [error, setError] = useState(null);
   // 데이터 없음 메시지
   const [noDataMessage, setNoDataMessage] = useState(null);
+  // 모달 관련 상태
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [selectedMentor, setSelectedMentor] = useState(null);
+  
+  // 모달 열기 함수
+  const openModal = (mentor) => {
+    setSelectedMentor(mentor);
+    setModalIsOpen(true);
+  };
+
+  // 모달 닫기 함수
+  const closeModal = () => {
+    setModalIsOpen(false);
+  };
+  
 
   // cityName이 변경될 때마다 API 호출
   useEffect(() => {
@@ -163,6 +179,17 @@ const MentorSelect = ({ candidateList, regionName, cityName }) => {
                 mentor={mentor} 
               />
             ))}
+
+                    {/* 멘토 상세 정보 모달 */}
+            <MentorSelectModal 
+              isOpen={modalIsOpen}
+              onClose={closeModal}
+              mentor={selectedMentor}
+              className="bg-white rounded-xl shadow-lg"
+              overlayClassName="fixed inset-0 flex items-center justify-center"      
+      
+            />
+
           </div>
         )}
       </div>
