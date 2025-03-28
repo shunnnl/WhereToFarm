@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -56,6 +57,12 @@ public class S3Service {
 
     // 사용자 이미지 업로드
     public String uploadUserProfileImage(MultipartFile file, Long userId) {
+
+        long MAX_FILE_SIZE = 5 * 1024 * 1024; // 용량 5MB 제한
+        if (file.isEmpty() || file.getSize() > MAX_FILE_SIZE) {
+            throw new GlobalException(UsersErrorCode.PROFILE_IMAGE_UPLOAD_FAILED);
+        }
+
         try {
             String uuid = UUID.randomUUID().toString();
             String key = "uploads/" + userId + "/profile_" + uuid + ".jpg";
