@@ -40,7 +40,7 @@ const MentorSelectModal = ({ isOpen, onClose, mentor }) => {
 
     try {
       const response = await authAxios.post('/chat/create', {
-        otherId: mentor.id // 멘토 ID 전송
+        otherId: mentor.mentorId // 멘토 ID 사용
       });
       
       // 성공 시 채팅 페이지로 이동

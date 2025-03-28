@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { authAxios } from '../../API/common/AxiosInstance';
 
 const Chat = () => {
   const [message, setMessage] = useState('');
@@ -6,8 +7,10 @@ const Chat = () => {
   const [currentTime, setCurrentTime] = useState('');
   const [connected, setConnected] = useState(false);
   const [roomId, setRoomId] = useState(1); // 기본 채팅방 ID
+  const [chatRooms, setChatRooms] = useState([]); // 대화 중인 멘토 목록
   const stompClient = useRef(null);
   const messagesEndRef = useRef(null);
+  
 
   // 시간 형식 설정
   useEffect(() => {
@@ -29,6 +32,27 @@ const Chat = () => {
       }
     ]);
   }, []);
+
+
+    // 채팅방 목록 가져오기
+    useEffect(() => {
+      const fetchChatRooms = async () => {
+        try {
+          const response = await authAxios.get('/chat/get/rooms');
+          console.log('응답 구조:', response);
+          // 응답이 배열인 경우와 {success, data} 형식인 경우 모두 처리
+          if (Array.isArray(response.data)) {
+            setChatRooms(response.data);
+          } else if (response.data && response.data.success) {
+            setChatRooms(response.data.data);
+          }
+        } catch (error) {
+          console.error('채팅방 목록 조회 실패:', error);
+        }
+      };      
+      fetchChatRooms();
+    }, []);
+  
 
   // 메시지 전송 처리
   const handleSendMessage = () => {
@@ -67,28 +91,33 @@ const Chat = () => {
         <div className="p-4 flex-1 overflow-y-auto">
           <h3 className="text-lg font-bold mb-3">대화 중인 멘토 목록</h3>
           <div className="space-y-4">
-            {/* 멘토 1 */}
-            <div className="flex items-center p-2 hover:bg-gray-100 rounded cursor-pointer">
-              <div className="w-12 h-12 rounded-full overflow-hidden mr-3">
-                <img src="/api/placeholder/48/48" alt="멘토1" className="w-full h-full object-cover" />
-              </div>
-              <div>
-                <p className="font-bold">멘토1</p>
-                <p className="text-sm text-gray-500">연락주세요</p>
-              </div>
-            </div>
-
-            
-            {/* 멘토 3 */}
-            <div className="flex items-center p-2 hover:bg-gray-100 rounded cursor-pointer">
-              <div className="w-12 h-12 rounded-full overflow-hidden mr-3">
-                <img src="/api/placeholder/48/48" alt="멘토2" className="w-full h-full object-cover" />
-              </div>
-              <div>
-                <p className="font-bold">멘토2</p>
-                <p className="text-sm text-gray-500">연락주세요</p>
-              </div>
-            </div>
+            {chatRooms.length > 0 ? (
+              chatRooms.map((room) => (
+                <div 
+                  key={room.roomId} 
+                  className="flex items-center p-2 hover:bg-gray-100 rounded cursor-pointer"
+                  onClick={() => setRoomId(room.roomId)}
+                >
+                  <div className="w-12 h-12 rounded-full overflow-hidden mr-3">
+                    <img 
+                      src={room.otherUserProfile.startsWith('http') 
+                        ? room.otherUserProfile 
+                        : `/api/placeholder/48/48`} 
+                      alt={room.otherUserName} 
+                      className="w-full h-full object-cover" 
+                    />
+                  </div>
+                  <div>
+                    <p className="font-bold">{room.otherUserName}</p>
+                    <p className="text-sm text-gray-500">
+                      {room.lastMessage || "연락주세요"}
+                    </p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-500">대화 중인 멘토가 없습니다.</p>
+            )}
           </div>
         </div>
       </div>
@@ -102,7 +131,9 @@ const Chat = () => {
               <img src="/api/placeholder/40/40" alt="프로필" className="w-full h-full object-cover" />
             </div>
             <div>
-              <h2 className="font-bold">멘토1</h2>
+              <h2 className="font-bold">
+                {chatRooms.find(room => room.roomId === roomId)?.otherUserName || "멘토"}
+              </h2>
             </div>
           </div>
           <button className="text-gray-600">
