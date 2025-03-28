@@ -2,10 +2,7 @@ package com.backend.farmbti.users.controller;
 
 import com.backend.farmbti.common.dto.CommonResponseDto;
 import com.backend.farmbti.security.util.SecurityUtils;
-import com.backend.farmbti.users.dto.CurrentUserResponse;
-import com.backend.farmbti.users.dto.PasswordChangeRequest;
-import com.backend.farmbti.users.dto.UserDeleteRequest;
-import com.backend.farmbti.users.dto.UserUpdateRequest;
+import com.backend.farmbti.users.dto.*;
 import com.backend.farmbti.users.service.UsersService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -45,10 +42,10 @@ public class UsersController {
 
     @PutMapping("/modify")
     @Operation(summary = "회원 정보 수정", description = "사용자 정보(이름, 생년월일, 주소, 성별)을 수정합니다.")
-    public CommonResponseDto updateUserInfo(@RequestBody UserUpdateRequest request) {
+    public CommonResponseDto<CurrentUserResponse> updateUserInfo(@RequestBody UserUpdateRequest request) {
         Long userId = securityUtils.getCurrentUsersId();
-        usersService.updateUserInfo(request, userId);
-        return CommonResponseDto.ok();
+        CurrentUserResponse updatedUserInfo = usersService.updateUserInfo(request, userId);
+        return CommonResponseDto.ok(updatedUserInfo);
     }
 
     @GetMapping("/me")
@@ -64,10 +61,10 @@ public class UsersController {
      */
     @PutMapping("/reset-default")
     @Operation(summary = "기본 프로필 이미지로 변경", description = "성별에 따라 기본 프로필 이미지로 변경합니다.")
-    public CommonResponseDto resetToDefaultProfileImage() {
+    public CommonResponseDto<UploadProfileImageResponse> resetToDefaultProfileImage() {
         Long userId = securityUtils.getCurrentUsersId();
-        usersService.resetToDefaultProfileImage(userId);
-        return CommonResponseDto.ok();
+        UploadProfileImageResponse imageUrl = usersService.resetToDefaultProfileImage(userId);
+        return CommonResponseDto.ok(imageUrl);
     }
 
     /**
@@ -78,14 +75,13 @@ public class UsersController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "프로필 이미지 업로드", description = "유저가 직접 업로드한 프로필 이미지로 변경합니다.")
     @ApiResponse(responseCode = "200", description = "이미지 업로드 완료")
-    public CommonResponseDto uploadProfileImage(
+    public CommonResponseDto<UploadProfileImageResponse> uploadProfileImage(
             @Parameter(description = "multipart/form-data 형식의 단일 이미지. key는 'file'입니다.")
             @RequestPart("file") MultipartFile file) {
 
         Long userId = securityUtils.getCurrentUsersId();
-        usersService.uploadUserProfileImage(userId, file);
-        return CommonResponseDto.ok();
+        UploadProfileImageResponse imageUrl = usersService.uploadUserProfileImage(userId, file);
+        return CommonResponseDto.ok(imageUrl);
     }
-
 
 }

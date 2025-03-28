@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -37,11 +36,6 @@ public class ChatService {
 
     @Transactional
     public ChatResponse create(Long userId, ChatRequest chatRequest) {
-
-        // 먼저 ID 동일성 검증
-        if (Objects.equals(userId, chatRequest.getOtherId())) {
-            throw new GlobalException(ChatErrorCode.SELF_MENTORING_NOT_ALLOWED);
-        }
 
         //로그인한 사용자와 상대방이 있는 채팅이 있을 때 사용
         //우리는 멘티만 채팅을 걸 수 있다.

@@ -16,6 +16,8 @@ public class CorsConfig {
 
         // 허용할 오리진(프론트엔드 도메인) 설정
         configuration.setAllowedOrigins(Arrays.asList(
+                "https://localhost:5173",    // 로컬 개발 환경
+                "https://localhost:5174",
                 "http://localhost:5173",    // 로컬 개발 환경
                 "http://localhost:5174",
                 "http://localhost:8081",
