@@ -62,7 +62,6 @@ const refreshAccessToken = async () => {
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("tokenExpires");
     localStorage.removeItem("user");
-    
     return Promise.reject(error);
   }
 };

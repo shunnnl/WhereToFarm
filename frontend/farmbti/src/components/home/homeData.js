@@ -24,7 +24,7 @@ export const bannerSlides = [
      alt: "Home Banner Image 2",
     button: {
       text: "자세히 보기",
-      link: "/detail-page-2" // 나중에수정
+      link: "/estate" // 나중에수정
     },
     text: {
       before: "나의 ",

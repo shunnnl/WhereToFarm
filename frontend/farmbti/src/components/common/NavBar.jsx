@@ -38,13 +38,7 @@ const Navbar = () => {
     const handleLogout = (e) => {
         e.preventDefault();
         
-        // 로컬 스토리지에서 토큰 삭제
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('tokenExpires');
-        localStorage.removeItem('user'); // 사용자 정보도 삭제
-        
-        dispatch(logout()); // 로그아웃 액션 디스패치
+        dispatch(logout()); // 로그아웃 액션 디스패치 (localStorage 정리 포함)
         setIsDropdownOpen(false);
         
         // 로그아웃 성공 토스트 메시지 표시
@@ -59,6 +53,7 @@ const Navbar = () => {
         
         navigate('/'); // 홈페이지로 리다이렉트
     };
+    
 
     return (
         <nav className="bg-white border-gray-200 dark:bg-gray-900 relative z-[100]">
