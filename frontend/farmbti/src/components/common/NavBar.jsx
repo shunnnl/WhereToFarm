@@ -131,7 +131,7 @@ const Navbar = () => {
                                     로그인
                                 </Link>
                                 <Link 
-                                    to="/register" 
+                                    to="/signup" 
                                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                     onClick={() => setIsDropdownOpen(false)}
                                 >
