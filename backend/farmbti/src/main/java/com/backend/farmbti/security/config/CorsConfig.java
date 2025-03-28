@@ -21,7 +21,8 @@ public class CorsConfig {
                 "http://localhost:5173",    // 로컬 개발 환경
                 "http://localhost:5174",
                 "http://localhost:8081",
-                "http://j12d209.p.ssafy.io"
+                "http://j12d209.p.ssafy.io",
+                "http://localhost:18081"
         ));
 
         // 허용할 HTTP 메서드 설정

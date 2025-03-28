@@ -157,6 +157,7 @@ public class CropsService {
         return responses;
     }
 
+    @Transactional(readOnly = true)
     public CropsDetailReponse getCropsDetail(Long usersId, Long cropsReportId) throws JsonProcessingException {
 
         CropsReport cropsReport = cropsReportRepository.findByUsers_IdAndId(usersId, cropsReportId)
@@ -165,6 +166,8 @@ public class CropsService {
         Crops crops = cropsReport.getCrops();
 
         String monthlyPrice = crops.getMonthlyPrice(); // JSON 문자열
+
+        System.out.println(monthlyPrice);
 
         // monthlyPrice JSON 문자열을 파싱하여 객체로 변환
         Object parsedMonthlyPrice = objectMapper.readValue(monthlyPrice, Object.class);
