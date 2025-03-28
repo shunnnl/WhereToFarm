@@ -173,16 +173,21 @@ const MentorSettingContent = ({ onChange, initialData }) => {
     e.preventDefault();
   };
 
-  // 선택된 작물과 설명을 formData에 반영
   useEffect(() => {
+    const selectedLabels = selectedFoods
+      .map((foodId) => {
+        const food = topFood.find((item) => item.id === foodId);
+        return food ? food.label : "";
+      })
+      .filter((label) => label !== "");
+
     setFormData((prev) => ({
       ...prev,
-      cropNames: selectedFoods.join(","),
+      cropNames: selectedLabels, 
       bio,
     }));
   }, [selectedFoods, bio]);
 
-  // onChange 콜백 수정
   useEffect(() => {
     if (onChange) {
       // 폼 데이터와 함께 유효성 검사 상태 포함

@@ -26,7 +26,7 @@ export const getCalculateReports = async () => {
     return response.data;
   } catch (error) {
     console.log(error);
-    throw error.error;
+    throw error;
   }
 };
 
@@ -40,12 +40,23 @@ export const putMyInfo = async (data) => {
     return response;
   } catch (error) {
     console.log(error);
-    throw error.error;
+    throw error;
   }
 };
 
 export const putMentorInfo = async (data) => {
-
+   try {
+    console.log(data)
+     const response = await authAxios.put("/mentors/modify", data);
+     console.log(response);
+     if (!response.success) {
+       throw response.error;
+     }
+     return response;
+   } catch (error) {
+     console.log(error);
+     throw error;
+   }
 }
 
 export const changePassword = async (data) => {
@@ -54,10 +65,10 @@ export const changePassword = async (data) => {
     if (!response.success) {
       throw response.error;
     }
-    return response.success; // 응답에 데이터 null 성공 여부만 가져오기
+    return response
   } catch (error) {
     console.log(error);
-    throw error.error;
+    throw error;
   }
 };
 
@@ -71,7 +82,7 @@ export const deleteUser = async (data) => {
     return response.success; // 응답에 데이터 null 성공 여부만 가져오기
   } catch (error) {
     console.log(error);
-    throw error.error;
+    throw error;
   }
 };
 
@@ -88,7 +99,7 @@ export const uploadImage = async (file) => {
     return response.data;
   } catch (error) {
     console.log(error);
-    throw error.error;
+    throw error;
   }
 };
 
@@ -102,6 +113,6 @@ export const deleteImage = async () => {
     return response.data;
   } catch (error) {
     console.log(error);
-    throw error.error;
+    throw error;
   }
 }

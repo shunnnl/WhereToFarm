@@ -3,7 +3,7 @@ import leaveIcon from "../../asset/mypage/leaves.svg";
 import { MessageSquare, User, Settings, Lock } from "lucide-react";
 import { toast } from "react-toastify";
 
-import { putMyInfo, changePassword } from "../../API/mypage/MyPageAPI";
+import { putMyInfo, changePassword, putMentorInfo } from "../../API/mypage/MyPageAPI";
 
 import MyPageModal from "./MyPageModal";
 import MentorSettingContent from "./MentorSettingContent";
@@ -172,17 +172,17 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
       switch (modalType) {
         case "mentor":
           if (!mentorFormData.isValid) {
-            // 첫 번째 오류 메시지 또는 기본 메시지 표시
             const errorMessage =
               Object.values(mentorFormData.errors).find((msg) => msg) ||
               "멘토 정보를 확인해주세요";
             return;
           }
 
-          // 유효한 경우 API 호출 및 처리
           console.log("멘토 정보 업데이트:", mentorFormData.data);
+          const mentorResponse = await putMentorInfo(mentorFormData.data)
+          console.log(mentorResponse)
 
-          // 멘토 정보 업데이트 후 상태 업데이트
+
           setMyInfo((prevInfo) => ({
             ...prevInfo,
             farmingYears: mentorFormData.data.farmingYears,
