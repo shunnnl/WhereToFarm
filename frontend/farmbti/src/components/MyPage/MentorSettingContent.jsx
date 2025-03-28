@@ -2,17 +2,12 @@ import { useState, useEffect } from "react";
 
 const MentorSettingContent = ({ onChange, initialData }) => {
   const [formData, setFormData] = useState({
-    Year: initialData?.Year || "",
-    foodType: initialData?.foodType || "",
-    description: initialData?.description || "",
+    farmingYears: initialData?.farmingYears || "",
+    cropNames: initialData?.cropNames || "",
+    bio: initialData?.bio || "",
   });
 
-  const [selectedFoods, setSelectedFoods] = useState(
-    initialData?.foodType ? initialData.foodType.split(",") : []
-  );
-  const [description, setDescription] = useState(
-    initialData?.description || ""
-  );
+  const [bio, setDescription] = useState(initialData?.bio || "");
 
   const [errors, setErrors] = useState({});
 
@@ -70,22 +65,42 @@ const MentorSettingContent = ({ onChange, initialData }) => {
     },
   ];
 
+  // 작물명을 ID로 변환하는 함수
+  const getIdFromLabel = (label) => {
+    const food = topFood.find((food) => food.label === label);
+    return food ? food.id : null;
+  };
+
+  // 초기 선택 작물 설정
+  const [selectedFoods, setSelectedFoods] = useState(() => {
+    if (!initialData?.cropNames) return [];
+
+    const cropNamesArray = Array.isArray(initialData.cropNames)
+      ? initialData.cropNames
+      : initialData.cropNames.split(",");
+
+    // 작물명을 ID로 변환
+    return cropNamesArray
+      .map((cropName) => getIdFromLabel(cropName))
+      .filter((id) => id !== null); // 유효한 ID만 반환
+  });
+
   // 유효성 검사 함수
   const validateField = (name, value) => {
     switch (name) {
-      case "Year":
+      case "farmingYears":
         if (!value) return "연도를 선택해주세요";
         if (value < 1980 || value > currentYear)
           return "유효한 연도를 선택해주세요";
         return "";
 
-      case "foodType":
+      case "cropNames":
         if (!value || value.length === 0)
           return "최소 한 개 이상의 작물을 선택해주세요";
         if (value.length > 5) return "최대 5개까지 선택 가능합니다";
         return "";
 
-      case "description":
+      case "bio":
         if (!value) return "멘토 소개를 입력해주세요";
         if (value.length < 10) return "10자 이상 입력해주세요";
         if (value.length > 100) return "100자 이내로 입력해주세요";
@@ -155,10 +170,10 @@ const MentorSettingContent = ({ onChange, initialData }) => {
   useEffect(() => {
     setFormData((prev) => ({
       ...prev,
-      foodType: selectedFoods.join(","),
-      description,
+      cropNames: selectedFoods.join(","),
+      bio: bio,
     }));
-  }, [selectedFoods, description]);
+  }, [selectedFoods, bio]);
 
   // onChange 콜백 수정
   useEffect(() => {
@@ -179,8 +194,8 @@ const MentorSettingContent = ({ onChange, initialData }) => {
         <h3 className="text-xl font-medium">귀농 등록</h3>
         <div className="grid grid-cols-3 gap-4 w-80">
           <select
-            name="Year"
-            value={formData.Year}
+            name="farmingYears" // "Year"에서 "farmingYears"로 변경
+            value={formData.farmingYears} // "Year"에서 "farmingYears"로 변경
             onChange={handleChange}
             required
             className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
@@ -238,9 +253,9 @@ const MentorSettingContent = ({ onChange, initialData }) => {
         <div className="flex flex-wrap justify-center w-full">
           <div className="w-full max-w-4xl relative">
             <textarea
-              id="description"
-              name="description"
-              value={description}
+              id="bio"
+              name="bio"
+              value={bio}
               onChange={handleDescriptionChange}
               className="w-full max-w-4xl px-3 py-2 border border-gray-300 rounded-lg 
             focus:outline-none focus:ring-2 focus:ring-green-500 
@@ -250,18 +265,18 @@ const MentorSettingContent = ({ onChange, initialData }) => {
             />
             <div
               className={`absolute bottom-2 right-2 text-sm ${
-                description.length > 100 || description.length < 10 ? "text-red-500" : "text-gray-500"
+                bio.length > 100 || bio.length < 10
+                  ? "text-red-500"
+                  : "text-gray-500"
               }`}
             >
-              {description.length}/100
+              {bio.length}/100
             </div>
           </div>
         </div>
       </div>
-      {errors.description && (
-        <div className="ml-24 text-red-500 text-sm mt-1">
-          {errors.description}
-        </div>
+      {errors.bio && (
+        <div className="ml-24 text-red-500 text-sm mt-1">{errors.bio}</div>
       )}
     </form>
   );
