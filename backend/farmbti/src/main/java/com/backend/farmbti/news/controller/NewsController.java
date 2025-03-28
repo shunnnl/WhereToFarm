@@ -27,12 +27,9 @@ public class NewsController {
 
     @GetMapping("/news/list")
     public CommonResponseDto getList() {
-
+        String keyword = "귀농";
+        return CommonResponseDto.ok(newsService.getNewsList(keyword));
     }
 
-    @GetMapping("/news/list/{newsId}")
-    public CommonResponseDto getListDetail() {
-
-    }
 
 }

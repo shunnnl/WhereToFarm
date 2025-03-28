@@ -58,6 +58,6 @@ cloud:
       auto: false
 naver:
   api:
-    client-id:
-    client-secret:
+    client-id: ${client-id}
+    client-secret: ${client-secret}
     url: https://openapi.naver.com/v1/search/news.json

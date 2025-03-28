@@ -1,11 +1,12 @@
 package com.backend.farmbti.news.service;
 
 import com.backend.farmbti.news.config.NaverApiConfig;
+import com.backend.farmbti.news.config.WebClientConfig;
+import com.backend.farmbti.news.dto.NewsMainResponse;
 import com.backend.farmbti.news.dto.NewsResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
@@ -16,9 +17,9 @@ import java.net.URI;
 public class NewsService {
 
     private final NaverApiConfig naverApiConfig;
-    private final WebClient webClient;
+    private final WebClientConfig webClient;
 
-    public NewsResponse getMainNews(String keyword) {
+    public NewsMainResponse getMainNews(String keyword) {
 
         URI uri = UriComponentsBuilder.
                 fromUriString(naverApiConfig.newsUrl)
@@ -45,5 +46,11 @@ public class NewsService {
         newsSearchResponse.setArticles(naverNewsResponse.getItems());
         return newsSearchResponse;
         //헤더세팅은 이미 컨피그에서 되어있음
+    }
+
+
+    public NewsResponse getNewsList(String keyword) {
+
+
     }
 }
