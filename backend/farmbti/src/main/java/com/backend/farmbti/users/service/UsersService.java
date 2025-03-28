@@ -9,10 +9,7 @@ import com.backend.farmbti.mentors.domain.Mentors;
 import com.backend.farmbti.mentors.domain.MentorsCrops;
 import com.backend.farmbti.mentors.repository.MentorsCropsRepository;
 import com.backend.farmbti.mentors.repository.MentorsRepository;
-import com.backend.farmbti.users.dto.CurrentUserResponse;
-import com.backend.farmbti.users.dto.PasswordChangeRequest;
-import com.backend.farmbti.users.dto.UserDeleteRequest;
-import com.backend.farmbti.users.dto.UserUpdateRequest;
+import com.backend.farmbti.users.dto.*;
 import com.backend.farmbti.users.exception.UsersErrorCode;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -167,7 +164,7 @@ public class UsersService {
      * 기본 프로필 이미지로 변경
      */
     @Transactional
-    public void resetToDefaultProfileImage(Long userId) {
+    public UploadProfileImageResponse resetToDefaultProfileImage(Long userId) {
         // 1. 사용자 조회
         Users user = usersRepository.findById(userId)
                 .orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
@@ -183,13 +180,18 @@ public class UsersService {
         // 4. 프로필 이미지 업데이트
         user.updateProfileImage(defaultProfileImageKey);
         usersRepository.save(user);
+
+        // 서명된 URL 생성 및 응답 객체 반환
+        return UploadProfileImageResponse.builder()
+                .imageUrl(s3Service.getSignedUrl(defaultProfileImageKey))
+                .build();
     }
 
     /**
      * 프로필 이미지 업로드
      */
     @Transactional
-    public void uploadUserProfileImage(Long userId, MultipartFile file) {
+    public UploadProfileImageResponse uploadUserProfileImage(Long userId, MultipartFile file) {
         Users user = usersRepository.findById(userId)
                 .orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
 
@@ -205,6 +207,11 @@ public class UsersService {
         // 3. 사용자 프로필 이미지 키 업데이트
         user.updateProfileImage(newProfileImageKey);
         usersRepository.save(user);
+
+        // 서명된 URL 생성 및 응답 객체 반환
+        return UploadProfileImageResponse.builder()
+                .imageUrl(s3Service.getSignedUrl(newProfileImageKey))
+                .build();
     }
 
     /**
