@@ -86,7 +86,7 @@ public class UsersService {
      * 회원 정보 수정
      */
     @Transactional
-    public void updateUserInfo(UserUpdateRequest request, Long userId) {
+    public CurrentUserResponse updateUserInfo(UserUpdateRequest request, Long userId) {
         Users user = usersRepository.findById(userId)
                 .orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
 
@@ -103,6 +103,9 @@ public class UsersService {
         user.updateUserInfo(request.getName(), request.getBirth(), request.getAddress(), request.getGender());
 
         usersRepository.save(user);
+
+        // 변경된 정보 기반으로 최신 유저 정보 응답
+        return getCurrentUserInfo(userId);
     }
 
 

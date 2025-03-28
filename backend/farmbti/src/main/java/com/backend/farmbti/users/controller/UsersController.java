@@ -42,10 +42,10 @@ public class UsersController {
 
     @PutMapping("/modify")
     @Operation(summary = "회원 정보 수정", description = "사용자 정보(이름, 생년월일, 주소, 성별)을 수정합니다.")
-    public CommonResponseDto updateUserInfo(@RequestBody UserUpdateRequest request) {
+    public CommonResponseDto<CurrentUserResponse> updateUserInfo(@RequestBody UserUpdateRequest request) {
         Long userId = securityUtils.getCurrentUsersId();
-        usersService.updateUserInfo(request, userId);
-        return CommonResponseDto.ok();
+        CurrentUserResponse updatedUserInfo = usersService.updateUserInfo(request, userId);
+        return CommonResponseDto.ok(updatedUserInfo);
     }
 
     @GetMapping("/me")
