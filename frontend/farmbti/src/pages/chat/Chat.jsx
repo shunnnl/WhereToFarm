@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { authAxios } from '../../API/common/AxiosInstance';
+import { Client } from '@stomp/stompjs'; // STOMP 클라이언트 임포트
+import SockJS from 'sockjs-client';
 
 const Chat = () => {
+  
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const [currentTime, setCurrentTime] = useState('');
@@ -10,59 +13,160 @@ const Chat = () => {
   const [chatRooms, setChatRooms] = useState([]); // 대화 중인 멘토 목록
   const stompClient = useRef(null);
   const messagesEndRef = useRef(null);
-  
+  const [currentUser, setCurrentUser]  = useState('');
+  const messageIdCounter = useRef(0);
 
-  // 시간 형식 설정
+  // 사용자 정보 가져오기
   useEffect(() => {
-    const now = new Date();
-    const hours = now.getHours().toString().padStart(2, '0');
-    const minutes = now.getMinutes().toString().padStart(2, '0');
-    setCurrentTime(`${hours}:${minutes}`);
+    const userInfo = localStorage.getItem('user');
+    if (userInfo) {
+      setCurrentUser(JSON.parse(userInfo));
+    }
   }, []);
 
-  // 초기 메시지 설정
+  // 채팅방 ID 변경시 해당 채팅방의 메시지 조회
   useEffect(() => {
-    setMessages([
-      {
-        id: 1,
-        sender: '윤석열',
-        text: '안녕하세요.편하게 말 걸어주세요^^',
-        time: '오후 12:38',
-        isMe: false
+    if (roomId) {
+      fetchMessages(roomId);
+    }
+  }, [roomId]);
+
+  // 메시지 목록 가져오기
+  const fetchMessages = async (roomId) => {
+    try {
+      const response = await authAxios.get(`/chat/${roomId}/messages/detail`);
+      if (response.data && response.data.success) {
+        setMessages(response.data.data.map((msg, index) => ({
+          id: index + 1,
+          text: msg.content,
+          time: formatTime(new Date(msg.sendTime)),
+          isMe: msg.senderId === currentUser?.id
+        })));
       }
-    ]);
+    } catch (error) {
+      console.error('메시지 조회 실패:', error);
+    }
+  };
+
+  // 웹소켓 연결
+  useEffect(() => {
+    if (roomId && currentUser) {
+      connectWebSocket();
+    }
+    return () => {
+      disconnectWebSocket();
+    };
+  }, [roomId, currentUser]);
+
+// 웹소켓 연결 함수 수정
+const connectWebSocket = () => {
+  disconnectWebSocket(); // 기존 연결 해제
+
+  const client = new Client({
+    // brokerURL 대신 webSocketFactory 사용
+    webSocketFactory: () => new SockJS('http://j12d209.p.ssafy.io/gs-guide-websocket'),
+    connectHeaders: {
+      Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+    },
+    debug: function (str) {
+      console.log('STOMP: ' + str);
+    },
+    reconnectDelay: 5000,
+    onConnect: () => {
+      console.log('웹소켓 연결 성공');
+      setConnected(true);
+      
+      // 채팅방 구독
+      client.subscribe(`/topic/chat/${roomId}`, onMessageReceived);
+    },
+    onStompError: (frame) => {
+      console.error('STOMP 에러:', frame);
+    }
+  });
+
+  client.activate();
+  stompClient.current = client;
+};
+
+  // 웹소켓 연결 해제
+  const disconnectWebSocket = () => {
+    if (stompClient.current && stompClient.current.connected) {
+      stompClient.current.deactivate();
+      setConnected(false);
+    }
+  };
+
+  // 메시지 수신 처리
+  const onMessageReceived = (payload) => {
+    const receivedMessage = JSON.parse(payload.body);
+  
+    // 내가 보낸 메시지는 이미 UI에 추가됐으므로 처리하지 않음
+    if (receivedMessage.senderId === currentUser?.id) {
+      return;
+    }
+    
+    // 상대방 메시지만 추가
+    const newMessage = {
+      id: `msg-${Date.now()}`,
+      text: receivedMessage.message || receivedMessage.content,
+      time: formatTime(new Date(receivedMessage.sendTime)),
+      isMe: false // 상대방 메시지는 항상 false
+    };
+    
+    setMessages(prev => [...prev, newMessage]);
+    };
+
+
+  // 채팅방 목록 가져오기
+  useEffect(() => {
+    const fetchChatRooms = async () => {
+      try {
+        const response = await authAxios.get('/chat/get/rooms');
+        console.log('응답 구조:', response);
+        // 응답이 배열인 경우와 {success, data} 형식인 경우 모두 처리
+        if (Array.isArray(response.data)) {
+          setChatRooms(response.data);
+        } else if (response.data && response.data.success) {
+          setChatRooms(response.data.data);
+        }
+      } catch (error) {
+        console.error('채팅방 목록 조회 실패:', error);
+      }
+    };
+
+    fetchChatRooms();
   }, []);
 
-
-    // 채팅방 목록 가져오기
-    useEffect(() => {
-      const fetchChatRooms = async () => {
-        try {
-          const response = await authAxios.get('/chat/get/rooms');
-          console.log('응답 구조:', response);
-          // 응답이 배열인 경우와 {success, data} 형식인 경우 모두 처리
-          if (Array.isArray(response.data)) {
-            setChatRooms(response.data);
-          } else if (response.data && response.data.success) {
-            setChatRooms(response.data.data);
-          }
-        } catch (error) {
-          console.error('채팅방 목록 조회 실패:', error);
-        }
-      };      
-      fetchChatRooms();
-    }, []);
+  // 시간 형식 변환 함수
+  const formatTime = (date) => {
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes}`;
+  };
   
-
   // 메시지 전송 처리
   const handleSendMessage = () => {
-    if (message.trim()) {
+    if (message.trim() && connected && roomId) {
+      const now = new Date();
+      
+      // 웹소켓으로 메시지 전송
+      stompClient.current.publish({
+        destination: `/chat/${roomId}/send`,
+        body: JSON.stringify({ 
+          message: message.trim(),
+          senderName: currentUser.name
+        
+        })
+      });
+      
+      // UI에 메시지 추가 (웹소켓 응답에도 추가될 수 있지만 UI 반응성을 위해)
       const newMessage = {
-        id: messages.length + 1,
+        id: `msg-${messageIdCounter.current++}`, // 고유 ID 생성
         text: message,
-        time: currentTime,
+        time: formatTime(now),
         isMe: true
       };
+      
       setMessages([...messages, newMessage]);
       setMessage('');
     }
@@ -75,7 +179,6 @@ const Chat = () => {
       handleSendMessage();
     }
   };
-
   return (
     <div className="flex h-screen bg-gray-100">
       {/* 좌측 멘토 목록 */}
@@ -121,8 +224,9 @@ const Chat = () => {
           </div>
         </div>
       </div>
-
-      {/* 우측 채팅 영역 */}
+      
+      
+  {/* 우측 채팅 영역 */}
       <div className="w-3/4 flex flex-col">
         {/* 헤더 - 좌측 뒤로가기 버튼과 높이 맞춤 */}
         <div className="bg-white p-4 flex items-center justify-between border-b h-16">
