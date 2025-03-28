@@ -59,6 +59,7 @@ public class S3Service {
     public String uploadUserProfileImage(MultipartFile file, Long userId) {
 
         long MAX_FILE_SIZE = 5 * 1024 * 1024; // 용량 5MB 제한
+
         if (file.isEmpty() || file.getSize() > MAX_FILE_SIZE) {
             throw new GlobalException(UsersErrorCode.PROFILE_IMAGE_UPLOAD_FAILED);
         }
