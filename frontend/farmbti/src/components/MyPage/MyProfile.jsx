@@ -222,22 +222,16 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
           });
 
           // 성공했다면 로컬 상태 업데이트
-          if (myInfoResponse) {
+          if (myInfoResponse.success) {
             // UI에 즉시 반영하기 위해 상태 업데이트
-            setMyInfo((prevInfo) => ({
-              ...prevInfo,
-              name,
-              address,
-              birth,
-              gender,
-            }));
+            setMyInfo(myInfoResponse.data);
 
             // 추가로 필요한 상태 업데이트
-            setBirth(formatBirthDate(birth));
-            setAddress(formatAddress(address));
+            setBirth(formatBirthDate(myInfoResponse.data.birth));
+            setAddress(formatAddress(myInfoResponse.data.address));
             setMyImage({
-              isDefaultImage: myInfoResponse.isDefaultImage,
-              imageUrl: myInfoResponse.profileImage,
+              isDefaultImage: myInfoResponse.data.isDefaultImage,
+              imageUrl: myInfoResponse.data.profileImage,
             });
 
             toast.success("회원 정보가 수정 되었습니다.");

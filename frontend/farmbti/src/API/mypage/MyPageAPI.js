@@ -33,15 +33,20 @@ export const getCalculateReports = async () => {
 export const putMyInfo = async (data) => {
   try {
     const response = await authAxios.put("/users/modify", data);
+    console.log(response)
     if (!response.success) {
       throw response.error;
     }
-    return response.success; // 응답에 데이터 null 성공 여부만 가져오기
+    return response;
   } catch (error) {
     console.log(error);
     throw error.error;
   }
 };
+
+export const putMentorInfo = async (data) => {
+
+}
 
 export const changePassword = async (data) => {
   try {
