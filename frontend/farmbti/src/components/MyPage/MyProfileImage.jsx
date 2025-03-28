@@ -135,10 +135,10 @@ const MyProfileImage = ({ imageUrl, isDefaultImage }) => {
 
           const response = await uploadImage(formData);
 
-          // setProfileData({
-          //   isDefaultImage: false, 
-          //   imageUrl: response.profileImage, 
-          // });
+          setProfileData({
+            isDefaultImage: false,
+            imageUrl: response.imageUrl,
+          });
 
           toast.success("프로필 이미지가 업로드되었습니다.");
         } catch (error) {
@@ -177,10 +177,10 @@ const MyProfileImage = ({ imageUrl, isDefaultImage }) => {
 
       const response = await deleteImage();
 
-      // setProfileData({
-      //   isDefaultImage: true,
-      //   imageUrl: response.profileImage,
-      // });
+      setProfileData({
+        isDefaultImage: true,
+        imageUrl: response.imageUrl,
+      });
 
       toast.success("기본 프로필 이미지로 변경되었습니다.");
     } catch (error) {

@@ -77,10 +77,9 @@ export const deleteUser = async (data) => {
 
 export const uploadImage = async (file) => {
   try {
-    console.log(file);
     const response = await authAxios.put("/users/upload-profile", file, {
       headers: {
-        "Content-Type": undefined, // 기존 Content-Type 헤더를 무시하고 자동 설정되도록 함
+        "Content-Type": undefined,
       },
     });
     if (!response.success) {
