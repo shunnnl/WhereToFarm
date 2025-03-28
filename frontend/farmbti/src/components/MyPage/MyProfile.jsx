@@ -280,7 +280,10 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
   return (
     <div>
       <div className="flex flex-col items-center pt-10">
-        <MyProfileImage imageUrl={myInfo.profileImage} />
+        <MyProfileImage
+          imageUrl={myInfo.profileImage}
+          isDefaultImage={myInfo.isDefaultImage}
+        />
         <div className="mentor-menti-button my-2">
           {myInfo.isMentor ? (
             <div className="px-4 py-1 bg-primaryGreen text-textColor-white rounded-full text-sm w-16 text-center">
