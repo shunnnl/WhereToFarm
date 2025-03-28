@@ -14,6 +14,8 @@ import com.backend.farmbti.mentors.exception.MentorsCropsErrorCode;
 import com.backend.farmbti.mentors.exception.MentorsErrorCode;
 import com.backend.farmbti.mentors.repository.MentorsCropsRepository;
 import com.backend.farmbti.mentors.repository.MentorsRepository;
+import com.backend.farmbti.users.dto.CurrentUserResponse;
+import com.backend.farmbti.users.service.UsersService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -33,6 +35,7 @@ public class MentorsService {
     private final UsersRepository usersRepository;
     private final CropsRepository cropsRepository;
     private final MentorsCropsRepository mentorsCropsRepository;
+    private final UsersService usersService;
 
     /**
      * 멘토 등록
@@ -78,7 +81,7 @@ public class MentorsService {
      * 멘토 정보 수정
      */
     @Transactional
-    public void updateMentorInfo(MentorRegisterRequest request, Long userId) {
+    public CurrentUserResponse updateMentorInfo(MentorRegisterRequest request, Long userId) {
         // 1. 멘토 정보 조회
         Mentors mentor = mentorsRepository.findByUserId(userId)
                 .orElseThrow(() -> new GlobalException(MentorsErrorCode.MENTOR_NOT_FOUND));
@@ -104,6 +107,9 @@ public class MentorsService {
                 .collect(Collectors.toList());
 
         mentorsCropsRepository.saveAll(mentorCrops);
+
+        return usersService.getCurrentUserInfo(userId);
+
     }
 
     /**
