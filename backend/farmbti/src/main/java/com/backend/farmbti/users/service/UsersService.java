@@ -176,7 +176,7 @@ public class UsersService {
         String defaultProfileImageKey = s3Service.getDefaultProfileImageKey(user.getGender());
 
         // 3. 이전 이미지 삭제 (기본 이미지가 아닌 경우)
-        if (!user.getProfileImage().startsWith("basic/")) {
+        if (defaultProfileImageKey != null && !user.getProfileImage().startsWith("basic/")) {
             s3Service.deleteFile(user.getProfileImage());
         }
 
