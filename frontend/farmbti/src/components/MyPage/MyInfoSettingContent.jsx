@@ -41,7 +41,7 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
         return "";
 
       case "gender":
-        if (!value) return "성별을 선택해주세요";
+        if (value !== 0 && value !== 1) return "성별을 선택해주세요";
         return "";
 
       case "year":
