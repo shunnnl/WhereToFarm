@@ -46,7 +46,7 @@ const CalculateResultCard = ({
   };
 
   return (
-    <div className="w-full max-w-md rounded-lg overflow-hidden shadow-md bg-gradient-to-br to-primaryGreen from-supportGreen">
+    <div className="w-full max-w-md rounded-lg overflow-hidden shadow-md bg-gradient-to-br to-primaryGreen from-supportGreen relative">
       {deleteMode && (
         <button
           className="absolute top-12 right-4 z-10 text-red-500 w-6 h-6 flex items-center justify-center"
