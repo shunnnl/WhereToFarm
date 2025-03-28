@@ -182,7 +182,7 @@ const MyProfileImage = ({ imageUrl, isDefaultImage }) => {
       //   imageUrl: response.profileImage,
       // });
 
-      toast.info("기본 프로필 이미지로 변경되었습니다.");
+      toast.success("기본 프로필 이미지로 변경되었습니다.");
     } catch (error) {
       console.error("이미지 초기화 실패:", error);
       toast.error("기본 이미지로 변경하는데 실패했습니다.");

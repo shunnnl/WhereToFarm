@@ -18,6 +18,7 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
   const [myInfo, setMyInfo] = useState(initialMyInfo);
   const [birth, setBirth] = useState({ year: "", month: "", day: "" });
   const [address, setAddress] = useState("");
+  const [myImage, setMyImage] = useState({});
 
   // 모달 타입 별 상태 분리
   const [mentorFormData, setMentorFormData] = useState({
@@ -82,6 +83,11 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
       errors: {},
     });
 
+    setMyImage({
+      isDefaultImage: myInfo.isDefaultImage,
+      imageUrl: myInfo.profileImage,
+    });
+
     // 멘토 정보도 초기화
     if (myInfo.isMentor) {
       setMentorFormData({
@@ -96,13 +102,12 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
     }
   }, [myInfo]);
 
-   useEffect(() => {
-     console.log("initialMyInfo changed:", initialMyInfo);
-     if (initialMyInfo && Object.keys(initialMyInfo).length > 0) {
-       setMyInfo(initialMyInfo);
-     }
-   }, [initialMyInfo]);
-
+  useEffect(() => {
+    console.log("initialMyInfo changed:", initialMyInfo);
+    if (initialMyInfo && Object.keys(initialMyInfo).length > 0) {
+      setMyInfo(initialMyInfo);
+    }
+  }, [initialMyInfo]);
 
   const handleChatting = () => {
     // chat 페이지로 넘어가기
@@ -230,6 +235,10 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
             // 추가로 필요한 상태 업데이트
             setBirth(formatBirthDate(birth));
             setAddress(formatAddress(address));
+            setMyImage({
+              isDefaultImage: myInfoResponse.isDefaultImage,
+              imageUrl: myInfoResponse.profileImage,
+            });
 
             toast.success("회원 정보가 수정 되었습니다.");
           }
@@ -281,8 +290,8 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
     <div>
       <div className="flex flex-col items-center pt-10">
         <MyProfileImage
-          imageUrl={myInfo.profileImage}
-          isDefaultImage={myInfo.isDefaultImage}
+          imageUrl={myImage.imageUrl}
+          isDefaultImage={myImage.isDefaultImage}
         />
         <div className="mentor-menti-button my-2">
           {myInfo.isMentor ? (
