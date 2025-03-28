@@ -5,7 +5,7 @@ import useKakaoAddressService from "../../API/useKakaoAddressService";
 const MyInfoSettingContent = ({ onChange, initialData }) => {
   const [formData, setFormData] = useState({
     name: initialData?.name || "",
-    gender: initialData?.gender || "",
+    gender: initialData?.gender !== undefined ? Number(initialData.gender) : "",
     year: initialData?.year || "",
     month: initialData?.month || "",
     day: initialData?.day || "",
@@ -41,7 +41,8 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
         return "";
 
       case "gender":
-        if (value !== 0 && value !== 1) return "성별을 선택해주세요";
+        if (value !== 0 && value !== 1 && value !== "0" && value !== "1")
+          return "성별을 선택해주세요";
         return "";
 
       case "year":
@@ -106,6 +107,7 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
     e.preventDefault();
   };
 
+  // 컴포넌트가 마운트될 때 초기 데이터 검증
   useEffect(() => {
     const newErrors = {};
     Object.entries(formData).forEach(([key, value]) => {
@@ -114,6 +116,7 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
     setErrors(newErrors);
   }, []);
 
+  // 폼 데이터나 에러가 변경될 때 부모 컴포넌트에 알림
   useEffect(() => {
     if (onChange) {
       onChange({
@@ -155,7 +158,7 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
                 type="radio"
                 name="gender"
                 value="남성"
-                checked={formData.gender === 0}
+                checked={formData.gender === 0 || formData.gender === "0"}
                 onChange={() => handleGenderChange("남성")}
                 className="w-5 h-5 text-blue-500"
               />
@@ -166,7 +169,7 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
                 type="radio"
                 name="gender"
                 value="여성"
-                checked={formData.gender === 1}
+                checked={formData.gender === 1 || formData.gender === "1"}
                 onChange={() => handleGenderChange("여성")}
                 className="w-5 h-5 text-blue-500"
               />
