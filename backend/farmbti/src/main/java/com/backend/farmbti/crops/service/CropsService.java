@@ -147,6 +147,7 @@ public class CropsService {
             // 작물 정보 가져오기 (사용자의 report에서 crops 객체 참조)
             Crops crops = report.getCrops();
             responses.add(CropsAllResponse.builder()
+                    .reportId(crops.getId())
                     .cropsName(crops.getName())
                     .myAreaVolume(report.getMyAreaVolume())
                     .myTotalPrice(report.getMyTotalPrice())
