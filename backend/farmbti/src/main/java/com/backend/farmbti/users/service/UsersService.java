@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -95,6 +96,12 @@ public class UsersService {
         // 입력값 검증
         validateUserUpdateRequest(request);
 
+        if (user.getProfileImage().startsWith("basic/") && !request.getGender().equals(user.getGender())) {
+            // 새로운 성별에 맞는 기본 프로필 이미지로 변경
+            String newDefaultProfileImageKey = s3Service.getDefaultProfileImageKey(request.getGender());
+            user.updateProfileImage(newDefaultProfileImageKey);
+        }
+
         // 회원 정보 업데이트
         user.updateUserInfo(request.getName(), request.getBirth(), request.getAddress(), request.getGender());
 
@@ -111,8 +118,17 @@ public class UsersService {
         Users user = usersRepository.findById(userId)
                 .orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
 
-        // 저장된 객체 키를 사용하여 서명된 URL 생성
-        String profileImageUrl = s3Service.getSignedUrl(user.getProfileImage());
+        // 프로필 이미지 S3 객체 키 (예: "basic/male.jpg", "uploads/1/abc.jpg")
+        String profileImageKey = user.getProfileImage();
+
+        String profileImageUrl;
+        try {
+            profileImageUrl = s3Service.getSignedUrl(profileImageKey);
+        } catch (Exception e) {
+            throw new GlobalException(UsersErrorCode.PROFILE_IMAGE_URL_GENERATION_FAILED);
+        }
+
+        boolean isDefaultImage = profileImageKey.startsWith("basic/");
 
         CurrentUserResponse.CurrentUserResponseBuilder builder = CurrentUserResponse.builder()
                 .userId(user.getId())
@@ -121,7 +137,8 @@ public class UsersService {
                 .address(user.getAddress())
                 .birth(user.getBirth())
                 .gender(user.getGender())
-                .profileImage(profileImageUrl);
+                .profileImage(profileImageUrl)
+                .isDefaultImage(isDefaultImage);
 
         // 2. 사용자의 멘토 정보 조회
         Optional<Mentors> mentorOptional = mentorsRepository.findByUserId(userId);
@@ -144,6 +161,50 @@ public class UsersService {
         }
 
         return builder.build();
+    }
+
+    /**
+     * 기본 프로필 이미지로 변경
+     */
+    @Transactional
+    public void resetToDefaultProfileImage(Long userId) {
+        // 1. 사용자 조회
+        Users user = usersRepository.findById(userId)
+                .orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
+
+        // 2. 기본 이미지 키 생성
+        String defaultProfileImageKey = s3Service.getDefaultProfileImageKey(user.getGender());
+
+        // 3. 이전 이미지 삭제 (기본 이미지가 아닌 경우)
+        if (defaultProfileImageKey != null && !user.getProfileImage().startsWith("basic/")) {
+            s3Service.deleteFile(user.getProfileImage());
+        }
+
+        // 4. 프로필 이미지 업데이트
+        user.updateProfileImage(defaultProfileImageKey);
+        usersRepository.save(user);
+    }
+
+    /**
+     * 프로필 이미지 업로드
+     */
+    @Transactional
+    public void uploadUserProfileImage(Long userId, MultipartFile file) {
+        Users user = usersRepository.findById(userId)
+                .orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
+
+        // 1. 이전 이미지 삭제 (기본 이미지가 아니면)
+        String currentKey = user.getProfileImage();
+        if (currentKey != null && !currentKey.startsWith("basic/")) {
+            s3Service.deleteFile(currentKey);
+        }
+
+        // 2. 새 이미지 업로드
+        String newProfileImageKey = s3Service.uploadUserProfileImage(file, userId);
+
+        // 3. 사용자 프로필 이미지 키 업데이트
+        user.updateProfileImage(newProfileImageKey);
+        usersRepository.save(user);
     }
 
     /**

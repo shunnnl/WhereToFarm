@@ -4,6 +4,8 @@ import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.backend.farmbti.common.exception.GlobalException;
+import com.backend.farmbti.users.exception.UsersErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,43 +45,37 @@ public class S3Service {
 
     // 기본 프로필 이미지 객체 키 가져오기
     public String getDefaultProfileImageKey(Byte gender) {
-        return gender == 1 ? "basic_1.jpg" : "basic_0.jpg";
+        String objectKey = "basic/" + (gender == 1 ? "basic_1.jpg" : "basic_0.jpg");
+
+        if (!amazonS3.doesObjectExist(bucket, objectKey)) {
+            throw new GlobalException(UsersErrorCode.DEFAULT_PROFILE_IMAGE_NOT_FOUND);
+        }
+
+        return objectKey;
     }
 
-    // 파일 업로드 메소드
-    public String uploadFile(MultipartFile file, String dirName) {
+    // 사용자 이미지 업로드
+    public String uploadUserProfileImage(MultipartFile file, Long userId) {
         try {
-            // 파일 메타데이터 설정
+            String uuid = UUID.randomUUID().toString();
+            String key = "uploads/" + userId + "/profile_" + uuid + ".jpg";
+
             ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setContentType(file.getContentType());
             metadata.setContentLength(file.getSize());
+            metadata.setContentType(file.getContentType());
 
-            // 파일명 중복 방지를 위한 UUID 사용
-            String fileName = dirName + "/" + UUID.randomUUID() + "_" + file.getOriginalFilename();
-
-            // S3에 업로드
-            amazonS3.putObject(
-                    bucket,
-                    fileName,
-                    file.getInputStream(),
-                    metadata
-            );
-
-            log.info("파일 업로드 성공: {}", fileName);
-            return fileName; // 객체 키 반환
+            amazonS3.putObject(bucket, key, file.getInputStream(), metadata);
+            return key;
         } catch (IOException e) {
-            log.error("파일 업로드 실패: {}", e.getMessage());
-            throw new RuntimeException("파일 업로드 중 오류 발생: " + e.getMessage());
+            throw new GlobalException(UsersErrorCode.PROFILE_IMAGE_UPLOAD_FAILED);
         }
     }
 
-    // 파일 삭제 메소드
-    public void deleteFile(String objectKey) {
-        try {
-            amazonS3.deleteObject(bucket, objectKey);
-            log.info("파일 삭제 성공: {}", objectKey);
-        } catch (Exception e) {
-            log.error("파일 삭제 실패: {}", e.getMessage());
+    // 사용자 이미지 삭제
+    public void deleteFile(String key) {
+        if (amazonS3.doesObjectExist(bucket, key)) {
+            amazonS3.deleteObject(bucket, key);
         }
     }
+
 }

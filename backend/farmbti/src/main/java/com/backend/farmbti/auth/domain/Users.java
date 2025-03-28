@@ -54,6 +54,8 @@ public class Users extends TimeStampEntity {
 
     public void updatePassword(String newPassword) {this.password = newPassword;}
 
+    public void updateProfileImage(String profileImage) {this.profileImage = profileImage;}
+
     public void updateUserInfo(String name, Date birth, String address, Byte gender) {
         this.name = name;
         this.birth = birth;
