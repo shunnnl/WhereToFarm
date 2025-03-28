@@ -15,13 +15,16 @@ import CropCalculatorPage from "./pages/crop-calculator/CropCalculatorPage";
 import Footer from "./components/common/Footer";
 import Chat from "./pages/chat/Chat";
 import MyPage from "./pages/mypage/MyPage";
-import FarmbtiReport from "./components/mypage/FarmbtiReport";
-import CropCalculateReport from "./components/mypage/CropCalculateReport";
+import FarmbtiReport from "./components/MyPage/FarmbtiReport";
+import CropCalculateReport from "./components/MyPage/CropCalculateReport";
 import Estate from "./pages/estate/Estate";
 import UserDeletePage from "./pages/auth/UserDeletePage";
 import AuthRequiredPage from "./pages/etc/AuthRequiredPage";
 import GuideBookPage from "./pages/etc/guidebook/GuideBookPage";
 import NewsPage from "./pages/news/NewsPage";
+import SurveyIntroPage from "./pages/recommendation/survey/SurveyIntroPage";
+import SurveyPage from "./pages/recommendation/survey/SurveyPage";
+
 
 const isAuthenticated = () => {
   return localStorage.getItem("accessToken") !== null;
@@ -49,6 +52,8 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/mentors" element={<MentorPage />} />
+            <Route path="/surveyintro" element={<SurveyIntroPage />} />
+            <Route path="/survey" element={<SurveyPage />} />
             <Route
               path="/crop-calculator"
               element={
