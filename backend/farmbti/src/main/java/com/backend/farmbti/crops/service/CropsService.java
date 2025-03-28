@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -131,6 +132,7 @@ public class CropsService {
 
     }
 
+    @Transactional(readOnly = true)
     public List<CropsAllResponse> getCrops(Long usersId) {
 
         //userId에 해당하는 모든 리포트 객체를 리스트로 가져옴
