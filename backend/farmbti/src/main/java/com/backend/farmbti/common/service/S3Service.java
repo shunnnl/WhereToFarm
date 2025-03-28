@@ -54,4 +54,28 @@ public class S3Service {
         return objectKey;
     }
 
+    // 사용자 이미지 업로드
+    public String uploadUserProfileImage(MultipartFile file, Long userId) {
+        try {
+            String uuid = UUID.randomUUID().toString();
+            String key = "uploads/" + userId + "/profile_" + uuid + ".jpg";
+
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentLength(file.getSize());
+            metadata.setContentType(file.getContentType());
+
+            amazonS3.putObject(bucket, key, file.getInputStream(), metadata);
+            return key;
+        } catch (IOException e) {
+            throw new GlobalException(UsersErrorCode.PROFILE_IMAGE_UPLOAD_FAILED);
+        }
+    }
+
+    // 사용자 이미지 삭제
+    public void deleteFile(String key) {
+        if (amazonS3.doesObjectExist(bucket, key)) {
+            amazonS3.deleteObject(bucket, key);
+        }
+    }
+
 }
