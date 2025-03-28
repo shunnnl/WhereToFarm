@@ -15,11 +15,11 @@ export const getCalculateReports = async () => {
   }
 };
 
-
 export const cropsReportsDeatil = async (reportId) => {
   try {
-    const response = authAxios.get(`/crops/get/${reportId}`);
+    const response = await authAxios.get(`/crops/get/${reportId}`);
     if (!response.success) {
+      console.log(response);
       throw response.error;
     }
     return response.data;
