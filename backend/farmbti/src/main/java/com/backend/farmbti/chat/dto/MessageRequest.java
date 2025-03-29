@@ -8,4 +8,5 @@ import lombok.Getter;
 public class MessageRequest {
     private String message;
     private String senderName;
+    private Long senderId;
 }

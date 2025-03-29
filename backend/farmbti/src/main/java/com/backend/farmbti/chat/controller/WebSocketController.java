@@ -36,7 +36,7 @@ public class WebSocketController {
         }
 
         // 메시지 처리 로직
-        MessageResponse messageResponse = webSocketService.saveAndGetMessage(roomId, messageRequest.getMessage());
+        MessageResponse messageResponse = webSocketService.saveAndGetMessage(roomId, messageRequest.getMessage(), messageRequest.getSenderId());
 
         //메시지 보내는 사람 즉, 로그인 한 사람
         String currentUserName = messageRequest.getSenderName();
