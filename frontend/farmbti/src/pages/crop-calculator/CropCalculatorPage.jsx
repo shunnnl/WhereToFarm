@@ -4,6 +4,7 @@ import CropSelectSection from "../../components/crop-calculator/CropSelectSectio
 import ProgressIndicator from "../../components/crop-calculator/ProgressIndicator";
 
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 
 import ResultSection from "../../components/crop-calculator/ResultSection";
 import {
@@ -13,6 +14,7 @@ import {
 import { toast } from "react-toastify";
 
 const CropCalculatorPage = () => {
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [area, setArea] = useState(null);
   const [convertedArea, setConvertedArea] = useState(0);
@@ -118,7 +120,7 @@ const CropCalculatorPage = () => {
       if (response) {
         toast.success("저장에 성공했습니다.");
         setTimeout(() => {
-          window.location.href = "/mypage/crop-calculate-report";
+          navigate("/mypage/crop-calculate-report");
         }, 1000);
       }
     } catch (error) {

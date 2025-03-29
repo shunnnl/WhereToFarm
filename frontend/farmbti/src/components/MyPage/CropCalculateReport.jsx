@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import CalculateResultCard from "./CalculateResultCard";
 import PaginationComponent from "../common/Pagination";
-import { getCalculateReports } from "../../API/mypage/MyReportsAPI";
+import DeleteConfirmModal from "../common/DeleteConfirmModal";
+import {
+  deleteCropsReports,
+  getCalculateReports,
+} from "../../API/mypage/MyReportsAPI";
 import { toast } from "react-toastify";
 import { Link } from "react-router";
 
@@ -24,7 +28,7 @@ const CropCalculateReport = () => {
 
   // 페이지네이션 상태
   const [activePage, setActivePage] = useState(1);
-  const itemsPerPage = 4; // 2x2 그리드에 맞는 4개 항목
+  const itemsPerPage = 4;
 
   // 페이지 변경 핸들러
   const handlePageChange = (pageNumber) => {
@@ -42,16 +46,47 @@ const CropCalculateReport = () => {
   // 삭제 모드 토글 상태
   const [deleteMode, setDeleteMode] = useState(false);
 
+  // 모달 상태
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [reportToDelete, setReportToDelete] = useState(null);
+
   // 삭제 모드 토글 핸들러
   const toggleDeleteMode = () => {
     setDeleteMode(!deleteMode);
   };
 
+  // 리포트 삭제 준비 핸들러
+  const prepareDeleteReport = (report) => {
+    setReportToDelete(report);
+    setIsModalOpen(true);
+  };
+
+  // 모달 닫기 핸들러
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setReportToDelete(null);
+  };
+
   // 리포트 삭제 핸들러
-  const handleDeleteReport = (reportId) => {
-    setMyFarmbtiReports((prevReports) =>
-      prevReports.filter((report) => report.id !== reportId)
-    );
+  const confirmDeleteReport = async () => {
+    if (!reportToDelete) return;
+
+    try {
+      const response = await deleteCropsReports(reportToDelete.reportId);
+
+      if (response.success) {
+        setMyCalculateResult((prevReports) =>
+          prevReports.filter(
+            (report) => report.reportId !== reportToDelete.reportId
+          )
+        );
+        toast.success("리포트가 삭제되었습니다.");
+        closeModal();
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(error.message || "리포트 삭제에 실패했습니다.");
+    }
   };
 
   return (
@@ -83,7 +118,7 @@ const CropCalculateReport = () => {
                 date={report.createdAt}
                 totalProfit={report.myTotalPrice}
                 deleteMode={deleteMode}
-                onDelete={handleDeleteReport}
+                onDelete={() => prepareDeleteReport(report)}
               />
             ))}
           </div>
@@ -116,6 +151,16 @@ const CropCalculateReport = () => {
           />
         </div>
       )}
+
+      {/* 삭제 확인 모달 */}
+      <DeleteConfirmModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        onConfirm={confirmDeleteReport}
+        title="리포트 삭제"
+        message="삭제하시겠습니까?"
+        itemName={reportToDelete?.cropsName}
+      />
     </div>
   );
 };

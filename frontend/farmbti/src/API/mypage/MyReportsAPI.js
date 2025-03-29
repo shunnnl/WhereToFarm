@@ -28,3 +28,17 @@ export const cropsReportsDeatil = async (reportId) => {
     throw error;
   }
 };
+
+export const deleteCropsReports = async (reportId) => {
+  try {
+    const response = await authAxios.delete(`/crops/delete/${reportId}`);
+    if (!response.success) {
+      console.log(response);
+      throw response.error;
+    }
+    return response;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
