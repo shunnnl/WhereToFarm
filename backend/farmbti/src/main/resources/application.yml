@@ -10,7 +10,7 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: create # create
+      ddl-auto: create
     show-sql: true
     open-in-view: false
   data:
