@@ -27,6 +27,7 @@ import GuideBookPage from "./pages/etc/guidebook/GuideBookPage";
 import NewsPage from "./pages/news/NewsPage";
 import SurveyIntroPage from "./pages/recommendation/survey/SurveyIntroPage";
 import SurveyPage from "./pages/recommendation/survey/SurveyPage";
+import EstateDetailPage from "./pages/etc/estate/EstateDetailPage";
 
 
 const isAuthenticated = () => {
@@ -90,6 +91,7 @@ function App() {
             <Route path="/guidebook" element={<GuideBookPage />} />
             <Route path="/news" element={<NewsPage />} />
             <Route path="/estate" element={<Estate />} />
+            <Route path="/estate/:estateId" element={<EstateDetailPage />} />
             <Route
               path="/account/delete"
               element={

@@ -79,39 +79,39 @@ const Estate = () => {
     setLoading(true);
     setError(null);
 
-    try {
-      // JSON Server에서 페이지네이션 데이터 가져오기
-      // _page: 현재 페이지, _limit: 페이지당 아이템 수
-      const response = await publicAxios.get("/properties", {
-        params: {
-          _page: page,
-          _limit: itemsPerPage,
-          ...(selectedRegion && { region_like: selectedRegion }),
-          ...(searchQuery && { q: searchQuery }),
-        },
-      });
+    // try {
+    //   // JSON Server에서 페이지네이션 데이터 가져오기
+    //   // _page: 현재 페이지, _limit: 페이지당 아이템 수
+    //   const response = await publicAxios.get("/properties", {
+    //     params: {
+    //       _page: page,
+    //       _limit: itemsPerPage,
+    //       ...(selectedRegion && { region_like: selectedRegion }),
+    //       ...(searchQuery && { q: searchQuery }),
+    //     },
+    //   });
 
-      // JSON Server는 X-Total-Count 헤더에 총 아이템 수를 반환
-      const totalCount = parseInt(response.headers["x-total-count"] || "0");
-      setTotalItemsCount(totalCount);
+    //   // JSON Server는 X-Total-Count 헤더에 총 아이템 수를 반환
+    //   const totalCount = parseInt(response.headers["x-total-count"] || "0");
+    //   setTotalItemsCount(totalCount);
 
-      setProperties(response.data);
-      setFilteredProperties(response.data);
-    } catch (err) {
-      console.error("매물 데이터를 불러오는 중 오류가 발생했습니다:", err);
-      setError("매물 데이터를 불러오는 중 오류가 발생했습니다.");
+    //   setProperties(response.data);
+    //   setFilteredProperties(response.data);
+    // } catch (err) {
+    //   console.error("매물 데이터를 불러오는 중 오류가 발생했습니다:", err);
+    //   setError("매물 데이터를 불러오는 중 오류가 발생했습니다.");
 
-      // 더미 데이터로 대체 (실제 구현에서는 제거)
-      setTimeout(() => {
-        setFilteredProperties(properties);
-        setTotalItemsCount(properties.length);
-        setLoading(false);
-      }, 500);
-    } finally {
-      if (!error) {
-        setLoading(false);
-      }
-    }
+    // 더미 데이터로 대체 (실제 구현에서는 제거)
+    setTimeout(() => {
+      setFilteredProperties(properties);
+      setTotalItemsCount(properties.length);
+      setLoading(false);
+    }, 500);
+    // } finally {
+    //   if (!error) {
+    //     setLoading(false);
+    //   }
+    // }
   };
 
   // 페이지 변경 핸들러
