@@ -19,4 +19,5 @@ public class LoginResponse {
     private String profileImage;
     private Token token;
     private LocalDateTime createdAt;
+    private Byte isOut; // 탈퇴여부
 }
