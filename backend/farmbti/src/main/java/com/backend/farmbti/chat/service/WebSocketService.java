@@ -23,8 +23,8 @@ public class WebSocketService {
     private final ChatRepository chatRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final UsersRepository usersRepository;
-
-    public MessageResponse saveAndGetMessage(Long roomId, String message) {
+    
+    public MessageResponse saveAndGetMessage(Long roomId, String message, Long senderId) {
 
         Chat chat = chatRepository.findById(roomId)
                 .orElseThrow(() -> new GlobalException(ChatErrorCode.CHAT_ROOM_NOT_EXISTS));
@@ -41,6 +41,7 @@ public class WebSocketService {
                 .messageId(chatMessage.getMessageId())
                 .content(chatMessage.getContent())
                 .sentAt(chatMessage.getSendAt())
+                .senderId(senderId)
                 .build();
     }
 
