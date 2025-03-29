@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PageHeader from "../../../components/common/PageHeader";
 import { publicAxios } from "../../../API/common/TestJsonServer";
+import LoadingSpinner from '../../../components/common/LoadingSpinner';
 
 const Estate = () => {
   const [selectedRegion, setSelectedRegion] = useState('');
@@ -26,17 +27,20 @@ const Estate = () => {
     setLoading(true);
     setError(null);
     
-    try {
-      // JSON Server에서 데이터 가져오기
-      const response = await publicAxios.get('/properties');
-      setProperties(response);
-      setFilteredProperties(response);
-    } catch (err) {
-      console.error('매물 데이터를 불러오는 중 오류가 발생했습니다:', err);
-      setError('매물 데이터를 불러오는 중 오류가 발생했습니다.');
-    } finally {
+    // try {
+    //   // JSON Server에서 데이터 가져오기
+    //   const response = await publicAxios.get('/properties');
+    //   setProperties(response);
+    //   setFilteredProperties(response);
+    // } catch (err) {
+    //   console.error('매물 데이터를 불러오는 중 오류가 발생했습니다:', err);
+    //   setError('매물 데이터를 불러오는 중 오류가 발생했습니다.');
+    // } finally {
+    //   setLoading(false);
+    // }
+    setTimeout(() => {
       setLoading(false);
-    }
+    }, 500);
   };
   
   // 필터링 함수
@@ -154,7 +158,7 @@ const Estate = () => {
         title="매물 보기"
         description="귀농 주거지 매물을 찾아보세요."
       />
-      
+
       <div className="flex justify-end items-center space-x-2 p-4 mb-6">
         {/* 지역 선택 드롭다운 */}
         <select
@@ -169,7 +173,7 @@ const Estate = () => {
             </option>
           ))}
         </select>
-        
+
         {/* 검색창 */}
         <input
           type="text"
@@ -178,7 +182,7 @@ const Estate = () => {
           value={searchQuery}
           onChange={handleSearchChange}
         />
-        
+
         {/* 검색하기 버튼 */}
         <button
           className="h-10 px-4 py-2 bg-green-800 text-white rounded-md hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-green-800"
@@ -187,22 +191,15 @@ const Estate = () => {
           검색하기
         </button>
       </div>
-      
+
       {/* 로딩 상태 */}
-      {loading && (
-        <div className="text-center py-12">
-          <p className="text-gray-500">매물 데이터를 불러오는 중입니다...</p>
-          <div className="mt-4 flex justify-center">
-            <div className="w-12 h-12 border-4 border-green-800 border-t-transparent rounded-full animate-spin"></div>
-          </div>
-        </div>
-      )}
-      
+      {loading && <LoadingSpinner text="매물 정보 불러오는 중..."/>}
+
       {/* 에러 메시지 */}
       {error && !loading && (
         <div className="text-center py-12">
           <p className="text-red-500">{error}</p>
-          <button 
+          <button
             className="mt-4 px-4 py-2 bg-green-800 text-white rounded-md hover:bg-green-500"
             onClick={fetchProperties}
           >
@@ -210,14 +207,16 @@ const Estate = () => {
           </button>
         </div>
       )}
-      
+
       {/* 검색 결과 수 표시 */}
       {!loading && !error && (
         <div className="mb-4">
-          <p className="text-gray-600">총 {filteredProperties.length}개의 매물이 있습니다.</p>
+          <p className="text-gray-600">
+            총 {filteredProperties.length}개의 매물이 있습니다.
+          </p>
         </div>
       )}
-      
+
       {/* 매물 카드 목록 */}
       {!loading && !error && (
         <div className="space-y-6">

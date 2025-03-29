@@ -20,7 +20,7 @@ import Chat from "./pages/chat/Chat";
 import MyPage from "./pages/mypage/MyPage";
 import FarmbtiReport from "./components/MyPage/FarmbtiReport";
 import CropCalculateReport from "./components/MyPage/CropCalculateReport";
-import Estate from "./pages/etc/estate/Estate";
+import Estate from "./pages/etc/estate/EstatePage";
 import UserDeletePage from "./pages/auth/UserDeletePage";
 import AuthRequiredPage from "./pages/etc/AuthRequiredPage";
 import GuideBookPage from "./pages/etc/guidebook/GuideBookPage";
