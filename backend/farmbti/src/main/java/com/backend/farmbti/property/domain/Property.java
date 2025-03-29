@@ -10,8 +10,7 @@ import lombok.*;
 @Entity
 @Table(name = "property")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Property extends TimeStampEntity {
-
+public class Property{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "property_id")
