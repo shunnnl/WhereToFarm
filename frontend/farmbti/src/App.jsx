@@ -20,7 +20,7 @@ import Chat from "./pages/chat/Chat";
 import MyPage from "./pages/mypage/MyPage";
 import FarmbtiReport from "./components/MyPage/FarmbtiReport";
 import CropCalculateReport from "./components/MyPage/CropCalculateReport";
-import Estate from "./pages/estate/Estate";
+import Estate from "./pages/etc/estate/Estate";
 import UserDeletePage from "./pages/auth/UserDeletePage";
 import AuthRequiredPage from "./pages/etc/AuthRequiredPage";
 import GuideBookPage from "./pages/etc/guidebook/GuideBookPage";
@@ -49,7 +49,6 @@ function App() {
   useEffect(() => {
     // 앱 로드 시 바로 체크
     store.dispatch(checkTokenExpiration());
-    
     // 주기적으로 토큰 만료 체크 (5분마다)
     const intervalId = setInterval(() => {
       store.dispatch(checkTokenExpiration());

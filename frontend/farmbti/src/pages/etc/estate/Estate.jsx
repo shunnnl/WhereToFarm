@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import PageHeader from "../../components/common/PageHeader";
-import { publicAxios } from "../../API/common/TestJsonServer";
+import PageHeader from "../../../components/common/PageHeader";
+import { publicAxios } from "../../../API/common/TestJsonServer";
 
 const Estate = () => {
   const [selectedRegion, setSelectedRegion] = useState('');
