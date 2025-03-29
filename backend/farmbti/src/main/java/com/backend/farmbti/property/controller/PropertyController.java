@@ -2,6 +2,7 @@ package com.backend.farmbti.property.controller;
 
 import com.backend.farmbti.common.dto.CommonResponseDto;
 import com.backend.farmbti.property.dto.PropertyListResponse;
+import com.backend.farmbti.property.dto.PropertySearchRequest;
 import com.backend.farmbti.property.service.PropertyService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -11,11 +12,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-
 @RestController
-@RequestMapping("/properties")
+@RequestMapping("/property")
 @RequiredArgsConstructor
-@Tag(name = "부동산 매물 컨트롤러", description = "부동산 매물 조회, 검색, 상세 정보 제공 API")
+@Tag(name = "부동산 매물 컨트롤러", description = "부동산 매물 조회, 검색, 상세 정보 제공하는 컨트롤러")
 @Slf4j
 public class PropertyController {
 
@@ -29,5 +29,10 @@ public class PropertyController {
         return CommonResponseDto.ok(properties);
     }
 
-
+    @Operation(summary = "매물 검색", description = "지역(도, 시군)을 기준으로 매물을 검색합니다.")
+    @PostMapping("/search")
+    public CommonResponseDto<List<PropertyListResponse>> searchProperties(@RequestBody PropertySearchRequest request) {
+        List<PropertyListResponse> searchResults = propertyService.searchProperties(request);
+        return CommonResponseDto.ok(searchResults);
+    }
 }
