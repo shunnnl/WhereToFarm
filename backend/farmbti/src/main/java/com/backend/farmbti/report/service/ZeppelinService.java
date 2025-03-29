@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class ZeppelinService {
 
@@ -120,7 +123,9 @@ public class ZeppelinService {
         try {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode root = mapper.readTree(rawZeppelinResult);
+            log.debug("🩵Parsed JSON root: " + root.toString());
             String data = root.path("body").path("results").path("msg").get(0).path("data").asText();
+            log.debug("🩵Body node: " + data.toString());
 
             if (data == null || data.isEmpty()) {
                 throw new GlobalException(ZeppelinErrorCode.EMPTY_RESULT);
@@ -137,7 +142,7 @@ public class ZeppelinService {
                 }
             }
 
-            System.out.println("Raw Zeppelin result: " + rawZeppelinResult);
+            log.debug("🩵Raw Zeppelin result: " + rawZeppelinResult);
 
             if (regionList.isEmpty()) {
                 throw new GlobalException(ZeppelinErrorCode.EMPTY_RESULT);
