@@ -86,6 +86,7 @@ public class AuthService {
                 .profileImage(users.getProfileImage())
                 .token(token)
                 .createdAt(users.getCreatedAt())
+                .isOut(users.getIsOut()) // 탈퇴여부
                 .build();
     }
 
