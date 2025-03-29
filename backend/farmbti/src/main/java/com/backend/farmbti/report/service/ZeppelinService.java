@@ -123,9 +123,9 @@ public class ZeppelinService {
         try {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode root = mapper.readTree(rawZeppelinResult);
-            log.debug("🩵Parsed JSON root: " + root.toString());
+            log.debug("\n🩵Parsed JSON root: " + root.toString());
             String data = root.path("body").path("results").path("msg").get(0).path("data").asText();
-            log.debug("🩵Body node: " + data.toString());
+            log.debug("\n🩵Body node: " + data.toString());
 
             if (data == null || data.isEmpty()) {
                 throw new GlobalException(ZeppelinErrorCode.EMPTY_RESULT);
@@ -142,7 +142,7 @@ public class ZeppelinService {
                 }
             }
 
-            log.debug("🩵Raw Zeppelin result: " + rawZeppelinResult);
+            log.debug("\n🩵Raw Zeppelin result: " + rawZeppelinResult);
 
             if (regionList.isEmpty()) {
                 throw new GlobalException(ZeppelinErrorCode.EMPTY_RESULT);
@@ -151,7 +151,7 @@ public class ZeppelinService {
             return regionList;
 
         } catch (Exception e) {
-            log.error("🩵Error parsing Zeppelin result: ", e);
+            log.error("\n🩵Error parsing Zeppelin result: ", e);
             throw new GlobalException(ZeppelinErrorCode.RESULT_PARSE_FAILED);
         }
     }
