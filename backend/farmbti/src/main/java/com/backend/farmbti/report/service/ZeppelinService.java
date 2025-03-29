@@ -151,6 +151,7 @@ public class ZeppelinService {
             return regionList;
 
         } catch (Exception e) {
+            log.error("🩵Error parsing Zeppelin result: ", e);
             throw new GlobalException(ZeppelinErrorCode.RESULT_PARSE_FAILED);
         }
     }
