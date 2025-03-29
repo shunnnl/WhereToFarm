@@ -137,6 +137,8 @@ public class ZeppelinService {
                 }
             }
 
+            System.out.println("Raw Zeppelin result: " + rawZeppelinResult);
+
             if (regionList.isEmpty()) {
                 throw new GlobalException(ZeppelinErrorCode.EMPTY_RESULT);
             }
