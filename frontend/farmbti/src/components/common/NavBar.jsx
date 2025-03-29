@@ -210,178 +210,191 @@ const Navbar = () => {
     };
     
     return (
-        <nav className="bg-white border-gray-200 dark:bg-gray-900 relative z-[100]">
-            <div className="max-w-screen-2xl flex items-center justify-between mx-auto px-24 py-4">
-                <div className="flex items-center ml-0">
-                    <Link to="/">
-                        <img
-                            src={logo}
-                            alt="어디가농 로고"
-                            className="h-14 self-center cursor-pointer"
-                        />
-                    </Link>
+      <nav className="bg-white border-gray-200 dark:bg-gray-900 relative z-[100]">
+        <div className="max-w-screen-2xl flex items-center justify-between mx-auto px-24 py-4">
+          <div className="flex items-center ml-0">
+            <Link to="/">
+              <img
+                src={logo}
+                alt="어디가농 로고"
+                className="h-14 self-center cursor-pointer"
+              />
+            </Link>
+          </div>
+
+          <div className="w-auto flex-grow flex justify-center">
+            <ul className="font-medium flex flex-row space-x-8 rtl:space-x-reverse text-base">
+              <li>
+                <Link to="/surveyintro" className={menuItemClass}>
+                  지역 추천 받기
+                </Link>
+              </li>
+              <li>
+                <Link to="/crop-calculator" className={menuItemClass}>
+                  작물 수확 계산기
+                </Link>
+              </li>
+              <li>
+                <Link to="/estimate" className={menuItemClass}>
+                  귀농 매물 보기
+                </Link>
+              </li>
+              <li>
+                <Link to="/mentors" className={menuItemClass}>
+                  귀농 멘토 찾기
+                </Link>
+              </li>
+              <li>
+                <Link to="/news" className={menuItemClass}>
+                  귀농 뉴스
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          <div className="flex items-center">
+            <div className="relative" ref={dropdownRef}>
+              <button
+                className="p-2 hover:bg-gray-100 rounded-full"
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                onMouseEnter={() => setIsDropdownOpen(true)}
+              >
+                <img src={userIcon} alt="사용자" className="h-6 w-6" />
+              </button>
+
+              {/* 드롭다운 메뉴 */}
+              {isLoggedIn && isDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-[100] border border-gray-200">
+                  <Link
+                    to="/mypage"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => setIsDropdownOpen(false)}
+                  >
+                    마이페이지
+                  </Link>
+                  <a
+                    href="#"
+                    className="block px-4 py-2 text-sm text-red-500 hover:bg-gray-100"
+                    onClick={handleLogout}
+                  >
+                    로그아웃
+                  </a>
                 </div>
-                
-                <div className="w-auto flex-grow flex justify-center">
-                    <ul className="font-medium flex flex-row space-x-8 rtl:space-x-reverse text-base">
-                        <li>
-                            <Link to="/surveyintro" className={menuItemClass}>
-                                지역 추천 받기
-                            </Link>
-                        </li>
-                        <li>
-                            <Link to="/crop-calculator" className={menuItemClass}>
-                                작물 수확 계산기
-                            </Link>
-                        </li>
-                        <li><a href="#" className={menuItemClass}>귀농 매물 보기</a></li>
-                        <li><a href="#" className={menuItemClass}>멘토 찾기</a></li>
-                        <li><a href="#" className={menuItemClass}>귀농 뉴스</a></li>
-                    </ul>
+              )}
+
+              {/* 비로그인 상태일 때는 로그인 페이지로 이동 */}
+              {!isLoggedIn && isDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-[100] border border-gray-200">
+                  <Link
+                    to="/login"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => setIsDropdownOpen(false)}
+                  >
+                    로그인
+                  </Link>
+                  <Link
+                    to="/signup"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => setIsDropdownOpen(false)}
+                  >
+                    회원가입
+                  </Link>
                 </div>
-                
-                <div className="flex items-center">
-                    <div className="relative" ref={dropdownRef}>
-                        <button
-                            className="p-2 hover:bg-gray-100 rounded-full"
-                            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                            onMouseEnter={() => setIsDropdownOpen(true)}
-                        >
-                            <img
-                                src={userIcon}
-                                alt="사용자"
-                                className="h-6 w-6"
-                            />
-                        </button>
-                        
-                        {/* 드롭다운 메뉴 */}
-                        {isLoggedIn && isDropdownOpen && (
-                            <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-[100] border border-gray-200">
-                                <Link 
-                                    to="/mypage" 
-                                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                    onClick={() => setIsDropdownOpen(false)}
-                                >
-                                    마이페이지
-                                </Link>
-                                <a 
-                                    href="#" 
-                                    className="block px-4 py-2 text-sm text-red-500 hover:bg-gray-100"
-                                    onClick={handleLogout}
-                                >
-                                    로그아웃
-                                </a>
-                            </div>
-                        )}
-                        
-                        {/* 비로그인 상태일 때는 로그인 페이지로 이동 */}
-                        {!isLoggedIn && isDropdownOpen && (
-                            <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-[100] border border-gray-200">
-                                <Link 
-                                    to="/login" 
-                                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                    onClick={() => setIsDropdownOpen(false)}
-                                >
-                                    로그인
-                                </Link>
-                                <Link 
-                                    to="/signup" 
-                                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                    onClick={() => setIsDropdownOpen(false)}
-                                >
-                                    회원가입
-                                </Link>
-                            </div>
-                        )}
-                    </div>
-                    
-                    {/* 알림 버튼 및 드롭다운 */}
-                    <div className="relative" ref={notificationRef}>
-                        <button 
-                            className="p-2 hover:bg-gray-100 rounded-full relative"
-                            onClick={() => {
-                                setIsNotificationOpen(!isNotificationOpen);
-                                if (!isNotificationOpen && unreadCount > 0) {
-                                    markAllAsRead();
-                                }
-                            }}
-                        >
-                            <img
-                                src={bellIcon}
-                                alt="알림"
-                                className="h-6 w-6"
-                            />
-                            {/* 읽지 않은 알림 표시 */}
-                            {unreadCount > 0 && (
-                                <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/3 -translate-y-1/3 bg-red-500 rounded-full">
-                                    {unreadCount > 9 ? '9+' : unreadCount}
-                                </span>
-                            )}
-                        </button>
-                        
-                        {/* 알림 드롭다운 */}
-                        {isNotificationOpen && (
-                            <div className="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg py-1 z-[100] border border-gray-200 max-h-96 overflow-y-auto">
-                                <div className="flex items-center justify-between px-4 py-2 border-b">
-                                    <h3 className="text-sm font-medium">알림</h3>
-                                    {notifications.length > 0 && (
-                                        <button 
-                                            className="text-xs text-blue-500 hover:text-blue-700"
-                                            onClick={markAllAsRead}
-                                        >
-                                            모두 읽음 표시
-                                        </button>
-                                    )}
-                                </div>
-                                
-                                {notifications.length === 0 ? (
-                                    <div className="px-4 py-6 text-center text-gray-500">
-                                        알림이 없습니다.
-                                    </div>
-                                ) : (
-                                    notifications.map((notification) => (
-                                        <div 
-                                            key={notification.id} 
-                                            className={`px-4 py-3 border-b hover:bg-gray-50 cursor-pointer ${!notification.read ? 'bg-blue-50' : ''}`}
-                                            onClick={() => {
-                                                // 읽음 처리
-                                                if (!notification.read) {
-                                                    markAsRead(notification.id);
-                                                }
-                                                // 알림 관련 페이지로 이동 (있을 경우)
-                                                if (notification.link) {
-                                                    navigate(notification.link);
-                                                    setIsNotificationOpen(false);
-                                                }
-                                            }}
-                                        >
-                                            <div className="flex">
-                                                <div className="ml-3 w-full">
-                                                    <p className="text-sm font-medium text-gray-900">{notification.title}</p>
-                                                    <p className="text-xs text-gray-500 mt-1">{notification.message}</p>
-                                                    <p className="text-xs text-gray-400 mt-1">
-                                                        {new Date(notification.createdAt).toLocaleString('ko-KR', { 
-                                                            year: 'numeric', 
-                                                            month: 'numeric', 
-                                                            day: 'numeric',
-                                                            hour: '2-digit',
-                                                            minute: '2-digit'
-                                                        })}
-                                                    </p>
-                                                </div>
-                                                {!notification.read && (
-                                                    <span className="h-2 w-2 bg-blue-500 rounded-full"></span>
-                                                )}
-                                            </div>
-                                        </div>
-                                    ))
-                                )}
-                            </div>
-                        )}
-                    </div>
-                </div>
+              )}
             </div>
-        </nav>
+
+            {/* 알림 버튼 및 드롭다운 */}
+            <div className="relative" ref={notificationRef}>
+              <button
+                className="p-2 hover:bg-gray-100 rounded-full relative"
+                onClick={() => {
+                  setIsNotificationOpen(!isNotificationOpen);
+                  if (!isNotificationOpen && unreadCount > 0) {
+                    markAllAsRead();
+                  }
+                }}
+              >
+                <img src={bellIcon} alt="알림" className="h-6 w-6" />
+                {/* 읽지 않은 알림 표시 */}
+                {unreadCount > 0 && (
+                  <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/3 -translate-y-1/3 bg-red-500 rounded-full">
+                    {unreadCount > 9 ? "9+" : unreadCount}
+                  </span>
+                )}
+              </button>
+
+              {/* 알림 드롭다운 */}
+              {isNotificationOpen && (
+                <div className="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg py-1 z-[100] border border-gray-200 max-h-96 overflow-y-auto">
+                  <div className="flex items-center justify-between px-4 py-2 border-b">
+                    <h3 className="text-sm font-medium">알림</h3>
+                    {notifications.length > 0 && (
+                      <button
+                        className="text-xs text-blue-500 hover:text-blue-700"
+                        onClick={markAllAsRead}
+                      >
+                        모두 읽음 표시
+                      </button>
+                    )}
+                  </div>
+
+                  {notifications.length === 0 ? (
+                    <div className="px-4 py-6 text-center text-gray-500">
+                      알림이 없습니다.
+                    </div>
+                  ) : (
+                    notifications.map((notification) => (
+                      <div
+                        key={notification.id}
+                        className={`px-4 py-3 border-b hover:bg-gray-50 cursor-pointer ${
+                          !notification.read ? "bg-blue-50" : ""
+                        }`}
+                        onClick={() => {
+                          // 읽음 처리
+                          if (!notification.read) {
+                            markAsRead(notification.id);
+                          }
+                          // 알림 관련 페이지로 이동 (있을 경우)
+                          if (notification.link) {
+                            navigate(notification.link);
+                            setIsNotificationOpen(false);
+                          }
+                        }}
+                      >
+                        <div className="flex">
+                          <div className="ml-3 w-full">
+                            <p className="text-sm font-medium text-gray-900">
+                              {notification.title}
+                            </p>
+                            <p className="text-xs text-gray-500 mt-1">
+                              {notification.message}
+                            </p>
+                            <p className="text-xs text-gray-400 mt-1">
+                              {new Date(notification.createdAt).toLocaleString(
+                                "ko-KR",
+                                {
+                                  year: "numeric",
+                                  month: "numeric",
+                                  day: "numeric",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                }
+                              )}
+                            </p>
+                          </div>
+                          {!notification.read && (
+                            <span className="h-2 w-2 bg-blue-500 rounded-full"></span>
+                          )}
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </nav>
     );
 };
 
