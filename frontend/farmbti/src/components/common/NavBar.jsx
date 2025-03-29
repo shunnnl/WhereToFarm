@@ -235,7 +235,7 @@ const Navbar = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/estimate" className={menuItemClass}>
+                <Link to="/estate" className={menuItemClass}>
                   귀농 매물 보기
                 </Link>
               </li>
