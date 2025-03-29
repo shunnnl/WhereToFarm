@@ -4,6 +4,8 @@ import { toast } from 'react-toastify'; // 추가: toast 알림 import
 import logo from "../../asset/navbar/main_logo.svg";
 import userIcon from "../../asset/navbar/user_icon.svg";
 import bellIcon from "../../asset/navbar/bell_icon.svg";
+import SockJS from 'sockjs-client';
+import { Client } from '@stomp/stompjs';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../../store/slices/authSlice'; // 로그아웃 액션 import 경로 수정
@@ -13,18 +15,47 @@ const Navbar = () => {
     
     // Redux 스토어에서 로그인 상태 가져오기
     const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
-    const dispatch = useDispatch(); // dispatch 추가
-    const navigate = useNavigate(); // 페이지 이동을 위한 훅 추가
+    
+    // 로컬 스토리지에서 사용자 정보 가져오기
+    const [user, setUser] = useState(null);
+    
+    useEffect(() => {
+        if (isLoggedIn) {
+            const userDataStr = localStorage.getItem('user');
+            if (userDataStr) {
+                try {
+                    const userData = JSON.parse(userDataStr);
+                    setUser(userData);
+                } catch (error) {
+                    console.error('Failed to parse user data:', error);
+                }
+            }
+        } else {
+            setUser(null);
+        }
+    }, [isLoggedIn]);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
     
     // 드롭다운 메뉴 상태 관리
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
+    
+    // 알림 관련 상태 추가
+    const [notifications, setNotifications] = useState([]);
+    const [unreadCount, setUnreadCount] = useState(0);
+    const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+    const notificationRef = useRef(null);
+    const stompClient = useRef(null);
     
     // 드롭다운 외부 클릭 시 닫기
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
                 setIsDropdownOpen(false);
+            }
+            if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+                setIsNotificationOpen(false);
             }
         };
         
@@ -34,14 +65,138 @@ const Navbar = () => {
         };
     }, []);
 
-    // 로그아웃 핸들러 추가
+    // WebSocket 연결 설정
+    useEffect(() => {
+        if (isLoggedIn && user && user.email) {
+            // WebSocket 연결
+            stompClient.current = new Client({
+                webSocketFactory: () => new SockJS('http://j12d209.p.ssafy.io/gs-guide-websocket'),
+                debug: (str) => {
+                    console.log(str);
+                },
+                reconnectDelay: 5000,
+                heartbeatIncoming: 4000,
+                heartbeatOutgoing: 4000,
+            });
+
+            stompClient.current.onConnect = () => {
+                // 사용자별 알림 구독 (email을 사용자 식별자로 사용)
+                stompClient.current.subscribe(`/user/${user.email}/queue/notifications`, (message) => {
+                    const notification = JSON.parse(message.body);
+                    // 새 알림 추가 및 읽지 않은 알림 카운트 증가
+                    setNotifications(prev => [notification, ...prev]);
+                    setUnreadCount(prev => prev + 1);
+                    
+                    // 토스트 알림 표시 (선택 사항)
+                    toast.info(notification.message, {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true
+                    });
+                });
+            };
+
+            stompClient.current.onStompError = (frame) => {
+                console.error('STOMP 에러:', frame);
+            };
+
+            stompClient.current.activate();
+
+            // 컴포넌트 언마운트 시 WebSocket 연결 해제
+            return () => {
+                if (stompClient.current && stompClient.current.connected) {
+                    stompClient.current.deactivate();
+                }
+            };
+        }
+    }, [isLoggedIn, user]);
+
+    // 초기 알림 데이터 로드
+    useEffect(() => {
+        if (isLoggedIn) {
+            // API에서 이전 알림 데이터 불러오기
+            const fetchNotifications = async () => {
+                try {
+                    const response = await fetch('/api/notifications', {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('accessToken')}` // 토큰 이름이 'accessToken'인 경우
+                        }
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        setNotifications(data.notifications);
+                        setUnreadCount(data.unreadCount);
+                    }
+                } catch (error) {
+                    console.error('알림 데이터 로드 실패:', error);
+                }
+            };
+            
+            fetchNotifications();
+        }
+    }, [isLoggedIn]);
+
+    // 알림 읽음 처리 함수
+    const markAsRead = async (notificationId) => {
+        try {
+            const response = await fetch(`/api/notifications/${notificationId}/read`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                }
+            });
+            
+            if (response.ok) {
+                // 알림 상태 업데이트
+                setNotifications(prev => 
+                    prev.map(notif => 
+                        notif.id === notificationId ? { ...notif, read: true } : notif
+                    )
+                );
+                setUnreadCount(prev => Math.max(0, prev - 1));
+            }
+        } catch (error) {
+            console.error('알림 읽음 처리 실패:', error);
+        }
+    };
+
+    // 모든 알림 읽음 처리
+    const markAllAsRead = async () => {
+        try {
+            const response = await fetch('/api/notifications/read-all', {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                }
+            });
+            
+            if (response.ok) {
+                // 모든 알림을 읽음 상태로 변경
+                setNotifications(prev => 
+                    prev.map(notif => ({ ...notif, read: true }))
+                );
+                setUnreadCount(0);
+            }
+        } catch (error) {
+            console.error('모든 알림 읽음 처리 실패:', error);
+        }
+    };
+
+    // 로그아웃 핸들러
     const handleLogout = (e) => {
         e.preventDefault();
         
-        dispatch(logout()); // 로그아웃 액션 디스패치 (localStorage 정리 포함)
+        // WebSocket 연결 해제
+        if (stompClient.current && stompClient.current.connected) {
+            stompClient.current.deactivate();
+        }
+        
+        dispatch(logout());
         setIsDropdownOpen(false);
         
-        // 로그아웃 성공 토스트 메시지 표시
         toast.success('로그아웃 성공!', {
           position: "top-center",
           autoClose: 3000,
@@ -51,10 +206,9 @@ const Navbar = () => {
           draggable: true
         });
         
-        navigate('/'); // 홈페이지로 리다이렉트
+        navigate('/');
     };
     
-
     return (
         <nav className="bg-white border-gray-200 dark:bg-gray-900 relative z-[100]">
             <div className="max-w-screen-2xl flex items-center justify-between mx-auto px-24 py-4">
@@ -113,7 +267,7 @@ const Navbar = () => {
                                 <a 
                                     href="#" 
                                     className="block px-4 py-2 text-sm text-red-500 hover:bg-gray-100"
-                                    onClick={handleLogout} // 로그아웃 핸들러 연결
+                                    onClick={handleLogout}
                                 >
                                     로그아웃
                                 </a>
@@ -141,13 +295,90 @@ const Navbar = () => {
                         )}
                     </div>
                     
-                    <button className="p-2 hover:bg-gray-100 rounded-full">
-                        <img
-                            src={bellIcon}
-                            alt="알림"
-                            className="h-6 w-6"
-                        />
-                    </button>
+                    {/* 알림 버튼 및 드롭다운 */}
+                    <div className="relative" ref={notificationRef}>
+                        <button 
+                            className="p-2 hover:bg-gray-100 rounded-full relative"
+                            onClick={() => {
+                                setIsNotificationOpen(!isNotificationOpen);
+                                if (!isNotificationOpen && unreadCount > 0) {
+                                    markAllAsRead();
+                                }
+                            }}
+                        >
+                            <img
+                                src={bellIcon}
+                                alt="알림"
+                                className="h-6 w-6"
+                            />
+                            {/* 읽지 않은 알림 표시 */}
+                            {unreadCount > 0 && (
+                                <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/3 -translate-y-1/3 bg-red-500 rounded-full">
+                                    {unreadCount > 9 ? '9+' : unreadCount}
+                                </span>
+                            )}
+                        </button>
+                        
+                        {/* 알림 드롭다운 */}
+                        {isNotificationOpen && (
+                            <div className="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg py-1 z-[100] border border-gray-200 max-h-96 overflow-y-auto">
+                                <div className="flex items-center justify-between px-4 py-2 border-b">
+                                    <h3 className="text-sm font-medium">알림</h3>
+                                    {notifications.length > 0 && (
+                                        <button 
+                                            className="text-xs text-blue-500 hover:text-blue-700"
+                                            onClick={markAllAsRead}
+                                        >
+                                            모두 읽음 표시
+                                        </button>
+                                    )}
+                                </div>
+                                
+                                {notifications.length === 0 ? (
+                                    <div className="px-4 py-6 text-center text-gray-500">
+                                        알림이 없습니다.
+                                    </div>
+                                ) : (
+                                    notifications.map((notification) => (
+                                        <div 
+                                            key={notification.id} 
+                                            className={`px-4 py-3 border-b hover:bg-gray-50 cursor-pointer ${!notification.read ? 'bg-blue-50' : ''}`}
+                                            onClick={() => {
+                                                // 읽음 처리
+                                                if (!notification.read) {
+                                                    markAsRead(notification.id);
+                                                }
+                                                // 알림 관련 페이지로 이동 (있을 경우)
+                                                if (notification.link) {
+                                                    navigate(notification.link);
+                                                    setIsNotificationOpen(false);
+                                                }
+                                            }}
+                                        >
+                                            <div className="flex">
+                                                <div className="ml-3 w-full">
+                                                    <p className="text-sm font-medium text-gray-900">{notification.title}</p>
+                                                    <p className="text-xs text-gray-500 mt-1">{notification.message}</p>
+                                                    <p className="text-xs text-gray-400 mt-1">
+                                                        {new Date(notification.createdAt).toLocaleString('ko-KR', { 
+                                                            year: 'numeric', 
+                                                            month: 'numeric', 
+                                                            day: 'numeric',
+                                                            hour: '2-digit',
+                                                            minute: '2-digit'
+                                                        })}
+                                                    </p>
+                                                </div>
+                                                {!notification.read && (
+                                                    <span className="h-2 w-2 bg-blue-500 rounded-full"></span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
         </nav>

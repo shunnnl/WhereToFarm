@@ -20,10 +20,16 @@ const Chat = () => {
   useEffect(() => {
     const userInfo = localStorage.getItem('user');
     if (userInfo) {
-      setCurrentUser(JSON.parse(userInfo));
+      try {
+        const parsedUser = JSON.parse(userInfo);
+        console.log('현재 사용자 정보:', parsedUser);
+        setCurrentUser(parsedUser);
+      } catch (error) {
+        console.error('사용자 정보 파싱 오류:', error);
+      }
     }
   }, []);
-
+  
   // 채팅방 ID 변경시 해당 채팅방의 메시지 조회
   useEffect(() => {
     if (roomId) {
@@ -97,24 +103,35 @@ const connectWebSocket = () => {
   };
 
   // 메시지 수신 처리
-  const onMessageReceived = (payload) => {
-    const receivedMessage = JSON.parse(payload.body);
+// 1. // onMessageReceived 함수 수정
+// 메시지 수신 처리 함수 - senderId로 구분
+const onMessageReceived = (payload) => {
+  const receivedMessage = JSON.parse(payload.body);
+  console.log('수신된 메시지 전체:', receivedMessage);
   
-    // 내가 보낸 메시지는 이미 UI에 추가됐으므로 처리하지 않음
-    if (receivedMessage.senderId === currentUser?.id) {
-      return;
-    }
-    
-    // 상대방 메시지만 추가
-    const newMessage = {
-      id: `msg-${Date.now()}`,
-      text: receivedMessage.message || receivedMessage.content,
-      time: formatTime(new Date(receivedMessage.sendTime)),
-      isMe: false // 상대방 메시지는 항상 false
-    };
-    
-    setMessages(prev => [...prev, newMessage]);
-    };
+  // 로컬 스토리지에서 사용자 정보 가져오기
+  const userInfo = JSON.parse(localStorage.getItem('user'));
+  console.log('현재 사용자 ID:', userInfo.id);
+  console.log('메시지 송신자 ID:', receivedMessage.senderId);
+  
+  // 자신이 보낸 메시지인지 확인 (senderId와 현재 사용자 ID 비교)
+  if (receivedMessage.senderId === userInfo.id) {
+    console.log('자신이 보낸 메시지, 무시함');
+    return; // 이미 UI에 추가된 메시지이므로 무시
+  }
+  
+  // 상대방 메시지 추가
+  const newMessage = {
+    id: `server-${receivedMessage.messageId}`,
+    text: receivedMessage.content,
+    time: formatTime(new Date(receivedMessage.sentAt)),
+    isMe: false // 상대방 메시지
+  };
+  
+  setMessages(prev => [...prev, newMessage]);
+};
+
+
 
 
   // 채팅방 목록 가져오기
@@ -144,33 +161,37 @@ const connectWebSocket = () => {
     return `${hours}:${minutes}`;
   };
   
-  // 메시지 전송 처리
-  const handleSendMessage = () => {
-    if (message.trim() && connected && roomId) {
-      const now = new Date();
-      
-      // 웹소켓으로 메시지 전송
-      stompClient.current.publish({
-        destination: `/chat/${roomId}/send`,
-        body: JSON.stringify({ 
-          message: message.trim(),
-          senderName: currentUser.name
-        
-        })
-      });
-      
-      // UI에 메시지 추가 (웹소켓 응답에도 추가될 수 있지만 UI 반응성을 위해)
-      const newMessage = {
-        id: `msg-${messageIdCounter.current++}`, // 고유 ID 생성
-        text: message,
-        time: formatTime(now),
-        isMe: true
-      };
-      
-      setMessages([...messages, newMessage]);
-      setMessage('');
-    }
-  };
+// 2. 메시지 전송 처리 함수 수정
+const handleSendMessage = () => {
+  if (message.trim() && connected && roomId) {
+    const now = new Date();
+    
+    // 로컬 스토리지에서 사용자 정보 가져오기
+    const userInfo = JSON.parse(localStorage.getItem('user'));
+    
+    // 웹소켓으로 메시지 전송
+    stompClient.current.publish({
+      destination: `/chat/${roomId}/send`,
+      body: JSON.stringify({ 
+        message: message.trim(),
+        senderName: userInfo.name,
+        senderId: userInfo.id  // 사용자 ID 명시적으로 추가
+      })
+    });
+    
+    // UI에 메시지 추가
+    const newMessage = {
+      id: `client-${Date.now()}`,
+      text: message,
+      time: formatTime(now),
+      isMe: true // 내가 보낸 메시지
+    };
+    
+    setMessages(prevMessages => [...prevMessages, newMessage]);
+    setMessage('');
+  }
+};
+
 
   // 엔터키 처리
   const handleKeyPress = (e) => {
