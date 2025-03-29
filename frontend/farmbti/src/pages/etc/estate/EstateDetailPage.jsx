@@ -100,11 +100,6 @@ const EstateDetailPage = () => {
               </p>
             )}
           </div>
-          <div className="mt-4 md:mt-0">
-            <button className="px-4 py-2 border border-green-800 text-green-800 rounded hover:bg-green-50">
-              관심 매물 추가
-            </button>
-          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
