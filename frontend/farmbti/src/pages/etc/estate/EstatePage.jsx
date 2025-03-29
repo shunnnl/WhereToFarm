@@ -39,6 +39,96 @@ const Estate = () => {
       realtor: "공주부동산",
       price: 100,
     },
+    {
+      id: 1,
+      address: "경기도 양평군 서종면 수입리 123-45",
+      type: "단독주택",
+      deposit: 2000,
+      area: 120.5,
+      features: "마당 넓음, 텃밭 있음, 계곡 인접, 2층 구조",
+      realtor: "양평부동산",
+      price: 80,
+    },
+    {
+      id: 2,
+      address: "강원도 홍천군 서면 모곡리 67-89",
+      type: "전원주택",
+      deposit: 1500,
+      area: 95.2,
+      features: "통나무집, 황토방, 2대 주차, 전망 좋음",
+      realtor: "홍천공인중개사",
+      price: 65,
+    },
+    {
+      id: 3,
+      address: "충청남도 공주시 계룡면 234-56",
+      type: "한옥",
+      deposit: 3000,
+      area: 150.8,
+      features: "정원, 연못, 한옥 스타일, 대형 다락방",
+      realtor: "공주부동산",
+      price: 100,
+    },
+    {
+      id: 1,
+      address: "경기도 양평군 서종면 수입리 123-45",
+      type: "단독주택",
+      deposit: 2000,
+      area: 120.5,
+      features: "마당 넓음, 텃밭 있음, 계곡 인접, 2층 구조",
+      realtor: "양평부동산",
+      price: 80,
+    },
+    {
+      id: 2,
+      address: "강원도 홍천군 서면 모곡리 67-89",
+      type: "전원주택",
+      deposit: 1500,
+      area: 95.2,
+      features: "통나무집, 황토방, 2대 주차, 전망 좋음",
+      realtor: "홍천공인중개사",
+      price: 65,
+    },
+    {
+      id: 3,
+      address: "충청남도 공주시 계룡면 234-56",
+      type: "한옥",
+      deposit: 3000,
+      area: 150.8,
+      features: "정원, 연못, 한옥 스타일, 대형 다락방",
+      realtor: "공주부동산",
+      price: 100,
+    },
+    {
+      id: 1,
+      address: "경기도 양평군 서종면 수입리 123-45",
+      type: "단독주택",
+      deposit: 2000,
+      area: 120.5,
+      features: "마당 넓음, 텃밭 있음, 계곡 인접, 2층 구조",
+      realtor: "양평부동산",
+      price: 80,
+    },
+    {
+      id: 2,
+      address: "강원도 홍천군 서면 모곡리 67-89",
+      type: "전원주택",
+      deposit: 1500,
+      area: 95.2,
+      features: "통나무집, 황토방, 2대 주차, 전망 좋음",
+      realtor: "홍천공인중개사",
+      price: 65,
+    },
+    {
+      id: 3,
+      address: "충청남도 공주시 계룡면 234-56",
+      type: "한옥",
+      deposit: 3000,
+      area: 150.8,
+      features: "정원, 연못, 한옥 스타일, 대형 다락방",
+      realtor: "공주부동산",
+      price: 100,
+    },
   ]);
   const [filteredProperties, setFilteredProperties] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -79,39 +169,39 @@ const Estate = () => {
     setLoading(true);
     setError(null);
 
-    try {
-      // JSON Server에서 페이지네이션 데이터 가져오기
-      // _page: 현재 페이지, _limit: 페이지당 아이템 수
-      const response = await publicAxios.get("/properties", {
-        params: {
-          _page: page,
-          _limit: itemsPerPage,
-          ...(selectedRegion && { region_like: selectedRegion }),
-          ...(searchQuery && { q: searchQuery }),
-        },
-      });
+    // try {
+    //   // JSON Server에서 페이지네이션 데이터 가져오기
+    //   // _page: 현재 페이지, _limit: 페이지당 아이템 수
+    //   const response = await publicAxios.get("/properties", {
+    //     params: {
+    //       _page: page,
+    //       _limit: itemsPerPage,
+    //       ...(selectedRegion && { region_like: selectedRegion }),
+    //       ...(searchQuery && { q: searchQuery }),
+    //     },
+    //   });
 
-      // JSON Server는 X-Total-Count 헤더에 총 아이템 수를 반환
-      const totalCount = parseInt(response.headers["x-total-count"] || "0");
-      setTotalItemsCount(totalCount);
+    //   // JSON Server는 X-Total-Count 헤더에 총 아이템 수를 반환
+    //   const totalCount = parseInt(response.headers["x-total-count"] || "0");
+    //   setTotalItemsCount(totalCount);
 
-      setProperties(response.data);
-      setFilteredProperties(response.data);
-    } catch (err) {
-      console.error("매물 데이터를 불러오는 중 오류가 발생했습니다:", err);
-      setError("매물 데이터를 불러오는 중 오류가 발생했습니다.");
+    //   setProperties(response.data);
+    //   setFilteredProperties(response.data);
+    // } catch (err) {
+    //   console.error("매물 데이터를 불러오는 중 오류가 발생했습니다:", err);
+    //   setError("매물 데이터를 불러오는 중 오류가 발생했습니다.");
 
-      // 더미 데이터로 대체 (실제 구현에서는 제거)
-      setTimeout(() => {
-        setFilteredProperties(properties);
-        setTotalItemsCount(properties.length);
-        setLoading(false);
-      }, 500);
-    } finally {
-      if (!error) {
-        setLoading(false);
-      }
-    }
+    // 더미 데이터로 대체 (실제 구현에서는 제거)
+    setTimeout(() => {
+      setFilteredProperties(properties);
+      setTotalItemsCount(properties.length);
+      setLoading(false);
+    }, 500);
+    // } finally {
+    //   if (!error) {
+    //     setLoading(false);
+    //   }
+    // }
   };
 
   // 페이지 변경 핸들러
