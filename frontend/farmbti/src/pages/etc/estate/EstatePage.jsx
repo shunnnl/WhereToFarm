@@ -1,155 +1,141 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import PageHeader from "../../../components/common/PageHeader";
 import { publicAxios } from "../../../API/common/TestJsonServer";
-import LoadingSpinner from '../../../components/common/LoadingSpinner';
+import PropertyCard from "../../../components/etc/estate/PropertyCard";
+import LoadingSpinner from "../../../components/common/LoadingSpinner";
+import PaginationComponent from "../../../components/common/Pagination";
 
 const Estate = () => {
-  const [selectedRegion, setSelectedRegion] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [properties, setProperties] = useState([]);
+  const [selectedRegion, setSelectedRegion] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [properties, setProperties] = useState([
+    {
+      id: 1,
+      address: "경기도 양평군 서종면 수입리 123-45",
+      type: "단독주택",
+      deposit: 2000,
+      area: 120.5,
+      features: "마당 넓음, 텃밭 있음, 계곡 인접, 2층 구조",
+      realtor: "양평부동산",
+      price: 80,
+    },
+    {
+      id: 2,
+      address: "강원도 홍천군 서면 모곡리 67-89",
+      type: "전원주택",
+      deposit: 1500,
+      area: 95.2,
+      features: "통나무집, 황토방, 2대 주차, 전망 좋음",
+      realtor: "홍천공인중개사",
+      price: 65,
+    },
+    {
+      id: 3,
+      address: "충청남도 공주시 계룡면 234-56",
+      type: "한옥",
+      deposit: 3000,
+      area: 150.8,
+      features: "정원, 연못, 한옥 스타일, 대형 다락방",
+      realtor: "공주부동산",
+      price: 100,
+    },
+  ]);
   const [filteredProperties, setFilteredProperties] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  
+
+  // 페이지네이션 상태
+  const [activePage, setActivePage] = useState(1);
+  const [totalItemsCount, setTotalItemsCount] = useState(0);
+  const itemsPerPage = 8;
+
   // 지역 목록
   const regions = [
-    '서울', '부산', '인천', '대구', '대전', '광주', '울산', '세종',
-    '경기도', '강원도', '충청북도', '충청남도',
-    '전라북도', '전라남도', '경상북도', '경상남도', '제주도'
+    "서울",
+    "부산",
+    "인천",
+    "대구",
+    "대전",
+    "광주",
+    "울산",
+    "세종",
+    "경기도",
+    "강원도",
+    "충청북도",
+    "충청남도",
+    "전라북도",
+    "전라남도",
+    "경상북도",
+    "경상남도",
+    "제주도",
   ];
-  
-  // 매물 데이터 가져오기
+
+  // 매물 데이터 가져오기 - 페이지네이션 적용
   useEffect(() => {
-    fetchProperties();
-  }, []);
-  
-  const fetchProperties = async () => {
+    fetchProperties(activePage);
+  }, [activePage]);
+
+  const fetchProperties = async (page = 1) => {
     setLoading(true);
     setError(null);
-    
-    // try {
-    //   // JSON Server에서 데이터 가져오기
-    //   const response = await publicAxios.get('/properties');
-    //   setProperties(response);
-    //   setFilteredProperties(response);
-    // } catch (err) {
-    //   console.error('매물 데이터를 불러오는 중 오류가 발생했습니다:', err);
-    //   setError('매물 데이터를 불러오는 중 오류가 발생했습니다.');
-    // } finally {
-    //   setLoading(false);
-    // }
-    setTimeout(() => {
-      setLoading(false);
-    }, 500);
-  };
-  
-  // 필터링 함수
-  useEffect(() => {
-    if (!selectedRegion && !searchQuery) {
-      setFilteredProperties(properties);
-      return;
-    }
-    
-    filterProperties();
-  }, [selectedRegion, searchQuery, properties]);
-  
-  const filterProperties = () => {
-    if (!properties.length) return;
-    
-    let filtered = [...properties];
-    
-    // 지역 필터링
-    if (selectedRegion) {
-      filtered = filtered.filter(property => 
-        property.지역?.includes(selectedRegion)
-      );
-    }
-    
-    // 검색어 필터링
-    if (searchQuery) {
-      filtered = filtered.filter(property => 
-        property.주소?.includes(searchQuery) || 
-        property.매물특징?.includes(searchQuery) ||
-        property.유형?.includes(searchQuery)
-      );
-    }
-    
-    setFilteredProperties(filtered);
-  };
-  
-  // JSON Server의 필터링 기능 사용하기
-  const fetchPropertiesByRegion = async (region) => {
-    setLoading(true);
-    setError(null);
-    
+
     try {
-      // JSON Server는 _like로 부분 일치 필터링 지원
-      const response = await publicAxios.get('/properties', {
-        params: { 지역_like: region }
+      // JSON Server에서 페이지네이션 데이터 가져오기
+      // _page: 현재 페이지, _limit: 페이지당 아이템 수
+      const response = await publicAxios.get("/properties", {
+        params: {
+          _page: page,
+          _limit: itemsPerPage,
+          ...(selectedRegion && { region_like: selectedRegion }),
+          ...(searchQuery && { q: searchQuery }),
+        },
       });
-      setProperties(response);
-      setFilteredProperties(response);
+
+      // JSON Server는 X-Total-Count 헤더에 총 아이템 수를 반환
+      const totalCount = parseInt(response.headers["x-total-count"] || "0");
+      setTotalItemsCount(totalCount);
+
+      setProperties(response.data);
+      setFilteredProperties(response.data);
     } catch (err) {
-      console.error('지역별 매물 데이터를 불러오는 중 오류가 발생했습니다:', err);
-      setError('매물 데이터를 불러오는 중 오류가 발생했습니다.');
+      console.error("매물 데이터를 불러오는 중 오류가 발생했습니다:", err);
+      setError("매물 데이터를 불러오는 중 오류가 발생했습니다.");
+
+      // 더미 데이터로 대체 (실제 구현에서는 제거)
+      setTimeout(() => {
+        setFilteredProperties(properties);
+        setTotalItemsCount(properties.length);
+        setLoading(false);
+      }, 500);
     } finally {
-      setLoading(false);
+      if (!error) {
+        setLoading(false);
+      }
     }
   };
-  
+
+  // 페이지 변경 핸들러
+  const handlePageChange = (pageNumber) => {
+    setActivePage(pageNumber);
+    // 페이지 변경 시 fetchProperties 함수가 useEffect를 통해 자동 호출됨
+  };
+
+  // 지역 변경 핸들러
   const handleRegionChange = (e) => {
     const region = e.target.value;
     setSelectedRegion(region);
-    
-    // 서버 측 필터링을 사용하려면 이 부분의 주석을 해제
-    // if (region) {
-    //   fetchPropertiesByRegion(region);
-    // } else {
-    //   fetchProperties();
-    // }
+    setActivePage(1); // 필터링 시 첫 페이지로 돌아가기
   };
-  
+
+  // 검색어 변경 핸들러
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
   };
-  
+
+  // 검색 버튼 클릭 핸들러
   const handleSearch = () => {
-    filterProperties();
-  };
-  
-  // 매물 카드 컴포넌트
-  const PropertyCard = ({ property }) => {
-    return (
-      <div className="bg-white rounded-lg shadow-md p-6 mb-4 border border-gray-200 hover:shadow-lg transition-shadow">
-        <div className="mb-4">
-          <h3 className="text-xl font-bold text-green-800 mb-2 truncate">{property.주소}</h3>
-          <p className="text-sm text-gray-500">{property.유형}</p>
-        </div>
-        
-        <div className="grid gap-4 mb-4">
-          <div>
-            <p className="text-sm text-gray-600">보증금액</p>
-            <p className="font-semibold">{property.보증금액} 만원</p>
-          </div>
-          <div>
-            <p className="text-sm text-gray-600">면적</p>
-            <p className="font-semibold">{property.면적} m²</p>
-          </div>
-        </div>
-        
-        <div className="mb-4">
-          <p className="text-sm text-gray-600">매물특징</p>
-          <p className="text-gray-800">{property.매물특징}</p>
-        </div>
-        
-        <div className="flex justify-between items-center mt-4">
-          <span className="text-sm text-gray-600">{property.공인중개사무소명}</span>
-          <button className="px-3 py-1 bg-green-800 text-white text-sm rounded hover:bg-green-700">
-            상세보기
-          </button>
-        </div>
-      </div>
-    );
+    setActivePage(1); // 검색 시 첫 페이지로 돌아가기
+    fetchProperties(1); // 검색 결과의 첫 페이지 가져오기
   };
 
   return (
@@ -181,6 +167,7 @@ const Estate = () => {
           placeholder="검색어를 입력하세요"
           value={searchQuery}
           onChange={handleSearchChange}
+          onKeyPress={(e) => e.key === "Enter" && handleSearch()}
         />
 
         {/* 검색하기 버튼 */}
@@ -193,7 +180,7 @@ const Estate = () => {
       </div>
 
       {/* 로딩 상태 */}
-      {loading && <LoadingSpinner text="매물 정보 불러오는 중..."/>}
+      {loading && <LoadingSpinner text="매물 정보 불러오는 중..." />}
 
       {/* 에러 메시지 */}
       {error && !loading && (
@@ -201,7 +188,7 @@ const Estate = () => {
           <p className="text-red-500">{error}</p>
           <button
             className="mt-4 px-4 py-2 bg-green-800 text-white rounded-md hover:bg-green-500"
-            onClick={fetchProperties}
+            onClick={() => fetchProperties(activePage)}
           >
             다시 시도
           </button>
@@ -210,9 +197,10 @@ const Estate = () => {
 
       {/* 검색 결과 수 표시 */}
       {!loading && !error && (
-        <div className="mb-4">
+        <div className="m-4">
           <p className="text-gray-600">
-            총 {filteredProperties.length}개의 매물이 있습니다.
+            총 {totalItemsCount}개의 매물 중 {filteredProperties.length}개를
+            표시하고 있습니다.
           </p>
         </div>
       )}
@@ -230,6 +218,16 @@ const Estate = () => {
             </div>
           )}
         </div>
+      )}
+
+      {/* 페이지네이션 컴포넌트 */}
+      {!loading && !error && totalItemsCount > itemsPerPage && (
+        <PaginationComponent
+          activePage={activePage}
+          totalItemsCount={totalItemsCount}
+          onChange={handlePageChange}
+          itemsPerPage={itemsPerPage}
+        />
       )}
     </div>
   );
