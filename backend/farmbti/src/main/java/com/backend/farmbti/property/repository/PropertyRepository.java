@@ -11,7 +11,6 @@ import org.springframework.data.repository.query.Param;
 @Repository
 public interface PropertyRepository extends JpaRepository<Property, Long> {
 
-    // 새로 추가할 페이지네이션 메서드
     @Query(value = "SELECT p FROM Property p WHERE p.detailAddress LIKE %:doName%",
             countQuery = "SELECT COUNT(p) FROM Property p WHERE p.detailAddress LIKE %:doName%")
     Page<Property> findByAddressContainingDoWithPage(@Param("doName") String doName, Pageable pageable);
