@@ -89,7 +89,7 @@ public class NewsService {
 
         String word = URLEncoder.encode(keyword, "UTF-8");
 
-        String apiURL = naverApiConfig.newsUrl + "?query=" + word + "&display=3&start=1&sort=sim";
+        String apiURL = naverApiConfig.newsUrl + "?query=" + word + "&display=3&start=6&sort=sim";
 
         Map<String, String> requestHeaders = new HashMap<>();
         requestHeaders.put("X-Naver-Client-Id", naverApiConfig.clientId);
@@ -103,7 +103,6 @@ public class NewsService {
         JsonNode itemsNode = rootNode.get("items");
 
         List<NewsMainResponse> newsList = new ArrayList<>();
-
         String[] news = {"news/news1.jpg", "news/news2.jpg", "news/news3.jpg"};
         int cnt = 0;
 
@@ -119,8 +118,8 @@ public class NewsService {
                     .build();
 
             newsList.add(newsMainResponse);
-
         }
+
 
         return newsList;
     }
@@ -133,7 +132,7 @@ public class NewsService {
 
         String word = URLEncoder.encode(keyword, "UTF-8");
 
-        String apiURL = naverApiConfig.newsUrl + "?query=" + word + "&display=100&start=1&sort=sim";
+        String apiURL = naverApiConfig.newsUrl + "?query=" + word + "&display=100&start=6&sort=sim";
 
         Map<String, String> requestHeaders = new HashMap<>();
         requestHeaders.put("X-Naver-Client-Id", naverApiConfig.clientId);
