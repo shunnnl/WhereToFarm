@@ -42,7 +42,7 @@ const SurveyPage = () => {
       }
     });
 
-    navigate('/recommendation/result', { state: { results } });
+    navigate('/report', { state: { results } });
   };
 
   return (
