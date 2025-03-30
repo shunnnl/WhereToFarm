@@ -37,50 +37,70 @@ const Chat = () => {
     }
   }, [roomId]);
 
-// fetchMessages 함수 수정 - 채팅방 변경 시 메시지 초기화 추가
+// 메시지 목록 가져오기 함수 - 타입 비교 수정
 const fetchMessages = async (chatRoomId) => {
   try {
-    // 1. 메시지 목록 초기화 (중요: API 호출 전에 초기화)
+    // 메시지 목록 초기화
     setMessages([]);
     
     console.log(`채팅방 ${chatRoomId}의 메시지를 가져오는 중...`);
     const response = await authAxios.get(`/chat/${chatRoomId}/messages/detail`);
     
-    // 응답 데이터 확인
     console.log(`채팅방 ${chatRoomId} 메시지 응답:`, response.data);
     
-    // 현재 사용자 정보 가져오기
+    // 현재 사용자 정보 가져오기 - 문자열 ID를 숫자로 변환
     const userInfo = localStorage.getItem('user');
-    const userId = userInfo ? JSON.parse(userInfo).id : null;
+    let currentUserId = null;
     
-    // 응답 형식 구조 처리 (다양한 응답 형식 대응)
+    if (userInfo) {
+      const parsedUser = JSON.parse(userInfo);
+      // 문자열인 경우 숫자로 변환 (백엔드가 숫자 ID를 사용할 경우)
+      currentUserId = typeof parsedUser.id === 'string' ? parseInt(parsedUser.id, 10) : parsedUser.id;
+    }
+    
+    console.log('현재 사용자 ID (변환 후):', currentUserId, '타입:', typeof currentUserId);
+    
+    // 응답 형식 구조 처리
     let messageData = [];
     
     if (Array.isArray(response.data)) {
-      // 응답이 직접 배열인 경우
       messageData = response.data;
     } else if (response.data && response.data.success && Array.isArray(response.data.data)) {
-      // 응답이 {success, data} 형식인 경우
       messageData = response.data.data;
     } else if (response.data && Array.isArray(response.data.data)) {
-      // success 필드 없이 data 배열만 있는 경우
       messageData = response.data.data;
     } else {
-      // 기타 응답 형식 처리
       console.warn(`채팅방 ${chatRoomId} 메시지 응답 형식을 처리할 수 없음:`, response.data);
       return;
     }
     
     // 메시지 형식을 컴포넌트에 맞게 변환
-    const fetchedMessages = messageData.map((msg) => ({
-      id: `msg-${msg.messageId || Date.now() + Math.random()}`,
-      text: msg.content,
-      time: formatTime(new Date(msg.sentAt || msg.sendTime || new Date())),
-      isMe: msg.senderId === userId,
-      roomId: chatRoomId // 메시지에 roomId 추가
-    }));
+    const fetchedMessages = messageData.map((msg) => {
+      // senderId를 적절한 타입으로 변환
+      const msgSenderId = typeof msg.senderId === 'string' ? parseInt(msg.senderId, 10) : msg.senderId;
+      
+      // 상세 로깅: ID 타입과 값 비교
+      console.log(`메시지 ID ${msg.messageId} - 송신자 ID: ${msgSenderId} (${typeof msgSenderId}), 현재 사용자 ID: ${currentUserId} (${typeof currentUserId})`);
+      console.log(`ID 일치 여부: ${msgSenderId === currentUserId}`);
+      
+      // 타입까지 고려한 ID 비교
+      const isMe = msgSenderId === currentUserId;
+      
+      return {
+        id: `msg-${msg.messageId || Date.now() + Math.random()}`,
+        text: msg.content,
+        time: formatTime(new Date(msg.sentAt || msg.sendTime || new Date())),
+        isMe: isMe,
+        roomId: chatRoomId
+      };
+    });
     
     console.log(`채팅방 ${chatRoomId}에서 ${fetchedMessages.length}개의 메시지를 로드 완료`);
+    
+    // 디버깅: 각 메시지의 isMe 속성 확인
+    fetchedMessages.forEach(msg => {
+      console.log(`메시지 '${msg.text}' - isMe: ${msg.isMe}`);
+    });
     
     // 상태 업데이트
     setMessages(fetchedMessages);
@@ -88,6 +108,8 @@ const fetchMessages = async (chatRoomId) => {
     console.error(`채팅방 ${chatRoomId}의 메시지 조회 실패:`, error);
   }
 };
+
+
 
   // 웹소켓 연결
 // 채팅방 ID 변경시 해당 채팅방의 메시지 조회 - 명시적 초기화 추가
@@ -177,50 +199,44 @@ useEffect(() => {
 
 
   // 메시지 수신 처리
-// 1. // onMessageReceived 함수 수정
-// 메시지 수신 처리 함수 수정 - 명확한 채팅방 필터링 추가
-const onMessageReceived = (payload, currentRoomId) => {
-  try {
-    const receivedMessage = JSON.parse(payload.body);
-    console.log('새 메시지 수신:', receivedMessage);
-    
-    // 수신된 메시지의 채팅방 ID 확인 (백엔드 응답에 맞게 조정)
-    // 만약 receivedMessage에 채팅방 ID 필드가 있다면 활용 (roomId, chatRoomId 등)
-    const messageRoomId = receivedMessage.roomId || receivedMessage.chatRoomId;
-    
-    // 다른 채팅방 메시지면 무시
-    if (messageRoomId && messageRoomId !== currentRoomId) {
-      console.log(`다른 채팅방 메시지(${messageRoomId}), 현재 채팅방(${currentRoomId})에서 무시`);
-      return;
+  const onMessageReceived = (payload, currentRoomId) => {
+    try {
+      const receivedMessage = JSON.parse(payload.body);
+      console.log('새 메시지 수신:', receivedMessage);
+      
+      // 현재 사용자 정보 가져오기
+      const userInfo = localStorage.getItem('user');
+      const currentUserId = userInfo ? JSON.parse(userInfo).id : null;
+      
+      // 메시지에 roomId가 있고 현재 채팅방과 다르면 무시
+      const messageRoomId = receivedMessage.roomId || receivedMessage.chatRoomId;
+      if (messageRoomId && messageRoomId !== currentRoomId) {
+        console.log(`다른 채팅방 메시지(${messageRoomId}), 현재 채팅방(${currentRoomId})에서 무시`);
+        return;
+      }
+      
+      // 자신이 보낸 메시지인지 확인 (이미 UI에 추가되었으므로 무시)
+      if (receivedMessage.senderId === currentUserId) {
+        console.log('자신이 보낸 메시지, 무시');
+        return;
+      }
+      
+      // 상대방 메시지 추가
+      const newMessage = {
+        id: `server-${receivedMessage.messageId || Date.now()}`,
+        text: receivedMessage.content,
+        time: formatTime(new Date(receivedMessage.sentAt || new Date())),
+        isMe: false, // 상대방 메시지이므로 항상 false
+        roomId: currentRoomId
+      };
+      
+      // 메시지 목록에 추가
+      setMessages(prev => [...prev, newMessage]);
+    } catch (error) {
+      console.error('메시지 처리 오류:', error);
     }
-    
-    // 로컬 스토리지에서 사용자 정보 가져오기
-    const userInfo = localStorage.getItem('user');
-    const userId = userInfo ? JSON.parse(userInfo).id : null;
-    
-    // 자신이 보낸 메시지인지 확인
-    if (receivedMessage.senderId === userId) {
-      console.log('자신이 보낸 메시지, 무시');
-      return;
-    }
-    
-    // 상대방 메시지 추가
-    const newMessage = {
-      id: `server-${receivedMessage.messageId || Date.now()}`,
-      text: receivedMessage.content,
-      time: formatTime(new Date(receivedMessage.sentAt || new Date())),
-      isMe: false,
-      roomId: currentRoomId
-    };
-    
-    // 메시지 목록에 추가
-    setMessages(prev => [...prev, newMessage]);
-  } catch (error) {
-    console.error('메시지 처리 오류:', error);
-  }
-};
-
-
+  };
+  
 
 
   // 채팅방 목록 가져오기
