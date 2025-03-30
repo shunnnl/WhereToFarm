@@ -188,8 +188,8 @@ const EstatePage = () => {
                 key={property.id}
                 property={{
                   ...property,
-                  realtor: property.agency, // PropertyCard 컴포넌트가 'realtor' 필드를 사용한다면
-                  features: property.feature, // PropertyCard 컴포넌트가 'features' 필드를 사용한다면
+                  realtor: property.agency,
+                  features: property.feature,
                 }}
               />
             ))
