@@ -34,6 +34,10 @@ public enum SecurityPath {
     SIGNUP("/auth/signUp"),
     LOGIN("/auth/login"),
 
+    //News 관련 경로
+    MAIN_NEWS("/news/main"),
+    LIST_NEWS("/news/list"),
+
     ZEPPELIN("/zeppelin/**"),
     PROPERTY("/property/**"); // property
 
