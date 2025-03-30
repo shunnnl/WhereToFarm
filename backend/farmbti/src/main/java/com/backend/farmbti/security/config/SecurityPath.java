@@ -42,8 +42,10 @@ public enum SecurityPath {
     POLICY_ALL("/policy"),
     POLICY_REGION("/policy/region"),
 
-    ZEPPELIN("/zeppelin/**"),
-    PROPERTY("/property/**"); // property
+    REPORT("/report/**"),
+
+    // Property 관련 경로
+    PROPERTY("/property/**");
 
     // 각 Enum 상수가 가지는 경로 문자열
     private final String path;
