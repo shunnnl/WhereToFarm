@@ -96,7 +96,7 @@ const RecommendedRegions = () => {
             <div className="bg-[#E8F3E7] p-6 rounded-lg">
               <div className="flex items-center gap-2 mb-6">
                 <span className="text-xl font-bold">🌾</span>
-                <span className="text-xl font-bold">많이 키우는 작물</span>
+                <span className="text-xl font-bold">많이 키우는 작물임</span>
               </div>
               <div className="flex flex-col gap-4">
                 {selectedRegion.crops.map((crop, index) => (
