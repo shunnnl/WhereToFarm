@@ -39,7 +39,7 @@ logging:
     com.backend.farmbti: DEBUG
     com.backend.farmbti.security.filter: DEBUG
 zeppelin:
-  base-url: "http://13.124.169.83:18080"
+  base-url: "http://3.39.65.150:18888"
 
 springdoc:
   swagger-ui:
@@ -59,7 +59,11 @@ cloud:
       auto: false
     stack:
       auto: false
-
+naver:
+  api:
+    client-id: ${client-id}
+    client-secret: ${client-secret}
+    url: https://openapi.naver.com/v1/search/news.json
 kakao:
   api:
     key: ${KAKAO_API_KEY}
