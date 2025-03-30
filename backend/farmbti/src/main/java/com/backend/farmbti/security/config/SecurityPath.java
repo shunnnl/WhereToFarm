@@ -33,7 +33,9 @@ public enum SecurityPath {
     // Auth 관련 경로
     SIGNUP("/auth/signUp"),
     LOGIN("/auth/login"),
-    ZEPPELIN("/zeppelin/**");
+
+    ZEPPELIN("/zeppelin/**"),
+    PROPERTY("/property/**"); // property
 
     // 각 Enum 상수가 가지는 경로 문자열
     private final String path;

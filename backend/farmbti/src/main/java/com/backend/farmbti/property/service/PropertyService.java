@@ -2,6 +2,7 @@ package com.backend.farmbti.property.service;
 
 import com.backend.farmbti.common.exception.GlobalException;
 import com.backend.farmbti.property.domain.Property;
+import com.backend.farmbti.property.dto.PropertyDetailResponse;
 import com.backend.farmbti.property.dto.PropertyListResponse;
 import com.backend.farmbti.property.dto.PropertySearchRequest;
 import com.backend.farmbti.property.exception.PropertyErrorCode;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
 public class PropertyService {
 
     private final PropertyRepository propertyRepository;
+    private final KakaoAddressService kakaoAddressService;
 
     /**
      * 모든 부동산 매물 조회
@@ -59,6 +62,35 @@ public class PropertyService {
                 .map(this::convertToListResponse)
                 .collect(Collectors.toList());
     }
+
+
+    /**
+     * 특정 매물 상세 조회 (좌표 정보 포함)
+     */
+    @Transactional(readOnly = true)
+    public PropertyDetailResponse getPropertyDetail(Long id) {
+        Property property = propertyRepository.findById(id)
+                .orElseThrow(() -> {
+                    return new GlobalException(PropertyErrorCode.PROPERTY_NOT_FOUND);
+                });
+
+        // 주소를 좌표로 변환
+        Map<String, Double> coordinates = kakaoAddressService.getCoordinatesByAddress(property.getDetailAddress());
+
+        // 매물 정보와 좌표 정보를 함께 반환
+        return PropertyDetailResponse.builder()
+                .id(property.getId())
+                .address(property.getDetailAddress())
+                .agency(property.getAgency())
+                .deposit(property.getDeposit())
+                .area(property.getArea())
+                .feature(property.getFeature())
+                .latitude(coordinates.get("latitude"))
+                .longitude(coordinates.get("longitude"))
+                .build();
+    }
+
+
 
     /**
      * Entity를 리스트 응답 DTO로 변환

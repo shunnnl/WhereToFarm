@@ -1,6 +1,7 @@
 package com.backend.farmbti.property.controller;
 
 import com.backend.farmbti.common.dto.CommonResponseDto;
+import com.backend.farmbti.property.dto.PropertyDetailResponse;
 import com.backend.farmbti.property.dto.PropertyListResponse;
 import com.backend.farmbti.property.dto.PropertySearchRequest;
 import com.backend.farmbti.property.service.PropertyService;
@@ -22,7 +23,7 @@ public class PropertyController {
     private final PropertyService propertyService;
 
     @Operation(summary = "모든 매물 조회", description = "모든 부동산 매물 정보를 리스트로 제공합니다.")
-    @GetMapping
+    @GetMapping("/list")
     public CommonResponseDto<List<PropertyListResponse>> getAllProperties() {
         log.info("모든 매물 조회 요청 수신");
         List<PropertyListResponse> properties = propertyService.getAllProperties();
@@ -34,5 +35,12 @@ public class PropertyController {
     public CommonResponseDto<List<PropertyListResponse>> searchProperties(@RequestBody PropertySearchRequest request) {
         List<PropertyListResponse> searchResults = propertyService.searchProperties(request);
         return CommonResponseDto.ok(searchResults);
+    }
+
+    @Operation(summary = "매물 상세 조회", description = "특정 매물의 상세 정보와 위치 좌표를 제공합니다.")
+    @GetMapping("/{id}")
+    public CommonResponseDto<PropertyDetailResponse> getPropertyDetail(@PathVariable Long id) {
+        PropertyDetailResponse property = propertyService.getPropertyDetail(id);
+        return CommonResponseDto.ok(property);
     }
 }
