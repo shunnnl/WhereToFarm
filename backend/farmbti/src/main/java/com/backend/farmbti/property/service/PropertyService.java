@@ -1,5 +1,6 @@
 package com.backend.farmbti.property.service;
 
+import com.backend.farmbti.common.dto.PageResponseDto;
 import com.backend.farmbti.common.exception.GlobalException;
 import com.backend.farmbti.property.domain.Property;
 import com.backend.farmbti.property.dto.PropertyDetailResponse;
@@ -9,13 +10,14 @@ import com.backend.farmbti.property.exception.PropertyErrorCode;
 import com.backend.farmbti.property.repository.PropertyRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
+import org.springframework.data.domain.Pageable;
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -27,14 +29,12 @@ public class PropertyService {
     /**
      * 모든 부동산 매물 조회
      */
-    @Transactional(readOnly = true)
-    public List<PropertyListResponse> getAllProperties() {
-        List<Property> properties = propertyRepository.findAll();
-
-        return properties.stream()
-                .map(this::convertToListResponse)
-                .collect(Collectors.toList());
+    public PageResponseDto<PropertyListResponse> getAllProperties(Pageable pageable) {
+        Page<Property> page = propertyRepository.findAll(pageable);
+        Page<PropertyListResponse> mapped = page.map(this::convertToListResponse);
+        return new PageResponseDto<>(mapped);
     }
+
 
     /**
      * 검색 조건에 따른 부동산 매물 조회

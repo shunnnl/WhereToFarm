@@ -18,7 +18,7 @@ import java.util.Map;
 @Slf4j
 public class KakaoAddressService {
 
-    @Value("${kakao.api.key:a24122d363b6f9d33ce3566b2f018f12}")
+    @Value("${kakao.api.key}")
     private String kakaoApiKey;
 
     private final RestTemplate restTemplate;
