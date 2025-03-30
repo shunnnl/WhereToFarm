@@ -104,15 +104,18 @@ public class NewsService {
 
         List<NewsMainResponse> newsList = new ArrayList<>();
 
+        String[] news = {"news/news1.jpg", "news/news2.jpg", "news/news3.jpg"};
+        int cnt = 0;
+
+
         for (JsonNode item : itemsNode) {
             String title = cleanHtmlTags(item.get("title").asText());
             String link = item.get("link").asText();
-            String image = null;
 
             NewsMainResponse newsMainResponse = NewsMainResponse.builder()
                     .title(title)
                     .link(link)
-                    .Image(image)
+                    .Image(s3Service.getSignedUrl(news[cnt++]))
                     .build();
 
             newsList.add(newsMainResponse);

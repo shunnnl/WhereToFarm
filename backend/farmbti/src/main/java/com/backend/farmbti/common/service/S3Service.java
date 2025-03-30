@@ -2,6 +2,7 @@ package com.backend.farmbti.common.service;
 
 import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.backend.farmbti.common.exception.GlobalException;
@@ -14,9 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -84,6 +83,43 @@ public class S3Service {
         if (amazonS3.doesObjectExist(bucket, key)) {
             amazonS3.deleteObject(bucket, key);
         }
+    }
+
+    /**
+     * news 폴더의 여러 이미지에 대한 서명된 URL 목록을 반환하는 메서드
+     *
+     * @return 각 이미지의 키와 해당 서명된 URL을 포함하는 Map
+     */
+    public Map<String, String> getNewsImagesSignedUrls() {
+        Map<String, String> signedUrls = new HashMap<>();
+
+        List<String> imageKeys = List.of(
+                "news/news1.jpg",
+                "news/news2.jpg",
+                "news/news3.jpg"
+        );
+
+        for (String objectKey : imageKeys) {
+            try {
+                // 객체가 존재하는지 확인
+                if (!amazonS3.doesObjectExist(bucket, objectKey)) {
+                    log.warn("Image not found in S3: {}", objectKey);
+                    continue; // 존재하지 않는 이미지는 건너뜀
+                }
+
+                // 기존 getSignedUrl 메서드를 활용하여 서명된 URL 생성
+                String signedUrl = getSignedUrl(objectKey);
+
+                // 파일명만 추출하여 키로 사용
+                String fileName = objectKey.substring(objectKey.lastIndexOf('/') + 1);
+                signedUrls.put(fileName, signedUrl);
+
+            } catch (AmazonS3Exception e) {
+                log.error("Error generating signed URL for {}: {}", objectKey, e.getMessage());
+            }
+        }
+
+        return signedUrls;
     }
 
 }
