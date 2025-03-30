@@ -1,8 +1,8 @@
-import { authAxios } from "../common/AxiosInstance";
+import { publicAxios } from "../common/AxiosInstance";
 
 export const getAllEstate = async () => {
   try {
-    const response = await authAxios.get("/property");
+    const response = await publicAxios.get("/property/list");
     if (!response.success) {
       throw response.error;
     }
@@ -15,7 +15,7 @@ export const getAllEstate = async () => {
 
 export const getFilteredEstate = async (province, city) => {
   try {
-    const response = await authAxios.post("/property/search", {
+    const response = await publicAxios.post("/property/search", {
       do_: province,
       city: city,
     });
@@ -31,7 +31,7 @@ export const getFilteredEstate = async (province, city) => {
 
 export const getEstateDetail = async (estateId) => {
   try {
-    const response = await authAxios.get(`/property/${estateId}`);
+    const response = await publicAxios.get(`/property/${estateId}`);
     if (!response.success) {
       throw response.error;
     }
