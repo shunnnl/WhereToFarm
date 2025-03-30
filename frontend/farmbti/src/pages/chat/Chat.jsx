@@ -37,39 +37,78 @@ const Chat = () => {
     }
   }, [roomId]);
 
-  // 메시지 목록 가져오기
-  const fetchMessages = async (roomId) => {
-    try {
-      const response = await authAxios.get(`/chat/${roomId}/messages/detail`);
-      if (response.data && response.data.success) {
-        setMessages(response.data.data.map((msg, index) => ({
-          id: index + 1,
-          text: msg.content,
-          time: formatTime(new Date(msg.sendTime)),
-          isMe: msg.senderId === currentUser?.id
-        })));
-      }
-    } catch (error) {
-      console.error('메시지 조회 실패:', error);
+// fetchMessages 함수 수정 - 채팅방 변경 시 메시지 초기화 추가
+const fetchMessages = async (chatRoomId) => {
+  try {
+    // 1. 메시지 목록 초기화 (중요: API 호출 전에 초기화)
+    setMessages([]);
+    
+    console.log(`채팅방 ${chatRoomId}의 메시지를 가져오는 중...`);
+    const response = await authAxios.get(`/chat/${chatRoomId}/messages/detail`);
+    
+    // 응답 데이터 확인
+    console.log(`채팅방 ${chatRoomId} 메시지 응답:`, response.data);
+    
+    // 현재 사용자 정보 가져오기
+    const userInfo = localStorage.getItem('user');
+    const userId = userInfo ? JSON.parse(userInfo).id : null;
+    
+    // 응답 형식 구조 처리 (다양한 응답 형식 대응)
+    let messageData = [];
+    
+    if (Array.isArray(response.data)) {
+      // 응답이 직접 배열인 경우
+      messageData = response.data;
+    } else if (response.data && response.data.success && Array.isArray(response.data.data)) {
+      // 응답이 {success, data} 형식인 경우
+      messageData = response.data.data;
+    } else if (response.data && Array.isArray(response.data.data)) {
+      // success 필드 없이 data 배열만 있는 경우
+      messageData = response.data.data;
+    } else {
+      // 기타 응답 형식 처리
+      console.warn(`채팅방 ${chatRoomId} 메시지 응답 형식을 처리할 수 없음:`, response.data);
+      return;
     }
-  };
+    
+    // 메시지 형식을 컴포넌트에 맞게 변환
+    const fetchedMessages = messageData.map((msg) => ({
+      id: `msg-${msg.messageId || Date.now() + Math.random()}`,
+      text: msg.content,
+      time: formatTime(new Date(msg.sentAt || msg.sendTime || new Date())),
+      isMe: msg.senderId === userId,
+      roomId: chatRoomId // 메시지에 roomId 추가
+    }));
+    
+    console.log(`채팅방 ${chatRoomId}에서 ${fetchedMessages.length}개의 메시지를 로드 완료`);
+    
+    // 상태 업데이트
+    setMessages(fetchedMessages);
+  } catch (error) {
+    console.error(`채팅방 ${chatRoomId}의 메시지 조회 실패:`, error);
+  }
+};
 
   // 웹소켓 연결
-  useEffect(() => {
-    if (roomId && currentUser) {
-      connectWebSocket();
-    }
-    return () => {
-      disconnectWebSocket();
-    };
-  }, [roomId, currentUser]);
+// 채팅방 ID 변경시 해당 채팅방의 메시지 조회 - 명시적 초기화 추가
+useEffect(() => {
+  if (roomId) {
+    console.log(`채팅방 ${roomId}로 전환, 메시지 로드 시작`);
+    
+    // 채팅방 변경 시 웹소켓 재연결 및 메시지 로드
+    fetchMessages(roomId);
+    connectWebSocket();
+  }
+}, [roomId]);
 
-// 웹소켓 연결 함수 수정
+
+// connectWebSocket 함수 수정 - 구독 관리 개선
 const connectWebSocket = () => {
-  disconnectWebSocket(); // 기존 연결 해제
+  // 기존 연결 해제
+  disconnectWebSocket();
 
+  // 새 STOMP 클라이언트 생성
   const client = new Client({
-    // brokerURL 대신 webSocketFactory 사용
     webSocketFactory: () => new SockJS('http://j12d209.p.ssafy.io/gs-guide-websocket'),
     connectHeaders: {
       Authorization: `Bearer ${localStorage.getItem('accessToken')}`
@@ -79,11 +118,17 @@ const connectWebSocket = () => {
     },
     reconnectDelay: 5000,
     onConnect: () => {
-      console.log('웹소켓 연결 성공');
+      console.log(`채팅방 ${roomId}에 웹소켓 연결 완료`);
       setConnected(true);
       
-      // 채팅방 구독
-      client.subscribe(`/topic/chat/${roomId}`, onMessageReceived);
+      // 현재 채팅방만 구독
+      const subscription = client.subscribe(`/topic/chat/${roomId}`, (payload) => {
+        onMessageReceived(payload, roomId);
+      });
+      
+      // 구독 정보 저장
+      client.currentSubscription = subscription;
+      client.currentRoomId = roomId;
     },
     onStompError: (frame) => {
       console.error('STOMP 에러:', frame);
@@ -94,41 +139,85 @@ const connectWebSocket = () => {
   stompClient.current = client;
 };
 
-  // 웹소켓 연결 해제
-  const disconnectWebSocket = () => {
-    if (stompClient.current && stompClient.current.connected) {
-      stompClient.current.deactivate();
-      setConnected(false);
+
+// 웹소켓 연결 해제 함수 수정 - 구독 해제 로직 강화
+const disconnectWebSocket = () => {
+  if (stompClient.current) {
+    // 이전 구독이 있으면 해제
+    if (stompClient.current.currentSubscription) {
+      try {
+        stompClient.current.currentSubscription.unsubscribe();
+        console.log(`채팅방 ${stompClient.current.currentRoomId} 구독 해제`);
+      } catch (error) {
+        console.error('구독 해제 오류:', error);
+      }
     }
-  };
+    
+    // 연결 해제
+    if (stompClient.current.connected) {
+      stompClient.current.deactivate();
+      console.log('STOMP 클라이언트 연결 해제');
+    }
+    
+    setConnected(false);
+  }
+};
+
+
+
+// 채팅방 ID 변경시 메시지 초기화 및 새 메시지 조회
+useEffect(() => {
+  if (roomId) {
+    // 중요: 채팅방 변경시 메시지 목록 초기화
+    setMessages([]);
+    // 새 채팅방의 메시지 조회
+    fetchMessages(roomId);
+  }
+}, [roomId]);
+
 
   // 메시지 수신 처리
 // 1. // onMessageReceived 함수 수정
-// 메시지 수신 처리 함수 - senderId로 구분
-const onMessageReceived = (payload) => {
-  const receivedMessage = JSON.parse(payload.body);
-  console.log('수신된 메시지 전체:', receivedMessage);
-  
-  // 로컬 스토리지에서 사용자 정보 가져오기
-  const userInfo = JSON.parse(localStorage.getItem('user'));
-  console.log('현재 사용자 ID:', userInfo.id);
-  console.log('메시지 송신자 ID:', receivedMessage.senderId);
-  
-  // 자신이 보낸 메시지인지 확인 (senderId와 현재 사용자 ID 비교)
-  if (receivedMessage.senderId === userInfo.id) {
-    console.log('자신이 보낸 메시지, 무시함');
-    return; // 이미 UI에 추가된 메시지이므로 무시
+// 메시지 수신 처리 함수 수정 - 명확한 채팅방 필터링 추가
+const onMessageReceived = (payload, currentRoomId) => {
+  try {
+    const receivedMessage = JSON.parse(payload.body);
+    console.log('새 메시지 수신:', receivedMessage);
+    
+    // 수신된 메시지의 채팅방 ID 확인 (백엔드 응답에 맞게 조정)
+    // 만약 receivedMessage에 채팅방 ID 필드가 있다면 활용 (roomId, chatRoomId 등)
+    const messageRoomId = receivedMessage.roomId || receivedMessage.chatRoomId;
+    
+    // 다른 채팅방 메시지면 무시
+    if (messageRoomId && messageRoomId !== currentRoomId) {
+      console.log(`다른 채팅방 메시지(${messageRoomId}), 현재 채팅방(${currentRoomId})에서 무시`);
+      return;
+    }
+    
+    // 로컬 스토리지에서 사용자 정보 가져오기
+    const userInfo = localStorage.getItem('user');
+    const userId = userInfo ? JSON.parse(userInfo).id : null;
+    
+    // 자신이 보낸 메시지인지 확인
+    if (receivedMessage.senderId === userId) {
+      console.log('자신이 보낸 메시지, 무시');
+      return;
+    }
+    
+    // 상대방 메시지 추가
+    const newMessage = {
+      id: `server-${receivedMessage.messageId || Date.now()}`,
+      text: receivedMessage.content,
+      time: formatTime(new Date(receivedMessage.sentAt || new Date())),
+      isMe: false,
+      roomId: currentRoomId
+    };
+    
+    // 메시지 목록에 추가
+    setMessages(prev => [...prev, newMessage]);
+  } catch (error) {
+    console.error('메시지 처리 오류:', error);
   }
-  
-  // 상대방 메시지 추가
-  const newMessage = {
-    id: `server-${receivedMessage.messageId}`,
-    text: receivedMessage.content,
-    time: formatTime(new Date(receivedMessage.sentAt)),
-    isMe: false // 상대방 메시지
-  };
-  
-  setMessages(prev => [...prev, newMessage]);
 };
 
 
