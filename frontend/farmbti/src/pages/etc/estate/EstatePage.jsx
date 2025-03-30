@@ -3,14 +3,15 @@ import PageHeader from "../../../components/common/PageHeader";
 import PropertyCard from "../../../components/etc/estate/PropertyCard";
 import LoadingSpinner from "../../../components/common/LoadingSpinner";
 import PaginationComponent from "../../../components/common/Pagination";
-import { getAllEstate } from "../../../API/etc/EstateAPI";
+import { getAllEstate, getFilteredEstate } from "../../../API/etc/EstateAPI";
 import { toast } from "react-toastify";
+import KoreaCityData from "../../../asset/data/KoreaCityData";
 
 const EstatePage = () => {
-  const [selectedRegion, setSelectedRegion] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedProvince, setSelectedProvince] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
+  const [cities, setCities] = useState([]);
   const [properties, setProperties] = useState([]);
-  const [filteredProperties, setFilteredProperties] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -19,30 +20,23 @@ const EstatePage = () => {
   const [totalItemsCount, setTotalItemsCount] = useState(0);
   const itemsPerPage = 8;
 
-  // 지역 목록
-  const regions = [
-    "부산광역시",
-    "인천광역시",
-    "대구광역시",
-    "대전광역시",
-    "광주광역시",
-    "울산광역시",
-    "세종특별자치시",
-    "경기도",
-    "강원도",
-    "충청북도",
-    "충청남도",
-    "전라북도",
-    "전라남도",
-    "경상북도",
-    "경상남도",
-    "제주도",
-  ];
+  // 도(province) 목록을 KoreaCityData에서 가져오기
+  const provinces = Object.keys(KoreaCityData);
 
-  // 매물 데이터 가져오기 - 페이지네이션 적용
+  // 초기 로드 시 전체 매물 데이터 가져오기
   useEffect(() => {
     getProperties(activePage);
   }, [activePage]);
+
+  // 도(province) 선택 시 해당 시/군/구 목록 업데이트
+  useEffect(() => {
+    if (selectedProvince) {
+      setCities(KoreaCityData[selectedProvince] || []);
+      setSelectedCity(""); // 도 변경 시 시/군/구 선택 초기화
+    } else {
+      setCities([]);
+    }
+  }, [selectedProvince]);
 
   // 매물 데이터 가져오는 함수
   const getProperties = async (page = 1) => {
@@ -52,11 +46,39 @@ const EstatePage = () => {
     try {
       const response = await getAllEstate();
       setProperties(response);
-      
+      setTotalItemsCount(response.length);
     } catch (error) {
       console.error("매물 데이터를 불러오는 중 오류가 발생했습니다:", error);
       setError("매물 데이터를 불러오는 중 오류가 발생했습니다.");
-      toast.error(error.message);
+      toast.error(error.message || "데이터를 불러오는 중 오류가 발생했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 필터링된 매물 데이터 가져오는 함수
+  const getFilteredProperties = async () => {
+    if (!selectedProvince) {
+      // 도(province)가 선택되지 않은 경우 전체 데이터 로드
+      getProperties(1);
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await getFilteredEstate(selectedProvince, selectedCity);
+      setProperties(response);
+      setTotalItemsCount(response.length);
+      setActivePage(1); // 필터링 시 첫 페이지로 돌아가기
+    } catch (error) {
+      console.error(
+        "필터링된 매물 데이터를 불러오는 중 오류가 발생했습니다:",
+        error
+      );
+      setError("필터링된 매물 데이터를 불러오는 중 오류가 발생했습니다.");
+      toast.error(error.message || "데이터를 불러오는 중 오류가 발생했습니다.");
     } finally {
       setLoading(false);
     }
@@ -68,22 +90,21 @@ const EstatePage = () => {
     // 페이지 변경 시 getProperties 함수가 useEffect를 통해 자동 호출됨
   };
 
-  // 지역 변경 핸들러
-  const handleRegionChange = (e) => {
-    const region = e.target.value;
-    setSelectedRegion(region);
-    setActivePage(1); // 필터링 시 첫 페이지로 돌아가기
+  // 도(province) 변경 핸들러
+  const handleProvinceChange = (e) => {
+    const province = e.target.value;
+    setSelectedProvince(province);
   };
 
-  // 검색어 변경 핸들러
-  const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value);
+  // 시/군/구(city) 변경 핸들러
+  const handleCityChange = (e) => {
+    const city = e.target.value;
+    setSelectedCity(city);
   };
 
-  // 검색 버튼 클릭 핸들러
-  const handleSearch = () => {
-    setActivePage(1); // 검색 시 첫 페이지로 돌아가기
-    getProperties(1); // 검색 결과의 첫 페이지 가져오기
+  // 도/시 필터 적용 핸들러
+  const handleFilter = () => {
+    getFilteredProperties();
   };
 
   return (
@@ -93,37 +114,42 @@ const EstatePage = () => {
         description="귀농 주거지 매물을 찾아보세요."
       />
 
-      <div className="flex justify-end items-center space-x-2 p-4 mb-6">
-        {/* 지역 선택 드롭다운 */}
+      <div className="flex flex-wrap justify-end items-center gap-2 p-4 mb-6">
+        {/* 도(province) 선택 드롭다운 */}
         <select
           className="h-10 w-32 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-          value={selectedRegion}
-          onChange={handleRegionChange}
+          value={selectedProvince}
+          onChange={handleProvinceChange}
         >
-          <option value="">지역 선택</option>
-          {regions.map((region) => (
-            <option key={region} value={region}>
-              {region}
+          <option value="">도 선택</option>
+          {provinces.map((province) => (
+            <option key={province} value={province}>
+              {province}
             </option>
           ))}
         </select>
 
-        {/* 검색창 */}
-        <input
-          type="text"
-          className="h-10 w-64 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-          placeholder="검색어를 입력하세요"
-          value={searchQuery}
-          onChange={handleSearchChange}
-          onKeyPress={(e) => e.key === "Enter" && handleSearch()}
-        />
+        {/* 시/군/구(city) 선택 드롭다운 */}
+        <select
+          className="h-10 w-32 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+          value={selectedCity}
+          onChange={handleCityChange}
+          disabled={!selectedProvince}
+        >
+          <option value="">시/군/구 선택</option>
+          {cities.map((city) => (
+            <option key={city} value={city}>
+              {city}
+            </option>
+          ))}
+        </select>
 
-        {/* 검색하기 버튼 */}
+        {/* 필터 적용 버튼 */}
         <button
           className="h-10 px-4 py-2 bg-green-800 text-white rounded-md hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-green-800"
-          onClick={handleSearch}
+          onClick={handleFilter}
         >
-          검색하기
+          필터 적용
         </button>
       </div>
 
