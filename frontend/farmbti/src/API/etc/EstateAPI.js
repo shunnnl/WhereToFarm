@@ -9,7 +9,7 @@ export const getAllEstate = async () => {
     return response.data;
   } catch (error) {
     console.log(error);
-    throw error;
+    throw error.error;
   }
 };
 
@@ -25,6 +25,6 @@ export const getFilteredEstate = async (province, city) => {
     return response.data;
   } catch (error) {
     console.log(error);
-    throw error;
+    throw error.error;
   }
 };
