@@ -1,5 +1,6 @@
 import React from 'react';
 import FarmerImage from '../../asset/home/calculator.svg';
+import { Link } from 'react-router-dom'; 
 
 const Mentor = () => {
     return (
@@ -16,9 +17,11 @@ const Mentor = () => {
                 <h2 className="text-4xl font-bold mb-4">
                   내 작물로 얻는 수익은 얼마일까?
                 </h2>
-                <h3 className="text-white text-2xl py-2 font-semibold">
-                  '작물 계산기'로 바로가기기 ↗️
-                </h3>
+                <Link to="/crop-calculator" className="block">
+                <h3 className="text-white text-2xl py-2 font-semibold hover:underline">
+                '작물 계산기'로 바로가기기 ↗️
+                  </h3>
+                </Link>
               </div>
               
               {/* Farmer Illustration */}

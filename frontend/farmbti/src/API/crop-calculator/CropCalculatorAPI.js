@@ -28,7 +28,7 @@ export const saveResult = async (reportId) => {
       throw response.error;
     }
 
-    return response.data;
+    return response.success;
   } catch (error) {
     console.log(error);
     throw error;

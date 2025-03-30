@@ -1,46 +1,113 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import leaveIcon from "../../asset/mypage/leaves.svg";
 import { MessageSquare, User, Settings, Lock } from "lucide-react";
+import { toast } from "react-toastify";
+
+import { putMyInfo, changePassword, putMentorInfo } from "../../API/mypage/MyPageAPI";
+
 import MyPageModal from "./MyPageModal";
 import MentorSettingContent from "./MentorSettingContent";
 import MyInfoSettingContent from "./MyInfoSettingContent";
-import { toast } from "react-toastify";
 import MyPasswordContent from "./MyPasswordContent";
 import MyProfileImage from "./MyProfileImage";
 
-const MyProfile = ({ myInfo }) => {
+const MyProfile = ({ myInfo: initialMyInfo }) => {
   const modalRef = useRef(null);
   const [modalType, setModalType] = useState("");
   const [modalTitle, setModalTitle] = useState("");
-
+  const [myInfo, setMyInfo] = useState(initialMyInfo);
+  const [birth, setBirth] = useState({ year: "", month: "", day: "" });
+  const [address, setAddress] = useState("");
+  const [myImage, setMyImage] = useState({});
 
   // 모달 타입 별 상태 분리
   const [mentorFormData, setMentorFormData] = useState({
-    data: { Year: "", foodType: "", description: "" },
+    data: {},
     isValid: true,
     errors: {},
   });
   const [myInfoFormData, setMyInfoFormData] = useState({
-    data: {
-      name: myInfo.userName || "",
-      gender: myInfo.gender || "",
-      Year: myInfo.birthYear || "",
-      Month: myInfo.birthMonth || "",
-      Day: myInfo.birthDay || "",
-      address: myInfo.region || "",
-    },
+    data: {},
     isValid: true,
     errors: {},
   });
-
   const [passwordFormData, setPasswordFormData] = useState({
-    data: { currentPassword: "", newPassword: "", confirmPassword: "" },
+    data: { password: "", newPassword: "", confirmPassword: "" },
     isValid: true,
     errors: {},
   });
 
   // 상태, 예외 처리
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const formatBirthDate = (birthString) => {
+    if (!birthString) return { year: "", month: "", day: "" };
+    const birthDate = new Date(birthString);
+    return {
+      year: birthDate.getFullYear().toString(),
+      month: (birthDate.getMonth() + 1).toString(),
+      day: birthDate.getDate().toString().padStart(2, "0"),
+    };
+  };
+
+  const formatAddress = (addressString) => {
+    if (!addressString) return "";
+    const address = `${addressString.split(" ")[0]} ${
+      addressString.split(" ")[1]
+    }`;
+
+    return address;
+  };
+
+  useEffect(() => {
+    if (!myInfo) {
+      return;
+    }
+
+    const birth = formatBirthDate(myInfo.birth);
+    setBirth(birth);
+
+    const address = formatAddress(myInfo.address);
+    setAddress(address);
+
+    setMyInfoFormData({
+      data: {
+        name: myInfo.name || "",
+        gender: myInfo.gender || 0,
+        year: birth.year,
+        month: birth.month,
+        day: birth.day,
+        address: myInfo.address || "",
+      },
+      isValid: true,
+      errors: {},
+    });
+
+    setMyImage({
+      isDefaultImage: myInfo.isDefaultImage,
+      imageUrl: myInfo.profileImage,
+    });
+
+    // 멘토 정보도 초기화
+    if (myInfo.isMentor) {
+      setMentorFormData({
+        data: {
+          farmingYears: myInfo.farmingYears,
+          cropNames: myInfo.cropNames,
+          bio: myInfo.bio,
+        },
+        isValid: true,
+        errors: {},
+      });
+    }
+  }, [myInfo]);
+
+  useEffect(() => {
+    console.log("initialMyInfo changed:", initialMyInfo);
+    if (initialMyInfo && Object.keys(initialMyInfo).length > 0) {
+      setMyInfo(initialMyInfo);
+    }
+  }, [initialMyInfo]);
 
   const handleChatting = () => {
     // chat 페이지로 넘어가기
@@ -80,13 +147,24 @@ const MyProfile = ({ myInfo }) => {
     }
   };
 
+  const createISODate = (
+    year,
+    month,
+    day,
+    hours = 0,
+    min = 0,
+    sec = 0,
+    milisec = 0
+  ) => {
+    const date = new Date(
+      Date.UTC(year, month - 1, day, hours, min, sec, milisec)
+    );
+    return date.toISOString();
+  };
+
   const handleConfirm = async () => {
     console.log("수정 시작...");
     console.log("현재 modalType:", modalType);
-    // handleConfirm 함수 내부
-    console.log("mentorFormData 전체:", mentorFormData);
-    console.log("isValid 값:", mentorFormData.isValid);
-    console.log("errors 객체:", mentorFormData.errors);
 
     try {
       setIsSubmitting(true);
@@ -94,20 +172,28 @@ const MyProfile = ({ myInfo }) => {
       switch (modalType) {
         case "mentor":
           if (!mentorFormData.isValid) {
-            // 첫 번째 오류 메시지 또는 기본 메시지 표시
             const errorMessage =
               Object.values(mentorFormData.errors).find((msg) => msg) ||
               "멘토 정보를 확인해주세요";
             return;
           }
 
-          // 유효한 경우 API 호출 및 처리
           console.log("멘토 정보 업데이트:", mentorFormData.data);
+          const mentorResponse = await putMentorInfo(mentorFormData.data)
+          console.log(mentorResponse)
+
+
+          setMyInfo((prevInfo) => ({
+            ...prevInfo,
+            farmingYears: mentorFormData.data.farmingYears,
+            cropNames: mentorFormData.data.cropNames,
+            bio: mentorFormData.data.bio,
+          }));
+
           toast.success("멘토 정보가 수정 되었습니다.");
           break;
 
         case "myInfo":
-          console.log("내 정보 모드 - 제출 전 데이터:", myInfoFormData.data);
           if (!myInfoFormData.isValid) {
             // 첫 번째 오류 메시지 또는 기본 메시지 표시
             const errorMessage =
@@ -118,7 +204,38 @@ const MyProfile = ({ myInfo }) => {
 
           // 유효한 경우 API 호출 및 처리
           console.log("회원 정보 업데이트:", myInfoFormData.data);
-          toast.success("회원 정보가 수정 되었습니다.");
+          const birth = createISODate(
+            myInfoFormData.data.year,
+            myInfoFormData.data.month,
+            myInfoFormData.data.day
+          );
+          const name = myInfoFormData.data.name;
+          const address = myInfoFormData.data.address;
+          const gender = myInfoFormData.data.gender;
+
+          // API 호출
+          const myInfoResponse = await putMyInfo({
+            name,
+            address,
+            birth,
+            gender,
+          });
+
+          // 성공했다면 로컬 상태 업데이트
+          if (myInfoResponse.success) {
+            // UI에 즉시 반영하기 위해 상태 업데이트
+            setMyInfo(myInfoResponse.data);
+
+            // 추가로 필요한 상태 업데이트
+            setBirth(formatBirthDate(myInfoResponse.data.birth));
+            setAddress(formatAddress(myInfoResponse.data.address));
+            setMyImage({
+              isDefaultImage: myInfoResponse.data.isDefaultImage,
+              imageUrl: myInfoResponse.data.profileImage,
+            });
+
+            toast.success("회원 정보가 수정 되었습니다.");
+          }
           break;
 
         case "password":
@@ -133,7 +250,17 @@ const MyProfile = ({ myInfo }) => {
 
           // 유효한 경우 API 호출 및 처리
           console.log("비밀번호 정보 업데이트:", passwordFormData.data);
-          toast.success("비밀번호 정보가 수정 되었습니다.");
+          const currentPassword = passwordFormData.data.password;
+          const newPassword = passwordFormData.data.newPassword;
+          console.log("newPassword:", passwordFormData.data.newPassword);
+          const passwordResponse = await changePassword({
+            currentPassword,
+            newPassword,
+          });
+
+          if (passwordResponse) {
+            toast.success("비밀번호 정보가 수정 되었습니다.");
+          }
           break;
 
         default:
@@ -146,7 +273,6 @@ const MyProfile = ({ myInfo }) => {
       toast.error("정보 수정에 실패했습니다.");
     } finally {
       setIsSubmitting(false);
-      console.log("제출 프로세스 완료");
     }
 
     // 최종 데이터 확인 (모든 경우에 실행)
@@ -157,7 +283,10 @@ const MyProfile = ({ myInfo }) => {
   return (
     <div>
       <div className="flex flex-col items-center pt-10">
-        <MyProfileImage userProfileImage={myInfo}/>
+        <MyProfileImage
+          imageUrl={myImage.imageUrl}
+          isDefaultImage={myImage.isDefaultImage}
+        />
         <div className="mentor-menti-button my-2">
           {myInfo.isMentor ? (
             <div className="px-4 py-1 bg-primaryGreen text-textColor-white rounded-full text-sm w-16 text-center">
@@ -173,7 +302,7 @@ const MyProfile = ({ myInfo }) => {
       <div className="greeting mx-10 p-2 border-b-2 border-b-gray-300 flex">
         <div>
           <span className="text-2xl text-textColor-black font-medium">
-            {myInfo.userName}{" "}
+            {myInfo.name}{" "}
           </span>
           <span className="text-lg text-textColor-black">님,</span>
           <p className="text-xl text-textColor-black">오늘도 안녕하세요 :)</p>
@@ -186,7 +315,7 @@ const MyProfile = ({ myInfo }) => {
         <div className="flex justify-between mb-1">
           <p className="text-md text-textColor-gray text-start">생년월일</p>
           <p className="text-lg text-textColor-black text-end">
-            {myInfo.birthDate}
+            {birth.year}년 {birth.month}월 {birth.day}일
           </p>
         </div>
         <div className="flex justify-between mb-1">
@@ -197,15 +326,13 @@ const MyProfile = ({ myInfo }) => {
         </div>
         <div className="flex justify-between mb-1">
           <p className="text-md text-textColor-gray text-start">지역</p>
-          <p className="text-lg text-textColor-black text-end">
-            {myInfo.region}
-          </p>
+          <p className="text-lg text-textColor-black text-end">{address}</p>
         </div>
         {myInfo.isMentor && (
           <div className="flex justify-between mb-1">
             <p className="text-md text-textColor-gray text-start">재배 작물</p>
             <p className="text-lg text-textColor-black text-end">
-              {myInfo.crops.join(", ")}
+              {myInfo.cropNames.join(", ")}
             </p>
           </div>
         )}

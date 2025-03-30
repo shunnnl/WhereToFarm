@@ -2,6 +2,9 @@ import { Provider } from "react-redux";
 import { store } from "./store";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+import { useEffect } from 'react';
+import { checkTokenExpiration } from './store/slices/authSlice';
+import { useDispatch } from 'react-redux';
 import "react-toastify/dist/ReactToastify.css";
 import "./styles/toast-custom.css";
 
@@ -15,9 +18,9 @@ import CropCalculatorPage from "./pages/crop-calculator/CropCalculatorPage";
 import Footer from "./components/common/Footer";
 import Chat from "./pages/chat/Chat";
 import MyPage from "./pages/mypage/MyPage";
-import FarmbtiReport from "./components/MyPage/FarmbtiReport";
-import CropCalculateReport from "./components/MyPage/CropCalculateReport";
-import Estate from "./pages/estate/Estate";
+import FarmbtiReport from "./components/mypage/FarmbtiReport";
+import CropCalculateReport from "./components/mypage/CropCalculateReport";
+import EstatePage from "./pages/etc/estate/EstatePage";
 import UserDeletePage from "./pages/auth/UserDeletePage";
 import AuthRequiredPage from "./pages/etc/AuthRequiredPage";
 import GuideBookPage from "./pages/etc/guidebook/GuideBookPage";
@@ -26,6 +29,8 @@ import SurveyIntroPage from "./pages/recommendation/survey/SurveyIntroPage";
 import SurveyPage from "./pages/recommendation/survey/SurveyPage";
 import ReportPage from "./pages/recommendation/report/ReportPage";
 import SupportPolicyPage from "./pages/etc/support/SupportPolicyPage";
+import EstateDetailPage from "./pages/etc/estate/EstateDetailPage";
+
 
 
 const isAuthenticated = () => {
@@ -40,7 +45,21 @@ const ProtectedRoute = ({ children }) => {
 };
 
 function App() {
+
+  
   console.log("Store:", store);
+
+  // 리프레시 토큰 체크
+  useEffect(() => {
+    // 앱 로드 시 바로 체크
+    store.dispatch(checkTokenExpiration());
+    // 주기적으로 토큰 만료 체크 (5분마다)
+    const intervalId = setInterval(() => {
+      store.dispatch(checkTokenExpiration());
+    }, 5 * 60 * 1000);
+    
+    return () => clearInterval(intervalId);
+  }, []);  // useDispatch를 의존성 배열에서 제거
 
   return (
     <Provider store={store}>
@@ -76,7 +95,8 @@ function App() {
             <Route path="/guidebook" element={<GuideBookPage />} />
             <Route path="/support" element={<SupportPolicyPage />} />
             <Route path="/news" element={<NewsPage />} />
-            <Route path="/estate" element={<Estate />} />
+            <Route path="/estate" element={<EstatePage />} />
+            <Route path="/estate/:estateId" element={<EstateDetailPage />} />
             <Route
               path="/account/delete"
               element={

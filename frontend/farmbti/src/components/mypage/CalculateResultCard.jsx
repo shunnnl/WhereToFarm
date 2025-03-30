@@ -1,7 +1,18 @@
 import { useRef } from "react";
 import CalculateResultModal from "./CalaulateResultModal";
+import { cropsReportsDeatil } from "../../API/mypage/MyReportsAPI";
+import { Trash2 } from "lucide-react";
+import { toast } from "react-toastify";
 
-const CalculateResultCard = ({ id, crop, area, date, totalProfit }) => {
+const CalculateResultCard = ({
+  id,
+  crop,
+  area,
+  date,
+  totalProfit,
+  deleteMode,
+  onDelete,
+}) => {
   const formattedDate = new Date(date)
     .toLocaleDateString("ko-KR", {
       year: "numeric",
@@ -17,12 +28,34 @@ const CalculateResultCard = ({ id, crop, area, date, totalProfit }) => {
 
   const modalRef = useRef(null);
 
-  const openModal = () => {
-    modalRef.current?.showModal();
+  const openModal = async () => {
+    try {
+      modalRef.current?.showModal();
+      console.log(id)
+      const reportData = await cropsReportsDeatil(id);
+      modalRef.current?.updateData(reportData);
+    } catch (error) {
+      toast.error( error?.message || "상세 정보를 불러오는 데 실패했습니다.");
+      modalRef.current?.close();
+    }
+  };
+
+  const handleDelete = (e) => {
+    e.stopPropagation(); // 이벤트 버블링 방지
+    onDelete(id);
   };
 
   return (
-    <div className="w-full max-w-md rounded-lg overflow-hidden shadow-md bg-gradient-to-br to-primaryGreen from-supportGreen">
+    <div className="w-full max-w-md rounded-lg overflow-hidden shadow-md bg-gradient-to-br to-primaryGreen from-supportGreen relative">
+      {deleteMode && (
+        <button
+          className="absolute top-12 right-4 z-10 text-red-500 w-6 h-6 flex items-center justify-center"
+          onClick={handleDelete}
+        >
+          <Trash2 />
+        </button>
+      )}
+
       <div className="px-6 py-2 text-white flex justify-between items-center">
         <div className="font-medium text-sm">작물 종류</div>
         <div className="text-md">{crop}</div>

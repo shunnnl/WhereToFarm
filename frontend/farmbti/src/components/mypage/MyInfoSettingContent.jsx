@@ -5,34 +5,31 @@ import useKakaoAddressService from "../../API/useKakaoAddressService";
 const MyInfoSettingContent = ({ onChange, initialData }) => {
   const [formData, setFormData] = useState({
     name: initialData?.name || "",
-    gender: initialData?.gender || "",
-    Year: initialData?.Year || "",
-    Month: initialData?.Month || "",
-    Day: initialData?.Day || "",
+    gender: initialData?.gender !== undefined ? Number(initialData.gender) : "",
+    year: initialData?.year || "",
+    month: initialData?.month || "",
+    day: initialData?.day || "",
     address: initialData?.address || "",
   });
 
   const [errors, setErrors] = useState({});
 
-  // 날짜 옵션 생성
   const currentYear = new Date().getFullYear();
   const yearOptions = Array.from({ length: 100 }, (_, i) => currentYear - i);
   const monthOptions = Array.from({ length: 12 }, (_, i) => i + 1);
 
-  // 선택한 연도와 월에 따라 일 옵션 계산
   const getDaysInMonth = (year, month) => {
     return new Date(year, month, 0).getDate();
   };
 
   const dayOptions =
-    formData.Year && formData.Month
+    formData.year && formData.month
       ? Array.from(
-          { length: getDaysInMonth(formData.Year, formData.Month) },
+          { length: getDaysInMonth(formData.year, formData.month) },
           (_, i) => i + 1
         )
       : Array.from({ length: 31 }, (_, i) => i + 1);
 
-  // 유효성 검사 함수
   const validateField = (name, value) => {
     switch (name) {
       case "name":
@@ -44,18 +41,19 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
         return "";
 
       case "gender":
-        if (!value) return "성별을 선택해주세요";
+        if (value !== 0 && value !== 1 && value !== "0" && value !== "1")
+          return "성별을 선택해주세요";
         return "";
 
-      case "Year":
+      case "year":
         if (!value) return "출생 연도를 선택해주세요";
         return "";
 
-      case "Month":
+      case "month":
         if (!value) return "출생 월을 선택해주세요";
         return "";
 
-      case "Day":
+      case "day":
         if (!value) return "출생일을 선택해주세요";
         return "";
 
@@ -67,7 +65,6 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
     }
   };
 
-  // 폼 데이터 변경 핸들러
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -75,7 +72,6 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
       [name]: value,
     }));
 
-    // 유효성 검사 실행 및 오류 상태 업데이트
     const errorMessage = validateField(name, value);
     setErrors((prev) => ({
       ...prev,
@@ -83,22 +79,21 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
     }));
   };
 
-  // 성별 선택 핸들러
   const handleGenderChange = (gender) => {
+    const genderValue = gender === "남성" ? 0 : 1;
+
     setFormData((prev) => ({
       ...prev,
-      gender,
+      gender: genderValue,
     }));
 
-    // 유효성 검사 업데이트
-    const errorMessage = validateField("gender", gender);
+    const errorMessage = validateField("gender", genderValue);
     setErrors((prev) => ({
       ...prev,
       gender: errorMessage,
     }));
   };
 
-  // 주소가 선택되었을 때 호출될 함수
   const handleAddressSelected = (addressData) => {
     setFormData((prev) => ({
       ...prev,
@@ -106,15 +101,13 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
     }));
   };
 
-  // 주소검색 서비스 훅 사용
   const { openAddressSearch } = useKakaoAddressService(handleAddressSelected);
 
-  // 폼 제출 핸들러
   const handleSubmit = (e) => {
     e.preventDefault();
   };
 
-  // 초기 마운트 시 유효성 검사
+  // 컴포넌트가 마운트될 때 초기 데이터 검증
   useEffect(() => {
     const newErrors = {};
     Object.entries(formData).forEach(([key, value]) => {
@@ -123,7 +116,7 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
     setErrors(newErrors);
   }, []);
 
-  // formData가 변경될 때마다 부모에게 알림 (유효성 검사 결과 포함)
+  // 폼 데이터나 에러가 변경될 때 부모 컴포넌트에 알림
   useEffect(() => {
     if (onChange) {
       onChange({
@@ -165,7 +158,7 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
                 type="radio"
                 name="gender"
                 value="남성"
-                checked={formData.gender === "남성"}
+                checked={formData.gender === 0 || formData.gender === "0"}
                 onChange={() => handleGenderChange("남성")}
                 className="w-5 h-5 text-blue-500"
               />
@@ -176,7 +169,7 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
                 type="radio"
                 name="gender"
                 value="여성"
-                checked={formData.gender === "여성"}
+                checked={formData.gender === 1 || formData.gender === "1"}
                 onChange={() => handleGenderChange("여성")}
                 className="w-5 h-5 text-blue-500"
               />
@@ -193,8 +186,8 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
           <h2 className="text-lg font-medium">생년월일</h2>
           <div className="grid grid-cols-3 gap-4">
             <select
-              name="Year"
-              value={formData.Year}
+              name="year"
+              value={formData.year}
               onChange={handleChange}
               className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-supportGreen"
             >
@@ -206,8 +199,8 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
               ))}
             </select>
             <select
-              name="Month"
-              value={formData.Month}
+              name="month"
+              value={formData.month}
               onChange={handleChange}
               className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-supportGreen"
             >
@@ -219,8 +212,8 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
               ))}
             </select>
             <select
-              name="Day"
-              value={formData.Day}
+              name="day"
+              value={formData.day}
               onChange={handleChange}
               className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-supportGreen"
             >
@@ -232,7 +225,7 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
               ))}
             </select>
           </div>
-          {(errors.Year || errors.Month || errors.Day) && (
+          {(errors.year || errors.month || errors.day) && (
             <div className="text-red-500 text-sm mt-1">
               생년월일을 모두 선택해주세요
             </div>

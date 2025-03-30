@@ -101,6 +101,7 @@ const CalculateResultModal = forwardRef(({ reportId }, ref) => {
   useImperativeHandle(ref, () => ({
     showModal: () => dialogRef.current?.showModal(),
     close: () => dialogRef.current?.close(),
+    updateData: (data) => setReport(data),
   }));
 
   const handleCancel = () => {

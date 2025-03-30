@@ -7,6 +7,7 @@ import MentorSelect from '../../components/mentor/MentorSelect';
 import { useEffect } from 'react';
 
 const MentorPage = () => {
+  
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
