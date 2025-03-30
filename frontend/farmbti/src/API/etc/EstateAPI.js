@@ -28,3 +28,16 @@ export const getFilteredEstate = async (province, city) => {
     throw error.error;
   }
 };
+
+export const getEstateDetail = async (estateId) => {
+  try {
+    const response = await authAxios.get(`/property/${estateId}`);
+    if (!response.success) {
+      throw response.error;
+    }
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    throw error.error;
+  }
+};
