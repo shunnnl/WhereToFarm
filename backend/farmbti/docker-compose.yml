@@ -25,6 +25,8 @@ services:
       - postgres
     env_file:
       - .env
+    environment:
+      - KAKAO_API_KEY=a24122d363b6f9d33ce3566b2f018f12
     volumes:
       - ./src/main/resources/application.yml:/app/application.yml
     networks:
