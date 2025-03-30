@@ -195,28 +195,31 @@ public class ReportService {
     /**
      * 파라미터를 바탕으로 성격 유형 결정
      */
-    private CharacterType determineCharacterType(Map<String, Object> params) {
-        // FARM 값을 기준으로 성격 유형 결정 로직
-        // 예: FARM 값을 조합하여 가장 적합한 캐릭터 유형 선택
 
-        // 여기서는 간단한 로직으로 구현 (실제로는 복잡한 비즈니스 로직이 필요할 수 있음)
+    private CharacterType determineCharacterType(Map<String, Object> params) {
+        // FARM 값을 추출
         Float fValue = convertToFloat(params.get("F"));
         Float aValue = convertToFloat(params.get("A"));
         Float rValue = convertToFloat(params.get("R"));
         Float mValue = convertToFloat(params.get("M"));
 
-        // 가장 높은 값을 기준으로 성격 유형 결정 (예시)
-        int characterTypeId = 1; // 기본값
+        // 각 값이 0.5를 초과하는지 여부에 따라 비트 플래그 생성
+        boolean isHighF = fValue > 0.5;
+        boolean isHighA = aValue > 0.5;
+        boolean isHighR = rValue > 0.5;
+        boolean isHighM = mValue > 0.5;
 
-        if (fValue >= aValue && fValue >= rValue && fValue >= mValue) {
-            characterTypeId = 1; // F 유형
-        } else if (aValue >= fValue && aValue >= rValue && aValue >= mValue) {
-            characterTypeId = 2; // A 유형
-        } else if (rValue >= fValue && rValue >= aValue && rValue >= mValue) {
-            characterTypeId = 3; // R 유형
-        } else if (mValue >= fValue && mValue >= aValue && mValue >= rValue) {
-            characterTypeId = 4; // M 유형
-        }
+        // 유형 ID 계산 (1~16)
+        int characterTypeId = 1;
+
+        // 비트 연산으로 ID 계산 (각 조합에 대해 1부터 16까지 매핑)
+        if (isHighF) characterTypeId += 8; // 첫 번째 비트 (8)
+        if (isHighA) characterTypeId += 4; // 두 번째 비트 (4)
+        if (isHighR) characterTypeId += 2; // 세 번째 비트 (2)
+        if (isHighM) characterTypeId += 1; // 네 번째 비트 (1)
+
+        log.info("Character determination: F={}, A={}, R={}, M={}, Selected characterTypeId={}",
+                fValue, aValue, rValue, mValue, characterTypeId);
 
         return characterTypeRepository.findById(characterTypeId)
                 .orElseThrow(() -> new GlobalException(ReportErrorCode.CHARACTER_TYPE_NOT_FOUND));
