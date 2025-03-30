@@ -25,7 +25,7 @@ spring:
       max-file-size: 5MB
       max-request-size: 5MB
 server:
-  port: 18081
+  port: 8081
 jwt:
   secret-key: ${JWT_SECRET}
   expiration-time: 3600000
