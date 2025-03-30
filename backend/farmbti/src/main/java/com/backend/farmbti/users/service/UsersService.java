@@ -54,7 +54,7 @@ public class UsersService {
     }
 
     /**
-     * 회원 탈퇴
+     * 회원 탈퇴 (논리적 삭제)
      */
     @Transactional
     public void deleteUser(UserDeleteRequest request, Long userId) {
@@ -66,20 +66,11 @@ public class UsersService {
             throw new GlobalException(UsersErrorCode.PASSWORD_MISMATCH);
         }
 
-        // 1. 멘토로 등록되어 있는지 확인
-        Optional<Mentors> mentorOptional = mentorsRepository.findByUserId(userId);
+        // 사용자 상태를 탈퇴(1)로 변경
+        user.updateIsOut((byte) 1);
 
-        // 2. 멘토인 경우, 멘토-작물 관계 삭제 후 멘토 정보 삭제
-        if (mentorOptional.isPresent()) {
-            Mentors mentor = mentorOptional.get();
-            // 2-1. 먼저 멘토-작물 관계 삭제
-            mentorsCropsRepository.deleteByMentorId(mentor.getId());
-            // 2-2. 그 다음 멘토 정보 삭제
-            mentorsRepository.delete(mentor);
-        }
-
-        // 3. 마지막으로 사용자 정보 삭제
-        usersRepository.delete(user);
+        // 변경사항 저장
+        usersRepository.save(user);
     }
 
     /**

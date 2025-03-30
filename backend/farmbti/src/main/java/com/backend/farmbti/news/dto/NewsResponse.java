@@ -3,12 +3,10 @@ package com.backend.farmbti.news.dto;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Builder
 public class NewsResponse {
     private String title;
-    private LocalDateTime createdAt;
+    private String createdAt;
     private String link;
 }

@@ -16,7 +16,6 @@ import com.backend.farmbti.crops.repository.CropsReportRepository;
 import com.backend.farmbti.crops.repository.CropsRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -147,7 +146,7 @@ public class CropsService {
             // 작물 정보 가져오기 (사용자의 report에서 crops 객체 참조)
             Crops crops = report.getCrops();
             responses.add(CropsAllResponse.builder()
-                    .reportId(crops.getId())
+                    .reportId(report.getId())
                     .cropsName(crops.getName())
                     .myAreaVolume(report.getMyAreaVolume())
                     .myTotalPrice(report.getMyTotalPrice())
@@ -158,6 +157,7 @@ public class CropsService {
         return responses;
     }
 
+    @Transactional(readOnly = true)
     public CropsDetailReponse getCropsDetail(Long usersId, Long cropsReportId) throws JsonProcessingException {
 
         CropsReport cropsReport = cropsReportRepository.findByUsers_IdAndId(usersId, cropsReportId)
@@ -166,6 +166,8 @@ public class CropsService {
         Crops crops = cropsReport.getCrops();
 
         String monthlyPrice = crops.getMonthlyPrice(); // JSON 문자열
+
+        System.out.println(monthlyPrice);
 
         // monthlyPrice JSON 문자열을 파싱하여 객체로 변환
         Object parsedMonthlyPrice = objectMapper.readValue(monthlyPrice, Object.class);

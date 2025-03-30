@@ -48,6 +48,10 @@ public class Users extends TimeStampEntity {
     @Column(name = "refresh_token")
     private String refreshToken;
 
+    @Builder.Default
+    @Column(name = "is_out", nullable = false)
+    private Byte isOut = 0; // 탈퇴여부: 탈퇴(1), 탈퇴X(0)
+
     public void updateRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
     }
@@ -55,6 +59,8 @@ public class Users extends TimeStampEntity {
     public void updatePassword(String newPassword) {this.password = newPassword;}
 
     public void updateProfileImage(String profileImage) {this.profileImage = profileImage;}
+
+    public void updateIsOut(Byte isOut) {this.isOut = isOut;}
 
     public void updateUserInfo(String name, Date birth, String address, Byte gender) {
         this.name = name;
