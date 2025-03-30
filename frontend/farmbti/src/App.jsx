@@ -20,7 +20,7 @@ import Chat from "./pages/chat/Chat";
 import MyPage from "./pages/mypage/MyPage";
 import FarmbtiReport from "./components/mypage/FarmbtiReport";
 import CropCalculateReport from "./components/mypage/CropCalculateReport";
-import Estate from "./pages/etc/estate/EstatePage";
+import EstatePage from "./pages/etc/estate/EstatePage";
 import UserDeletePage from "./pages/auth/UserDeletePage";
 import AuthRequiredPage from "./pages/etc/AuthRequiredPage";
 import GuideBookPage from "./pages/etc/guidebook/GuideBookPage";
@@ -90,7 +90,7 @@ function App() {
             />
             <Route path="/guidebook" element={<GuideBookPage />} />
             <Route path="/news" element={<NewsPage />} />
-            <Route path="/estate" element={<Estate />} />
+            <Route path="/estate" element={<EstatePage />} />
             <Route path="/estate/:estateId" element={<EstateDetailPage />} />
             <Route
               path="/account/delete"
