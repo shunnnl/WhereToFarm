@@ -16,8 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/property")
 @RequiredArgsConstructor
@@ -38,11 +36,16 @@ public class PropertyController {
         return CommonResponseDto.ok(propertyService.getAllProperties(pageable));
     }
 
-
     @Operation(summary = "매물 검색", description = "지역(도, 시군)을 기준으로 매물을 검색합니다.")
     @PostMapping("/search")
-    public CommonResponseDto<List<PropertyListResponse>> searchProperties(@RequestBody PropertySearchRequest request) {
-        List<PropertyListResponse> searchResults = propertyService.searchProperties(request);
+    public CommonResponseDto<PageResponseDto<PropertyListResponse>> searchProperties(
+            @RequestBody PropertySearchRequest request,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "id"));
+        PageResponseDto<PropertyListResponse> searchResults = propertyService.searchPropertiesWithPage(request, pageable);
+
         return CommonResponseDto.ok(searchResults);
     }
 
