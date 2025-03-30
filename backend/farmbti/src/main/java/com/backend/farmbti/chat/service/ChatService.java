@@ -14,6 +14,7 @@ import com.backend.farmbti.chat.repository.ChatMessageRepository;
 import com.backend.farmbti.chat.repository.ChatRepository;
 import com.backend.farmbti.common.exception.GlobalErrorCode;
 import com.backend.farmbti.common.exception.GlobalException;
+import com.backend.farmbti.common.service.S3Service;
 import com.backend.farmbti.mentors.domain.Mentors;
 import com.backend.farmbti.mentors.exception.MentorsErrorCode;
 import com.backend.farmbti.mentors.repository.MentorsRepository;
@@ -33,6 +34,7 @@ public class ChatService {
     private final UsersRepository usersRepository;
     private final MentorsRepository mentorsRepository;
     private final ChatMessageRepository chatMessageRepository;
+    private final S3Service s3Service;
 
     @Transactional
     public ChatResponse create(Long userId, ChatRequest chatRequest) {
@@ -65,7 +67,7 @@ public class ChatService {
                 .otherUserId(chat.getMentor().getId())
                 .currentUserName(chat.getMentee().getName())
                 .otherUserName(chat.getMentor().getUser().getName())
-                .otherUserProfile(chat.getMentor().getUser().getProfileImage())
+                .otherUserProfile(s3Service.getSignedUrl(chat.getMentor().getUser().getProfileImage()))
                 .isCurrentUserMentee(true)
                 .build();
 
@@ -103,7 +105,7 @@ public class ChatService {
                     .roomId(chat.getRoomId())
                     .otherUserId(otherUserId)
                     .otherUserName(otherUserName)
-                    .otherUserProfile(otherUserProfile)
+                    .otherUserProfile(s3Service.getSignedUrl(otherUserProfile))
                     .lastMessage(latestMessage)
                     .build();
 
@@ -128,14 +130,21 @@ public class ChatService {
 
     }
 
-    public List<MessageResponse> getMessageDetail(Long roomId) {
+    @Transactional(readOnly = true)
+    public List<MessageResponse> getMessageDetail(Long roomId, Long usersId) {
 
         List<ChatMessage> chatMessages = chatMessageRepository.findByChat_RoomId(roomId);
 
         return chatMessages.stream().map(
                 messages -> {
 
+                    //현재 로그인한 사용자가 멘티라면
+                    boolean isUserMentee = messages.getChat().getMentee().getId().equals(usersId);
+
+                    Long otherUserId = isUserMentee ? messages.getChat().getMentor().getId() : messages.getChat().getMentee().getId();
+
                     return MessageResponse.builder()
+                            .senderId(otherUserId)
                             .messageId(messages.getMessageId())
                             .content(messages.getContent())
                             .sentAt(messages.getSendAt())

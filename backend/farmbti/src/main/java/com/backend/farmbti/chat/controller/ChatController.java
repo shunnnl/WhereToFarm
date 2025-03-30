@@ -46,8 +46,8 @@ public class ChatController {
     @GetMapping("/{roomId}/messages/detail")
     @Operation(summary = "메시지 목록 조회", description = "특정 채팅방의 메시지들을 조회합니다.")
     public CommonResponseDto sendMessage(@PathVariable Long roomId) {
-
-        return CommonResponseDto.ok(chatService.getMessageDetail(roomId));
+        Long usersId = securityUtils.getCurrentUsersId();
+        return CommonResponseDto.ok(chatService.getMessageDetail(roomId, usersId));
     }
 //
 //    @DeleteMapping("/{roomId}/messages/{messageId}")
