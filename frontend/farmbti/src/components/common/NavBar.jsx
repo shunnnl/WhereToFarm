@@ -92,17 +92,18 @@ const Navbar = () => {
                     
                     try {
                         const receivedData = JSON.parse(message.body);
-                        
-                        // 서버에서 보내는 형식에 맞게 알림 생성
-                        // { "sender": "사용자이름", "timestamp": "2025-03-30T10:15:30.123Z" }
+                        console.log("새 메시지 수신:", receivedData);
+
+                        // 수신된 메시지로 알림 객체 생성
                         const notification = {
-                            id: new Date().getTime().toString(), // 고유 ID 생성
-                            title: "새 메시지 도착",
-                            message: `${receivedData.sender}님으로부터 새 메시지가 도착했습니다.`,
-                            createdAt: receivedData.timestamp,
-                            read: false
+                            id: receivedData.messageId.toString(),
+                            title: "새 메시지",
+                            message: `${receivedData.senderId}님: ${receivedData.content}`,
+                            createdAt: receivedData.sentAt,
+                            read: false,
+                            senderId: receivedData.senderId
                         };
-                        
+                                        
                         // 새 알림 추가 및 읽지 않은 알림 카운트 증가
                         setNotifications(prev => [notification, ...prev]);
                         setUnreadCount(prev => prev + 1);
@@ -148,6 +149,10 @@ const Navbar = () => {
             setUnreadCount(0);
         }
     }, [isLoggedIn]);
+
+
+
+    
     
     // 알림 읽음 // 알림 읽음 처리 함수 (로컬에서만 처리)
 const markAsRead = (notificationId) => {
@@ -160,6 +165,8 @@ const markAsRead = (notificationId) => {
     setUnreadCount(prev => Math.max(0, prev - 1));
 };
 
+
+
     // 모든 알림 읽음 처리 (로컬에서만 처리)
     const markAllAsRead = () => {
         // 모든 알림을 읽음 상태로 변경
@@ -168,6 +175,8 @@ const markAsRead = (notificationId) => {
         );
         setUnreadCount(0);
     };
+
+
 
     // 로그아웃 핸들러
     const handleLogout = (e) => {
@@ -290,21 +299,21 @@ const markAsRead = (notificationId) => {
             {/* 알림 버튼 및 드롭다운 */}
             <div className="relative" ref={notificationRef}>
               <button
-                className="p-2 hover:bg-gray-100 rounded-full relative"
+                className={`p-2 ${unreadCount > 0 ? 'bg-red-100' : 'hover:bg-gray-100'} rounded-full relative`}
                 onClick={() => {
-                  setIsNotificationOpen(!isNotificationOpen);
-                  if (!isNotificationOpen && unreadCount > 0) {
-                    markAllAsRead();
-                  }
+                    setIsNotificationOpen(!isNotificationOpen);
+                    if (!isNotificationOpen && unreadCount > 0) {
+                        markAllAsRead();
+                    }
                 }}
               >
                 <img src={bellIcon} alt="알림" className="h-6 w-6" />
                 {/* 읽지 않은 알림 표시 */}
                 {unreadCount > 0 && (
-                  <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/3 -translate-y-1/3 bg-red-500 rounded-full">
+                    <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/3 -translate-y-1/3 bg-red-500 rounded-full">
                     {unreadCount > 9 ? "9+" : unreadCount}
-                  </span>
-                )}
+                </span>
+            )}
               </button>
 
               {/* 알림 드롭다운 */}
