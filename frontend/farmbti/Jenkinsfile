@@ -60,6 +60,10 @@ pipeline {
                     cp -r frontend/farmbti/dist /home/ubuntu/nginx/dist
 
                     echo "[INFO] dist 복사 완료 ✅"
+                    
+                    echo "[INFO] Nginx 컨테이너 재시작 중..."
+                    docker restart farmbti-nginx
+                    echo "[INFO] Nginx 재시작 완료 ✅"
                     '''
                 }
             }
