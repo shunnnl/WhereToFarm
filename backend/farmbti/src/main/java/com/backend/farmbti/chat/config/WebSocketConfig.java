@@ -3,10 +3,21 @@ package com.backend.farmbti.chat.config;
 import com.backend.farmbti.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.messaging.simp.stomp.StompCommand;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+import org.springframework.messaging.support.ChannelInterceptor;
+import org.springframework.messaging.support.MessageHeaderAccessor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+
+import java.security.SignatureException;
+import java.util.List;
 
 @Configuration
 @EnableWebSocketMessageBroker  // WebSocket 메시지 브로커 기능 활성화
@@ -34,4 +45,31 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 .setAllowedOrigins("http://localhost:18081", "http://localhost:3000", "http://j12d209.p.ssafy.io", "http://localhost:5173", "http://localhost:5174") // CORS 설정 (필요에 따라 조정)
                 .withSockJS();  // SockJS 지원 추가 (브라우저 호환성을 위해)
     }
+
+    @Override
+    public void configureClientInboundChannel(ChannelRegistration registration) {
+        registration.interceptors(new ChannelInterceptor() {
+            @Override
+            public Message<?> preSend(Message<?> message, MessageChannel channel) {
+                StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+
+                if (StompCommand.CONNECT.equals(accessor.getCommand())) {
+                    // 헤더에서 토큰 추출
+                    List<String> authorization = accessor.getNativeHeader("X-Authorization");
+                    if (authorization != null && !authorization.isEmpty()) {
+                        String bearerToken = authorization.get(0).replace("Bearer ", "");
+                        try {
+                            if (jwtTokenProvider.validateToken(bearerToken)) {
+                                accessor.setUser(new UsernamePasswordAuthenticationToken(jwtTokenProvider.getName(bearerToken), null, null));
+                            }
+                        } catch (SignatureException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+                return message;
+            }
+        });
+    }
+
 }
