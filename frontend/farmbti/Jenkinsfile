@@ -27,6 +27,14 @@ pipeline {
             }
         }
 
+        stage('Apply Environment Config') {
+            steps {
+                configFileProvider([configFile(fileId: 'front_env', targetLocation: "${FRONT_PROJECT_DIR}/.env")]) {
+                    sh 'echo "✅ 환경 설정 파일 적용 완료"'
+                }
+            }
+        }
+
         stage('Build Frontend') {
             steps {
                 dir("frontend/farmbti") {
