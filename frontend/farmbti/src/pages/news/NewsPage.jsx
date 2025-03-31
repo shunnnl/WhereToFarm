@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import PageHeader from "../../components/common/PageHeader";
 import PaginationComponent from "../../components/common/Pagination";
 import { getNewsList } from "../../API/etc/NewsAPI";
+import LoadingSpinner from "../../components/common/LoadingSpinner";
 import { toast } from "react-toastify";
 import { Calendar, Clock, ArrowRight } from "lucide-react";
 
@@ -58,7 +59,9 @@ const NewsPage = () => {
       />
 
       {isLoading ? (
-        <></>
+        <>
+          <LoadingSpinner text="뉴스 불러오는 중..." />
+        </>
       ) : (
         <>
           <div className="max-w-5xl mx-auto mt-6 px-4">
