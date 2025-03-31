@@ -30,13 +30,26 @@ const Chat = () => {
     }
   }, []);
   
-  // 채팅방 ID 변경시 해당 채팅방의 메시지 조회
+  // 2. 채팅방 목록 로드 (컴포넌트 마운트시 1회만 실행)
   useEffect(() => {
-    if (roomId) {
-      fetchMessages(roomId);
-    }
-  }, [roomId]);
+    const fetchChatRooms = async () => {
+      try {
+        const response = await authAxios.get('/chat/get/rooms');
+        console.log('채팅방 목록 응답:', response);
+        
+        if (Array.isArray(response.data)) {
+          setChatRooms(response.data);
+        } else if (response.data && response.data.success) {
+          setChatRooms(response.data.data);
+        }
+      } catch (error) {
+        console.error('채팅방 목록 조회 실패:', error);
+      }
+    };
 
+    fetchChatRooms();
+  }, []);
+  
 // 메시지 목록 가져오기 함수 - 타입 비교 수정
 const fetchMessages = async (chatRoomId) => {
   try {
@@ -139,6 +152,9 @@ const connectWebSocket = () => {
       console.log('STOMP: ' + str);
     },
     reconnectDelay: 5000,
+    heartbeatIncoming: 10000,
+    heartbeatOutgoing: 10000,
+
     onConnect: () => {
       console.log(`채팅방 ${roomId}에 웹소켓 연결 완료`);
       setConnected(true);
@@ -274,6 +290,7 @@ const handleSendMessage = () => {
     // 로컬 스토리지에서 사용자 정보 가져오기
     const userInfo = JSON.parse(localStorage.getItem('user'));
     
+    console.log("백엔드에 보내고있는 senderId==", userInfo.id)
     // 웹소켓으로 메시지 전송
     stompClient.current.publish({
       destination: `/chat/${roomId}/send`,

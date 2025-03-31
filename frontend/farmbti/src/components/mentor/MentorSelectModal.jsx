@@ -65,7 +65,7 @@ const MentorSelectModal = ({ isOpen, onClose, mentor }) => {
       isOpen={isOpen}
       onRequestClose={onClose}
       className="bg-white p-6 rounded-xl shadow-md max-w-4xl w-full mx-auto "
-      overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+      overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
       contentLabel="멘토 프로필 상세 정보"
     >
       <div className="mentor-modal w-full">
