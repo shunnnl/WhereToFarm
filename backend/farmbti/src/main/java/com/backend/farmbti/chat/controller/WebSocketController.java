@@ -57,6 +57,7 @@ public class WebSocketController {
         // 메시지를 받는 사람에게 알림 전송
         // 전송 시도 후
         try {
+            System.out.println("receiverUsername: [" + receiverUsername + "]"); // 이름에 공백이나 특수문자가 있는지 확인
             messagingTemplate.convertAndSendToUser(
                     receiverUsername,
                     "/queue/notifications",
