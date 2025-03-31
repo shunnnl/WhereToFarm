@@ -44,12 +44,32 @@ public class ReportController {
     }
 
     @Operation(
-            summary = "사용자별 리포트 목록 조회",
-            description = "특정 사용자가 생성한 리포트의 요약 정보를 조회합니다."
+            summary = "내 리포트 목록 조회",
+            description = "현재 로그인한 사용자가 생성한 리포트의 요약 정보를 조회합니다."
     )
-    @GetMapping("/list/user/{userId}")
-    public CommonResponseDto<List<ReportListResponseDto>> getReportsByUserId(@PathVariable Long userId) {
-        List<ReportListResponseDto> reports = reportService.getReportsByUserId(userId);
+    @GetMapping("/list/my")
+    public CommonResponseDto<List<ReportListResponseDto>> getMyReports() {
+        List<ReportListResponseDto> reports = reportService.getMyReports();
         return CommonResponseDto.ok(reports);
+    }
+
+    @Operation(
+            summary = "리포트 상세 조회",
+            description = "특정 리포트의 상세 정보를 조회합니다."
+    )
+    @GetMapping("/{reportId}")
+    public CommonResponseDto<ReportResponseDto> getReportDetail(@PathVariable Integer reportId) {
+        ReportResponseDto report = reportService.getReportDetail(reportId);
+        return CommonResponseDto.ok(report);
+    }
+
+    @Operation(
+            summary = "리포트 삭제",
+            description = "특정 리포트를 삭제합니다. 본인의 리포트만 삭제할 수 있습니다."
+    )
+    @DeleteMapping("/{reportId}")
+    public CommonResponseDto<Void> deleteReport(@PathVariable Integer reportId) {
+        reportService.deleteReport(reportId);
+        return CommonResponseDto.ok(null);
     }
 }

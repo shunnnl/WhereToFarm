@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -162,10 +163,14 @@ public class ReportService {
     }
 
     /**
-     * 특정 사용자의 리포트 목록 조회
+     * 현재 로그인한 사용자의 리포트 목록 조회
      */
     @Transactional(readOnly = true)
-    public List<ReportListResponseDto> getReportsByUserId(Long userId) {
+    public List<ReportListResponseDto> getMyReports() {
+        // 현재 로그인한 사용자 ID 가져오기
+        Long userId = securityUtils.getCurrentUsersId();
+
+        // 사용자의 리포트 조회
         List<Report> reports = reportRepository.findByUserId(userId);
 
         return reports.stream()
@@ -187,6 +192,99 @@ public class ReportService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 리포트 상세 조회
+     */
+    @Transactional(readOnly = true)
+    public ReportResponseDto getReportDetail(Integer reportId) {
+        // 리포트 조회
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new GlobalException(ReportErrorCode.REPORT_NOT_FOUND));
+
+        // 요청한 사용자가 리포트 소유자인지 확인 (선택적)
+        Long currentUserId = securityUtils.getCurrentUsersId();
+        if (!report.getUser().getId().equals(currentUserId)) {
+            throw new GlobalException(ReportErrorCode.ACCESS_DENIED);
+        }
+
+        CharacterType characterType = report.getCharacterType();
+
+        // 캐릭터 이미지의 Signed URL 생성
+        String characterImagePath = characterType.getImage();
+        String characterImageUrl = s3Service.getSignedUrl(characterImagePath);
+
+        // 지역 결과 목록 구성
+        List<ReportResponseDto.RegionResultDto> regionResults = report.getReportRegions().stream()
+                .sorted(Comparator.comparing(ReportRegion::getRank))
+                .map(reportRegion -> {
+                    Region region = reportRegion.getRegion();
+
+                    // 작물 정보 매핑
+                    List<ReportResponseDto.CropResultDto> cropResults = region.getRegionCrops().stream()
+                            .map(crop -> ReportResponseDto.CropResultDto.builder()
+                                    .rank(crop.getRank())
+                                    .cropName(crop.getName())
+                                    .build())
+                            .collect(Collectors.toList());
+
+                    // 지역 관련 정책 검색
+                    List<Policy> regionPolicies = policyRepository.findAllByRegionContaining(region.getName());
+                    List<ReportResponseDto.PolicyDto> policyDtos = regionPolicies.stream()
+                            .map(policy -> ReportResponseDto.PolicyDto.builder()
+                                    .id(policy.getId())
+                                    .region(policy.getRegion())
+                                    .registrationDate(policy.getRegistrationDate())
+                                    .title(policy.getTitle())
+                                    .description(policy.getDescription())
+                                    .target(policy.getTarget())
+                                    .support(policy.getSupport())
+                                    .build())
+                            .collect(Collectors.toList());
+
+                    return ReportResponseDto.RegionResultDto.builder()
+                            .rank(reportRegion.getRank())
+                            .regionName(region.getName())
+                            .basicInfo(region.getBasicInfo())
+                            .recommendationReason(region.getRecommendationReason())
+                            .topCrops(cropResults)
+                            .policies(policyDtos)
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+        // 응답 DTO 구성
+        return ReportResponseDto.builder()
+                .reportId(report.getId())
+                .createdAt(report.getCreatedAt())
+                .fRatio(report.getFRatio())
+                .aRatio(report.getSRatio())
+                .rRatio(report.getNRatio())
+                .mRatio(report.getPRatio())
+                .characterTypeName(characterType.getName())
+                .characterTypeDescription(characterType.getDescription())
+                .characterTypeImage(characterImageUrl)
+                .topRegions(regionResults)
+                .build();
+    }
+
+    /**
+     * 리포트 삭제
+     */
+    @Transactional
+    public void deleteReport(Integer reportId) {
+        // 리포트 조회
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new GlobalException(ReportErrorCode.REPORT_NOT_FOUND));
+
+        // 본인 리포트인지 확인
+        Long currentUserId = securityUtils.getCurrentUsersId();
+        if (!report.getUser().getId().equals(currentUserId)) {
+            throw new GlobalException(ReportErrorCode.ACCESS_DENIED);
+        }
+
+        // 리포트 삭제
+        reportRepository.delete(report);
+    }
 
     /**
      * Object를 Float으로 변환 (Map에서 받은 값 처리용)
