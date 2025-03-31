@@ -41,6 +41,7 @@ public enum SecurityPath {
     // Policy 관련 경로
     POLICY_ALL("/policy"),
     POLICY_REGION("/policy/region"),
+    POLITCY_MAIN("/policy/main"),
 
     ZEPPELIN("/zeppelin/**"),
     PROPERTY("/property/**"); // property
