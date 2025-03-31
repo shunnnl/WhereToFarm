@@ -40,6 +40,8 @@ logging:
     com.backend.farmbti.security.filter: DEBUG
 zeppelin:
   base-url: "http://13.124.169.83:18080"
+  notebook:
+    id: 2KT1U3TU1
 
 springdoc:
   swagger-ui:
@@ -67,3 +69,4 @@ naver:
 kakao:
   api:
     key: ${KAKAO_API_KEY}
+
