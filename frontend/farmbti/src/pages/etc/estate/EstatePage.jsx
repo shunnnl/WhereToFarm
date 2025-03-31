@@ -118,111 +118,113 @@ const EstatePage = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4">
-      <PageHeader
-        title="매물 보기"
-        description="귀농 주거지 매물을 찾아보세요."
-      />
+    <>
+        <PageHeader
+          title="매물 보기"
+          description="귀농 주거지 매물을 찾아보세요."
+        />
+      <div className="max-w-6xl mx-auto px-4">
 
-      <div className="flex flex-wrap justify-end items-center gap-2 p-4 mb-6">
-        {/* 도(province) 선택 드롭다운 */}
-        <select
-          className="h-10 w-32 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-          value={selectedProvince}
-          onChange={handleProvinceChange}
-        >
-          <option value="">도 선택</option>
-          {provinces.map((province) => (
-            <option key={province} value={province}>
-              {province}
-            </option>
-          ))}
-        </select>
+        <div className="flex flex-wrap justify-end items-center gap-2 p-4 mb-6">
+          {/* 도(province) 선택 드롭다운 */}
+          <select
+            className="h-10 w-32 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+            value={selectedProvince}
+            onChange={handleProvinceChange}
+          >
+            <option value="">도 선택</option>
+            {provinces.map((province) => (
+              <option key={province} value={province}>
+                {province}
+              </option>
+            ))}
+          </select>
 
-        {/* 시/군/구(city) 선택 드롭다운 */}
-        <select
-          className="h-10 w-32 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-          value={selectedCity}
-          onChange={handleCityChange}
-          disabled={!selectedProvince}
-        >
-          <option value="">시/군/구 선택</option>
-          {cities.map((city) => (
-            <option key={city} value={city}>
-              {city}
-            </option>
-          ))}
-        </select>
+          {/* 시/군/구(city) 선택 드롭다운 */}
+          <select
+            className="h-10 w-32 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+            value={selectedCity}
+            onChange={handleCityChange}
+            disabled={!selectedProvince}
+          >
+            <option value="">시/군/구 선택</option>
+            {cities.map((city) => (
+              <option key={city} value={city}>
+                {city}
+              </option>
+            ))}
+          </select>
 
-        {/* 필터 적용 버튼 */}
-        <button
-          className="h-10 px-4 py-2 bg-green-800 text-white rounded-md hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-green-800"
-          onClick={handleFilter}
-        >
-          필터 적용
-        </button>
-      </div>
-
-      {/* 검색 결과 수 표시 */}
-      {!error && (
-        <div className="m-4">
-          <p className="text-gray-600">
-            총 {totalItemsCount}개의 매물 중 {properties.length}개를 표시하고
-            있습니다.
-          </p>
+          {/* 필터 적용 버튼 */}
+          <button
+            className="h-10 px-4 py-2 bg-green-800 text-white rounded-md hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-green-800"
+            onClick={handleFilter}
+          >
+            필터 적용
+          </button>
         </div>
-      )}
 
-      {/* 매물 카드 목록 */}
-      <div className="space-y-6 min-h-[500px]">
-        {loading ? (
-          // 로딩 중에는 이 부분만 표시
-          <div className="py-12 flex justify-center items-center">
-            <LoadingSpinner text="매물 정보 불러오는 중..." />
+        {/* 검색 결과 수 표시 */}
+        {!error && (
+          <div className="m-4">
+            <p className="text-gray-600">
+              총 {totalItemsCount}개의 매물 중 {properties.length}개를 표시하고
+              있습니다.
+            </p>
           </div>
-        ) : error ? (
-          // 에러 발생 시
-          <div className="text-center py-12">
-            <p className="text-red-500">{error}</p>
-            <button
-              className="mt-4 px-4 py-2 bg-green-800 text-white rounded-md hover:bg-green-500"
-              onClick={() => getProperties(activePage)}
-            >
-              다시 시도
-            </button>
-          </div>
-        ) : properties.length > 0 ? (
-          // 매물 데이터가 있는 경우
-          properties.map((property) => (
-            <PropertyCard
-              key={property.id}
-              property={{
-                ...property,
-                realtor: property.agency,
-                features: property.feature,
-              }}
+        )}
+
+        {/* 매물 카드 목록 */}
+        <div className="space-y-6 min-h-[500px]">
+          {loading ? (
+            // 로딩 중에는 이 부분만 표시
+            <div className="py-12 flex justify-center items-center">
+              <LoadingSpinner text="매물 정보 불러오는 중..." />
+            </div>
+          ) : error ? (
+            // 에러 발생 시
+            <div className="text-center py-12">
+              <p className="text-red-500">{error}</p>
+              <button
+                className="mt-4 px-4 py-2 bg-green-800 text-white rounded-md hover:bg-green-500"
+                onClick={() => getProperties(activePage)}
+              >
+                다시 시도
+              </button>
+            </div>
+          ) : properties.length > 0 ? (
+            // 매물 데이터가 있는 경우
+            properties.map((property) => (
+              <PropertyCard
+                key={property.id}
+                property={{
+                  ...property,
+                  realtor: property.agency,
+                  features: property.feature,
+                }}
+              />
+            ))
+          ) : (
+            // 검색 결과가 없는 경우
+            <div className="text-center py-12">
+              <p className="text-gray-500">검색 결과가 없습니다.</p>
+            </div>
+          )}
+        </div>
+
+        {/* 페이지네이션 컴포넌트 */}
+        {!loading && !error && totalItemsCount > itemsPerPage && (
+          <div className="mt-6 flex justify-center">
+            <PaginationComponent
+              activePage={activePage}
+              totalItemsCount={totalItemsCount}
+              onChange={handlePageChange}
+              itemsPerPage={itemsPerPage}
             />
-          ))
-        ) : (
-          // 검색 결과가 없는 경우
-          <div className="text-center py-12">
-            <p className="text-gray-500">검색 결과가 없습니다.</p>
           </div>
         )}
       </div>
-
-      {/* 페이지네이션 컴포넌트 */}
-      {!loading && !error && totalItemsCount > itemsPerPage && (
-        <div className="mt-6 flex justify-center">
-          <PaginationComponent
-            activePage={activePage}
-            totalItemsCount={totalItemsCount}
-            onChange={handlePageChange}
-            itemsPerPage={itemsPerPage}
-          />
-        </div>
-      )}
-    </div>
+    </>
   );
 };
 
