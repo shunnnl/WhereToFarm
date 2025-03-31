@@ -20,6 +20,10 @@ services:
     container_name: postgres
     image: postgres:14
     restart: always
+    environment:
+      POSTGRES_DB: farmbti_db
+      POSTGRES_USER: ssafy
+      POSTGRES_PASSWORD: ssafy209!@
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
