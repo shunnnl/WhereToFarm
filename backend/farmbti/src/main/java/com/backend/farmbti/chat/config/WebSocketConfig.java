@@ -16,7 +16,6 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
-import java.security.SignatureException;
 import java.util.List;
 
 @Configuration
@@ -53,18 +52,24 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
             public Message<?> preSend(Message<?> message, MessageChannel channel) {
                 StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
 
-                if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-                    // 헤더에서 토큰 추출
-                    List<String> authorization = accessor.getNativeHeader("X-Authorization");
-                    if (authorization != null && !authorization.isEmpty()) {
-                        String bearerToken = authorization.get(0).replace("Bearer ", "");
-                        try {
-                            if (jwtTokenProvider.validateToken(bearerToken)) {
-                                accessor.setUser(new UsernamePasswordAuthenticationToken(jwtTokenProvider.getName(bearerToken), null, null));
-                            }
-                        } catch (SignatureException e) {
-                            throw new RuntimeException(e);
+                if (accessor != null) {
+                    System.out.println("WebSocket 메시지 타입: " + accessor.getCommand());
+
+                    if (StompCommand.CONNECT.equals(accessor.getCommand())) {
+                        List<String> authorization = accessor.getNativeHeader("X-Authorization");
+                        System.out.println("WebSocket 연결 시도, 인증 헤더: " + (authorization != null ? "존재함" : "없음"));
+
+                        if (authorization != null && !authorization.isEmpty()) {
+                            String bearerToken = authorization.get(0).replace("Bearer ", "");
+                            System.out.println("토큰: " + bearerToken.substring(0, Math.min(10, bearerToken.length())) + "...");
+
+                            String username = jwtTokenProvider.getName(bearerToken);
+                            System.out.println("토큰에서 추출한 사용자 이름: " + username);
+                            accessor.setUser(new UsernamePasswordAuthenticationToken(username, null, null));
                         }
+                    } else if (StompCommand.SUBSCRIBE.equals(accessor.getCommand())) {
+                        System.out.println("구독 경로: " + accessor.getDestination());
+                        System.out.println("구독 사용자: " + (accessor.getUser() != null ? accessor.getUser().getName() : "인증 없음"));
                     }
                 }
                 return message;
