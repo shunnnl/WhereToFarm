@@ -17,8 +17,11 @@ public class ChatMessage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "message_id")
     private Long messageId;
-    
+
     private String content;
+
+    @Column(name = "sender_id")
+    private Long senderId;
 
     @Column(name = "send_at")
     private LocalDateTime sendAt;
