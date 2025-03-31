@@ -36,13 +36,32 @@ const EstateDetailPage = () => {
     }
   }, [property]);
 
-  if (!property) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <p>요청하신 매물을 찾을 수 없습니다.</p>
+if (!property) {
+  return (
+    <>
+      <PageHeader
+        title="매물 상세 보기"
+        description="선택하신 매물의 상세 정보를 살펴보세요."
+      />
+      <div className="container mx-auto px-4 py-10 flex justify-center">
+        <div className="bg-gray-50 border border-gray-200 rounded-md p-6 text-center max-w-md">
+          <h3 className="text-lg font-medium text-gray-800 mb-2">
+            매물을 찾을 수 없습니다
+          </h3>
+          <p className="text-gray-600 mb-4">
+            요청하신 매물 정보가 존재하지 않습니다.
+          </p>
+          <button
+            onClick={() => window.history.back()}
+            className="bg-primaryGreen text-white px-4 py-2 rounded text-sm"
+          >
+            이전 페이지로
+          </button>
+        </div>
       </div>
-    );
-  }
+    </>
+  );
+}
 
   return (
     <div>
@@ -159,15 +178,28 @@ const EstateDetailPage = () => {
                     </p>
                   </div>
 
-                  <div id="map" className="w-full h-96 rounded-lg mb-6"></div>
-
-                  <div className="mb-6">
-                    <h4 className="text-lg font-medium mb-2">위도/경도 좌표</h4>
-                    <p className="text-gray-600">
-                      위도: {property.latitude.toFixed(6)}, 경도:{" "}
-                      {property.longitude.toFixed(6)}
-                    </p>
-                  </div>
+                  {property.latitude && property.longitude ? (
+                    <>
+                      {" "}
+                      <div
+                        id="map"
+                        className="w-full h-96 rounded-lg mb-6"
+                      ></div>
+                      <div className="mb-6">
+                        <h4 className="text-lg font-medium mb-2">
+                          위도/경도 좌표
+                        </h4>
+                        <p className="text-gray-600">
+                          위도: {property.latitude.toFixed(6)}, 경도:{" "}
+                          {property.longitude.toFixed(6)}
+                        </p>
+                      </div>
+                    </>
+                  ) : (
+                    <div id="map" className="w-full h-96 rounded-lg mb-6 bg-gray-50">
+                      <p className="">지도 정보가 없습니다.</p>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
