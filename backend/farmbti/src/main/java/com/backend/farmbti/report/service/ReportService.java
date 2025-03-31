@@ -267,6 +267,24 @@ public class ReportService {
                 .build();
     }
 
+    /**
+     * 리포트 삭제
+     */
+    @Transactional
+    public void deleteReport(Integer reportId) {
+        // 리포트 조회
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new GlobalException(ReportErrorCode.REPORT_NOT_FOUND));
+
+        // 본인 리포트인지 확인
+        Long currentUserId = securityUtils.getCurrentUsersId();
+        if (!report.getUser().getId().equals(currentUserId)) {
+            throw new GlobalException(ReportErrorCode.ACCESS_DENIED);
+        }
+
+        // 리포트 삭제
+        reportRepository.delete(report);
+    }
 
     /**
      * Object를 Float으로 변환 (Map에서 받은 값 처리용)

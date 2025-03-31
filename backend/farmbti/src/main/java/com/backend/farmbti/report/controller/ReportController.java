@@ -62,4 +62,14 @@ public class ReportController {
         ReportResponseDto report = reportService.getReportDetail(reportId);
         return CommonResponseDto.ok(report);
     }
+
+    @Operation(
+            summary = "리포트 삭제",
+            description = "특정 리포트를 삭제합니다. 본인의 리포트만 삭제할 수 있습니다."
+    )
+    @DeleteMapping("/{reportId}")
+    public CommonResponseDto<Void> deleteReport(@PathVariable Integer reportId) {
+        reportService.deleteReport(reportId);
+        return CommonResponseDto.ok(null);
+    }
 }

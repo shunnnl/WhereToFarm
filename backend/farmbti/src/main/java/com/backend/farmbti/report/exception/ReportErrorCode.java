@@ -12,7 +12,7 @@ public enum ReportErrorCode implements ErrorCode {
     REGION_NOT_FOUND(404, "해당 지역을 찾을 수 없습니다."),
     CHARACTER_TYPE_NOT_FOUND(404, "해당 성격 유형을 찾을 수 없습니다."),
     REPORT_NOT_FOUND(404, "해당 리포트를 찾을 수 없습니다."),
-    ACCESS_DENIED(403, "권한이 없습니다. 본인의 리포트만 조회할 수 있습니다."),
+    ACCESS_DENIED(403, "권한이 없습니다. 본인의 리포트만 조회,삭제할 수 있습니다."),
     REPORT_CREATION_FAILED(500, "리포트 생성에 실패했습니다.");
 
     private final int status;
