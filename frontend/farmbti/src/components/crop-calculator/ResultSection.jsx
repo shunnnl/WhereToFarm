@@ -52,7 +52,7 @@ const ResultSection = ({
             myRate={result.myRate}
             isHouse={result.house}
           />
-          <BenefitForecastGraph myForecast={result.myMonthlyPrice} />
+          <BenefitForecastGraph myForecast={result.myMonthlyPrice} pastPrice={result.myPastPrice} />
           <div className="flex justify-center items-center gap-4 mb-6">
             <button
               className="bg-primaryGreen hover:bg-green-600 px-4 py-2 text-sm text-white font-light rounded-md shadow-lg transition-colors duration-200"
