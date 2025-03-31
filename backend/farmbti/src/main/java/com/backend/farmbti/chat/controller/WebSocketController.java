@@ -35,6 +35,8 @@ public class WebSocketController {
             throw new GlobalException(ChatErrorCode.MESSAGE_TO_LONG);
         }
 
+        System.out.println(messageRequest.getSenderId());
+
         // 메시지 처리 로직
         MessageResponse messageResponse = webSocketService.saveAndGetMessage(roomId, messageRequest.getMessage(), messageRequest.getSenderId());
 

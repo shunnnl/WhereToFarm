@@ -29,6 +29,8 @@ public class WebSocketService {
         Chat chat = chatRepository.findById(roomId)
                 .orElseThrow(() -> new GlobalException(ChatErrorCode.CHAT_ROOM_NOT_EXISTS));
 
+        System.out.println(senderId);
+
         ChatMessage chatMessage = ChatMessage.builder()
                 .senderId(senderId)
                 .content(message)
