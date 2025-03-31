@@ -84,11 +84,13 @@ const Navbar = () => {
 
                     // user 객체 정보 확인
                 console.log("현재 사용자 정보:", user);
+                console.log("user.name:", user.name);
 
                 
                 // 사용자별 알림 구독 (name을 사용자 식별자로 사용)
                 stompClient.current.subscribe(`/user/${user.name}/queue/notifications`, (message) => {
                     console.log("알림메시지 수신:", message.body);
+                    console.log('user.name ==,' ,user.name)
                     
                     try {
                         const receivedData = JSON.parse(message.body);
