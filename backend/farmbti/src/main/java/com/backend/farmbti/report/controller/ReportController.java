@@ -52,4 +52,14 @@ public class ReportController {
         List<ReportListResponseDto> reports = reportService.getMyReports();
         return CommonResponseDto.ok(reports);
     }
+
+    @Operation(
+            summary = "리포트 상세 조회",
+            description = "특정 리포트의 상세 정보를 조회합니다."
+    )
+    @GetMapping("/{reportId}")
+    public CommonResponseDto<ReportResponseDto> getReportDetail(@PathVariable Integer reportId) {
+        ReportResponseDto report = reportService.getReportDetail(reportId);
+        return CommonResponseDto.ok(report);
+    }
 }
