@@ -1,28 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import Modal from 'react-modal';
 import { authAxios } from '../../API/common/AxiosInstance';
-import { useNavigate } from 'react-router-dom'; // Import for navigation
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-
 
 // 모달 앱 요소 설정 (접근성 목적)
 Modal.setAppElement('#root'); // 앱에 맞게 수정 필요
 
 const MentorSelectModal = ({ isOpen, onClose, mentor }) => {
   const [currentUser, setCurrentUser] = useState(null);
-  const navigate = useNavigate(); 
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+
   useEffect(() => {
     const userInfo = localStorage.getItem('user');
     if (userInfo) {
       setCurrentUser(JSON.parse(userInfo));
     }
   }, []);
-
-
-
-
+  
   if (!mentor) return null;
-
 
   // 채팅 생성 함수
   const handleCreateChat = async () => {
@@ -36,30 +33,47 @@ const MentorSelectModal = ({ isOpen, onClose, mentor }) => {
     }
     
     console.log('다른 멘토에게 질문: 허용됨');
-
-
+    setIsLoading(true);
+    
     try {
+      // 채팅방 생성 API 요청
       const response = await authAxios.post('/chat/create', {
         otherId: mentor.mentorId // 멘토 ID 사용
       });
       
-      // 성공 시 채팅 페이지로 이동
-      if (response.success) {
-        navigate('/chat');
+      console.log('채팅방 생성 응답:', response);
+      
+      // 응답 구조에 따라 채팅방 ID 추출 (응답 구조에 맞게 수정 필요)
+      let chatRoomId;
+      
+      if (response.data && response.data.success && response.data.data) {
+        // {success: true, data: {roomId: 123}} 형태인 경우
+        chatRoomId = response.data.data.roomId || response.data.data.id;
+      } else if (response.data && response.data.roomId) {
+        // {roomId: 123} 형태인 경우
+        chatRoomId = response.data.roomId;
+      } else if (response.data && typeof response.data === 'number') {
+        // 직접 룸 ID가 반환되는 경우
+        chatRoomId = response.data;
+      }
+      
+      if (chatRoomId) {
+        console.log(`채팅방 ${chatRoomId}로 이동합니다`);
+        onClose(); // 모달 닫기
+        // 채팅 페이지로 이동하면서 룸 ID를 state로 전달
+        navigate('/chat', { state: { roomId: chatRoomId, mentorName: mentor.name } });
       } else {
-        console.error('채팅 생성 실패:', response.error);
-        alert('채팅 생성에 실패했습니다. 다시 시도해주세요.');
+        console.error('채팅방 ID를 찾을 수 없습니다:', response);
+        toast.error('채팅방 생성에 실패했습니다. 다시 시도해주세요.');
       }
     } catch (error) {
       console.error('채팅 생성 중 오류 발생:', error);
-      alert('서버 연결 중 문제가 발생했습니다. 다시 시도해주세요.');
+      toast.error('서버 연결 중 문제가 발생했습니다. 다시 시도해주세요.');
+    } finally {
+      setIsLoading(false);
     }
   };
-
-
-
-
-
+  
   return (
     <Modal
       isOpen={isOpen}
@@ -104,10 +118,17 @@ const MentorSelectModal = ({ isOpen, onClose, mentor }) => {
         <div className="mt-6">
           <button
             onClick={handleCreateChat}
-            className="px-8 py-3 bg-green-600 text-white rounded hover:bg-green-700 flex items-center"
+            disabled={isLoading}
+            className={`px-8 py-3 bg-green-600 text-white rounded hover:bg-green-700 flex items-center justify-center w-full ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
           >
-            질문하러 가기
-            <span className="ml-2">▶</span>
+            {isLoading ? (
+              <span>연결 중...</span>
+            ) : (
+              <>
+                질문하러 가기
+                <span className="ml-2">▶</span>
+              </>
+            )}
           </button>
         </div>
       </div>
