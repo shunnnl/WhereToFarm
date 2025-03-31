@@ -114,7 +114,7 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
 
   const handleDescriptionChange = (e) => {
     const text = e.target.value;
-    if (text.length <= 1000) {
+    if (text.length <= 100) {
       setDescription(text);
     }
   };
@@ -335,7 +335,7 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
                 required
               />
               <div className="w-full text-right text-sm text-gray-500">
-                {description.length}/1000
+                {description.length}/100
               </div>
             </div>
           </div>
