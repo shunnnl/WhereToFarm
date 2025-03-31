@@ -5,6 +5,7 @@ import ProfileCard from './ProfileCard';
 import { authAxios } from '../../API/common/AxiosInstance';
 import MentorSelectModal from './MentorSelectModal';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { toast } from 'react-toastify'; // 추가: toast 알림 import
 
 const MentorSelect = ({ candidateList, regionName, cityName }) => {
   // 멘토 목록 상태 관리
@@ -68,7 +69,17 @@ const MentorSelect = ({ candidateList, regionName, cityName }) => {
     setIsLoading(true);
     setError(null);
     setNoDataMessage(null);
-    
+    // 로그인 상태 확인 (LocalStorage, SessionStorage 등에서 토큰 확인)
+    const accessToken = localStorage.getItem('accessToken'); // 실제 토큰 저장 키 이름에 맞게 수정
+
+    if (!accessToken) {
+      // 로그인하지 않은 상태
+      toast.error("로그인 후 이용해주세요!");
+      setNoDataMessage("로그인이 필요한 서비스입니다.");
+      setIsLoading(false);
+      return;
+    }
+  
     try {
       // 디버깅을 위한 로그
       console.log('도시명으로 멘토 조회 요청:', city);
