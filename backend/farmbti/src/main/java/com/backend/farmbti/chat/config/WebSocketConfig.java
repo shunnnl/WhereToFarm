@@ -56,7 +56,12 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                     System.out.println("WebSocket 메시지 타입: " + accessor.getCommand());
 
                     if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-                        List<String> authorization = accessor.getNativeHeader("X-Authorization");
+                        // 두 헤더 모두 확인 (Authorization 또는 X-Authorization)
+                        List<String> authorization = accessor.getNativeHeader("Authorization");
+                        if (authorization == null || authorization.isEmpty()) {
+                            authorization = accessor.getNativeHeader("X-Authorization");
+                        }
+
                         System.out.println("WebSocket 연결 시도, 인증 헤더: " + (authorization != null ? "존재함" : "없음"));
 
                         if (authorization != null && !authorization.isEmpty()) {
@@ -67,9 +72,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                             System.out.println("토큰에서 추출한 사용자 이름: " + username);
                             accessor.setUser(new UsernamePasswordAuthenticationToken(username, null, null));
                         }
-                    } else if (StompCommand.SUBSCRIBE.equals(accessor.getCommand())) {
-                        System.out.println("구독 경로: " + accessor.getDestination());
-                        System.out.println("구독 사용자: " + (accessor.getUser() != null ? accessor.getUser().getName() : "인증 없음"));
                     }
                 }
                 return message;
