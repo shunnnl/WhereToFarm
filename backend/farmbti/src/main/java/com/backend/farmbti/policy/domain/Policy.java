@@ -17,8 +17,11 @@ public class Policy {
 	@Column(name = "policy_id")
 	private Long id;
 
-	@Column(name = "application_period", length = 50, nullable = false)
-	private String applicationPeriod;
+	@Column(length = 50, nullable = false)
+	private String region;
+
+	@Column(name = "registration_date", length = 50, nullable = false)
+	private String registrationDate;
 
 	@Column(length = 100, nullable = false)
 	private String title;
@@ -26,16 +29,10 @@ public class Policy {
 	@Column(length = 500, nullable = false)
 	private String description;
 
-	@Column(length = 10, nullable = false)
-	private String region;
-
-	@Column(length = 100, nullable = false)
+	@Column(length = 500, nullable = false)
 	private String target;
 
-	@Column(length = 100, nullable = false)
+	@Column(length = 200, nullable = false)
 	private String support;
-
-	@Column(length = 50, nullable = false)
-	private String contact;
 
 }
