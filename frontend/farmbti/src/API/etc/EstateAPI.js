@@ -15,12 +15,15 @@ export const getAllEstate = async (page, size) => {
   }
 };
 
-export const getFilteredEstate = async (province, city) => {
+export const getFilteredEstate = async (province, city, page, size) => {
   try {
-    const response = await publicAxios.post("/property/search", {
-      do_: province,
-      city: city,
-    });
+    const response = await publicAxios.post(
+      `/property/search?page=${page}&size=${size}`,
+      {
+        do_: province,
+        city: city,
+      }
+    );
     if (!response.success) {
       throw response.error;
     }

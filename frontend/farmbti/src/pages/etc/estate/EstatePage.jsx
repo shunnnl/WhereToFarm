@@ -20,13 +20,21 @@ const EstatePage = () => {
   const [totalItemsCount, setTotalItemsCount] = useState(0);
   const itemsPerPage = 10;
 
+  const [isFiltered, setIsFiltered] = useState(false);
+
   // 도(province) 목록을 KoreaCityData에서 가져오기
   const provinces = Object.keys(KoreaCityData);
 
-  // 초기 로드 시 전체 매물 데이터 가져오기
+  // 초기 로드 및 페이지 변경 시 데이터 로드
   useEffect(() => {
-    getProperties(activePage);
-  }, [activePage]);
+    if (isFiltered) {
+      // 필터링된 상태에서 페이지네이션
+      getFilteredPropertiesWithPagination(activePage);
+    } else {
+      // 전체 데이터 페이지네이션
+      getProperties(activePage);
+    }
+  }, [activePage, isFiltered]);
 
   // 도(province) 선택 시 해당 시/군/구 목록 업데이트
   useEffect(() => {
@@ -56,30 +64,28 @@ const EstatePage = () => {
     }
   };
 
-  // 필터링된 매물 데이터 가져오는 함수
-  const getFilteredProperties = async () => {
-    if (!selectedProvince) {
-      // 도(province)가 선택되지 않은 경우 전체 데이터 로드
-      getProperties(1);
-      return;
-    }
-
+  // 필터링 상태에서 페이지네이션 처리하는 함수
+  const getFilteredPropertiesWithPagination = async (page = 1) => {
     setLoading(true);
     setError(null);
 
     try {
-      const response = await getFilteredEstate(selectedProvince, selectedCity);
-      // 필터링된 응답이 페이지네이션 형태인 경우
+      const response = await getFilteredEstate(
+        selectedProvince,
+        selectedCity,
+        page - 1,
+        itemsPerPage
+      );
+
       if (response.content && response.totalElements) {
         setProperties(response.content);
         setTotalItemsCount(response.totalElements);
       } else {
-        // 필터링된 응답이 단순 배열인 경우
         setProperties(response);
         setTotalItemsCount(response.length);
       }
-      setActivePage(1); // 필터링 시 첫 페이지로 돌아가기
     } catch (error) {
+      // 에러 처리
       console.error(
         "필터링된 매물 데이터를 불러오는 중 오류가 발생했습니다:",
         error
@@ -114,17 +120,23 @@ const EstatePage = () => {
 
   // 도/시 필터 적용 핸들러
   const handleFilter = () => {
-    getFilteredProperties();
+    if (selectedProvince) {
+      setIsFiltered(true);
+      getFilteredPropertiesWithPagination(1);
+    } else {
+      setIsFiltered(false);
+      getProperties(1);
+    }
+    setActivePage(1); // 필터링 시 첫 페이지로 돌아가기
   };
 
   return (
     <>
-        <PageHeader
-          title="매물 보기"
-          description="귀농 주거지 매물을 찾아보세요."
-        />
+      <PageHeader
+        title="매물 보기"
+        description="귀농 주거지 매물을 찾아보세요."
+      />
       <div className="max-w-6xl mx-auto px-4">
-
         <div className="flex flex-wrap justify-end items-center gap-2 p-4 mb-6">
           {/* 도(province) 선택 드롭다운 */}
           <select
@@ -168,8 +180,9 @@ const EstatePage = () => {
         {!error && (
           <div className="m-4">
             <p className="text-gray-600">
-              총 {totalItemsCount}개의 매물 중 {properties.length}개를 표시하고
-              있습니다.
+              {properties.length > 0
+                ? `총 ${totalItemsCount}개의 매물 중 ${properties.length}개를 표시하고 있습니다.`
+                : "0개의 매물 중 0개를 표시하고 있습니다."}
             </p>
           </div>
         )}
