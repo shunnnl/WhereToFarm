@@ -9,8 +9,8 @@ const EstateDetailPage = () => {
   const { estateId } = useParams();
   const [property, setProperty] = useState(null);
   const [isLoading, setisLoading] = useState(true);
+  // 지도 관련 state 제거 및 기본 탭만 유지
   const [activeTab, setActiveTab] = useState("info");
-  const [map, setMap] = useState(null);
 
   useEffect(() => {
     const getPropertyDetail = async () => {
@@ -28,40 +28,34 @@ const EstateDetailPage = () => {
     getPropertyDetail();
   }, [estateId]);
 
-  useEffect(() => {
-    // 카카오맵 API 연동 부분
-    if (property?.latitude && property?.longitude) {
-      console.log("지도를 표시할 위치:", property.latitude, property.longitude);
-      // 여기에 카카오맵 초기화 코드 추가
-    }
-  }, [property]);
+  // 지도 관련 useEffect 제거
 
-if (!property) {
-  return (
-    <>
-      <PageHeader
-        title="매물 상세 보기"
-        description="선택하신 매물의 상세 정보를 살펴보세요."
-      />
-      <div className="container mx-auto px-4 py-10 flex justify-center">
-        <div className="bg-gray-50 border border-gray-200 rounded-md p-6 text-center max-w-md">
-          <h3 className="text-lg font-medium text-gray-800 mb-2">
-            매물을 찾을 수 없습니다
-          </h3>
-          <p className="text-gray-600 mb-4">
-            요청하신 매물 정보가 존재하지 않습니다.
-          </p>
-          <button
-            onClick={() => window.history.back()}
-            className="bg-primaryGreen text-white px-4 py-2 rounded text-sm"
-          >
-            이전 페이지로
-          </button>
+  if (!property) {
+    return (
+      <>
+        <PageHeader
+          title="매물 상세 보기"
+          description="선택하신 매물의 상세 정보를 살펴보세요."
+        />
+        <div className="container mx-auto px-4 py-10 flex justify-center">
+          <div className="bg-gray-50 border border-gray-200 rounded-md p-6 text-center max-w-md">
+            <h3 className="text-lg font-medium text-gray-800 mb-2">
+              매물을 찾을 수 없습니다
+            </h3>
+            <p className="text-gray-600 mb-4">
+              요청하신 매물 정보가 존재하지 않습니다.
+            </p>
+            <button
+              onClick={() => window.history.back()}
+              className="bg-primaryGreen text-white px-4 py-2 rounded text-sm"
+            >
+              이전 페이지로
+            </button>
+          </div>
         </div>
-      </div>
-    </>
-  );
-}
+      </>
+    );
+  }
 
   return (
     <div>
@@ -96,112 +90,55 @@ if (!property) {
               </div>
             </div>
 
-            {/* 탭 네비게이션 */}
+            {/* 부동산 정보 섹션 - 탭 네비게이션 없이 직접 표시 */}
             <div className="mb-8">
-              <div className="flex border-b border-gray-200">
-                <button
-                  className={`py-2 px-4 ${
-                    activeTab === "info"
-                      ? "border-b-2 border-green-800 text-green-800 font-medium"
-                      : "text-gray-600"
-                  }`}
-                  onClick={() => setActiveTab("info")}
-                >
-                  부동산 정보
-                </button>
-                <button
-                  className={`py-2 px-4 ${
-                    activeTab === "location"
-                      ? "border-b-2 border-green-800 text-green-800 font-medium"
-                      : "text-gray-600"
-                  }`}
-                  onClick={() => setActiveTab("location")}
-                >
-                  위치 정보
-                </button>
+              <div className="bg-white rounded-lg shadow-md p-6 mt-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold border-b border-gray-200 pb-2">
+                      기본 정보
+                    </h3>
+
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">면적</span>
+                      <span className="font-medium">
+                        {property.area.toLocaleString()} m²
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">주소</span>
+                      <span className="font-medium">{property.address}</span>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold border-b border-gray-200 pb-2">
+                      거래 정보
+                    </h3>
+
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">매매 가격</span>
+                      <span className="font-medium">
+                        {property.deposit.toLocaleString()} 만원
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">중개사무소</span>
+                      <span className="font-medium">{property.agency}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-6 pt-4 border-t border-gray-200">
+                  <h3 className="text-lg font-semibold mb-3">추가 정보</h3>
+                  <div className="bg-gray-50 p-4 rounded-md">
+                    <p className="font-medium mb-2">특징</p>
+                    <p>{property.feature}</p>
+                  </div>
+                </div>
               </div>
-
-              {/* 부동산 정보 탭 */}
-              {activeTab === "info" && (
-                <div className="bg-white rounded-lg shadow-md p-6 mt-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-4">
-                      <h3 className="text-lg font-semibold border-b border-gray-200 pb-2">
-                        기본 정보
-                      </h3>
-
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">면적</span>
-                        <span className="font-medium">
-                          {property.area.toLocaleString()} m²
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="space-y-4">
-                      <h3 className="text-lg font-semibold border-b border-gray-200 pb-2">
-                        거래 정보
-                      </h3>
-
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">매매 가격</span>
-                        <span className="font-medium">
-                          {property.deposit.toLocaleString()} 만원
-                        </span>
-                      </div>
-
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">중개사무소</span>
-                        <span className="font-medium">{property.agency}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="mt-6 pt-4 border-t border-gray-200">
-                    <h3 className="text-lg font-semibold mb-3">추가 정보</h3>
-                    <div className="bg-gray-50 p-4 rounded-md">
-                      <p className="font-medium mb-2">특징</p>
-                      <p>{property.feature}</p>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* 위치 정보 탭 */}
-              {activeTab === "location" && (
-                <div className="bg-white rounded-lg shadow-md p-6 mt-4">
-                  <h3 className="text-xl font-semibold mb-4">위치</h3>
-
-                  <div className="mb-4">
-                    <p className="text-gray-800 font-medium">
-                      {property.address}
-                    </p>
-                  </div>
-
-                  {property.latitude && property.longitude ? (
-                    <>
-                      {" "}
-                      <div
-                        id="map"
-                        className="w-full h-96 rounded-lg mb-6"
-                      ></div>
-                      <div className="mb-6">
-                        <h4 className="text-lg font-medium mb-2">
-                          위도/경도 좌표
-                        </h4>
-                        <p className="text-gray-600">
-                          위도: {property.latitude.toFixed(6)}, 경도:{" "}
-                          {property.longitude.toFixed(6)}
-                        </p>
-                      </div>
-                    </>
-                  ) : (
-                    <div id="map" className="w-full h-96 rounded-lg mb-6 bg-gray-50">
-                      <p className="">지도 정보가 없습니다.</p>
-                    </div>
-                  )}
-                </div>
-              )}
             </div>
           </>
         )}
