@@ -162,10 +162,14 @@ public class ReportService {
     }
 
     /**
-     * 특정 사용자의 리포트 목록 조회
+     * 현재 로그인한 사용자의 리포트 목록 조회
      */
     @Transactional(readOnly = true)
-    public List<ReportListResponseDto> getReportsByUserId(Long userId) {
+    public List<ReportListResponseDto> getMyReports() {
+        // 현재 로그인한 사용자 ID 가져오기
+        Long userId = securityUtils.getCurrentUsersId();
+
+        // 사용자의 리포트 조회
         List<Report> reports = reportRepository.findByUserId(userId);
 
         return reports.stream()

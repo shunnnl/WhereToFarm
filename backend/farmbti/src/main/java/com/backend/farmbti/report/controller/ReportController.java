@@ -44,12 +44,12 @@ public class ReportController {
     }
 
     @Operation(
-            summary = "사용자별 리포트 목록 조회",
-            description = "특정 사용자가 생성한 리포트의 요약 정보를 조회합니다."
+            summary = "내 리포트 목록 조회",
+            description = "현재 로그인한 사용자가 생성한 리포트의 요약 정보를 조회합니다."
     )
-    @GetMapping("/list/user/{userId}")
-    public CommonResponseDto<List<ReportListResponseDto>> getReportsByUserId(@PathVariable Long userId) {
-        List<ReportListResponseDto> reports = reportService.getReportsByUserId(userId);
+    @GetMapping("/list/my")
+    public CommonResponseDto<List<ReportListResponseDto>> getMyReports() {
+        List<ReportListResponseDto> reports = reportService.getMyReports();
         return CommonResponseDto.ok(reports);
     }
 }
