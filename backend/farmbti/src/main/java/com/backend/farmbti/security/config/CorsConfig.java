@@ -22,6 +22,7 @@ public class CorsConfig {
                 "http://localhost:5174",
                 "http://localhost:8081",
                 "http://j12d209.p.ssafy.io",
+                "https://j12d209.p.ssafy.io",
                 "http://localhost",
                 "http://localhost:18081"
         ));
