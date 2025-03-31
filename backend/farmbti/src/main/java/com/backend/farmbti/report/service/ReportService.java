@@ -1,11 +1,14 @@
 package com.backend.farmbti.report.service;
 
+import com.backend.farmbti.common.service.S3Service;
+import com.backend.farmbti.policy.repository.PolicyRepository;
 import com.backend.farmbti.report.domain.CharacterType;
 import com.backend.farmbti.report.repository.CharacterTypeRepository;
 import com.backend.farmbti.common.exception.GlobalException;
 import com.backend.farmbti.report.domain.Region;
 import com.backend.farmbti.report.repository.RegionRepository;
 import com.backend.farmbti.report.domain.Report;
+import com.backend.farmbti.policy.domain.Policy;
 import com.backend.farmbti.report.domain.ReportRegion;
 import com.backend.farmbti.report.dto.ReportResponseDto;
 import com.backend.farmbti.report.exception.ReportErrorCode;
@@ -30,6 +33,8 @@ public class ReportService {
     private final ReportRegionRepository reportRegionRepository;
     private final RegionRepository regionRepository;
     private final CharacterTypeRepository characterTypeRepository;
+    private final PolicyRepository policyRepository;
+    private final S3Service s3Service;
 
     /**
      * 지역 목록과 FARM 파라미터를 기반으로 리포트 생성
@@ -90,6 +95,21 @@ public class ReportService {
                                 .build())
                         .collect(Collectors.toList());
 
+                // 지역 관련 정책 검색
+                List<Policy> regionPolicies = policyRepository.findAllByRegionContaining(region.getName());
+
+                List<ReportResponseDto.PolicyDto> policyDtos = regionPolicies.stream()
+                        .map(policy -> ReportResponseDto.PolicyDto.builder()
+                                .id(policy.getId())
+                                .region(policy.getRegion())
+                                .registrationDate(policy.getRegistrationDate())
+                                .title(policy.getTitle())
+                                .description(policy.getDescription())
+                                .target(policy.getTarget())
+                                .support(policy.getSupport())
+                                .build())
+                        .collect(Collectors.toList());
+
                 // 지역 결과 DTO 생성
                 ReportResponseDto.RegionResultDto regionResult = ReportResponseDto.RegionResultDto.builder()
                         .rank(i + 1)
@@ -97,10 +117,15 @@ public class ReportService {
                         .basicInfo(region.getBasicInfo())
                         .recommendationReason(region.getRecommendationReason())
                         .topCrops(cropResults)
+                        .policies(policyDtos)
                         .build();
 
                 regionResults.add(regionResult);
             }
+
+            // 캐릭터 이미지의 Signed URL 생성
+            String characterImagePath = characterType.getImage();
+            String characterImageUrl = s3Service.getSignedUrl(characterImagePath);
 
             // 3. 최종 응답 DTO 생성
             return ReportResponseDto.builder()
@@ -112,7 +137,7 @@ public class ReportService {
                     .mRatio(savedReport.getPRatio())
                     .characterTypeName(characterType.getName())
                     .characterTypeDescription(characterType.getDescription())
-                    .characterTypeImage(characterType.getImage())
+                    .characterTypeImage(characterImageUrl)
                     .topRegions(regionResults)
                     .build();
 

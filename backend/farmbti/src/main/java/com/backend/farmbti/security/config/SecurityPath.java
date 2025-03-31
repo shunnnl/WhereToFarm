@@ -43,9 +43,6 @@ public enum SecurityPath {
     POLICY_REGION("/policy/region"),
     POLITCY_MAIN("/policy/main"),
 
-    // Report 관련 경로
-    REPORT("/report/**"),
-
     // Property 관련 경로
     PROPERTY("/property/**");
 
