@@ -1,23 +1,21 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 // 카드 컴포넌트 - NewsCard와 높이 통일
 const Card = ({ icon, title, subtitle, buttonText }) => {
   return (
     <div className="bg-white rounded-lg shadow-md flex flex-col h-64 transition-transform hover:-translate-y-1 duration-300">
-      {/* 상단 패딩을 더 추가하여 컨텐츠 중앙 정렬 */}
       <div className="pt-8 pb-2 flex justify-center">
         <div className="text-4xl text-pink-500">
           {icon}
         </div>
       </div>
       
-      {/* 본문 컨텐츠 */}
       <div className="px-6 flex-grow flex flex-col items-center">
         <h3 className="text-lg font-bold mb-2 text-center">{title}</h3>
         <p className="text-gray-600 text-center">{subtitle}</p>
       </div>
       
-      {/* 버튼 영역을 분리하여 푸터처럼 배치 */}
       <div className="px-6 pb-6 mt-auto">
         <button 
           className="flex items-center text-gray-700 hover:text-black transition-colors mx-auto"
@@ -57,11 +55,27 @@ const BenefitCards = () => {
   ];
   
   return (
-    <div className="mt-8">
-      <div className="flex items-center mb-6">
-        <span className="font text-5xl font-bold mb-6">📢 관심있는 혜택을 찾아보세요 ↗️</span>
-      </div>
-      
+    <div className="mt-16 mb-12">
+        <Link 
+        to="/support" 
+        className="group inline-flex items-center gap-2 mb-8 hover:text-primaryGreen transition-colors cursor-pointer"
+      >
+          <span className="font text-4xl font-bold mb-6">📢 관심있는 혜택을 찾아보세요</span>
+          <svg 
+          className="w-7 h-7 -mt-3 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M7 17L17 7" />
+          <path d="M7 7h10v10" />
+        </svg>
+        </Link>
+
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {cardsData.map((card, index) => (
           <Card

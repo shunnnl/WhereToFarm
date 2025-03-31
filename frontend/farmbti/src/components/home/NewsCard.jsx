@@ -1,28 +1,37 @@
 import React from 'react';
 
-const NewsCard = ({ imageUrl, title, subtitle, moreLink }) => {
+const NewsCard = ({ image, title, link }) => {
   return (
-    <div className="bg-white rounded-xl overflow-hidden shadow-md transition-transform hover:-translate-y-1 duration-300">
+    <a 
+      href={link}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="block bg-white rounded-xl overflow-hidden shadow-md transition-all hover:-translate-y-1 duration-300 relative group h-64"
+    >
       {/* 이미지 섹션 */}
       <div className="h-40 overflow-hidden">
         <img 
-          src={imageUrl} 
+          src={image} 
           alt={title} 
           className="w-full h-full object-cover"
+          onError={(e) => {
+            e.target.src = '/assets/default-news-image.jpg';
+          }}
         />
       </div>
       
       {/* 콘텐츠 섹션 */}
       <div className="p-4">
-        <h3 className="font-semibold text-base mb-1">{title}</h3>
-        <p className="text-sm text-gray-600">{subtitle}</p>
+        <h3 className="font-semibold text-base line-clamp-2">{title}</h3>
       </div>
-      
-      {/* 푸터 섹션 */}
-      <div className="px-4 py-2 border-t border-gray-100 text-center">
-        <a href={moreLink} className="text-sm text-gray-500">더보기</a>
+
+      {/* 호버 시 나타나는 오버레이 */}
+      <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+        <span className="text-white font-medium px-4 py-2 rounded-full border-2 border-white hover:bg-white hover:text-black transition-colors">
+          자세히 보기
+        </span>
       </div>
-    </div>
+    </a>
   );
 };
 
