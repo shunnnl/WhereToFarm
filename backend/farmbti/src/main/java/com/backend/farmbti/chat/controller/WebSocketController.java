@@ -55,11 +55,18 @@ public class WebSocketController {
         notification.put("timestamp", messageResponse.getSentAt());
 
         // 메시지를 받는 사람에게 알림 전송
-        messagingTemplate.convertAndSendToUser(
-                receiverUsername,
-                "/queue/notifications",  // 사용자별 구독 경로
-                notification
-        );
+        // 전송 시도 후
+        try {
+            messagingTemplate.convertAndSendToUser(
+                    receiverUsername,
+                    "/queue/notifications",
+                    notification
+            );
+            System.out.println("알림 전송 성공!");
+        } catch (Exception e) {
+            System.out.println("알림 전송 실패: " + e.getMessage());
+            e.printStackTrace();
+        }
 
         return messageResponse;
     }
