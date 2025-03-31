@@ -1,5 +1,6 @@
 package com.backend.farmbti.report.controller;
 
+import com.backend.farmbti.report.dto.ReportListResponseDto;
 import com.backend.farmbti.report.dto.ReportResponseDto;
 import com.backend.farmbti.report.dto.ZeppelinRequestDto;
 import com.backend.farmbti.report.service.ReportService;
@@ -42,4 +43,13 @@ public class ReportController {
         return CommonResponseDto.ok(reportResponse);
     }
 
+    @Operation(
+            summary = "사용자별 리포트 목록 조회",
+            description = "특정 사용자가 생성한 리포트의 요약 정보를 조회합니다."
+    )
+    @GetMapping("/list/user/{userId}")
+    public CommonResponseDto<List<ReportListResponseDto>> getReportsByUserId(@PathVariable Long userId) {
+        List<ReportListResponseDto> reports = reportService.getReportsByUserId(userId);
+        return CommonResponseDto.ok(reports);
+    }
 }

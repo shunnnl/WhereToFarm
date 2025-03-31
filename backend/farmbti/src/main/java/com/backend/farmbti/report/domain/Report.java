@@ -1,5 +1,6 @@
 package com.backend.farmbti.report.domain;
 
+import com.backend.farmbti.auth.domain.Users;
 import com.backend.farmbti.common.entity.TimeStampEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -22,11 +23,12 @@ public class Report extends TimeStampEntity {
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "users_id")  // users 테이블의 PK와 연결할 외래키 컬럼명 지정
+    private Users user;  // Users 엔티티와의 관계 설정
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "character_id", nullable = false)
     private CharacterType characterType;
-
-    @Column(name = "score_id", nullable = false)
-    private Integer scoreId;
 
     @Column(name = "f_ratio", nullable = false)
     private Float fRatio;
@@ -40,14 +42,7 @@ public class Report extends TimeStampEntity {
     @Column(name = "p_ratio", nullable = false)
     private Float pRatio;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
     @OneToMany(mappedBy = "report", cascade = CascadeType.ALL)
     private List<ReportRegion> reportRegions = new ArrayList<>();
 
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-    }
 }
