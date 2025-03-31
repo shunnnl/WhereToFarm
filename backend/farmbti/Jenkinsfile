@@ -103,9 +103,6 @@ pipeline {
                         cp -f backend/farmbti/.env /var/jenkins_home/app/backend/farmbti/
                     '''
 
-                    echo "✅ 기존 postgres 컨테이너 제거 시도"
-                    sh 'docker rm -f postgres || true'
-
                     echo "✅ 배포 시작"
                     sh 'cd /var/jenkins_home/app/backend/farmbti/ && $DOCKER_COMPOSE_PATH down || true'
                     sh 'cd /var/jenkins_home/app/backend/farmbti/ && $DOCKER_COMPOSE_PATH build --no-cache'
