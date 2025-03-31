@@ -1,5 +1,7 @@
 package com.backend.farmbti.policy.controller;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -48,5 +50,12 @@ public class PolicyController {
 		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "id"));
 		Page<Policy> policies = policyService.getPoliciesByRegion(region, pageable);
 		return CommonResponseDto.ok(policies);
+	}
+
+	@GetMapping("/main")
+	@Operation(summary = "랜덤으로 3개의 지원 정책 조회", description = "랜덤으로 3개의 지원 정책 정보를 조회합니다.")
+	public CommonResponseDto<List<Policy>> getRandomPolicies() {
+		List<Policy> randomPolicies = policyService.getRandomPolicies();
+		return CommonResponseDto.ok(randomPolicies);
 	}
 }
