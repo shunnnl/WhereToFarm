@@ -11,9 +11,35 @@ services:
       - .env
     volumes:
       - ./src/main/resources/application.yml:/app/application.yml
+    depends_on:
+      - postgres
+      - redis
+    restart: always
     networks:
       - farmbti
+
+  postgres:
+    container_name: farmbti-db
+    image: postgres:14
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - farmbti
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
 
 networks:
   farmbti:
     external: true
+
+volumes:
+  postgres_data:
+  redis_data:
