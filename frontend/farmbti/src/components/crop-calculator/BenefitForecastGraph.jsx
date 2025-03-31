@@ -1,8 +1,9 @@
 import { useEffect, useRef } from "react";
 import * as d3 from "d3";
 
-const BenefitForecastGraph = ({ myForecast, pastPrice }) => {
+const BenefitForecastGraph = ({ myForecast, pastPrice, isInModal = false }) => {
   const svgRef = useRef();
+  const containerRef = useRef(); // 툴팁 컨테이너를 위한 ref 추가
 
   // D3와 React 통합을 위한 useEffect
   useEffect(() => {
@@ -115,7 +116,7 @@ const BenefitForecastGraph = ({ myForecast, pastPrice }) => {
         d3
           .axisLeft(yScale)
           .ticks(10)
-          .tickFormat((d) => `${d.toLocaleString()}원`)
+          .tickFormat((d) => `${Math.round(d).toLocaleString()}원`)
       );
 
     // y축 라벨
@@ -185,12 +186,17 @@ const BenefitForecastGraph = ({ myForecast, pastPrice }) => {
       });
     });
 
-    // 툴팁 생성
-    const tooltip = d3
-      .select("body")
-      .selectAll(".price-tooltip")
-      .data([null])
-      .enter()
+    // 툴팁 생성 - body 대신 containerRef나 dialog를 사용
+    // 기존 툴팁 제거 (중복 방지)
+    d3.selectAll(".price-tooltip").remove();
+
+    // 툴팁 컨테이너 선택 - isInModal이 true면 containerRef, 아니면 body
+    const tooltipContainer = isInModal
+      ? d3.select(containerRef.current)
+      : d3.select("body");
+
+    // 새 툴팁 생성
+    const tooltip = tooltipContainer
       .append("div")
       .attr("class", "price-tooltip")
       .style("opacity", 0)
@@ -207,20 +213,40 @@ const BenefitForecastGraph = ({ myForecast, pastPrice }) => {
     // 모든 데이터 포인트에 마우스 이벤트 추가
     g.selectAll(".data-point")
       .on("mouseover", function (event, d) {
+        const circle = d3.select(this);
+        const cx = parseFloat(circle.attr("cx"));
+        const month = Math.round(xScale.invert(cx));
+        const year = parseInt(this.parentNode.getAttribute("data-year"));
+
         // 원본 데이터 찾기
         const pointData = allData.find(
-          (item) =>
-            item.year === +this.parentNode.getAttribute("data-year") &&
-            item.month === Math.round(xScale.invert(this.cx.baseVal.value))
+          (item) => item.year === year && item.month === month
         );
 
         if (!pointData) return;
 
         const isForecast = pointData.year === 2025;
 
-        d3.select(this).transition().duration(200).attr("r", 8);
+        circle.transition().duration(200).attr("r", 8);
 
         tooltip.transition().duration(200).style("opacity", 0.9);
+
+        // 위치 계산 및 적용
+        let leftPos, topPos;
+
+        if (isInModal) {
+          // 모달 내부에서는 상대적 위치 계산
+          const svgRect = svgRef.current.getBoundingClientRect();
+          const containerRect = containerRef.current.getBoundingClientRect();
+
+          // 마우스 위치를 상대적으로 계산
+          leftPos = event.clientX - containerRect.left + 10 + "px";
+          topPos = event.clientY - containerRect.top - 28 + "px";
+        } else {
+          // 일반 페이지에서는 페이지 기준 위치
+          leftPos = event.pageX + 10 + "px";
+          topPos = event.pageY - 28 + "px";
+        }
 
         tooltip
           .html(
@@ -231,11 +257,13 @@ const BenefitForecastGraph = ({ myForecast, pastPrice }) => {
               ${pointData.year}년 ${pointData.month}월
               ${isForecast ? "(예측)" : "(실제)"}
             </div>
-            <div>가격: ${pointData.price_forecast.toLocaleString()}원</div>
+            <div>가격: ${Math.round(
+              pointData.price_forecast
+            ).toLocaleString()}원</div>
           `
           )
-          .style("left", event.pageX + 10 + "px")
-          .style("top", event.pageY - 28 + "px");
+          .style("left", leftPos)
+          .style("top", topPos);
       })
       .on("mouseout", function () {
         d3.select(this).transition().duration(200).attr("r", 5);
@@ -284,11 +312,19 @@ const BenefitForecastGraph = ({ myForecast, pastPrice }) => {
       .attr("text-anchor", "middle")
       .style("font-size", "16px")
       .style("font-weight", "bold")
-      .text("월별 작물 매출액 추이 및 예측");
-  }, [myForecast, pastPrice]);
+      .text("월별 1Kg당 작물 매출액 추이 및 예측");
+
+    // 컴포넌트가 언마운트될 때 툴팁 제거
+    return () => {
+      d3.selectAll(".price-tooltip").remove();
+    };
+  }, [myForecast, pastPrice, isInModal]);
 
   return (
-    <div className="bg-white rounded-lg shadow-lg m-4 p-6 flex flex-col justify-center items-center">
+    <div
+      ref={containerRef}
+      className="bg-gray-50 rounded-lg shadow-lg m-8 p-6 flex flex-col justify-center items-center relative"
+    >
       <div className="w-full">
         <svg ref={svgRef} className="w-full"></svg>
       </div>
