@@ -67,7 +67,7 @@ const Navbar = () => {
 
     // WebSocket 연결 설정
     useEffect(() => {
-        if (isLoggedIn && user && user.email) {
+        if (isLoggedIn && user && user.name) {
             // WebSocket 연결
             stompClient.current = new Client({
                 webSocketFactory: () => new SockJS('http://j12d209.p.ssafy.io/gs-guide-websocket'),
@@ -75,36 +75,60 @@ const Navbar = () => {
                     console.log(str);
                 },
                 reconnectDelay: 5000,
-                heartbeatIncoming: 4000,
-                heartbeatOutgoing: 4000,
+                heartbeatIncoming: 10000,
+                heartbeatOutgoing: 10000,
             });
-
+    
             stompClient.current.onConnect = () => {
-                // 사용자별 알림 구독 (email을 사용자 식별자로 사용)
-                stompClient.current.subscribe(`/user/${user.email}/queue/notifications`, (message) => {
-                    const notification = JSON.parse(message.body);
-                    // 새 알림 추가 및 읽지 않은 알림 카운트 증가
-                    setNotifications(prev => [notification, ...prev]);
-                    setUnreadCount(prev => prev + 1);
+                console.log("웹소켓 연결 성공!");
+
+                    // user 객체 정보 확인
+                console.log("현재 사용자 정보:", user);
+
+                
+                // 사용자별 알림 구독 (name을 사용자 식별자로 사용)
+                stompClient.current.subscribe(`/user/${user.name}/queue/notifications`, (message) => {
+                    console.log("알림메시지 수신:", message.body);
                     
-                    // 토스트 알림 표시 (선택 사항)
-                    toast.info(notification.message, {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true
-                    });
+                    try {
+                        const receivedData = JSON.parse(message.body);
+                        console.log("새 메시지 수신:", receivedData);
+
+                        // 수신된 메시지로 알림 객체 생성
+                        const notification = {
+                            id: receivedData.messageId.toString(),
+                            title: "새 메시지",
+                            message: `${receivedData.senderId}님: ${receivedData.content}`,
+                            createdAt: receivedData.sentAt,
+                            read: false,
+                            senderId: receivedData.senderId
+                        };
+                                        
+                        // 새 알림 추가 및 읽지 않은 알림 카운트 증가
+                        setNotifications(prev => [notification, ...prev]);
+                        setUnreadCount(prev => prev + 1);
+                        
+                        // 토스트 알림 표시
+                        toast.info(`${receivedData.sender}님의 새 메시지가 도착했습니다.`, {
+                            position: "top-right",
+                            autoClose: 5000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true
+                        });
+                    } catch (error) {
+                        console.error('알림 처리 중 오류 발생:', error);
+                    }
                 });
             };
-
+    
             stompClient.current.onStompError = (frame) => {
                 console.error('STOMP 에러:', frame);
             };
-
+    
             stompClient.current.activate();
-
+    
             // 컴포넌트 언마운트 시 WebSocket 연결 해제
             return () => {
                 if (stompClient.current && stompClient.current.connected) {
@@ -113,77 +137,46 @@ const Navbar = () => {
             };
         }
     }, [isLoggedIn, user]);
+    
+
+
 
     // 초기 알림 데이터 로드
     useEffect(() => {
         if (isLoggedIn) {
-            // API에서 이전 알림 데이터 불러오기
-            const fetchNotifications = async () => {
-                try {
-                    const response = await fetch('/api/notifications', {
-                        headers: {
-                            'Authorization': `Bearer ${localStorage.getItem('accessToken')}` // 토큰 이름이 'accessToken'인 경우
-                        }
-                    });
-                    if (response.ok) {
-                        const data = await response.json();
-                        setNotifications(data.notifications);
-                        setUnreadCount(data.unreadCount);
-                    }
-                } catch (error) {
-                    console.error('알림 데이터 로드 실패:', error);
-                }
-            };
-            
-            fetchNotifications();
+            // 알림을 DB에 저장하지 않으므로 초기 상태는 빈 배열
+            setNotifications([]);
+            setUnreadCount(0);
         }
     }, [isLoggedIn]);
 
-    // 알림 읽음 처리 함수
-    const markAsRead = async (notificationId) => {
-        try {
-            const response = await fetch(`/api/notifications/${notificationId}/read`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-                }
-            });
-            
-            if (response.ok) {
-                // 알림 상태 업데이트
-                setNotifications(prev => 
-                    prev.map(notif => 
-                        notif.id === notificationId ? { ...notif, read: true } : notif
-                    )
-                );
-                setUnreadCount(prev => Math.max(0, prev - 1));
-            }
-        } catch (error) {
-            console.error('알림 읽음 처리 실패:', error);
-        }
+
+
+    
+    
+    // 알림 읽음 // 알림 읽음 처리 함수 (로컬에서만 처리)
+const markAsRead = (notificationId) => {
+    // 알림 상태 업데이트
+    setNotifications(prev => 
+        prev.map(notif => 
+            notif.id === notificationId ? { ...notif, read: true } : notif
+        )
+    );
+    setUnreadCount(prev => Math.max(0, prev - 1));
+};
+
+
+
+    // 모든 알림 읽음 처리 (로컬에서만 처리)
+    const markAllAsRead = () => {
+        // 모든 알림을 읽음 상태로 변경
+        setNotifications(prev => 
+            prev.map(notif => ({ ...notif, read: true }))
+        );
+        setUnreadCount(0);
     };
 
-    // 모든 알림 읽음 처리
-    const markAllAsRead = async () => {
-        try {
-            const response = await fetch('/api/notifications/read-all', {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-                }
-            });
-            
-            if (response.ok) {
-                // 모든 알림을 읽음 상태로 변경
-                setNotifications(prev => 
-                    prev.map(notif => ({ ...notif, read: true }))
-                );
-                setUnreadCount(0);
-            }
-        } catch (error) {
-            console.error('모든 알림 읽음 처리 실패:', error);
-        }
-    };
+
 
     // 로그아웃 핸들러
     const handleLogout = (e) => {
@@ -306,21 +299,21 @@ const Navbar = () => {
             {/* 알림 버튼 및 드롭다운 */}
             <div className="relative" ref={notificationRef}>
               <button
-                className="p-2 hover:bg-gray-100 rounded-full relative"
+                className={`p-2 ${unreadCount > 0 ? 'bg-red-100' : 'hover:bg-gray-100'} rounded-full relative`}
                 onClick={() => {
-                  setIsNotificationOpen(!isNotificationOpen);
-                  if (!isNotificationOpen && unreadCount > 0) {
-                    markAllAsRead();
-                  }
+                    setIsNotificationOpen(!isNotificationOpen);
+                    if (!isNotificationOpen && unreadCount > 0) {
+                        markAllAsRead();
+                    }
                 }}
               >
                 <img src={bellIcon} alt="알림" className="h-6 w-6" />
                 {/* 읽지 않은 알림 표시 */}
                 {unreadCount > 0 && (
-                  <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/3 -translate-y-1/3 bg-red-500 rounded-full">
+                    <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/3 -translate-y-1/3 bg-red-500 rounded-full">
                     {unreadCount > 9 ? "9+" : unreadCount}
-                  </span>
-                )}
+                </span>
+            )}
               </button>
 
               {/* 알림 드롭다운 */}
