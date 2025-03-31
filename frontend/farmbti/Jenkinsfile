@@ -27,6 +27,14 @@ pipeline {
             }
         }
 
+        stage('Apply Environment Config') {
+            steps {
+                configFileProvider([configFile(fileId: 'front_env', targetLocation: "${FRONT_PROJECT_DIR}/.env")]) {
+                    sh 'echo "✅ 환경 설정 파일 적용 완료"'
+                }
+            }
+        }
+
         stage('Build Frontend') {
             steps {
                 dir("frontend/farmbti") {
@@ -52,6 +60,10 @@ pipeline {
                     cp -r frontend/farmbti/dist /home/ubuntu/nginx/dist
 
                     echo "[INFO] dist 복사 완료 ✅"
+                    
+                    echo "[INFO] Nginx 컨테이너 재시작 중..."
+                    docker restart farmbti-nginx
+                    echo "[INFO] Nginx 재시작 완료 ✅"
                     '''
                 }
             }

@@ -68,42 +68,52 @@ const Navbar = () => {
     // WebSocket 연결 설정
     useEffect(() => {
         if (isLoggedIn && user && user.name) {
+            // JWT 토큰 가져오기
+            const token = localStorage.getItem('accessToken'); // 다른 페이지와 동일한 키 사용
+            
+            if (!token) {
+                console.error("JWT 토큰이 없습니다. WebSocket 연결에 인증이 필요합니다.");
+                return;
+            }
+            
             // WebSocket 연결
             stompClient.current = new Client({
                 webSocketFactory: () => new SockJS('http://j12d209.p.ssafy.io/gs-guide-websocket'),
+                connectHeaders: {
+                    Authorization: `Bearer ${token}` // JWT 토큰을 연결 헤더에 추가
+                },
                 debug: (str) => {
                     console.log(str);
                 },
-                reconnectDelay: 5000,
-                heartbeatIncoming: 10000,
-                heartbeatOutgoing: 10000,
-            });
+                reconnectDelay: 2000,
+                heartbeatIncoming: 4000, 
+                heartbeatOutgoing: 4000,
+                        });
     
             stompClient.current.onConnect = () => {
                 console.log("웹소켓 연결 성공!");
-
-                    // user 객체 정보 확인
                 console.log("현재 사용자 정보:", user);
-
+                console.log("user.name:", user.name);
                 
                 // 사용자별 알림 구독 (name을 사용자 식별자로 사용)
-                stompClient.current.subscribe(`/user/${user.name}/queue/notifications`, (message) => {
+                stompClient.current.subscribe(`/user/queue/notifications`, (message) => {
                     console.log("알림메시지 수신:", message.body);
+                    console.log('user.name ==,' ,user.name);
                     
                     try {
                         const receivedData = JSON.parse(message.body);
-                        console.log("새 메시지 수신:", receivedData);
-
-                        // 수신된 메시지로 알림 객체 생성
+                        console.log("백엔드에서 받은 원본 메시지:", receivedData);
+    
+                        // 백엔드 DTO 형식에 맞게 알림 객체 생성
                         const notification = {
-                            id: receivedData.messageId.toString(),
+                            id: Date.now().toString(),
                             title: "새 메시지",
-                            message: `${receivedData.senderId}님: ${receivedData.content}`,
-                            createdAt: receivedData.sentAt,
+                            message: `${receivedData.sender}님이 메시지를 보냈습니다.`,
+                            createdAt: receivedData.timestamp,
                             read: false,
-                            senderId: receivedData.senderId
+                            senderId: receivedData.sender
                         };
-                                        
+                        
                         // 새 알림 추가 및 읽지 않은 알림 카운트 증가
                         setNotifications(prev => [notification, ...prev]);
                         setUnreadCount(prev => prev + 1);
@@ -119,12 +129,17 @@ const Navbar = () => {
                         });
                     } catch (error) {
                         console.error('알림 처리 중 오류 발생:', error);
+                        console.error('원본 메시지:', message.body);
                     }
                 });
             };
     
             stompClient.current.onStompError = (frame) => {
                 console.error('STOMP 에러:', frame);
+            };
+            
+            stompClient.current.onWebSocketError = (error) => {
+                console.error('WebSocket 에러:', error);
             };
     
             stompClient.current.activate();
@@ -136,8 +151,7 @@ const Navbar = () => {
                 }
             };
         }
-    }, [isLoggedIn, user]);
-    
+    }, [isLoggedIn, user]);    
 
 
 

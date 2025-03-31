@@ -133,6 +133,9 @@ const SignupPage = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+
+
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -144,11 +147,10 @@ const SignupPage = () => {
       try {
         const birthDate = new Date(
           formData.birthYear,
-          formData.birthMonth - 1, // JavaScript에서 월은 0부터 시작
+          formData.birthMonth - 1,
           formData.birthDay
-        ).toISOString(); // ISO 8601 형식으로 변환
-
-        // 백엔드에 전송할 데이터 구조화
+        ).toISOString();
+  
         const userData = {
           email: formData.email,
           password: formData.password,
@@ -158,13 +160,33 @@ const SignupPage = () => {
           birth: birthDate
         };
         console.log("요청할 데이터:", userData);
-
+  
         // axios를 사용하여 회원가입 API 호출
         const response = await publicAxios.post('/auth/signUp', userData);
         
-        console.log('회원가입 성공:', response);
+        console.log('전체 응답 객체:', response);
         
-        // 변경된 부분: 토스트 알림 표시 및 메인 페이지로 이동
+        // response 객체가 직접 데이터를 가지고 있는 경우
+        if (response && response.success === false && response.error) {
+          console.log('에러 감지됨:', response.error);
+          
+          // 이메일 중복 에러 처리
+          if (response.error.code === "EMAIL_INVALID") {
+            setErrors(prev => ({
+              ...prev,
+              email: response.error.message
+            }));
+            return;
+          } else {
+            // 다른 에러 케이스 처리
+            toast.error(`회원가입 실패: ${response.error.message}`);
+            return;
+          }
+        }
+        
+        // 성공 케이스 (success가 true이거나 에러가 없는 경우)
+        console.log('회원가입 성공');
+        
         toast.success('회원가입이 완료되었습니다!', {
           position: "top-center",
           autoClose: 3000,
@@ -174,33 +196,15 @@ const SignupPage = () => {
           draggable: true
         });
         
-        // 홈페이지(메인 화면)으로 리다이렉트
         navigate('/');
-        
       } catch (error) {
-        console.error('회원가입 실패:', error);
-        
-        // 서버에서 받은 오류 메시지 처리
-        if (error.response?.data) {
-          const errorData = error.response.data;
-          
-          // 필드별 오류 메시지가 있을 경우
-          if (errorData.errors) {
-            setErrors(prev => ({
-              ...prev,
-              ...errorData.errors
-            }));
-          } 
-          // 일반 오류 메시지
-          else if (errorData.message) {
-            toast.error(`회원가입 실패: ${errorData.message}`);
-          }
-        } else {
-          toast.error('서버 연결 오류가 발생했습니다. 다시 시도해주세요.');
-        }
+        console.error('회원가입 실패 (예외 발생):', error);
+        toast.error('서버 연결 오류가 발생했습니다. 다시 시도해주세요.');
       }
     }
   };
+
+
 
   // 연도 옵션 생성 (현재 연도부터 100년 전까지)
   const currentYear = new Date().getFullYear();
