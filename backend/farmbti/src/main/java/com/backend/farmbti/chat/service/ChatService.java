@@ -139,12 +139,12 @@ public class ChatService {
                 messages -> {
 
                     //현재 로그인한 사용자가 멘티라면
-                    boolean isUserMentee = messages.getChat().getMentee().getId().equals(usersId);
+                    //boolean isUserMentee = messages.getChat().getMentee().getId().equals(usersId);
 
-                    Long otherUserId = isUserMentee ? messages.getChat().getMentor().getId() : messages.getChat().getMentee().getId();
+                    //Long otherUserId = isUserMentee ? messages.getChat().getMentor().getId() : messages.getChat().getMentee().getId();
 
                     return MessageResponse.builder()
-                            .senderId(otherUserId)
+                            .senderId(messages.getSenderId())
                             .messageId(messages.getMessageId())
                             .content(messages.getContent())
                             .sentAt(messages.getSendAt())
