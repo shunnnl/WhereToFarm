@@ -1,8 +1,10 @@
 import { publicAxios } from "../common/AxiosInstance";
 
-export const getAllEstate = async () => {
+export const getAllEstate = async (page, size) => {
   try {
-    const response = await publicAxios.get("/property/list");
+    const response = await publicAxios.get(
+      `/property/list?page=${page}&size=${size}`
+    );
     if (!response.success) {
       throw response.error;
     }
