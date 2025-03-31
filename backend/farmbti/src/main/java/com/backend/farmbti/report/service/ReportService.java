@@ -203,20 +203,31 @@ public class ReportService {
         Float rValue = convertToFloat(params.get("R"));
         Float mValue = convertToFloat(params.get("M"));
 
-        // 각 값이 0.5를 초과하는지 여부에 따라 비트 플래그 생성
-        boolean isHighF = fValue > 0.5;
-        boolean isHighA = aValue > 0.5;
-        boolean isHighR = rValue > 0.5;
-        boolean isHighM = mValue > 0.5;
+        // 0.6을 기준으로 high/low 결정
+        boolean isHighF = fValue >= 0.6;
+        boolean isHighA = aValue >= 0.6;
+        boolean isHighR = rValue >= 0.6;
+        boolean isHighM = mValue >= 0.6;
 
         // 유형 ID 계산 (1~16)
         int characterTypeId = 1;
 
-        // 비트 연산으로 ID 계산 (각 조합에 대해 1부터 16까지 매핑)
-        if (isHighF) characterTypeId += 8; // 첫 번째 비트 (8)
-        if (isHighA) characterTypeId += 4; // 두 번째 비트 (4)
-        if (isHighR) characterTypeId += 2; // 세 번째 비트 (2)
-        if (isHighM) characterTypeId += 1; // 네 번째 비트 (1)
+        if (isHighF && isHighA && isHighR && isHighM) characterTypeId = 1;
+        else if (isHighF && isHighA && isHighR && !isHighM) characterTypeId = 2;
+        else if (isHighF && isHighA && !isHighR && isHighM) characterTypeId = 3;
+        else if (isHighF && isHighA && !isHighR && !isHighM) characterTypeId = 4;
+        else if (isHighF && !isHighA && isHighR && isHighM) characterTypeId = 5;
+        else if (isHighF && !isHighA && isHighR && !isHighM) characterTypeId = 6;
+        else if (isHighF && !isHighA && !isHighR && isHighM) characterTypeId = 7;
+        else if (isHighF && !isHighA && !isHighR && !isHighM) characterTypeId = 8;
+        else if (!isHighF && isHighA && isHighR && isHighM) characterTypeId = 9;
+        else if (!isHighF && isHighA && isHighR && !isHighM) characterTypeId = 10;
+        else if (!isHighF && isHighA && !isHighR && isHighM) characterTypeId = 11;
+        else if (!isHighF && isHighA && !isHighR && !isHighM) characterTypeId = 12;
+        else if (!isHighF && !isHighA && isHighR && isHighM) characterTypeId = 13;
+        else if (!isHighF && !isHighA && isHighR && !isHighM) characterTypeId = 14;
+        else if (!isHighF && !isHighA && !isHighR && isHighM) characterTypeId = 15;
+        else if (!isHighF && !isHighA && !isHighR && !isHighM) characterTypeId = 16;
 
         log.info("Character determination: F={}, A={}, R={}, M={}, Selected characterTypeId={}",
                 fValue, aValue, rValue, mValue, characterTypeId);
