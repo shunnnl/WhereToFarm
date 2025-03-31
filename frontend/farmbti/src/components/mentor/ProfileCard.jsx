@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import MentorSelectModal from './MentorSelectModal';
 
-const ProfileCard = ({ mentor, className = '' }) => {
+const ProfileCard = ({ mentor, className = '', regionName = '', cityName = '' }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   
@@ -32,6 +32,22 @@ const ProfileCard = ({ mentor, className = '' }) => {
     setIsModalOpen(false);
   };
   
+  // 지역 정보 표시 생성
+  const getLocationDisplay = () => {
+    // 상위 컴포넌트에서 지역 정보를 받았다면 해당 정보 사용
+    if (regionName || cityName) {
+      if (regionName && cityName) {
+        return `${regionName} ${cityName}`;
+      } else if (regionName) {
+        return regionName;
+      } else if (cityName) {
+        return cityName;
+      }
+    }
+    // 받지 않았다면 멘토 객체의 주소 정보 사용
+    return address || '';
+  };
+  
   return (
     <>
       <div 
@@ -50,6 +66,7 @@ const ProfileCard = ({ mentor, className = '' }) => {
           h-[480px]
           ${className}
           cursor-pointer
+          relative
         `}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
@@ -72,8 +89,8 @@ const ProfileCard = ({ mentor, className = '' }) => {
           </p>
         </div>
         
-        {/* 지역 태그 */}
-        {address && (
+        {/* 지역 태그 - 상위 컴포넌트에서 받은 값 사용 */}
+        {getLocationDisplay() && (
           <div className="mt-3">
             <span className="
               bg-green-100
@@ -83,7 +100,7 @@ const ProfileCard = ({ mentor, className = '' }) => {
               rounded-full
               text-sm
             ">
-              # {address}
+              # {getLocationDisplay()}
             </span>
           </div>
         )}
@@ -116,10 +133,28 @@ const ProfileCard = ({ mentor, className = '' }) => {
           </div>
         )}
         
-        {/* 짧은 소개 */}
+        {/* 짧은 소개 - 명확한 스타일로 고정 */}
         {bio && (
-          <div className="mt-3 text-center text-gray-700 text-sm overflow-hidden">
-            {bio.length > 100 ? bio.substring(0, 100) + '...' : bio}
+          <div className="
+            mt-4 
+            text-center 
+            text-gray-700 
+            text-sm
+            max-h-16
+            w-full
+            mb-4
+            relative
+          ">
+            <div className="overflow-hidden" style={{ height: '4rem' }}>
+              {bio}
+            </div>
+            {bio && bio.length > 60 && (
+              <div className="absolute bottom-0 right-0 left-0 text-right pr-2" style={{ 
+                background: 'linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,1) 30%)' 
+              }}>
+                ...
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -129,8 +164,10 @@ const ProfileCard = ({ mentor, className = '' }) => {
         isOpen={isModalOpen}
         onClose={closeModal}
         mentor={mentor}
+        regionName={regionName}
+        cityName={cityName}
       />
-    </>  
+    </>
   );
 };
 

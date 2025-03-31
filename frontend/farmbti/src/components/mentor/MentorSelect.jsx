@@ -227,7 +227,12 @@ const MentorSelect = ({ candidateList, regionName, cityName }) => {
                   key={mentor.mentorId} 
                   className="min-w-[280px] max-w-[280px] flex-shrink-0"
                 >
-                  <ProfileCard mentor={mentor} />
+                  <ProfileCard 
+                  mentor={mentor}
+                  regionName={regionName} 
+                  cityName={cityName}
+      
+                  />
                 </div>
               ))}
             </div>
