@@ -20,10 +20,10 @@ import com.backend.farmbti.users.exception.UsersErrorCode;
 import com.backend.farmbti.users.service.UsersService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -45,74 +45,120 @@ public class MentorsService {
      */
     @Transactional
     public void registerMentor(MentorRegisterRequest request, Long userId) {
-        // 1. 이미 멘토로 등록되어 있는지 확인
+        validateMentorRegistration(userId);
+        validateMentorRequest(request);
+        try {
+
+            // 1. 사용자 정보 조회
+            Users user = findUserById(userId);
+
+            // 2. 작물 이름 유효성 검증
+            List<Crops> crops = validateCropNames(request.getCropNames());
+
+            // 3. 멘토 객체 생성 및 저장
+            Mentors savedMentor = createAndSaveMentor(user, request);
+
+            // 4. 멘토-작물 관계 설정
+            createMentorCropRelations(savedMentor, crops);
+
+        } catch (GlobalException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new GlobalException(MentorsErrorCode.MENTOR_REGISTRATION_FAILED);
+        }
+    }
+
+    private void validateMentorRegistration(Long userId) {
         if (mentorsRepository.existsByUserId(userId)) {
             throw new GlobalException(MentorsErrorCode.ALREADY_REGISTERED_AS_MENTOR);
         }
+    }
 
-        // 2. 사용자 정보 조회
-        Users user = usersRepository.findById(userId)
+    private Users findUserById(Long userId) {
+        return usersRepository.findById(userId)
                 .orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
+    }
 
-        // 3. 입력값 검증
-        validateMentorRequest(request);
-
-        // 4. 작물 이름 유효성 검증
-        List<Crops> crops = validateCropNames(request.getCropNames());
-
-        // 5. 멘토 객체 생성 및 저장
+    private Mentors createAndSaveMentor(Users user, MentorRegisterRequest request) {
         Mentors mentor = Mentors.builder()
                 .user(user)
                 .bio(request.getBio())
                 .farmingYears(request.getFarmingYears())
                 .build();
 
-        Mentors savedMentor = mentorsRepository.save(mentor);
-
-        // 6. 멘토-작물 관계 설정
-        List<MentorsCrops> mentorCrops = crops.stream()
-                .map(crop -> MentorsCrops.builder()
-                        .mentor(savedMentor)
-                        .crop(crop)
-                        .build())
-                .collect(Collectors.toList());
-
-        mentorsCropsRepository.saveAll(mentorCrops);
+        return mentorsRepository.save(mentor);
     }
+
+    private void createMentorCropRelations(Mentors mentor, List<Crops> crops) {
+        try {
+            List<MentorsCrops> mentorCrops = crops.stream()
+                    .map(crop -> MentorsCrops.builder()
+                            .mentor(mentor)
+                            .crop(crop)
+                            .build())
+                    .collect(Collectors.toList());
+
+            mentorsCropsRepository.saveAll(mentorCrops);
+        } catch (Exception e) {
+            throw new GlobalException(MentorsErrorCode.MENTOR_CROP_RELATION_FAILED);
+        }
+    }
+
 
     /**
      * 멘토 정보 수정
      */
     @Transactional
     public CurrentUserResponse updateMentorInfo(MentorRegisterRequest request, Long userId) {
-        // 1. 멘토 정보 조회
-        Mentors mentor = mentorsRepository.findByUserId(userId)
+        try {
+            // 1. 멘토 정보 조회
+            Mentors mentor = findMentorByUserId(userId);
+
+            // 2. 입력값 검증
+            validateMentorRequest(request);
+
+            // 3. 작물 이름 유효성 검증
+            List<Crops> newCrops = validateCropNames(request.getCropNames());
+
+            // 4. 멘토 정보 업데이트
+            updateMentorDetails(mentor, request);
+
+            // 5. 기존 멘토-작물 관계 삭제 및 새 관계 설정
+            updateMentorCropRelations(mentor, newCrops);
+
+            return usersService.getCurrentUserInfo(userId);
+
+        } catch (GlobalException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new GlobalException(MentorsErrorCode.MENTOR_UPDATE_FAILED);
+        }
+    }
+
+    private Mentors findMentorByUserId(Long userId) {
+        return mentorsRepository.findByUserId(userId)
                 .orElseThrow(() -> new GlobalException(MentorsErrorCode.MENTOR_NOT_FOUND));
+    }
 
-        // 2. 입력값 검증 (기존 validateMentorRequest 메소드 재사용)
-        validateMentorRequest(request);
-
-        // 3. 작물 이름 유효성 검증 (기존 validateCropNames 메소드 재사용)
-        List<Crops> newCrops = validateCropNames(request.getCropNames());
-
-        // 4. 멘토 정보 업데이트
+    private void updateMentorDetails(Mentors mentor, MentorRegisterRequest request) {
         mentor.updateMentorInfo(request.getBio(), request.getFarmingYears());
+    }
 
-        // 5. 기존 멘토-작물 관계 삭제
-        mentorsCropsRepository.deleteByMentorId(mentor.getId());
+    private void updateMentorCropRelations(Mentors mentor, List<Crops> newCrops) {
+        try {
+            mentorsCropsRepository.deleteByMentorId(mentor.getId());
 
-        // 6. 새로운 멘토-작물 관계 설정
-        List<MentorsCrops> mentorCrops = newCrops.stream()
-                .map(crop -> MentorsCrops.builder()
-                        .mentor(mentor)
-                        .crop(crop)
-                        .build())
-                .collect(Collectors.toList());
+            List<MentorsCrops> mentorCrops = newCrops.stream()
+                    .map(crop -> MentorsCrops.builder()
+                            .mentor(mentor)
+                            .crop(crop)
+                            .build())
+                    .collect(Collectors.toList());
 
-        mentorsCropsRepository.saveAll(mentorCrops);
-
-        return usersService.getCurrentUserInfo(userId);
-
+            mentorsCropsRepository.saveAll(mentorCrops);
+        } catch (Exception e) {
+            throw new GlobalException(MentorsErrorCode.MENTOR_CROP_RELATION_FAILED);
+        }
     }
 
     /**
@@ -120,55 +166,55 @@ public class MentorsService {
      */
     @Transactional(readOnly = true)
     public List<MentorListResponse> getMentorsByLocation(String city) {
-        // 입력값 검증
-        if (city == null || city.trim().isEmpty()) {
+        try {
+            validateLocationInput(city);
+            List<Mentors> mentors = findMentorsByCity(city);
+            return mentors.stream()
+                    .map(this::convertToMentorListResponse)
+                    .collect(Collectors.toList());
+        } catch (GlobalException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new GlobalException(MentorsErrorCode.MENTOR_LOCATION_SEARCH_FAILED);
+        }
+    }
+
+    private void validateLocationInput(String city) {
+        if (StringUtils.isBlank(city)) {
             throw new GlobalException(MentorsErrorCode.INVALID_LOCATION_PARAMETER);
         }
+    }
 
+    private List<Mentors> findMentorsByCity(String city) {
         List<Mentors> mentors = mentorsRepository.findByUser_AddressContaining(city);
 
-        // 검색 결과가 없을 경우 예외 발생
         if (mentors.isEmpty()) {
             throw new GlobalException(MentorsErrorCode.NO_MENTORS_IN_LOCATION);
         }
 
-        return mentors.stream()
-                .map(mentor -> {
-                    Users user = mentor.getUser();
+        return mentors;
+    }
 
-                    // 프로필 이미지 URL 생성
-                    String profileImageUrl;
-                    try {
-                        profileImageUrl = s3Service.getSignedUrl(user.getProfileImage());
-                    } catch (Exception e) {
-                        throw new GlobalException(UsersErrorCode.PROFILE_IMAGE_URL_GENERATION_FAILED);
-                    }
+    private MentorListResponse convertToMentorListResponse(Mentors mentor) {
+        Users user = mentor.getUser();
 
-                    // 멘토가 키우는 작물 조회
-                    List<MentorsCrops> mentorsCrops = mentorsCropsRepository.findByMentorId(mentor.getId());
-                    List<String> cropNames = mentorsCrops.stream()
-                            .map(mc -> mc.getCrop().getName())
-                            .collect(Collectors.toList());
-
-                    // 응답 객체 생성 (유저 정보 + 멘토 정보)
-                    return MentorListResponse.builder()
-                            // 유저 정보
-                            .userId(user.getId())
-                            .email(user.getEmail())
-                            .name(user.getName())
-                            .address(user.getAddress())
-                            .birth(user.getBirth())
-                            .gender(user.getGender())
-                            .profileImage(profileImageUrl)
-
-                            // 멘토 정보
-                            .mentorId(mentor.getId())
-                            .bio(mentor.getBio())
-                            .farmingYears(mentor.getFarmingYears())
-                            .cropNames(cropNames)
-                            .build();
-                })
+        List<String> cropNames = mentorsCropsRepository.findByMentorId(mentor.getId()).stream()
+                .map(mc -> mc.getCrop().getName())
                 .collect(Collectors.toList());
+
+        return MentorListResponse.builder()
+                .userId(user.getId())
+                .email(user.getEmail())
+                .name(user.getName())
+                .address(user.getAddress())
+                .birth(user.getBirth())
+                .gender(user.getGender())
+                .profileImage(getProfileImageUrl(user))
+                .mentorId(mentor.getId())
+                .bio(mentor.getBio())
+                .farmingYears(mentor.getFarmingYears())
+                .cropNames(cropNames)
+                .build();
     }
 
     /**
@@ -196,23 +242,30 @@ public class MentorsService {
      * 작물 이름 유효성 검증
      */
     private List<Crops> validateCropNames(List<String> cropNames) {
-        List<Crops> crops = new ArrayList<>();
-
-        for (String name : cropNames) {
-            try {
-                Optional<Crops> cropOptional = cropsRepository.findByName(name);
-                if (cropOptional.isPresent()) {
-                    crops.add(cropOptional.get());
-                } else {
-                    // 해당 이름의 작물이 없는 경우
-                    throw new GlobalException(MentorsCropsErrorCode.INVALID_CROP_NAME);
-                }
-            } catch (Exception e) {
-                // DB 조회 중 다른 예외가 발생한 경우
-                throw new GlobalException(MentorsCropsErrorCode.INVALID_CROP_NAME);
-            }
+        if (cropNames == null || cropNames.isEmpty()) {
+            throw new GlobalException(MentorsCropsErrorCode.NO_CROPS_SELECTED);
         }
 
-        return crops;
+        return cropNames.stream()
+                .map(this::findValidCrop)
+                .collect(Collectors.toList());
     }
+
+    private Crops findValidCrop(String cropName) {
+        return cropsRepository.findByName(cropName)
+                .orElseThrow(() -> new GlobalException(
+                        MentorsCropsErrorCode.INVALID_CROP_NAME));
+    }
+
+    private String getProfileImageUrl(Users user) {
+        try {
+            String profileImageKey = Optional.ofNullable(user.getProfileImage())
+                    .orElse(s3Service.getDefaultProfileImageKey(user.getGender()));
+
+            return s3Service.getSignedUrl(profileImageKey);
+        } catch (Exception e) {
+            throw new GlobalException(UsersErrorCode.PROFILE_IMAGE_URL_GENERATION_FAILED);
+        }
+    }
+
 }
