@@ -28,7 +28,7 @@ import NewsPage from "./pages/news/NewsPage";
 import SurveyIntroPage from "./pages/recommendation/survey/SurveyIntroPage";
 import SurveyPage from "./pages/recommendation/survey/SurveyPage";
 import ReportPage from "./pages/recommendation/report/ReportPage";
-import SupportPolicyPage from "./pages/etc/support/SupportPolicyPage";
+import SupportPolicyPage from "./pages/etc/policy/SupportPolicyPage";
 import EstateDetailPage from "./pages/etc/estate/EstateDetailPage";
 
 

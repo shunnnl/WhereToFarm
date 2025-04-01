@@ -63,7 +63,7 @@ export const serviceIcons = [
   {
     icon: icon_3, // 실제로는 icon_3.svg로 변경해야 함
     title: "혜택",
-    link: "/check"
+    link: "/support"
   },
   {
     icon: icon_4, 
