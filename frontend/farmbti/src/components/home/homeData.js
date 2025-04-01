@@ -5,6 +5,7 @@ import icon_1 from "../../asset/home/가이드.svg";
 import icon_2 from "../../asset/home/매물.svg";
 import icon_3 from "../../asset/home/혜택.svg";
 import icon_4 from "../../asset/home/작물_계산기.svg";
+import { BookOpen, Home, Gift, Calculator } from "lucide-react";
 
 // 배너 슬라이더 데이터
 export const bannerSlides = [
@@ -51,23 +52,23 @@ export const bannerSlides = [
 // 서비스 아이콘 메뉴 데이터
 export const serviceIcons = [
   {
-    icon: icon_1,
+    icon: BookOpen,
     title: "가이드북",
     link: "/guidebook"
   },
   {
-    icon: icon_2, // 실제로는 icon_2.svg로 변경해야 함
+    icon: Home,
     title: "매물",
     link: "/estate"
   },
   {
-    icon: icon_3, // 실제로는 icon_3.svg로 변경해야 함
+    icon: Gift,
     title: "혜택",
     link: "/check"
   },
   {
-    icon: icon_4, 
-    title: "작물_계산기",
+    icon: Calculator,
+    title: "작물 계산기",
     link: "/crop-calculator"
   }
 ];
