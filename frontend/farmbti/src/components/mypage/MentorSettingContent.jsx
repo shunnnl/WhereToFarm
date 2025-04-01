@@ -6,48 +6,48 @@ const MentorSettingContent = ({ onChange, initialData }) => {
     {
       id: "apple",
       label: "사과",
-      iconSrc: "../../asset/mentor/icons/apple.png",
+      iconSrc: "../../asset/crops-icons/apple.png",
     },
     {
       id: "cucumber",
       label: "오이",
-      iconSrc: "../../asset/mentor/icons/cucumber.png",
+      iconSrc: "../../asset/crops-icons/cucumber.png",
     },
     {
       id: "grape",
       label: "포도",
-      iconSrc: "../../asset/mentor/icons/grape.png",
+      iconSrc: "../../asset/crops-icons/grape.png",
     },
     {
       id: "greenonion",
       label: "대파",
-      iconSrc: "../../asset/mentor/icons/greenonion.png",
+      iconSrc: "../../asset/crops-icons/greenonion.png",
     },
     {
       id: "lettuce",
       label: "상추",
-      iconSrc: "../../asset/mentor/icons/lettuce.png",
+      iconSrc: "../../asset/crops-icons/lettuce.png",
     },
     {
       id: "onion",
       label: "양파",
-      iconSrc: "../../asset/mentor/icons/onion.png",
+      iconSrc: "../../asset/crops-icons/onion.png",
     },
-    { id: "pear", label: "배", iconSrc: "../../asset/mentor/icons/pear.png" },
+    { id: "pear", label: "배", iconSrc: "../../asset/crops-icons/pear.png" },
     {
       id: "sweetpotato",
       label: "고구마",
-      iconSrc: "../../asset/mentor/icons/sweetpotato.png",
+      iconSrc: "../../asset/crops-icons/sweetpotato.png",
     },
     {
       id: "tangerine",
       label: "감귤",
-      iconSrc: "../../asset/mentor/icons/tangerine.png",
+      iconSrc: "../../asset/crops-icons/tangerine.png",
     },
     {
       id: "watermelon",
       label: "수박",
-      iconSrc: "../../asset/mentor/icons/watermelon.png",
+      iconSrc: "../../asset/crops-icons/watermelon.png",
     },
   ];
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import farmer_image from '../../asset/mentor/farmer.svg'
+import farmer_image from '../../asset/mentor/farmer.png'
 const GradientSection = () => {
   return (
     <div className="relative w-full h-[500px] bg-gradient-to-b from-white to-amber-50 flex items-center justify-center">

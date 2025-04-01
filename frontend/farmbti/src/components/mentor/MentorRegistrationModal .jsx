@@ -19,16 +19,32 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
   const [isCheckingMentorStatus, setIsCheckingMentorStatus] = useState(false);
 
   const topFood = [
-    { id: '사과', label: '사과', iconSrc: 'src/asset/mentor/icons/apple.png' },
-    { id: '오이', label: '오이', iconSrc: 'src/asset/mentor/icons/cucumber.png' },
-    { id: '포도', label: '포도', iconSrc: 'src/asset/mentor/icons/grape.png' },
-    { id: '파', label: '파', iconSrc: 'src/asset/mentor/icons/greenonion.png' },
-    { id: '상추', label: '상추', iconSrc: 'src/asset/mentor/icons/lettuce.png' },
-    { id: '양파', label: '양파', iconSrc: 'src/asset/mentor/icons/onion.png' },
-    { id: '배', label: '배', iconSrc: 'src/asset/mentor/icons/pear.png' },
-    { id: '고구마', label: '고구마', iconSrc: 'src/asset/mentor/icons/sweetpotato.png' },
-    { id: '귤', label: '귤', iconSrc: 'src/asset/mentor/icons/tangerine.png' },
-    { id: '수박', label: '수박', iconSrc: 'src/asset/mentor/icons/watermelon.png' }
+    { id: "사과", label: "사과", iconSrc: "src/asset/crops-icons/apple.png" },
+    {
+      id: "오이",
+      label: "오이",
+      iconSrc: "src/asset/crops-icons/cucumber.png",
+    },
+    { id: "포도", label: "포도", iconSrc: "src/asset/crops-icons/grape.png" },
+    { id: "파", label: "파", iconSrc: "src/asset/crops-icons/greenonion.png" },
+    {
+      id: "상추",
+      label: "상추",
+      iconSrc: "src/asset/crops-icons/lettuce.png",
+    },
+    { id: "양파", label: "양파", iconSrc: "src/asset/crops-icons/onion.png" },
+    { id: "배", label: "배", iconSrc: "src/asset/crops-icons/pear.png" },
+    {
+      id: "고구마",
+      label: "고구마",
+      iconSrc: "src/asset/crops-icons/sweetpotato.png",
+    },
+    { id: "귤", label: "귤", iconSrc: "src/asset/crops-icons/tangerine.png" },
+    {
+      id: "수박",
+      label: "수박",
+      iconSrc: "src/asset/crops-icons/watermelon.png",
+    },
   ];
 
     // 사용자 정보 및 멘토 상태 확인

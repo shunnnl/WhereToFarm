@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // 추가: 라우팅을 위한 import
 import { toast } from 'react-toastify'; // 추가: 토스트 알림을 위한 import
-import signup_image from '../../asset/auth/login.svg';
+import signup_image from '../../asset/auth/login.png';
 import useKakaoAddressService from '../../API/useKakaoAddressService';
 import { publicAxios } from '../../API/common/AxiosInstance';
 

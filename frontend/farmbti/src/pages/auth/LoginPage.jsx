@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify'; // 추가: 토스트 알림 import
-import login_image from '../../asset/auth/login.svg'
+import login_image from '../../asset/auth/login.png'
 import { Link, useNavigate } from 'react-router-dom'; 
 import { publicAxios } from '../../API/common/AxiosInstance'
 import { useEffect } from 'react';
