@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.backend.farmbti.policy.domain.Policy;
+import com.backend.farmbti.policy.dto.PolicyFilterRequestDto;
 
 @Repository
 public interface PolicyRepository extends JpaRepository<Policy, Long> {
@@ -24,8 +25,5 @@ public interface PolicyRepository extends JpaRepository<Policy, Long> {
 	// 랜덤 3개 혜택 조회
 	@Query("SELECT p FROM Policy p ORDER BY RANDOM()")
 	List<Policy> findRandomPolicies(Pageable pageable);
-
-	@Query("SELECT p FROM Policy p WHERE p.region LIKE %:region%")
-	List<Policy> findAllByRegionContaining(@Param("region") String region);
 
 }

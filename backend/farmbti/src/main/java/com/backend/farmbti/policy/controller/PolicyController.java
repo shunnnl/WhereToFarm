@@ -7,11 +7,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.backend.farmbti.policy.domain.Policy;
+import com.backend.farmbti.policy.dto.PolicyFilterRequestDto;
 import com.backend.farmbti.policy.service.PolicyService;
 import com.backend.farmbti.common.dto.CommonResponseDto;
 
@@ -39,16 +41,16 @@ public class PolicyController {
 		return CommonResponseDto.ok(policyPage);
 	}
 
-	@GetMapping("/region")
-	@Operation(summary = "지역별 지원 정책 조회", description = "입력한 지역에 해당하는 지원 정책 정보를 조회합니다.")
+	@PostMapping("/region")
+	@Operation(summary = "지역별 지원 정책 조회", description = "지역(도, 시군)을 기준으로 정책을 검색합니다.")
 	public CommonResponseDto<Page<Policy>> getPoliciesByRegion(
-		@Parameter(description = "정책 지역명", example = "하동군")
-		@RequestParam String region,
+		@RequestParam PolicyFilterRequestDto request,
 		@RequestParam(defaultValue = "0") int page, // 페이지 번호
 		@RequestParam(defaultValue = "10") int size // 페이지 크기
 	) {
 		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "id"));
-		Page<Policy> policies = policyService.getPoliciesByRegion(region, pageable);
+		Page<Policy> policies = policyService.getPoliciesByRegion(request, pageable);
+
 		return CommonResponseDto.ok(policies);
 	}
 
