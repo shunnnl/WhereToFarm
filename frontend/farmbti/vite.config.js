@@ -6,11 +6,11 @@ import * as path from "path";
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()]
-  // server: {
-  //   https: {
-  //     key: fs.readFileSync(path.resolve(__dirname, "localhost-key.pem")),
-  //     cert: fs.readFileSync(path.resolve(__dirname, "localhost.pem")),
-  //   },
-  // }
+  plugins: [react()],
+  server: {
+    https: {
+      key: fs.readFileSync(path.resolve(__dirname, "localhost-key.pem")),
+      cert: fs.readFileSync(path.resolve(__dirname, "localhost.pem")),
+    },
+  }
 })

@@ -2,11 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { authAxios } from '../../API/common/AxiosInstance';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const Chat = () => {
   const location = useLocation();
-  
+  const navigate = useNavigate(); // 추가: 네비게이션을 위한 훅
+
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const [currentTime, setCurrentTime] = useState('');
@@ -21,6 +22,12 @@ const Chat = () => {
   const MAX_CHAR_LIMIT = 1000;
 
   
+  // 뒤로가기 함수 추가
+  const handleGoBack = () => {
+    navigate(-1); // 브라우저 히스토리에서 한 단계 뒤로 이동
+  };
+
+
   // URL state에서 roomId 가져오기
   useEffect(() => {
     if (location.state && location.state.roomId) {
@@ -322,7 +329,10 @@ const Chat = () => {
       <div className="w-1/4 bg-white border-r flex flex-col">
         {/* 뒤로가기 버튼 - 헤더와 높이 맞춤 */}
         <div className="p-4 border-b flex items-center h-16">
-          <button className="text-gray-600">
+          <button 
+            className="text-gray-600 hover:text-gray-900 p-2"
+            onClick={handleGoBack}
+          >
             ←
           </button>
         </div>
@@ -350,7 +360,7 @@ const Chat = () => {
                   <div>
                     <p className="font-bold">{room.otherUserName}</p>
                     <p className="text-sm text-gray-500">
-                      {room.lastMessage || "연락주세요"}
+                      {room.lastMessage || "멘토와의 대화를 시작합니다"}
                     </p>
                   </div>
                 </div>
@@ -371,8 +381,21 @@ const Chat = () => {
             <div className="bg-white p-4 flex items-center justify-between border-b h-16">
               <div className="flex items-center">
                 <div className="w-10 h-10 rounded-full overflow-hidden mr-3">
-                  <img src="/api/placeholder/40/40" alt="프로필" className="w-full h-full object-cover" />
-                </div>
+                        <img 
+                          src={(() => {
+                            // 현재 선택된 채팅방 찾기
+                            const currentRoom = chatRooms.find(room => room.roomId === roomId);
+                            // 좌측 목록과 동일한 방식으로 이미지 표시
+                            return (currentRoom && currentRoom.otherUserProfile && 
+                                  currentRoom.otherUserProfile.startsWith('http')) 
+                                  ? currentRoom.otherUserProfile 
+                                  : `/api/placeholder/40/40`;
+                          })()} 
+                          alt={getMentorName()} 
+                          className="w-full h-full object-cover" 
+                        />
+
+                  </div>
                 <div>
                   <h2 className="font-bold">{getMentorName()}</h2>
                 </div>
