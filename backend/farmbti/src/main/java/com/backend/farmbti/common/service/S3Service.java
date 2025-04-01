@@ -6,6 +6,7 @@ import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.backend.farmbti.common.exception.GlobalException;
+import com.backend.farmbti.common.exception.S3ErrorCode;
 import com.backend.farmbti.users.exception.UsersErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,7 +49,7 @@ public class S3Service {
         String objectKey = "basic/" + (gender == 1 ? "basic_1.jpg" : "basic_0.jpg");
 
         if (!amazonS3.doesObjectExist(bucket, objectKey)) {
-            throw new GlobalException(UsersErrorCode.DEFAULT_PROFILE_IMAGE_NOT_FOUND);
+            throw new GlobalException(S3ErrorCode.DEFAULT_PROFILE_IMAGE_NOT_FOUND);
         }
 
         return objectKey;
@@ -60,7 +61,7 @@ public class S3Service {
         long MAX_FILE_SIZE = 5 * 1024 * 1024; // 용량 5MB 제한
 
         if (file.isEmpty() || file.getSize() > MAX_FILE_SIZE) {
-            throw new GlobalException(UsersErrorCode.PROFILE_IMAGE_UPLOAD_FAILED);
+            throw new GlobalException(S3ErrorCode.PROFILE_IMAGE_UPLOAD_FAILED);
         }
 
         try {
@@ -74,7 +75,7 @@ public class S3Service {
             amazonS3.putObject(bucket, key, file.getInputStream(), metadata);
             return key;
         } catch (IOException e) {
-            throw new GlobalException(UsersErrorCode.PROFILE_IMAGE_UPLOAD_FAILED);
+            throw new GlobalException(S3ErrorCode.PROFILE_IMAGE_UPLOAD_FAILED);
         }
     }
 
