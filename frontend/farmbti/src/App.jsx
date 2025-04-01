@@ -22,7 +22,7 @@ import FarmbtiReport from "./components/mypage/FarmbtiReport";
 import CropCalculateReport from "./components/mypage/CropCalculateReport";
 import EstatePage from "./pages/etc/estate/EstatePage";
 import UserDeletePage from "./pages/auth/UserDeletePage";
-import AuthRequiredPage from "./pages/etc/AuthRequiredPage";
+import AuthRequiredPage from "./pages/etc/error-pages/AuthRequiredPage";
 import GuideBookPage from "./pages/etc/guidebook/GuideBookPage";
 import NewsPage from "./pages/news/NewsPage";
 import SurveyIntroPage from "./pages/recommendation/survey/SurveyIntroPage";
@@ -30,6 +30,7 @@ import SurveyPage from "./pages/recommendation/survey/SurveyPage";
 import ReportPage from "./pages/recommendation/report/ReportPage";
 import SupportPolicyPage from "./pages/etc/support/SupportPolicyPage";
 import EstateDetailPage from "./pages/etc/estate/EstateDetailPage";
+import NotFoundPage from "./pages/etc/error-pages/NotFoundPage";
 
 
 
@@ -127,6 +128,8 @@ function App() {
               />
             </Route>
             <Route path="/account/delete" element={<UserDeletePage />} />
+
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
           <div className="mt-24">
             <Footer />
