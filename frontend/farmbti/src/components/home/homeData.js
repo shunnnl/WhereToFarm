@@ -37,7 +37,7 @@ export const bannerSlides = [
     src: homeimage_3,
     alt: "Home Banner Image 3",
     button: {
-      text: "계산하기",
+      text: "작물 수익 계산하기",
       link: "/crop-calculator",
     },
     text: {
