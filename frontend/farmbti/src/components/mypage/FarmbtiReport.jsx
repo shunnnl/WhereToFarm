@@ -1,45 +1,23 @@
 import { useState, useEffect } from "react";
 import FarmbtiCard from "./FrambtiCard";
 import PaginationComponent from "../common/Pagination";
+import { getMyFarmbtiReports } from "../../API/mypage/MyReportsAPI";
 
 const FarmbtiReport = () => {
-  const [myFarmbtiReports, setMyFarmbtiReports] = useState([
-    {
-      id: 1,
-      reportName: "산천리 마을 외 2",
-      farmerType: "흥미진진형 농부",
-      date: "2024-01-19",
-      matchRate: 85,
-    },
-    {
-      id: 2,
-      reportName: "소태미 마을 외 2",
-      farmerType: "자연친화형 농부",
-      date: "2024-02-13",
-      matchRate: 60,
-    },
-    {
-      id: 3,
-      reportName: "소태미 마을 외 2",
-      farmerType: "자연친화형 농부",
-      date: "2024-02-13",
-      matchRate: 60,
-    },
-    {
-      id: 4,
-      reportName: "소태미 마을 외 2",
-      farmerType: "자연친화형 농부",
-      date: "2024-02-13",
-      matchRate: 60,
-    },
-    {
-      id: 5,
-      reportName: "소태미 마을 외 2",
-      farmerType: "자연친화형 농부",
-      date: "2024-02-13",
-      matchRate: 60,
-    },
-  ]);
+  const [myFarmbtiReports, setMyFarmbtiReports] = useState([]);
+  useEffect(() => {
+      const getReports = async () => {
+        try {
+          const data = await getMyFarmbtiReports();
+          setMyFarmbtiReports(data);
+        } catch (error) {
+          // console.log(error);
+          toast.error(error.message || "정보를 불러올 수 없습니다.");
+        }
+      };
+      getReports();
+    }, []);
+  
 
   // 페이지네이션 상태
   const [activePage, setActivePage] = useState(1);
@@ -98,12 +76,11 @@ const FarmbtiReport = () => {
           {currentItems.map((report) => {
             return (
               <FarmbtiCard
-                key={report.id}
-                id={report.id}
-                reportName={report.reportName}
-                farmerType={report.farmerType}
-                date={report.date}
-                matchRate={report.matchRate}
+                key={report.reportId}
+                id={report.reportId}
+                reportName={report.topRegionName}
+                farmerType={report.characterTypeName}
+                date={report.createdAt}
                 deleteMode={deleteMode}
                 onDelete={handleDeleteReport}
               />
