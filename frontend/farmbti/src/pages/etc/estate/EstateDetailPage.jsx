@@ -13,6 +13,7 @@ const EstateDetailPage = () => {
   const [activeTab, setActiveTab] = useState("info");
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     const getPropertyDetail = async () => {
       try {
         const data = await getEstateDetail(estateId);

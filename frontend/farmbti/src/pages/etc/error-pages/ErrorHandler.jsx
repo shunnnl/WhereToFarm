@@ -6,6 +6,7 @@ const ErrorHandler = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     // API 에러 처리 함수
     const handleApiError = (event) => {
       const { code, message } = event.detail;

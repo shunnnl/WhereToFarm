@@ -7,6 +7,7 @@ const AuthRequiredPage = () => {
 
   // 5초 후 로그인 페이지로 리다이렉트
   useEffect(() => {
+    window.scrollTo(0, 0);
     const timer = setTimeout(() => {
       navigate("/login");
     }, 5000);

@@ -11,6 +11,7 @@ const NewsPage = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     setIsLoading(true);
     const getNews = async () => {
       try {
