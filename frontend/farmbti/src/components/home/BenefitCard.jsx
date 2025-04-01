@@ -1,13 +1,43 @@
 const BenefitCard = ({ region, title, description }) => {
+  // 랜덤 이모지 배열 생성
+  const emojis = [
+    "✨",
+    "🚀",
+    "💡",
+    "🎯",
+    "🌟",
+    "🔥",
+    "💪",
+    "🎉",
+    "📱",
+    "💼",
+    "👨‍💻",
+    "🛠️",
+    "📊",
+    "📈",
+    "🔍",
+    "🎁",
+    "💯",
+    "⭐",
+  ];
+
+  // 랜덤 이모지 선택
+  const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+
   return (
     <div className="bg-white rounded-lg shadow-md flex flex-col h-64 transition-transform hover:-translate-y-1 duration-300">
-      <div className="pt-8 pb-2 flex justify-center">
-        <div className="text-lg text-textColor-black">{region}</div>
+      <div className="flex flex-col items-center">
+        <div className="text-3xl my-3">{randomEmoji}</div>
+        <div className="text-lg text-textColor-gray pb-2">{region}</div>
       </div>
 
       <div className="px-6 flex-grow flex flex-col items-center">
-        <h3 className="text-lg font-bold mb-2 text-center">{title}</h3>
-        <p className="text-gray-600 text-center">{description}</p>
+        <h3 className="text-lg font-bold mb-2 text-center whitespace-nowrap overflow-hidden text-ellipsis max-w-full">
+          {title}
+        </h3>
+        <p className="text-gray-600 text-center overflow-hidden line-clamp-2">
+          {description}
+        </p>
       </div>
 
       <div className="px-6 pb-6 mt-auto">
