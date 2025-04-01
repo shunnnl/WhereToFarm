@@ -32,10 +32,24 @@ const BenefitCard = ({ region, title, description }) => {
       </div>
 
       <div className="px-6 flex-grow flex flex-col items-center">
-        <h3 className="text-lg font-bold mb-2 text-center whitespace-nowrap overflow-hidden text-ellipsis max-w-full">
+        <h3
+          className="text-lg font-bold mb-2 text-center overflow-hidden text-ellipsis w-full px-1"
+          style={{
+            display: "-webkit-box",
+            WebkitLineClamp: 1,
+            WebkitBoxOrient: "vertical",
+          }}
+        >
           {title}
         </h3>
-        <p className="text-gray-600 text-center overflow-hidden line-clamp-2">
+        <p
+          className="text-gray-600 text-center overflow-hidden w-full px-1"
+          style={{
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical",
+          }}
+        >
           {description}
         </p>
       </div>
