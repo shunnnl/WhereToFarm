@@ -1,45 +1,29 @@
 import { useState, useEffect } from "react";
 import FarmbtiCard from "./FrambtiCard";
 import PaginationComponent from "../common/Pagination";
+import DeleteConfirmModal from "../common/DeleteConfirmModal";
+import {
+  getMyFarmbtiReports,
+  deleteMyFarmbtiReport,
+} from "../../API/mypage/MyReportsAPI";
+import { toast } from "react-toastify";
+import { Link } from "react-router";
 
 const FarmbtiReport = () => {
-  const [myFarmbtiReports, setMyFarmbtiReports] = useState([
-    {
-      id: 1,
-      reportName: "산천리 마을 외 2",
-      farmerType: "흥미진진형 농부",
-      date: "2024-01-19",
-      matchRate: 85,
-    },
-    {
-      id: 2,
-      reportName: "소태미 마을 외 2",
-      farmerType: "자연친화형 농부",
-      date: "2024-02-13",
-      matchRate: 60,
-    },
-    {
-      id: 3,
-      reportName: "소태미 마을 외 2",
-      farmerType: "자연친화형 농부",
-      date: "2024-02-13",
-      matchRate: 60,
-    },
-    {
-      id: 4,
-      reportName: "소태미 마을 외 2",
-      farmerType: "자연친화형 농부",
-      date: "2024-02-13",
-      matchRate: 60,
-    },
-    {
-      id: 5,
-      reportName: "소태미 마을 외 2",
-      farmerType: "자연친화형 농부",
-      date: "2024-02-13",
-      matchRate: 60,
-    },
-  ]);
+  const [myFarmbtiReports, setMyFarmbtiReports] = useState([]);
+
+  useEffect(() => {
+    const getReports = async () => {
+      try {
+        const data = await getMyFarmbtiReports();
+        setMyFarmbtiReports(data);
+      } catch (error) {
+        // console.log(error);
+        toast.error(error.message || "정보를 불러올 수 없습니다.");
+      }
+    };
+    getReports();
+  }, []);
 
   // 페이지네이션 상태
   const [activePage, setActivePage] = useState(1);
@@ -61,20 +45,50 @@ const FarmbtiReport = () => {
   // 삭제 모드 토글 상태
   const [deleteMode, setDeleteMode] = useState(false);
 
+  // 모달 상태
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [reportToDelete, setReportToDelete] = useState(null);
+
   // 삭제 모드 토글 핸들러
   const toggleDeleteMode = () => {
     setDeleteMode(!deleteMode);
   };
 
-  // 리포트 삭제 핸들러
-  const handleDeleteReport = (reportId) => {
-    setMyFarmbtiReports((prevReports) =>
-      prevReports.filter((report) => report.id !== reportId)
-    );
+  // 리포트 삭제 준비 핸들러
+  const prepareDeleteReport = (report) => {
+    console.log("===삭제할 리포트:", report);
+    setReportToDelete(report);
+    setIsModalOpen(true);
   };
 
-  // 화면이 랜더링 되면서 api 요청
-  useEffect(() => {}, []);
+  // 모달 닫기 핸들러
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setReportToDelete(null);
+  };
+
+  // 리포트 삭제 핸들러
+  const confirmDeleteReport = async () => {
+    if (!reportToDelete) return;
+
+    try {
+      // Path parameter로 직접 reportId 전달
+      const response = await deleteMyFarmbtiReport(reportToDelete.reportId);
+
+      if (response.success) {
+        setMyFarmbtiReports((prevReports) =>
+          prevReports.filter(
+            (report) => report.reportId !== reportToDelete.reportId
+          )
+        );
+        toast.success("리포트가 삭제되었습니다.");
+        closeModal();
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(error.message || "리포트 삭제에 실패했습니다.");
+    }
+  };
 
   return (
     <div className="relative pb-20">
@@ -94,22 +108,33 @@ const FarmbtiReport = () => {
       </p>
 
       <div className="h-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {currentItems.map((report) => {
-            return (
+        {myFarmbtiReports.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {currentItems.map((report) => (
               <FarmbtiCard
-                key={report.id}
-                id={report.id}
-                reportName={report.reportName}
-                farmerType={report.farmerType}
-                date={report.date}
-                matchRate={report.matchRate}
+                key={report.reportId}
+                id={report.reportId}
+                reportName={report.topRegionName}
+                farmerType={report.characterTypeName}
+                date={report.createdAt}
                 deleteMode={deleteMode}
-                onDelete={handleDeleteReport}
+                onDelete={() => prepareDeleteReport(report)}
               />
-            );
-          })}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col justify-center items-center p-48">
+            <p className="text-center text-lg text-textColor-gray font-medium">
+              귀농 리포트가 없습니다.
+            </p>
+            <Link
+              to={"/farmbti"}
+              className="text-center text-md text-primaryGreen hover:underline"
+            >
+              귀농 적성 테스트 하러 가기
+            </Link>
+          </div>
+        )}
       </div>
 
       {/* 페이지네이션 - 절대 위치로 고정 */}
@@ -126,6 +151,16 @@ const FarmbtiReport = () => {
           />
         </div>
       )}
+
+      {/* 삭제 확인 모달 */}
+      <DeleteConfirmModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        onConfirm={confirmDeleteReport}
+        title="리포트 삭제"
+        message="삭제하시겠습니까?"
+        itemName={reportToDelete?.topRegionName}
+      />
     </div>
   );
 };
