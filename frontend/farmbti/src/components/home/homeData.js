@@ -37,7 +37,7 @@ export const bannerSlides = [
      alt: "Home Banner Image 3",
     button: {
       text: "신청하기",
-      link: "/apply" // 나중에 수정
+      link: "/crop-calculator" 
     },
     text:{
       title:"농부가 된다면, 나의 수익은?",
