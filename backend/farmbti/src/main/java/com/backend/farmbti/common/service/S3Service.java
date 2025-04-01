@@ -7,7 +7,6 @@ import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.backend.farmbti.common.exception.GlobalException;
 import com.backend.farmbti.common.exception.S3ErrorCode;
-import com.backend.farmbti.users.exception.UsersErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -104,7 +103,6 @@ public class S3Service {
             try {
                 // 객체가 존재하는지 확인
                 if (!amazonS3.doesObjectExist(bucket, objectKey)) {
-                    log.warn("Image not found in S3: {}", objectKey);
                     continue; // 존재하지 않는 이미지는 건너뜀
                 }
 
@@ -116,7 +114,6 @@ public class S3Service {
                 signedUrls.put(fileName, signedUrl);
 
             } catch (AmazonS3Exception e) {
-                log.error("Error generating signed URL for {}: {}", objectKey, e.getMessage());
             }
         }
 
