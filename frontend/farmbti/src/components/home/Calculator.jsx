@@ -19,7 +19,7 @@ const Mentor = () => {
                 </h2>
                 <Link to="/crop-calculator" className="block">
                 <h3 className="text-white text-2xl py-2 font-semibold hover:underline">
-                '작물 계산기'로 바로가기기 ↗️
+                '작물 계산기'로 바로가기 ↗️
                   </h3>
                 </Link>
               </div>
