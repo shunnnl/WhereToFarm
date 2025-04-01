@@ -156,7 +156,7 @@ const LoginPage = () => {
               {errors.server && (<p className="mt-1 text-sm text-red-600">{errors.server}</p>)}
             </div>
             <div className="flex items-center justify-between">
-              <div className="flex items-center">
+              {/* <div className="flex items-center">
                 <input
                   id="remember-me"
                   type="checkbox"
@@ -165,12 +165,12 @@ const LoginPage = () => {
                 <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
                   로그인 상태 유지
                 </label>
-              </div>
-              <div>
+              </div> */}
+              {/* <div>
                 <a href="#" className="text-sm text-green-600 hover:text-green-500">
                   비밀번호를 잊으셨나요?
                 </a>
-              </div>
+              </div> */}
             </div>
             <div>
               <button
