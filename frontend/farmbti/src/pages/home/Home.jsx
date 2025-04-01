@@ -2,11 +2,12 @@ import React from 'react';
 import ContentLayout from '../../components/layout/ContentLayout';
 import BannerSlider from '../../components/home/BannerSlider';
 import ServiceIcons from '../../components/home/ServiceIcons';
-import BenefitCard from '../../components/home/BenefitCard';
+import BenefitSection from "../../components/home/BenefitSection";
 import NewsSection from '../../components/home/NewsSection';
 import Mentor  from '../../components/home/Mentor';
 import Calculator from '../../components/home/Calculator'
 import { bannerSlides, serviceIcons, newsItems } from '../../components/home/homeData';
+
 
 const Home = () => {
   return (
@@ -22,7 +23,7 @@ const Home = () => {
         <ServiceIcons icons={serviceIcons} />
 
         {/* 관심있는 혜택 섹션 */}
-        <BenefitCard />
+        <BenefitSection/>
 
         {/* 귀농뉴스 섹션 */}
         <NewsSection newsItems={newsItems} />
