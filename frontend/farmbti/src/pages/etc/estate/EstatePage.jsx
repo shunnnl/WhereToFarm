@@ -27,6 +27,7 @@ const EstatePage = () => {
 
   // 초기 로드 및 페이지 변경 시 데이터 로드
   useEffect(() => {
+    window.scrollTo(0, 0);
     if (isFiltered) {
       // 필터링된 상태에서 페이지네이션
       getFilteredPropertiesWithPagination(activePage);

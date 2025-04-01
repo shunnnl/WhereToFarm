@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { AlertTriangle } from "lucide-react";
 
@@ -7,6 +7,10 @@ const ServerErrorPage = () => {
   const { code = "500", message = "서버에 문제가 발생했습니다." } =
     location.state || {};
   const [isRetrying, setIsRetrying] = useState(false);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const handleRetry = () => {
     setIsRetrying(true);

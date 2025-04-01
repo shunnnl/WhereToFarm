@@ -26,6 +26,7 @@ const CropCalculatorPage = () => {
 
   // 화면 렌더링 시 설정
   useEffect(() => {
+    window.scrollTo(0, 0);
     // 사용자 이름 가져오기
     const user = localStorage.getItem("user");
     if (user) {

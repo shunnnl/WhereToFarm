@@ -8,6 +8,7 @@ const MyPage = () => {
   const [myInfo, setMyInfo] = useState({});
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     const getMyInfo = async () => {
       try {
         const userInfo = await getMyPage();
