@@ -17,7 +17,7 @@ const PropertyCard = ({ property }) => {
 
       <div className="grid gap-4 mb-4">
         <div>
-          <p className="text-sm text-gray-600">보증금액</p>
+          <p className="text-sm text-gray-600">매매 금액</p>
           <p className="font-semibold">{property.deposit} 만원</p>
         </div>
         <div>
