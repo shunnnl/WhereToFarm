@@ -56,3 +56,17 @@ export const getMyFarmbtiReports = async () => {
     throw error;
   }
 }
+
+export const deleteMyFarmbtiReport = async (reportId) => {
+  try {
+    const response = await authAxios.delete(`/report/${reportId}`);
+    if (!response.success) {
+      console.log(response);
+      throw response.error;
+    }
+    return response;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
