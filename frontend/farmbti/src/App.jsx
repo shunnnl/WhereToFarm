@@ -28,6 +28,7 @@ import ReportPage from "./pages/recommendation/report/ReportPage";
 import SupportPolicyPage from "./pages/etc/support/SupportPolicyPage";
 import EstateDetailPage from "./pages/etc/estate/EstateDetailPage";
 import NotFoundPage from "./pages/etc/error-pages/NotFoundPage";
+import ErrorHandler from "./pages/etc/error-pages/ErrorHandler";
 
 
 
@@ -49,6 +50,7 @@ function App() {
       <BrowserRouter>
         <div className="App">
           <Navbar />
+          <ErrorHandler />
 
           {/* 페이지 내용 */}
           <Routes>

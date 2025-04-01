@@ -89,6 +89,20 @@ authAxios.interceptors.response.use(
       }
     }
 
+    if (error.response?.status === 404) {
+      // 이벤트 발생
+      window.dispatchEvent(new CustomEvent('api-error', { 
+        detail: { code: 404, message: '찾는 정보가 없어요!' } 
+      }));
+    }
+    
+    // 서버 에러 발생!
+    if (error.response?.status >= 500) {
+      window.dispatchEvent(new CustomEvent('api-error', { 
+        detail: { code: 500, message: '서버에 문제가 생겼어요!' } 
+      }));
+    }
+
     return Promise.reject(error.response?.data || error);
   }
 );
