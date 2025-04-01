@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,7 +45,7 @@ public class PolicyController {
 	@PostMapping("/region")
 	@Operation(summary = "지역별 지원 정책 조회", description = "지역(도, 시군)을 기준으로 정책을 검색합니다.")
 	public CommonResponseDto<Page<Policy>> getPoliciesByRegion(
-		@RequestParam PolicyFilterRequestDto request,
+		@RequestBody PolicyFilterRequestDto request,
 		@RequestParam(defaultValue = "0") int page, // 페이지 번호
 		@RequestParam(defaultValue = "10") int size // 페이지 크기
 	) {
