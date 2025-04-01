@@ -24,7 +24,7 @@ public enum SecurityPath {
     WEB_SOCKET("/websocket-test.html"),
     WEB_SOCKET_CONNECTION("/gs-guide-websocket"),
     WEB_SOCKET_INFO("/gs-guide-websocket/info"),
-    WEB_SOCKET_WS("ws/**"),
+    WEB_SOCKET_WS("wss/**"),
     WEB_SOCKET_ALL("/gs-guide-websocket/**"),
 
     //static icon
@@ -34,12 +34,17 @@ public enum SecurityPath {
     SIGNUP("/auth/signUp"),
     LOGIN("/auth/login"),
 
-    //News 관련 경로
+    // News 관련 경로
     MAIN_NEWS("/news/main"),
     LIST_NEWS("/news/list"),
 
-    ZEPPELIN("/zeppelin/**"),
-    PROPERTY("/property/**"); // property
+    // Policy 관련 경로
+    POLICY_ALL("/policy"),
+    POLICY_REGION("/policy/region"),
+    POLITCY_MAIN("/policy/main"),
+
+    // Property 관련 경로
+    PROPERTY("/property/**");
 
     // 각 Enum 상수가 가지는 경로 문자열
     private final String path;

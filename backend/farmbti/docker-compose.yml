@@ -1,37 +1,44 @@
-version: '3.8'
-
 services:
-  postgres:
-    image: postgres:14
-    container_name: postgres
-    environment:
-      POSTGRES_DB: farmbti_db
-      POSTGRES_USER: ssafy
-      POSTGRES_PASSWORD: ssafy209!@
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-    networks:
-      - farmbti
-
   backend:
     container_name: farmbti-backend
     build: .
     image: nageum/farmbti_backend
     ports:
       - "8081:8081"
-    depends_on:
-      - postgres
     env_file:
       - .env
-    environment:
-      - KAKAO_API_KEY=a24122d363b6f9d33ce3566b2f018f124
-      - client-id=1TgtpJ9xAyA_fHiy9pRI
-      - client-secret=ijnEAaSVcU
-      - url=https://openapi.naver.com/v1/search/news.json
     volumes:
       - ./src/main/resources/application.yml:/app/application.yml
+    depends_on:
+      - postgres
+      - redis
+    restart: always
+    networks:
+      - farmbti
+
+  postgres:
+    container_name: postgres
+    image: postgres:14
+    restart: always
+    environment:
+      POSTGRES_DB: farmbti_db
+      POSTGRES_USER: ssafy
+      POSTGRES_PASSWORD: ssafy209!@
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - farmbti
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
     networks:
       - farmbti
 
@@ -40,4 +47,5 @@ networks:
     external: true
 
 volumes:
-  postgres-data:
+  postgres_data:
+  redis_data:
