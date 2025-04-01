@@ -1,34 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-// 초기 상태 - localStorage에서 토큰 확인하여 로그인 상태 결정
-const checkInitialState = () => {
-  const accessToken = localStorage.getItem('accessToken');
-  const tokenExpires = localStorage.getItem('tokenExpires');
-  
-  // 토큰이 있고 만료되지 않았으면 로그인 상태로 간주
-  if (accessToken && tokenExpires) {
-    const expiryTime = new Date(tokenExpires);
-    const currentTime = new Date();
-    
-    if (currentTime < expiryTime) {
-      // 사용자 정보 가져오기
-      const userStr = localStorage.getItem('user');
-      const user = userStr ? JSON.parse(userStr) : null;
-      return { isLoggedIn: true, user };
-    }
-  }
-  
-  // 토큰이 없거나 만료됐으면 localStorage 정리
-  localStorage.removeItem('accessToken');
-  localStorage.removeItem('refreshToken');
-  localStorage.removeItem('tokenExpires');
-  localStorage.removeItem('user');
-  
-  return { isLoggedIn: false, user: null };
+// 초기 상태 설정 - 앱 시작 시 localStorage 확인하여 로그인 상태 결정
+const initialState = {
+  isLoggedIn: localStorage.getItem('accessToken') !== null,
+  user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null
 };
-
-const initialState = checkInitialState();
-
 export const authSlice = createSlice({
   name: 'auth',
   initialState,

@@ -18,7 +18,9 @@ const Chat = () => {
   const messagesEndRef = useRef(null);
   const [currentUser, setCurrentUser] = useState('');
   const messageIdCounter = useRef(0);
+  const MAX_CHAR_LIMIT = 1000;
 
+  
   // URL state에서 roomId 가져오기
   useEffect(() => {
     if (location.state && location.state.roomId) {
@@ -161,7 +163,7 @@ const Chat = () => {
 
     // 새 STOMP 클라이언트 생성
     const client = new Client({
-      webSocketFactory: () => new SockJS('http://j12d209.p.ssafy.io/gs-guide-websocket'),
+      webSocketFactory: () => new SockJS('https://j12d209.p.ssafy.io/gs-guide-websocket'),
       connectHeaders: {
         Authorization: `Bearer ${localStorage.getItem('accessToken')}`
       },
@@ -414,14 +416,19 @@ const Chat = () => {
                 <div className="flex-1 relative">
                   <textarea
                     className="w-full border rounded-full py-2 px-4 pr-12 resize-none"
-                    placeholder="메시지를 입력해주세요."
+                    placeholder="메시지를 입력해주세요. (최대 1000자)"
                     rows={1}
                     value={message}
-                    onChange={(e) => setMessage(e.target.value)}
+                    onChange={(e) => {
+                      const input = e.target.value;
+                      if (input.length <= MAX_CHAR_LIMIT) {
+                        setMessage(input);
+                      }
+                    }}
                     onKeyPress={handleKeyPress}
                   />
                   <span className="absolute right-3 bottom-2 text-gray-400 text-sm">
-                    {message.length}/100
+                    {message.length}/{MAX_CHAR_LIMIT}
                   </span>
                 </div>
                 <button 

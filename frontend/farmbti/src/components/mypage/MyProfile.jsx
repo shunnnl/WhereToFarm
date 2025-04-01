@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import leaveIcon from "../../asset/mypage/leaves.svg";
 import { MessageSquare, User, Settings, Lock } from "lucide-react";
 import { toast } from "react-toastify";
+import { useNavigate } from 'react-router-dom';
 
 import { putMyInfo, changePassword, putMentorInfo } from "../../API/mypage/MyPageAPI";
 
@@ -19,6 +20,9 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
   const [birth, setBirth] = useState({ year: "", month: "", day: "" });
   const [address, setAddress] = useState("");
   const [myImage, setMyImage] = useState({});
+  const navigate = useNavigate();
+
+
 
   // 모달 타입 별 상태 분리
   const [mentorFormData, setMentorFormData] = useState({
@@ -111,6 +115,8 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
 
   const handleChatting = () => {
     // chat 페이지로 넘어가기
+    navigate('/chat');
+
     return;
   };
 

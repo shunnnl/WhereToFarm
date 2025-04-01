@@ -79,7 +79,7 @@ const Navbar = () => {
             
             // WebSocket 연결
             stompClient.current = new Client({
-                webSocketFactory: () => new SockJS('http://j12d209.p.ssafy.io/gs-guide-websocket'),
+                webSocketFactory: () => new SockJS('https://j12d209.p.ssafy.io/gs-guide-websocket'),
                 connectHeaders: {
                     Authorization: `Bearer ${token}` // JWT 토큰을 연결 헤더에 추가
                 },
@@ -184,12 +184,22 @@ const markAsRead = (notificationId) => {
 
     // 모든 알림 읽음 처리 (로컬에서만 처리)
     const markAllAsRead = () => {
-        // 모든 알림을 읽음 상태로 변경
-        setNotifications(prev => 
-            prev.map(notif => ({ ...notif, read: true }))
-        );
-        setUnreadCount(0);
-    };
+    // 모든 알림을 읽음 상태로 변경하는 대신 알림함 비우기
+    setNotifications([]);
+    setUnreadCount(0);
+    
+    // 토스트 알림으로 알림함을 비웠다는 메시지 표시 (선택사항)
+    toast.info('모든 알림을 처리했습니다.', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true
+    });
+  
+  
+  };
 
 
 
@@ -356,9 +366,6 @@ return (
                 className={`p-2 ${unreadCount > 0 ? 'bg-red-100' : 'hover:bg-gray-100'} rounded-full relative`}
                 onClick={() => {
                     setIsNotificationOpen(!isNotificationOpen);
-                    if (!isNotificationOpen && unreadCount > 0) {
-                        markAllAsRead();
-                    }
                 }}
               >
                 <img src={bellIcon} alt="알림" className="h-6 w-6" />
@@ -401,11 +408,11 @@ return (
                           if (!notification.read) {
                             markAsRead(notification.id);
                           }
-                          // 알림 관련 페이지로 이동 (있을 경우)
-                          if (notification.link) {
-                            navigate(notification.link);
-                            setIsNotificationOpen(false);
-                          }
+
+                            // 단순히 채팅 페이지로 이동
+                          navigate('/chat');
+                          setIsNotificationOpen(false);
+
                         }}
                       >
                         <div className="flex">
