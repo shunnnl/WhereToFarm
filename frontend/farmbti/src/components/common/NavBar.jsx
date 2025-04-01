@@ -6,6 +6,7 @@ import userIcon from "../../asset/navbar/user_icon.svg";
 import bellIcon from "../../asset/navbar/bell_icon.svg";
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
+import { authAxios } from '../../API/common/AxiosInstance';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../../store/slices/authSlice'; // 로그아웃 액션 import 경로 수정
@@ -192,31 +193,70 @@ const markAsRead = (notificationId) => {
 
 
 
-    // 로그아웃 핸들러
-    const handleLogout = (e) => {
-        e.preventDefault();
-        
-        // WebSocket 연결 해제
-        if (stompClient.current && stompClient.current.connected) {
-            stompClient.current.deactivate();
-        }
-        
-        dispatch(logout());
-        setIsDropdownOpen(false);
-        
-        toast.success('로그아웃 성공!', {
+// 로그아웃 핸들러
+const handleLogout = async (e) => {
+  e.preventDefault();
+  
+  try {
+      // 백엔드 서버에 로그아웃 요청 보내기
+      const response = await authAxios.post('/auth/logout');
+      
+      // 성공 응답인지 확인
+      if (response.success) {
+          // WebSocket 연결 해제
+          if (stompClient.current && stompClient.current.connected) {
+              stompClient.current.deactivate();
+          }
+          
+          // 로컬 스토리지에서 토큰 제거
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("refreshToken");
+          localStorage.removeItem("tokenExpires");
+          localStorage.removeItem("user");
+          
+          // 리덕스 스토어에서 로그아웃 액션 디스패치
+          dispatch(logout());
+          setIsDropdownOpen(false);
+          
+          toast.success('로그아웃 성공!', {
+              position: "top-center",
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true
+          });
+          
+          navigate('/');
+      } else {
+          // 성공이 아닌 경우 오류 메시지 표시
+          throw new Error(response.error?.message || '로그아웃 실패');
+      }
+  } catch (error) {
+      console.error('로그아웃 실패:', error);
+      
+      // 오류가 발생해도 로컬에서는 로그아웃 처리
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("tokenExpires");
+      localStorage.removeItem("user");
+      
+      dispatch(logout());
+      
+      toast.error('로그아웃 중 오류가 발생했습니다', {
           position: "top-center",
           autoClose: 3000,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
           draggable: true
-        });
-        
-        navigate('/');
-    };
-    
-    return (
+      });
+      
+      navigate('/');
+  }
+};
+
+return (
       <nav className="bg-white border-gray-200 dark:bg-gray-900 relative z-[100]">
         <div className="max-w-screen-2xl flex items-center justify-between mx-auto px-24 py-4">
           <div className="flex items-center ml-0">
