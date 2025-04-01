@@ -2,9 +2,6 @@ import { Provider } from "react-redux";
 import { store } from "./store";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import { useEffect } from 'react';
-// import { checkTokenExpiration } from './store/slices/authSlice';
-import { useDispatch } from 'react-redux';
 import "react-toastify/dist/ReactToastify.css";
 import "./styles/toast-custom.css";
 
@@ -31,6 +28,8 @@ import ReportPage from "./pages/recommendation/report/ReportPage";
 import SupportPolicyPage from "./pages/etc/support/SupportPolicyPage";
 import EstateDetailPage from "./pages/etc/estate/EstateDetailPage";
 import NotFoundPage from "./pages/etc/error-pages/NotFoundPage";
+import ErrorHandler from "./pages/etc/error-pages/ErrorHandler";
+import ServerErrorPage from "./pages/etc/error-pages/ServerErrorPage";
 
 
 
@@ -47,26 +46,12 @@ const ProtectedRoute = ({ children }) => {
 
 function App() {
 
-  
-  console.log("Store:", store);
-
-  // // 리프레시 토큰 체크
-  // useEffect(() => {
-  //   // 앱 로드 시 바로 체크
-  //   store.dispatch(checkTokenExpiration());
-  //   // 주기적으로 토큰 만료 체크 (5분마다)
-  //   const intervalId = setInterval(() => {
-  //     store.dispatch(checkTokenExpiration());
-  //   }, 5 * 60 * 1000);
-    
-  //   return () => clearInterval(intervalId);
-  // }, []);  // useDispatch를 의존성 배열에서 제거
-
   return (
     <Provider store={store}>
       <BrowserRouter>
         <div className="App">
           <Navbar />
+          <ErrorHandler />
 
           {/* 페이지 내용 */}
           <Routes>
@@ -128,6 +113,9 @@ function App() {
               />
             </Route>
             <Route path="/account/delete" element={<UserDeletePage />} />
+
+            <Route path="/error/server" element={<ServerErrorPage />} />
+            <Route path="/error/not-found" element={<NotFoundPage />} />
 
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
