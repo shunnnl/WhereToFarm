@@ -26,4 +26,7 @@ public interface PolicyRepository extends JpaRepository<Policy, Long> {
 	@Query("SELECT p FROM Policy p ORDER BY RANDOM()")
 	List<Policy> findRandomPolicies(Pageable pageable);
 
+	@Query("SELECT p FROM Policy p WHERE p.region LIKE %:region%")
+	List<Policy> findAllByRegionContaining(@Param("region") String region);
+
 }
