@@ -75,11 +75,15 @@ authAxios.interceptors.response.use(
   },
   async (error) => {
     const originalRequest = error.config;
-    
+
     // 토큰 만료로 인한 401 에러이고, 이전에 재시도하지 않은 경우
-    if (error.response && error.response.status === 401 && !originalRequest._retry) {
+    if (
+      error.response &&
+      error.response.status === 401 &&
+      !originalRequest._retry
+    ) {
       originalRequest._retry = true;
-      
+
       try {
         const accessToken = await refreshAccessToken();
         originalRequest.headers["Authorization"] = `Bearer ${accessToken}`;
@@ -89,18 +93,49 @@ authAxios.interceptors.response.use(
       }
     }
 
-    if (error.response?.status === 404) {
-      // 이벤트 발생
-      window.dispatchEvent(new CustomEvent('api-error', { 
-        detail: { code: 404, message: '찾는 정보가 없어요!' } 
-      }));
+    // 응답이 있는 경우의 에러 처리
+    if (error.response) {
+      if (error.response.status === 404) {
+        // 이벤트 발생
+        window.dispatchEvent(
+          new CustomEvent("api-error", {
+            detail: { code: 404, message: "찾는 정보가 없어요!" },
+          })
+        );
+      }
+
+      // 서버 에러 발생!
+      if (error.response.status >= 500) {
+        window.dispatchEvent(
+          new CustomEvent("api-error", {
+            detail: { code: 500, message: "서버에 문제가 생겼어요!" },
+          })
+        );
+      }
     }
-    
-    // 서버 에러 발생!
-    if (error.response?.status >= 500) {
-      window.dispatchEvent(new CustomEvent('api-error', { 
-        detail: { code: 500, message: '서버에 문제가 생겼어요!' } 
-      }));
+    // 요청은 보냈지만 응답이 없는 경우 (네트워크 오류)
+    else if (error.request) {
+      console.error("네트워크 연결 오류:", error.request);
+      window.dispatchEvent(
+        new CustomEvent("api-error", {
+          detail: {
+            code: "NETWORK",
+            message: "서버에 연결할 수 없습니다. 네트워크 연결을 확인해주세요.",
+          },
+        })
+      );
+    }
+    // 요청 설정 중 오류 발생 (미처리 예외)
+    else {
+      console.error("요청 설정 오류:", error.message);
+      window.dispatchEvent(
+        new CustomEvent("api-error", {
+          detail: {
+            code: "ERROR",
+            message: "요청 처리 중 오류가 발생했습니다.",
+          },
+        })
+      );
     }
 
     return Promise.reject(error.response?.data || error);
@@ -134,10 +169,52 @@ publicAxios.interceptors.response.use(
     return response.data;
   },
   (error) => {
+    // 응답이 있는 경우의 에러 처리
+    if (error.response) {
+      if (error.response.status === 404) {
+        window.dispatchEvent(
+          new CustomEvent("api-error", {
+            detail: { code: 404, message: "찾는 정보가 없어요!" },
+          })
+        );
+      }
+
+      if (error.response.status >= 500) {
+        window.dispatchEvent(
+          new CustomEvent("api-error", {
+            detail: { code: 500, message: "서버에 문제가 생겼어요!" },
+          })
+        );
+      }
+    }
+    // 네트워크 오류 처리
+    else if (error.request) {
+      console.error("네트워크 연결 오류:", error.request);
+      window.dispatchEvent(
+        new CustomEvent("api-error", {
+          detail: {
+            code: "NETWORK",
+            message: "서버에 연결할 수 없습니다. 네트워크 연결을 확인해주세요.",
+          },
+        })
+      );
+    }
+    // 기타 오류
+    else {
+      console.error("요청 설정 오류:", error.message);
+      window.dispatchEvent(
+        new CustomEvent("api-error", {
+          detail: {
+            code: "ERROR",
+            message: "요청 처리 중 오류가 발생했습니다.",
+          },
+        })
+      );
+    }
+
     return Promise.reject(error.response?.data || error);
   }
 );
-
 
 
 

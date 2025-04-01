@@ -29,6 +29,7 @@ import SupportPolicyPage from "./pages/etc/support/SupportPolicyPage";
 import EstateDetailPage from "./pages/etc/estate/EstateDetailPage";
 import NotFoundPage from "./pages/etc/error-pages/NotFoundPage";
 import ErrorHandler from "./pages/etc/error-pages/ErrorHandler";
+import ServerErrorPage from "./pages/etc/error-pages/ServerErrorPage";
 
 
 
@@ -112,6 +113,9 @@ function App() {
               />
             </Route>
             <Route path="/account/delete" element={<UserDeletePage />} />
+
+            <Route path="/error/server" element={<ServerErrorPage />} />
+            <Route path="/error/not-found" element={<NotFoundPage />} />
 
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
