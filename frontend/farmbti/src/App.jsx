@@ -2,9 +2,6 @@ import { Provider } from "react-redux";
 import { store } from "./store";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import { useEffect } from 'react';
-// import { checkTokenExpiration } from './store/slices/authSlice';
-import { useDispatch } from 'react-redux';
 import "react-toastify/dist/ReactToastify.css";
 import "./styles/toast-custom.css";
 
