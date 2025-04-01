@@ -64,7 +64,7 @@ export const serviceIcons = [
   {
     icon: Gift,
     title: "혜택",
-    link: "/check"
+    link: "/support"
   },
   {
     icon: Calculator,
