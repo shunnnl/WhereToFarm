@@ -5,7 +5,6 @@ import com.backend.farmbti.chat.dto.MessageResponse;
 import com.backend.farmbti.chat.exception.ChatErrorCode;
 import com.backend.farmbti.chat.service.WebSocketService;
 import com.backend.farmbti.common.exception.GlobalException;
-import com.backend.farmbti.security.util.SecurityUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -23,7 +22,6 @@ import java.util.Map;
 public class WebSocketController {
 
     private final WebSocketService webSocketService;
-    private final SecurityUtils securityUtils;
     private final SimpMessagingTemplate messagingTemplate;
 
 
@@ -53,6 +51,7 @@ public class WebSocketController {
         Map<String, Object> notification = new HashMap<>();
         notification.put("sender", currentUserName); //보낸사람
         notification.put("timestamp", messageResponse.getSentAt());
+        notification.put("roomId", roomId);
 
         // 메시지를 받는 사람에게 알림 전송
         // 전송 시도 후
