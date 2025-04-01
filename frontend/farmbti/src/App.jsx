@@ -44,21 +44,6 @@ const ProtectedRoute = ({ children }) => {
 
 function App() {
 
-  
-  console.log("Store:", store);
-
-  // // 리프레시 토큰 체크
-  // useEffect(() => {
-  //   // 앱 로드 시 바로 체크
-  //   store.dispatch(checkTokenExpiration());
-  //   // 주기적으로 토큰 만료 체크 (5분마다)
-  //   const intervalId = setInterval(() => {
-  //     store.dispatch(checkTokenExpiration());
-  //   }, 5 * 60 * 1000);
-    
-  //   return () => clearInterval(intervalId);
-  // }, []);  // useDispatch를 의존성 배열에서 제거
-
   return (
     <Provider store={store}>
       <BrowserRouter>
