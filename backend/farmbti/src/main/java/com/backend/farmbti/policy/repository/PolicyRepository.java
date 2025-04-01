@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.backend.farmbti.policy.domain.Policy;
+import com.backend.farmbti.policy.dto.PolicyFilterRequestDto;
 
 @Repository
 public interface PolicyRepository extends JpaRepository<Policy, Long> {
