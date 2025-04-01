@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import leaveIcon from "../../asset/mypage/leaves.svg";
+import leaveIcon from "../../asset/mypage/leaves.png";
 import { MessageSquare, User, Settings, Lock } from "lucide-react";
 import { toast } from "react-toastify";
 import { useNavigate } from 'react-router-dom';

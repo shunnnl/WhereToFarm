@@ -1,6 +1,6 @@
 import { toast } from "react-toastify";
 import { deleteUser } from "../../API/mypage/MyPageAPI";
-import authImage from "../../asset/auth/login.svg";
+import authImage from "../../asset/auth/login.png";
 import { useState } from "react";
 
 const UserDeletePage = () => {

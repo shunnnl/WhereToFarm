@@ -3,7 +3,7 @@ import Modal from 'react-modal';
 import { useSelector } from 'react-redux';
 import { authAxios } from '../../API/common/AxiosInstance';
 import MentorRegistrationModal from './MentorRegistrationModal ';
-import together from '../../asset/mentor/together.svg';
+import together from '../../asset/mentor/together.png';
 import { Link } from 'react-router-dom'; 
 import { useRef, useEffect, useState } from 'react';
 import { toast } from 'react-toastify'; // 추가: toast 알림 import
