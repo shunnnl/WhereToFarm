@@ -46,7 +46,7 @@ const ServiceIcons = ({ icons }) => {
         <div className="w-2/5 flex flex-col justify-center pl-20">
           <h2 className="text-5xl font-bold mb-6">주요 서비스</h2>
           <p className="text-gray-600 text-2xl leading-relaxed">
-            귀농플랫폼들의 주인공이 되기위한 첫 걸음,<br />
+            귀농인이 되기 위한 첫 걸음,<br />
             어디가농과 함께 시작하세요.
           </p>
         </div>
