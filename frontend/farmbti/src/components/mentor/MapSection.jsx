@@ -15,7 +15,7 @@ const MapSection = () => {
     const [candidate, setCandidate] = useState(null);
     // 원래 색상을 저장할 객체 추가
     const originalFillsRef = useRef({});
-
+    const mentorSelectRef = useRef(null);
 
     console.log("selectedRegion = ", selectedRegion)
 
@@ -48,6 +48,18 @@ const MapSection = () => {
     const handleCardSelect = (cityName) => {
         console.log("선택된 도시:", cityName);
         setSelectedCity(cityName);
+
+
+        // 도시 선택 시 MentorSelect 영역으로 스크롤
+        setTimeout(() => {
+            if (mentorSelectRef.current) {
+                mentorSelectRef.current.scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        }, 100); // 약간의 지연을 두어 DOM이 업데이트된 후 스크롤
+
       };
 
 
@@ -340,7 +352,7 @@ const MapSection = () => {
     </div>
            {/* 멘토 선택 영역 - 지도/지역 목록 아래에 배치 */}
            {selectedRegion && (
-            <div className="mt-8 w-full">
+            <div className="mt-8 w-full" ref={mentorSelectRef}>
                  <MentorSelect
                     candidateList={selectedCity ? findCandidateRegion(selectedCity) : findCandidateRegion(selectedRegion.name)}
                     regionName={selectedRegion.name} // 도 이름
