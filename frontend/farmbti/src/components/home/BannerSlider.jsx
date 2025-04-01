@@ -88,7 +88,7 @@ const BannerSlider = ({ slides }) => {
           {slide.button && (
             <a
               href={slide.button.link}
-              className="absolute bottom-16 left-1/2 transform -translate-x-1/2 px-16 py-6 text-2xl bg-green-800 hover:bg-blue-700 text-white font-medium rounded-lg shadow-md transition-colors duration-300"
+              className="absolute bottom-16 left-1/2 transform -translate-x-1/2 px-16 py-6 text-2xl bg-green-800 hover:bg-green-700 text-white font-medium rounded-lg shadow-md transition-colors duration-300"
             >
               {slide.button.text}
             </a>
