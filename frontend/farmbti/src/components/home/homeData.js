@@ -9,42 +9,44 @@ import icon_4 from "../../asset/home/작물_계산기.svg";
 // 배너 슬라이더 데이터
 export const bannerSlides = [
   {
-     src: homeimage_1,
-     alt: "Home Banner Image 1",
+    src: homeimage_1,
+    alt: "Home Banner Image 1",
     button: null, // 첫 번째 페이지는 버튼 없음
     text: {
       title: "귀농의 첫걸음, 똑똑하게",
-      content_1:"귀농, 어디로 가야 할지 고민되시나요?",
-      content_2:"빅데이터 분석을 통해 당신에게 딱 맞는 최적의 귀농 지역을 추천해 드립니다.",
-      content_3:"지금 바로 클릭하고 새로운 시작을 준비해보세요!" 
-    }
+      content_1: "귀농, 어디로 가야 할지 고민되시나요?",
+      content_2:
+        "빅데이터 분석을 통해 당신에게 딱 맞는 최적의 귀농 지역을 추천해 드립니다.",
+      content_3: "지금 바로 클릭하고 새로운 시작을 준비해보세요!",
+    },
   },
   {
-     src: homeimage_2,
-     alt: "Home Banner Image 2",
+    src: homeimage_2,
+    alt: "Home Banner Image 2",
     button: {
-      text: "자세히 보기",
-      link: "/estate" // 나중에수정
+      text: "귀농지 추천 받기",
+      link: "/surveyintro",
     },
     text: {
       before: "나의 ",
       highlight: "귀농지",
-      after: "는?"
-      }
+      after: "는?",
     },
+  },
   {
-     src: homeimage_3,
-     alt: "Home Banner Image 3",
+    src: homeimage_3,
+    alt: "Home Banner Image 3",
     button: {
-      text: "신청하기",
-      link: "/apply" // 나중에 수정
+      text: "계산하기",
+      link: "/crop-calculator",
     },
-    text:{
-      title:"농부가 된다면, 나의 수익은?",
-      content_1:"어떤 작물을 재배할지 고민되시나요?",
-      content_2:"재배 면적에 따라 예상 수익, 투자 비용, 순이익까지 한 눈에 확인하고,",
-      content_3:"나에게 딱 맞는 농사 계획을 세워보세요!"
-    }
+    text: {
+      title: "농부가 된다면, 나의 수익은?",
+      content_1: "어떤 작물을 재배할지 고민되시나요?",
+      content_2:
+        "재배 면적에 따라 예상 수익, 투자 비용, 순이익까지 한 눈에 확인하고,",
+      content_3: "나에게 딱 맞는 농사 계획을 세워보세요!",
+    },
   },
 ];
 
