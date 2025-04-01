@@ -24,7 +24,7 @@ public enum SecurityPath {
     WEB_SOCKET("/websocket-test.html"),
     WEB_SOCKET_CONNECTION("/gs-guide-websocket"),
     WEB_SOCKET_INFO("/gs-guide-websocket/info"),
-    WEB_SOCKET_WS("ws/**"),
+    WEB_SOCKET_WS("wss/**"),
     WEB_SOCKET_ALL("/gs-guide-websocket/**"),
 
     //static icon

@@ -41,7 +41,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         // WebSocket 연결 엔드포인트 등록
         registry.addEndpoint("/gs-guide-websocket")
-                .setAllowedOrigins("http://localhost:18081", "http://localhost:3000", "http://j12d209.p.ssafy.io", "http://localhost:5173", "http://localhost:5174") // CORS 설정 (필요에 따라 조정)
+                .setAllowedOrigins("http://localhost:18081", "http://localhost:3000", "https://j12d209.p.ssafy.io", "http://localhost:5173", "http://localhost:5174") // CORS 설정 (필요에 따라 조정)
                 .withSockJS();  // SockJS 지원 추가 (브라우저 호환성을 위해)
     }
 
