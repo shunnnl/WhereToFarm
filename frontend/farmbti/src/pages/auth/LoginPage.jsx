@@ -12,7 +12,8 @@ const LoginPage = () => {
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({
     email: '',
-    password: ''
+    password: '',
+    server: ''
   });
   const navigate = useNavigate();
   const dispatch = useDispatch(); // Redux dispatch 추가
@@ -30,7 +31,9 @@ const LoginPage = () => {
     // 이전 오류 초기화
     const newErrors = {
       email: '',
-      password: ''
+      password: '',
+      server: ''
+
     };
 
     // 이메일 유효성 검사
