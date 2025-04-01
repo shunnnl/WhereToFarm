@@ -2,7 +2,7 @@ import React from 'react';
 
 const ServiceIcons = ({ icons }) => {
   return (
-    <div className="py-20">
+    <div className="pt-20 pb-8">
       <div className="flex justify-between items-center max-w-screen-2xl mx-auto">
         {/* 왼쪽: 아이콘 메뉴 */}
         <div className="w-3/5 flex justify-center">
