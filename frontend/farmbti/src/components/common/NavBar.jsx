@@ -79,7 +79,7 @@ const Navbar = () => {
             
             // WebSocket 연결
             stompClient.current = new Client({
-                webSocketFactory: () => new SockJS('http://j12d209.p.ssafy.io/gs-guide-websocket'),
+                webSocketFactory: () => new SockJS('wss://j12d209.p.ssafy.io/gs-guide-websocket'),
                 connectHeaders: {
                     Authorization: `Bearer ${token}` // JWT 토큰을 연결 헤더에 추가
                 },

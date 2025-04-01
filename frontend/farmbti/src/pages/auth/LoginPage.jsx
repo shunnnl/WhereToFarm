@@ -60,17 +60,15 @@ const LoginPage = () => {
         password
       });
       
-      console.log('로그인 성공:', response);
+      console.log('서버 응답:', response);
       
-      // 응답 성공 확인
-      if (response.success && response.data && response.data.token) {
-        // 액세스 토큰만 localStorage에 저장
+      // 응답 확인 - Axios가 이미 응답을 파싱했거나 인터셉터가 적용된 것 같습니다
+      if (response.success) {
+        // 로그인 성공 로직
         localStorage.setItem('accessToken', response.data.token.accessToken);
-        // 리프레시 토큰 저장
         localStorage.setItem('refreshToken', response.data.token.refreshToken);
-        // 만료 시간 저장
         localStorage.setItem('tokenExpires', response.data.token.accessTokenExpiresInForHour);
-        // 사용자 정보 객체 생성
+        
         const userData = {
           id: response.data.id,
           email: response.data.email,
@@ -80,13 +78,9 @@ const LoginPage = () => {
           profileImage: response.data.profileImage
         };
         
-        // 사용자 정보 저장
         localStorage.setItem('user', JSON.stringify(userData));
-        
-        // Redux 스토어에 로그인 상태 업데이트 - 이 부분이 추가됨
         dispatch(login(userData));
         
-        // 추가: 로그인 성공 토스트 메시지 표시
         toast.success('로그인 성공!', {
           position: "top-center",
           autoClose: 3000,
@@ -96,22 +90,19 @@ const LoginPage = () => {
           draggable: true
         });
         
-        // 로그인 후 메인 페이지나 대시보드로 이동
         navigate('/');
       } else {
-        // 토큰이 없는 경우 처리
-        newErrors.server = '로그인에 실패했습니다. 다시 시도해주세요.';
+        // 로그인 실패 로직
+        const errorMessage = response.error?.message || '로그인에 실패했습니다. 다시 시도해주세요.';
+        newErrors.server = errorMessage;
         setErrors(newErrors);
-        // toast.error('로그인에 실패했습니다. 다시 시도해주세요.');
       }
     } catch (error) {
-      console.error('로그인 실패:', error);
-      newErrors.server = error.message || '로그인에 실패했습니다. 다시 시도해주세요.';
+      console.error('로그인 실패 (네트워크 오류):', error);
+      newErrors.server = '서버 연결에 실패했습니다. 다시 시도해주세요.';
       setErrors(newErrors);
-      
-      // 추가: 오류 시 토스트 메시지 표시
-      // toast.error(error.response?.data?.message || '로그인에 실패했습니다. 다시 시도해주세요.');
     }
+    
   };
 
   return (

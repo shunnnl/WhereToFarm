@@ -161,7 +161,7 @@ const Chat = () => {
 
     // 새 STOMP 클라이언트 생성
     const client = new Client({
-      webSocketFactory: () => new SockJS('http://j12d209.p.ssafy.io/gs-guide-websocket'),
+      webSocketFactory: () => new SockJS('wss://j12d209.p.ssafy.io/gs-guide-websocket'),
       connectHeaders: {
         Authorization: `Bearer ${localStorage.getItem('accessToken')}`
       },
