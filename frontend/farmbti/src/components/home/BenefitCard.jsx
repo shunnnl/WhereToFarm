@@ -1,4 +1,8 @@
+import { ChevronRight } from "lucide-react";
+import { useNavigate } from "react-router";
+
 const BenefitCard = ({ region, title, description }) => {
+  const navigate = useNavigate();
   // 랜덤 이모지 배열 생성
   const emojis = [
     "✨",
@@ -57,11 +61,11 @@ const BenefitCard = ({ region, title, description }) => {
       <div className="px-6 pb-6 mt-auto">
         <button
           className="flex items-center text-gray-700 hover:text-black transition-colors mx-auto"
-          onClick={() => console.log(`${title} 버튼 클릭됨`)}
+          onClick={() => navigate("/support")}
         >
-          <span className="mr-2">자세히 살펴보기</span>
+          <span className="mr-2">다른 혜택도 보기</span>
           <span className="rounded-full bg-gray-200 w-6 h-6 flex items-center justify-center text-sm">
-            {">"}
+            <ChevronRight size={16}/>
           </span>
         </button>
       </div>
