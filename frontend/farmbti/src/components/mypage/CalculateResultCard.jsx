@@ -3,6 +3,7 @@ import CalculateResultModal from "./CalaulateResultModal";
 import { cropsReportsDeatil } from "../../API/mypage/MyReportsAPI";
 import { Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
+import { handleErrorToast } from "../../utils/ErrorUtils";
 
 const CalculateResultCard = ({
   id,
@@ -31,11 +32,11 @@ const CalculateResultCard = ({
   const openModal = async () => {
     try {
       modalRef.current?.showModal();
-      console.log(id)
+      console.log(id);
       const reportData = await cropsReportsDeatil(id);
       modalRef.current?.updateData(reportData);
     } catch (error) {
-      toast.error( error?.message || "상세 정보를 불러오는 데 실패했습니다.");
+      handleErrorToast(error, toast);
       modalRef.current?.close();
     }
   };

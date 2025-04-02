@@ -32,10 +32,6 @@ export const cropsReportsDeatil = async (reportId) => {
 export const deleteCropsReports = async (reportId) => {
   try {
     const response = await authAxios.delete(`/crops/delete/${reportId}`);
-    if (!response.success) {
-      console.log(response);
-      throw response.error;
-    }
     return response;
   } catch (error) {
     console.log(error);
@@ -46,10 +42,6 @@ export const deleteCropsReports = async (reportId) => {
 export const getMyFarmbtiReports = async () => {
   try {
     const response = await authAxios.get("/report/list/my");
-    if (!response.success) {
-      console.log(response);
-      throw response.error;
-    }
     return response.data;
   } catch (error) {
     console.log(error);
@@ -60,10 +52,6 @@ export const getMyFarmbtiReports = async () => {
 export const deleteMyFarmbtiReport = async (reportId) => {
   try {
     const response = await authAxios.delete(`/report/${reportId}`);
-    if (!response.success) {
-      console.log(response);
-      throw response.error;
-    }
     return response;
   } catch (error) {
     console.log(error);

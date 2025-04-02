@@ -5,13 +5,10 @@ export const getAllEstate = async (page, size) => {
     const response = await publicAxios.get(
       `/property/list?page=${page}&size=${size}`
     );
-    if (!response.success) {
-      throw response.error;
-    }
     return response.data;
   } catch (error) {
     console.log(error);
-    throw error.error;
+    throw error;
   }
 };
 
@@ -24,25 +21,19 @@ export const getFilteredEstate = async (province, city, page, size) => {
         city: city,
       }
     );
-    if (!response.success) {
-      throw response.error;
-    }
     return response.data;
   } catch (error) {
     console.log(error);
-    throw error.error;
+    throw error;
   }
 };
 
 export const getEstateDetail = async (estateId) => {
   try {
     const response = await publicAxios.get(`/property/${estateId}`);
-    if (!response.success) {
-      throw response.error;
-    }
     return response.data;
   } catch (error) {
     console.log(error);
-    throw error.error;
+    throw error;
   }
 };

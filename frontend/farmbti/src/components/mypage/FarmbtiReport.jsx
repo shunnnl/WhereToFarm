@@ -8,6 +8,7 @@ import {
 } from "../../API/mypage/MyReportsAPI";
 import { toast } from "react-toastify";
 import { Link } from "react-router";
+import { handleErrorToast } from "../../utils/ErrorUtils";
 
 const FarmbtiReport = () => {
   const [myFarmbtiReports, setMyFarmbtiReports] = useState([]);
@@ -18,8 +19,7 @@ const FarmbtiReport = () => {
         const data = await getMyFarmbtiReports();
         setMyFarmbtiReports(data);
       } catch (error) {
-        // console.log(error);
-        toast.error(error.message || "정보를 불러올 수 없습니다.");
+        handleErrorToast(error, toast);
       }
     };
     getReports();
@@ -86,7 +86,7 @@ const FarmbtiReport = () => {
       }
     } catch (error) {
       console.error(error);
-      toast.error(error.message || "리포트 삭제에 실패했습니다.");
+      handleErrorToast(error, toast);
     }
   };
 
@@ -128,7 +128,7 @@ const FarmbtiReport = () => {
               귀농 리포트가 없습니다.
             </p>
             <Link
-              to={"/farmbti"}
+              to={"/surveyintro"}
               className="text-center text-md text-primaryGreen hover:underline"
             >
               귀농 적성 테스트 하러 가기

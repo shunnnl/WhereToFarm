@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Camera, RefreshCw } from "lucide-react";
 import { toast } from "react-toastify";
 import { uploadImage, deleteImage } from "../../API/mypage/MyPageAPI";
+import { handleErrorToast } from "../../utils/ErrorUtils";
 
 const MyProfileImage = ({ imageUrl, isDefaultImage }) => {
   const [profileData, setProfileData] = useState({
@@ -29,21 +30,21 @@ const MyProfileImage = ({ imageUrl, isDefaultImage }) => {
     const fileExtension = "." + fileName.split(".").pop();
 
     if (!validExtensions.includes(fileExtension)) {
-      toast.error("JPG, JPEG, PNG, GIF 형식의 이미지만 업로드 가능합니다.");
+      toast.warning("JPG, JPEG, PNG, GIF 형식의 이미지만 업로드 가능합니다.");
       return false;
     }
 
     // 2. MIME 타입 확인
     const validMimeTypes = ["image/jpeg", "image/png", "image/gif"];
     if (!validMimeTypes.includes(file.type)) {
-      toast.error("JPG, JPEG, PNG, GIF 형식의 이미지만 업로드 가능합니다.");
+      toast.warning("JPG, JPEG, PNG, GIF 형식의 이미지만 업로드 가능합니다.");
       return false;
     }
 
     // 3. 파일 크기 확인 (5MB 제한)
     const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
     if (file.size > maxSizeInBytes) {
-      toast.error("이미지 크기는 5MB 이하여야 합니다.");
+      toast.warning("이미지 크기는 5MB 이하여야 합니다.");
       return false;
     }
 
@@ -118,7 +119,7 @@ const MyProfileImage = ({ imageUrl, isDefaultImage }) => {
 
       // 매직 넘버를 통한 파일 내용 검증
       await validateImageContent(file).catch((error) => {
-        toast.error(error.message);
+        toast.warning(error.message);
         e.target.value = "";
         setIsLoading(false);
         throw error;
@@ -143,7 +144,7 @@ const MyProfileImage = ({ imageUrl, isDefaultImage }) => {
           toast.success("프로필 이미지가 업로드되었습니다.");
         } catch (error) {
           console.error("이미지 업로드 실패:", error);
-          toast.error(error.message);
+          handleErrorToast(error, toast);
           URL.revokeObjectURL(imageUrl);
         } finally {
           setIsLoading(false);
@@ -153,7 +154,7 @@ const MyProfileImage = ({ imageUrl, isDefaultImage }) => {
 
       img.onerror = () => {
         URL.revokeObjectURL(imageUrl);
-        toast.error("손상된 이미지 파일입니다. 다른 이미지를 선택해주세요.");
+        toast.warning("손상된 이미지 파일입니다. 다른 이미지를 선택해주세요.");
         e.target.value = "";
         setIsLoading(false);
       };
@@ -185,7 +186,7 @@ const MyProfileImage = ({ imageUrl, isDefaultImage }) => {
       toast.success("기본 프로필 이미지로 변경되었습니다.");
     } catch (error) {
       console.error("이미지 초기화 실패:", error);
-      toast.error("기본 이미지로 변경하는데 실패했습니다.");
+      handleErrorToast(error, toast);
     } finally {
       setIsLoading(false);
     }
