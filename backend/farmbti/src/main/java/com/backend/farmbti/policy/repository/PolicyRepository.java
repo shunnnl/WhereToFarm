@@ -19,7 +19,10 @@ public interface PolicyRepository extends JpaRepository<Policy, Long> {
 	Page<Policy> findAll(Pageable pageable);
 
 	// 지역별 혜택 조회
-	@Query("SELECT p FROM Policy p WHERE p.region LIKE %:region%")
+	@Query(
+		value = "SELECT p FROM Policy p WHERE p.region LIKE %:region%",
+		countQuery = "SELECT COUNT(p) FROM Policy p WHERE p.region LIKE %:region%"
+	)
 	Page<Policy> findByRegionContaining(@Param("region") String region, Pageable pageable);
 
 	// 랜덤 3개 혜택 조회

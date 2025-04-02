@@ -70,3 +70,14 @@ kakao:
   api:
     key: ${KAKAO_API_KEY}
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus
+  endpoint:
+    prometheus:
+      enabled: true
+  metrics:
+    enable:
+      all: true

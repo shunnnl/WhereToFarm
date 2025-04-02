@@ -3,22 +3,22 @@ package com.backend.farmbti.report.service;
 import com.backend.farmbti.auth.domain.Users;
 import com.backend.farmbti.auth.exception.AuthErrorCode;
 import com.backend.farmbti.auth.repository.UsersRepository;
+import com.backend.farmbti.common.exception.GlobalException;
 import com.backend.farmbti.common.service.S3Service;
+import com.backend.farmbti.policy.domain.Policy;
 import com.backend.farmbti.policy.repository.PolicyRepository;
 import com.backend.farmbti.report.domain.CharacterType;
-import com.backend.farmbti.report.dto.ReportListResponseDto;
-import com.backend.farmbti.report.repository.CharacterTypeRepository;
-import com.backend.farmbti.common.exception.GlobalException;
 import com.backend.farmbti.report.domain.Region;
-import com.backend.farmbti.report.repository.RegionRepository;
 import com.backend.farmbti.report.domain.Report;
-import com.backend.farmbti.policy.domain.Policy;
 import com.backend.farmbti.report.domain.ReportRegion;
+import com.backend.farmbti.report.dto.ReportListResponseDto;
 import com.backend.farmbti.report.dto.ReportResponseDto;
 import com.backend.farmbti.report.exception.ReportErrorCode;
+import com.backend.farmbti.report.repository.CharacterTypeRepository;
+import com.backend.farmbti.report.repository.RegionRepository;
 import com.backend.farmbti.report.repository.ReportRegionRepository;
 import com.backend.farmbti.report.repository.ReportRepository;
-import com.backend.farmbti.users.exception.UsersErrorCode;
+import com.backend.farmbti.security.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,7 +29,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import com.backend.farmbti.security.util.SecurityUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -150,6 +149,7 @@ public class ReportService {
                     .rRatio(savedReport.getNRatio())
                     .mRatio(savedReport.getPRatio())
                     .characterTypeName(characterType.getName())
+                    .characterSubtitle(characterType.getSubtitle())
                     .characterTypeDescription(characterType.getDescription())
                     .characterTypeImage(characterImageUrl)
                     .topRegions(regionResults)
@@ -261,6 +261,7 @@ public class ReportService {
                 .rRatio(report.getNRatio())
                 .mRatio(report.getPRatio())
                 .characterTypeName(characterType.getName())
+                .characterSubtitle(characterType.getSubtitle())
                 .characterTypeDescription(characterType.getDescription())
                 .characterTypeImage(characterImageUrl)
                 .topRegions(regionResults)

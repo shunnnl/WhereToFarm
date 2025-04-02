@@ -44,7 +44,10 @@ public enum SecurityPath {
     POLITCY_MAIN("/policy/main"),
 
     // Property 관련 경로
-    PROPERTY("/property/**");
+    PROPERTY("/property/**"),
+
+    // Prometheus 관련 경로
+    PROMETHEUS("/actuator/**");
 
     // 각 Enum 상수가 가지는 경로 문자열
     private final String path;
