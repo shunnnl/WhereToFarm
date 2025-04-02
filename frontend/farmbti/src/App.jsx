@@ -69,7 +69,7 @@ function App() {
 
             <Route path="/surveyintro" element={<SurveyIntroPage />} />
             <Route path="/survey" element={<SurveyPage />} />
-            <Route path="/report" element={<ReportPage />} />
+            <Route path="/report/:reportId" element={<ReportPage />} />
             <Route
               path="/crop-calculator"
               element={
