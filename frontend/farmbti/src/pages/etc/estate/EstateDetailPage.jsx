@@ -34,16 +34,14 @@ const EstateDetailPage = () => {
     getPropertyDetail();
   }, [estateId]);
 
-  // 지도 관련 useEffect 제거
-
   if (!property) {
     return (
-      <>
+      <div className="min-h-screen flex flex-col">
         <PageHeader
           title="매물 상세 보기"
           description="선택하신 매물의 상세 정보를 살펴보세요."
         />
-        <div className="container mx-auto px-4 py-12 flex justify-center">
+        <div className="container mx-auto px-4 py-12 pb-16 flex justify-center flex-grow">
           <div className="bg-gray-50 border border-gray-200 rounded-md p-8 text-center max-w-md">
             <h3 className="text-lg font-medium text-gray-800 mb-4">
               매물을 찾을 수 없습니다
@@ -59,17 +57,17 @@ const EstateDetailPage = () => {
             </button>
           </div>
         </div>
-      </>
+      </div>
     );
   }
 
   return (
-    <div className="pb-12">
+    <div className="min-h-screen flex flex-col">
       <PageHeader
         title="매물 상세 보기"
         description="선택하신 매물의 상세 정보를 살펴보세요."
       />
-      <div className="container mx-auto px-6 bg-gray-50">
+      <div className="container mx-auto px-6 bg-gray-50 flex-grow pb-16">
         {isLoading ? (
           <LoadingSpinner text="정보 불러오는 중..." />
         ) : (
@@ -106,7 +104,7 @@ const EstateDetailPage = () => {
               </div>
             </div>
 
-            <div className="mb-10">
+            <div className="mb-16">
               <div className="bg-white rounded-lg shadow-md p-8 mt-6 mx-20">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                   <div className="space-y-6">
