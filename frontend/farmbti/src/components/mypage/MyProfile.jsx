@@ -39,7 +39,7 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
     errors: {},
   });
   const [passwordFormData, setPasswordFormData] = useState({
-    data: { password: "", newPassword: "", confirmPassword: "" },
+    data: { password: "", newPassword: "", confirmNewPassword: "" },
     isValid: true,
     errors: {},
   });
@@ -143,7 +143,7 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
       isValid: true,
       errors: {},
     });
-    
+
     setModalType("password");
     setModalTitle("비밀번호 수정");
     modalRef.current?.openModal();
@@ -293,6 +293,19 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
     modalRef.current?.closeModal();
   };
 
+const handleCancel = () => {
+  // 모달 타입에 따라 폼 데이터 초기화
+  if (modalType === "password") {
+    setPasswordFormData({
+      data: { password: "", newPassword: "", confirmNewPassword: "" },
+      isValid: true,
+      errors: {},
+    });
+  }
+  
+  modalRef.current?.closeModal();
+};
+
   return (
     <div>
       <div className="flex flex-col items-center pt-10">
@@ -405,6 +418,7 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
         isLoading={isSubmitting}
         isFormValid={isCurrentFormValid()}
         onConfirm={handleConfirm}
+        onCancel={handleCancel}
       >
         {/* 조건부 콘텐츠 렌더링 */}
         {modalType === "mentor" && (
