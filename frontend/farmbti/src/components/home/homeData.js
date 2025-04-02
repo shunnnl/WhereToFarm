@@ -5,7 +5,7 @@ import icon_1 from "../../asset/home/가이드.svg";
 import icon_2 from "../../asset/home/매물.svg";
 import icon_3 from "../../asset/home/혜택.svg";
 import icon_4 from "../../asset/home/작물_계산기.svg";
-import { BookOpen, Home, Gift, Calculator } from "lucide-react";
+import { BookOpen, Home, Gift, Calculator, LandPlot } from "lucide-react";
 
 // 배너 슬라이더 데이터
 export const bannerSlides = [
@@ -59,6 +59,16 @@ export const serviceIcons = [
     link: "/guidebook"
   },
   {
+    icon: LandPlot,
+    title: "지역\n추천",  
+    link: "/crop-calculator"
+  },
+  {
+    icon: Calculator,
+    title: "작물\n계산기", 
+    link: "/crop-calculator"
+  },
+  {
     icon: Home,
     title: "매물",
     link: "/estate"
@@ -67,11 +77,6 @@ export const serviceIcons = [
     icon: Gift,
     title: "혜택",
     link: "/support"
-  },
-  {
-    icon: Calculator,
-    title: "작물 계산기",
-    link: "/crop-calculator"
   }
 ];
 

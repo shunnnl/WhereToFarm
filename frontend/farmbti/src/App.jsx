@@ -58,7 +58,15 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
-            <Route path="/mentors" element={<MentorPage />} />
+            <Route 
+              path="/mentors" 
+              element={
+                <ProtectedRoute>
+                  <MentorPage />
+                </ProtectedRoute>
+              
+              } />
+
             <Route path="/surveyintro" element={<SurveyIntroPage />} />
             <Route path="/survey" element={<SurveyPage />} />
             <Route path="/report" element={<ReportPage />} />
