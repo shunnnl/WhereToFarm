@@ -137,6 +137,13 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
   };
 
   const handleMyPasswordSetting = () => {
+
+    setPasswordFormData({
+      data: { password: "", newPassword: "", confirmNewPassword: "" },
+      isValid: true,
+      errors: {},
+    });
+    
     setModalType("password");
     setModalTitle("비밀번호 수정");
     modalRef.current?.openModal();
