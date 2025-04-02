@@ -89,6 +89,7 @@ public class ChatService {
 
                     // 탈퇴한 유저면 null 리턴 (아래 filter에서 제거됨)
                     if (user.getIsOut() == 1) {
+                        System.out.println(" 탈퇴한 유저" + user.getName());
                         return null;
                     }
 
