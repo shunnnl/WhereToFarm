@@ -20,8 +20,16 @@ const SurveyPage = () => {
     console.log('총 질문 수:', questions.length);
   }, []);
 
-  // 진행률 계산 (전체 문항 수로 나누기)
-  const progress = Math.round((currentQuestion / (questions.length - 1)) * 100);
+  // 진행률 계산 (현재 질문 번호를 기준으로 계산)
+  const calculateProgress = () => {
+    // 마지막 질문이면 100%, 아니면 현재 진행률 계산
+    if (currentQuestion === questions.length - 1) {
+      return 100;
+    }
+    return Math.round((currentQuestion / (questions.length - 1)) * 100);
+  };
+
+  const progress = calculateProgress();
 
   // 응답 저장
   const handleAnswer = (value) => {
@@ -69,15 +77,8 @@ const SurveyPage = () => {
         throw new Error('유효하지 않은 API 응답');
       }
 
-      console.log('이동할 reportId:', response.reportId);
-      console.log('ReportPage로 전달할 데이터:', response);
-      
-      // 결과 페이지로 이동
-      navigate(`/report/${response.reportId}`, { 
-        state: { 
-          reportData: response
-        } 
-      });
+      // reportId만 사용하여 결과 페이지로 이동
+      navigate(`/report/${response.reportId}`);
       console.log('navigate 호출 완료');
       
     } catch (error) {
