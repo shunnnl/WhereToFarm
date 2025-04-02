@@ -11,6 +11,7 @@ import MentorSettingContent from "./MentorSettingContent";
 import MyInfoSettingContent from "./MyInfoSettingContent";
 import MyPasswordContent from "./MyPasswordContent";
 import MyProfileImage from "./MyProfileImage";
+import { handleErrorToast } from "../../utils/ErrorUtils";
 
 const MyProfile = ({ myInfo: initialMyInfo }) => {
   const modalRef = useRef(null);
@@ -274,9 +275,7 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
           break;
       }
     } catch (error) {
-      console.error("정보 업데이트 실패", error);
-      console.log("에러 세부 정보:", error.message);
-      toast.error("정보 수정에 실패했습니다.");
+      handleErrorToast(error.toast);
     } finally {
       setIsSubmitting(false);
     }

@@ -2,6 +2,7 @@ import { toast } from "react-toastify";
 import { deleteUser } from "../../API/mypage/MyPageAPI";
 import authImage from "../../asset/auth/login.png";
 import { useState } from "react";
+import { handleErrorToast } from "../../utils/ErrorUtils";
 
 const UserDeletePage = () => {
   const [password, setPassword] = useState("");
@@ -44,8 +45,8 @@ const UserDeletePage = () => {
 
     try {
       const data = {
-        password: password
-      }
+        password: password,
+      };
       const response = await deleteUser(data);
 
       if (response) {
@@ -62,9 +63,7 @@ const UserDeletePage = () => {
         }, 1500);
       }
     } catch (error) {
-      const errorMessage =
-        error.message || "탈퇴 처리 중 오류가 발생했습니다";
-      toast.error(errorMessage);
+      handleErrorToast(error, toast);
     } finally {
       setIsLoading(false);
     }

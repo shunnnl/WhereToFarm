@@ -8,6 +8,7 @@ import {
 } from "../../API/mypage/MyReportsAPI";
 import { toast } from "react-toastify";
 import { Link } from "react-router";
+import { handleErrorToast } from "../../utils/ErrorUtils";
 
 const CropCalculateReport = () => {
   // 예시 데이터
@@ -19,8 +20,7 @@ const CropCalculateReport = () => {
         const data = await getCalculateReports();
         setMyCalculateResult(data);
       } catch (error) {
-        // console.log(error);
-        toast.error(error.message || "정보를 불러올 수 없습니다.");
+        handleErrorToast(error, toast);
       }
     };
     getReports();
@@ -84,8 +84,7 @@ const CropCalculateReport = () => {
         closeModal();
       }
     } catch (error) {
-      console.error(error);
-      toast.error(error.message || "리포트 삭제에 실패했습니다.");
+      handleErrorToast(error, toast);
     }
   };
 

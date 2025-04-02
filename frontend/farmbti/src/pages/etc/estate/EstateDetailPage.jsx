@@ -5,6 +5,7 @@ import { getEstateDetail } from "../../../API/etc/EstateAPI";
 import { toast } from "react-toastify";
 import LoadingSpinner from "../../../components/common/LoadingSpinner";
 import { ChevronLeft } from "lucide-react";
+import { handleErrorToast } from "../../../utils/ErrorUtils";
 
 const EstateDetailPage = () => {
   const { estateId } = useParams();
@@ -26,7 +27,7 @@ const EstateDetailPage = () => {
       } catch (error) {
         console.error("Error fetching property details:", error);
         setisLoading(false);
-        toast.error(error.message || "부동산 상세 조회를 할 수 없습니다.");
+        handleErrorToast(error, toast);
       }
     };
 
