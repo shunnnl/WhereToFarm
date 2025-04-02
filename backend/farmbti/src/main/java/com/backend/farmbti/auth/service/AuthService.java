@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -55,13 +55,17 @@ public class AuthService {
     }
 
     private void validateSignupRequest(SignUpRequest request) {
-        Optional<Users> existingUser = usersRepository.findByEmail(request.getEmail());
+        List<Users> existingUsers = usersRepository.findAllByEmail(request.getEmail());
 
-        // isOut이 0(활성 상태)이면 중복 예외 발생
-        if (existingUser.isPresent() && existingUser.get().getIsOut().equals((byte) 0)) {
+        // isOut = 0인 유저가 있는지 확인
+        boolean hasActiveUser = existingUsers.stream()
+                .anyMatch(user -> user.getIsOut().equals((byte) 0));
+
+        if (hasActiveUser) {
             throw new GlobalException(AuthErrorCode.EMAIL_INVALID);
         }
     }
+
 
     public LoginResponse login(LoginRequest request) {
 
