@@ -4,16 +4,23 @@ import axios from "axios";
 const createErrorResponse = (code, message, originalError = null) => {
   return {
     success: false,
+    data: null, // data 필드 추가
     error: {
       code,
       message,
-      type: code >= 400 && code < 500 ? "BUSINESS" : "SYSTEM",
-      details: process.env.NODE_ENV === "development" ? originalError : null,
+      // status 필드 추가 (숫자 코드는 status로, 문자열 코드는 그대로 code로)
+      status: typeof code === "number" ? code : 400,
+      // type 필드는 내부적으로 사용
+      type:
+        typeof code === "number" && code >= 400 && code < 500
+          ? "BUSINESS"
+          : "SYSTEM",
+      // details는 개발 환경에서만 포함
+      ...(process.env.NODE_ENV === "development" && { details: originalError }),
     },
   };
 };
 
-// 오류 처리 통합 함수
 const handleApiError = (error) => {
   // HTTP 상태 코드별 오류 메시지
   const statusMessages = {
@@ -46,7 +53,12 @@ const handleApiError = (error) => {
     );
 
     // 서버에서 이미 표준화된 오류 객체를 보냈는지 확인
-    if (error.response.data && error.response.data.error) {
+    // 서버 응답이 success: false 형태라면 그대로 반환
+    if (
+      error.response.data &&
+      error.response.data.success === false &&
+      error.response.data.error
+    ) {
       return error.response.data;
     }
 
@@ -184,6 +196,10 @@ authAxios.interceptors.response.use(
   (response) => {
     // 데이터가 이미 표준화된 형식인지 확인
     if (response.data && response.data.success !== undefined) {
+      // success가 false인 경우 오류로 처리
+      if (response.data.success === false) {
+        return Promise.reject(response.data);
+      }
       return response.data;
     }
 
@@ -244,6 +260,10 @@ publicAxios.interceptors.response.use(
   (response) => {
     // 데이터가 이미 표준화된 형식인지 확인
     if (response.data && response.data.success !== undefined) {
+      // success가 false인 경우 오류로 처리
+      if (response.data.success === false) {
+        return Promise.reject(response.data);
+      }
       return response.data;
     }
 

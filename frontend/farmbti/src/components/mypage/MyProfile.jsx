@@ -275,7 +275,7 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
           break;
       }
     } catch (error) {
-      handleErrorToast(error.toast);
+      handleErrorToast(error, toast);
     } finally {
       setIsSubmitting(false);
     }
