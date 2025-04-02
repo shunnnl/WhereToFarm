@@ -20,7 +20,7 @@ public class Users extends TimeStampEntity {
     private Long id;
     //private: 객체의 데이터를 외부에서 직접 접근하지 못하게 하고, 대신 메소드를 통해 접근
 
-    @Column(nullable = false, length = 50, unique = true) // NULL 불가, 최대 길이 50, 중복 방지
+    @Column(nullable = false, length = 50) // NULL 불가, 최대 길이 50, 중복 방지
     private String email;
 
     @Column(nullable = false, length = 100) // NULL 불가, 최대 길이 100
@@ -56,11 +56,17 @@ public class Users extends TimeStampEntity {
         this.refreshToken = refreshToken;
     }
 
-    public void updatePassword(String newPassword) {this.password = newPassword;}
+    public void updatePassword(String newPassword) {
+        this.password = newPassword;
+    }
 
-    public void updateProfileImage(String profileImage) {this.profileImage = profileImage;}
+    public void updateProfileImage(String profileImage) {
+        this.profileImage = profileImage;
+    }
 
-    public void updateIsOut(Byte isOut) {this.isOut = isOut;}
+    public void updateIsOut(Byte isOut) {
+        this.isOut = isOut;
+    }
 
     public void updateUserInfo(String name, Date birth, String address, Byte gender) {
         this.name = name;
