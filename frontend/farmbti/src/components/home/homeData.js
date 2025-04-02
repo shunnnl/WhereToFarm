@@ -27,7 +27,7 @@ export const bannerSlides = [
     text: {
       before: "나의 ",
       highlight: "귀농지",
-      after: "는?",
+      after: "는? ",
     },
   },
   {
