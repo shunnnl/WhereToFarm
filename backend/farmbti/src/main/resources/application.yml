@@ -76,8 +76,13 @@ management:
       exposure:
         include: health, info, prometheus
   endpoint:
+    web:
+      exposure:
+        include: prometheus
     prometheus:
       enabled: true
   metrics:
     enable:
       all: true
+    tags:
+      application: farmbti-backend
