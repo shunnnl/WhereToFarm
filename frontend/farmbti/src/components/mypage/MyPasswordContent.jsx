@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-const MyPasswordContent = ({ onChange, initialData }) => {
+const MyPasswordContent = ({ onChange }) => {
   const [formData, setFormData] = useState({
     password: "",
     newPassword: "",
@@ -9,40 +9,12 @@ const MyPasswordContent = ({ onChange, initialData }) => {
 
   const [errors, setErrors] = useState({});
 
-  const validateField = (name, value, allValues = formData) => {
-    switch (name) {
-      case "password":
-        return !value ? "비밀번호는 필수값입니다." : "";
-      case "newPassword":
-        if (!value) return "새 비밀번호는 필수값입니다.";
-        if (value.length < 8 || !/[A-Za-z]/.test(value) || !/\d/.test(value))
-          return "비밀번호는 최소 8자 이상이며, 문자와 숫자를 포함해야 합니다.";
-        if (value === allValues.password)
-          return "현재 비밀번호와 다르게 입력해주세요.";
-        return "";
-      case "confirmNewPassword":
-        if (!value) return "새 비밀번호 확인은 필수값입니다.";
-        if (value !== allValues.newPassword)
-          return "비밀번호가 일치하지 않습니다.";
-        return "";
-      default:
-        return "";
-    }
-  };
-
-  // 폼 데이터 변경 핸들러
+  // 폼 데이터 변경 핸들러 - 상태만 업데이트
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
-    }));
-
-    // 유효성 검사 실행 및 오류 상태 업데이트
-    const errorMessage = validateField(name, value);
-    setErrors((prev) => ({
-      ...prev,
-      [name]: errorMessage,
     }));
   };
 
@@ -51,7 +23,42 @@ const MyPasswordContent = ({ onChange, initialData }) => {
     e.preventDefault();
   };
 
-  // formData가 변경될 때마다 부모에게 알림 (유효성 검사 결과 포함)
+  // 모든 유효성 검사를 useEffect로 처리
+  useEffect(() => {
+    const newErrors = {};
+
+    // 현재 비밀번호 검증
+    newErrors.password = !formData.password ? "비밀번호는 필수값입니다." : "";
+
+    // 새 비밀번호 검증
+    if (!formData.newPassword) {
+      newErrors.newPassword = "새 비밀번호는 필수값입니다.";
+    } else if (
+      formData.newPassword.length < 8 ||
+      !/[A-Za-z]/.test(formData.newPassword) ||
+      !/\d/.test(formData.newPassword)
+    ) {
+      newErrors.newPassword =
+        "비밀번호는 최소 8자 이상이며, 문자와 숫자를 포함해야 합니다.";
+    } else if (formData.newPassword === formData.password) {
+      newErrors.newPassword = "현재 비밀번호와 다르게 입력해주세요.";
+    } else {
+      newErrors.newPassword = "";
+    }
+
+    // 새 비밀번호 확인 검증
+    if (!formData.confirmNewPassword) {
+      newErrors.confirmNewPassword = "새 비밀번호 확인은 필수값입니다.";
+    } else if (formData.confirmNewPassword !== formData.newPassword) {
+      newErrors.confirmNewPassword = "비밀번호가 일치하지 않습니다.";
+    } else {
+      newErrors.confirmNewPassword = "";
+    }
+
+    setErrors(newErrors);
+  }, [formData]); // formData가 변경될 때마다 모든 유효성 검사 실행
+
+  // formData나 errors가 변경될 때마다 부모에게 알림
   useEffect(() => {
     if (onChange) {
       onChange({
