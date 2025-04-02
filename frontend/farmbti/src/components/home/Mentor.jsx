@@ -19,7 +19,7 @@ const Mentor = () => {
                 </h2>
                 <Link to="/mentors" className="block">
                   <h3 className="text-white text-2xl py-2 font-semibold hover:underline">
-                    '멘토 찾기'로 바로가기 ↗️
+                    '멘토 찾기'로 바로가기 ↗
                   </h3>
                 </Link>
               </div>
