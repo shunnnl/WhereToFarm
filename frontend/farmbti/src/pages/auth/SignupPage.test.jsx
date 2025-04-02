@@ -187,10 +187,10 @@ describe('SignupPage', () => {
     fireEvent.click(screen.getByLabelText(/남성/i));
     
     // 생년월일 선택
-    const yearSelect = screen.getByRole('combobox', { name: '출생 연도' });
-    const monthSelect = screen.getByRole('combobox', { name: '출생 월' });
-    const daySelect = screen.getByRole('combobox', { name: '출생 일' });
-            
+    const yearSelect = screen.getByTestId('birth-year-select');
+    const monthSelect = screen.getByTestId('birth-month-select');
+    const daySelect = screen.getByTestId('birth-day-select');
+                
     fireEvent.change(yearSelect, { target: { value: '1990' } });
     fireEvent.change(monthSelect, { target: { value: '1' } });
     fireEvent.change(daySelect, { target: { value: '1' } });

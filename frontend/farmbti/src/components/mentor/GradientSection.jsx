@@ -2,7 +2,7 @@ import React from 'react';
 import farmer_image from '../../asset/mentor/farmer.png'
 const GradientSection = () => {
   return (
-    <div className="relative w-full h-[500px] bg-gradient-to-b from-white to-amber-50 flex items-center justify-center">
+    <div className="relative w-full max-w-full overflow-x-hidden h-[500px] bg-gradient-to-b from-white to-amber-50 flex items-center justify-center">
       <div className="flex flex-col items-center justify-center gap-6 max-w-6xl mx-auto px-4">
         <img
           src={farmer_image}
