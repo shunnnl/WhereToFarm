@@ -56,12 +56,10 @@ public class AuthService {
     }
 
     private void validateSignupRequest(SignUpRequest request) {
+        Optional<Users> existingUser = usersRepository.findByEmail(request.getEmail());
 
-        // 이메일로 사용자 조회
-        Optional<Users> userOptional = usersRepository.findByEmail(request.getEmail());
-
-        // 사용자가 존재하고, isOut이 0(탈퇴하지 않음)인 경우 예외 발생
-        if (userOptional.isPresent() && userOptional.get().getIsOut() == 0) {
+        // isOut이 0(활성 상태)이면 중복 예외 발생
+        if (existingUser.isPresent() && existingUser.get().getIsOut().equals((byte) 0)) {
             throw new GlobalException(AuthErrorCode.EMAIL_INVALID);
         }
     }
