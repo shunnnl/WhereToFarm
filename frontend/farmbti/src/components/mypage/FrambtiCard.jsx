@@ -10,6 +10,7 @@ const FarmbtiCard = ({
   deleteMode,
   onDelete,
 }) => {
+  const navigate = useNavigate();
   const formattedDate = new Date(date)
     .toLocaleDateString("ko-KR", {
       year: "numeric",
@@ -19,10 +20,8 @@ const FarmbtiCard = ({
     .replace(/\. /g, ". ")
     .replace(/\.$/, "");
 
-  const progressWidth = `${matchRate}%`;
-
   const handleNavigate = (reportId) => {
-    useNavigate(`/report/${reportId}`);
+    navigate(`/report/${reportId}`);
   };
 
   const handleDelete = (e) => {
