@@ -51,7 +51,7 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
     return {
       year: birthDate.getFullYear().toString(),
       month: (birthDate.getMonth() + 1).toString(),
-      day: birthDate.getDate().toString().padStart(2, "0"),
+      day: birthDate.getDate().toString(),
     };
   };
 
