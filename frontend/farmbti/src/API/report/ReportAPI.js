@@ -18,3 +18,14 @@ export const createReport = async (farmScores) => {
     throw error;
   }
 }; 
+
+export const getReport = async (reportId) => {
+    try {
+      const response = await authAxios.get(`/report/${reportId}`);
+      console.log('Report 조회 응답:', response);
+      return response.data;
+    } catch (error) {
+      console.error('Report 조회 실패:', error.response?.data || error);
+      throw error;
+    }
+  };

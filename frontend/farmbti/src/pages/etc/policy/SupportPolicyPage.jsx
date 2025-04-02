@@ -142,32 +142,46 @@ const SupportPolicyPage = () => {
 
           {/* 필터 섹션 */}
           <div className="p-4 border-b border-gray-100 flex justify-end gap-2">
-            <select
-              value={selectedDo}
-              onChange={handleDoChange}
-              className="block w-40 rounded border border-gray-300 focus:border-green-500 focus:ring-green-500"
-            >
-              <option value="">도 선택</option>
-              {Object.keys(KoreaCityData).map((do_name) => (
-                <option key={do_name} value={do_name}>
-                  {do_name}
-                </option>
-              ))}
-            </select>
+            <div className="relative">
+              <select
+                value={selectedDo}
+                onChange={handleDoChange}
+                className="block w-40 rounded border border-gray-300 focus:border-green-500 focus:ring-green-500 pl-4 pr-8 py-2 appearance-none"
+              >
+                <option value="">도 선택</option>
+                {Object.keys(KoreaCityData).map((do_name) => (
+                  <option key={do_name} value={do_name}>
+                    {do_name}
+                  </option>
+                ))}
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                  <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                </svg>
+              </div>
+            </div>
 
-            <select
-              value={selectedSiGunGu}
-              onChange={handleSiGunGuChange}
-              className="block w-40 rounded border border-gray-300 focus:border-green-500 focus:ring-green-500"
-              disabled={!selectedDo}
-            >
-              <option value="">시/군/구 선택</option>
-              {siGunGuList.map((siGunGu) => (
-                <option key={siGunGu} value={siGunGu}>
-                  {siGunGu}
-                </option>
-              ))}
-            </select>
+            <div className="relative">
+              <select
+                value={selectedSiGunGu}
+                onChange={handleSiGunGuChange}
+                className="block w-40 rounded border border-gray-300 focus:border-green-500 focus:ring-green-500 pl-4 pr-8 py-2 appearance-none"
+                disabled={!selectedDo}
+              >
+                <option value="">시/군/구 선택</option>
+                {siGunGuList.map((siGunGu) => (
+                  <option key={siGunGu} value={siGunGu}>
+                    {siGunGu}
+                  </option>
+                ))}
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                  <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                </svg>
+              </div>
+            </div>
 
             <button
               onClick={handleFilterApply}
