@@ -186,13 +186,18 @@ public class MentorsService {
     }
 
     private List<Mentors> findMentorsByCity(String city) {
-        List<Mentors> mentors = mentorsRepository.findByUser_AddressContaining(city);
+        List<Mentors> allMentors = mentorsRepository.findByUser_AddressContaining(city);
 
-        if (mentors.isEmpty()) {
+        // 탈퇴하지 않은 사용자(isOut = 0)의 멘토만 필터링
+        List<Mentors> activeMentors = allMentors.stream()
+                .filter(mentor -> mentor.getUser().getIsOut() == (byte) 0)
+                .collect(Collectors.toList());
+
+        if (activeMentors.isEmpty()) {
             throw new GlobalException(MentorsErrorCode.NO_MENTORS_IN_LOCATION);
         }
 
-        return mentors;
+        return activeMentors;
     }
 
     private MentorListResponse convertToMentorListResponse(Mentors mentor) {
