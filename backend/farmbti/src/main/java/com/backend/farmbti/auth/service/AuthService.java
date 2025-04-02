@@ -10,7 +10,6 @@ import com.backend.farmbti.common.exception.GlobalException;
 import com.backend.farmbti.common.service.S3Service;
 import com.backend.farmbti.security.dto.Token;
 import com.backend.farmbti.security.jwt.JwtTokenProvider;
-import com.backend.farmbti.users.exception.UsersErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -68,13 +67,9 @@ public class AuthService {
 
 
         //1. 이메일 검증
-        Users users = usersRepository.findByEmail(request.getEmail())
+        Users users = usersRepository.findByEmailAndIsOut(request.getEmail(), (byte) 0)
                 .orElseThrow(() -> new GlobalException(AuthErrorCode.EMAIL_NOT_FOUND));
 
-        //회원탈퇴 검증
-        if (users.getIsOut() == 1) {
-            throw new GlobalException(UsersErrorCode.ALREADY_DELETED_USER);
-        }
 
         //2. 비밀번호 검증
         if (!passwordEncoder.matches(request.getPassword(), users.getPassword())) {
