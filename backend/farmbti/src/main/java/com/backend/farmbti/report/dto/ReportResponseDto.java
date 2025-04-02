@@ -16,6 +16,7 @@ public class ReportResponseDto {
     private Float rRatio;
     private Float mRatio;
     private String characterTypeName;
+    private String characterSubtitle;
     private String characterTypeDescription;
     private String characterTypeImage;
     private List<RegionResultDto> topRegions;

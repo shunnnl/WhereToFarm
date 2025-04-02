@@ -22,6 +22,9 @@ public class CharacterType {
     @Column(name = "character_name", length = 100, nullable = false)
     private String name;
 
+    @Column(name = "character_subtitle", length = 100, nullable = false)
+    private String subtitle;
+
     @Column(name = "character_description", length = 255, nullable = false)
     private String description;
 
