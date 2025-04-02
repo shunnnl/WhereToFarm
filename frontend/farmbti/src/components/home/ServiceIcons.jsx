@@ -39,7 +39,7 @@ const ServiceIcons = ({ icons }) => {
                     </div>
                     
                     {/* 텍스트 컨테이너 - 고정 높이 */}
-                    <div className="h-10 flex items-center justify-center w-full">
+                    <div className="h-10 flex items-center justify-center w-40">
                       <span className="text-center text-gray-700 font-medium text-lg whitespace-pre-line">
                       {service.title}
                       </span>

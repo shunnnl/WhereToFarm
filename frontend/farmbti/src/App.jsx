@@ -68,8 +68,22 @@ function App() {
               } />
 
             <Route path="/surveyintro" element={<SurveyIntroPage />} />
-            <Route path="/survey" element={<SurveyPage />} />
-            <Route path="/report/:reportId" element={<ReportPage />} />
+            <Route 
+              path="/survey" 
+              element={
+                <ProtectedRoute>
+                  <SurveyPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/report/:reportId" 
+              element={
+                <ProtectedRoute>
+                  <ReportPage />
+                </ProtectedRoute>
+              } 
+            />
             <Route
               path="/crop-calculator"
               element={
