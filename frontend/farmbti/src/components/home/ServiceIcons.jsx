@@ -5,7 +5,7 @@ const ServiceIcons = ({ icons }) => {
     <div className="pt-20 pb-8">
       <div className="flex justify-between items-center max-w-screen-2xl mx-auto">
         {/* 왼쪽: 주요 서비스 텍스트 */}
-        <div className="w-2/5 flex flex-col justify-center pr-20">
+        <div className="w-2/6 flex flex-col justify-center">
           <h2 className="text-5xl font-bold mb-6">주요 서비스</h2>
           <p className="text-gray-600 text-2xl leading-relaxed">
             귀농인이 되기 위한 첫 걸음,<br />
@@ -14,8 +14,8 @@ const ServiceIcons = ({ icons }) => {
         </div>
         
         {/* 오른쪽: 아이콘 메뉴 */}
-        <div className="w-3/5 flex justify-center">
-          <div className="grid grid-cols-4 gap-10">
+        <div className="w-4/6 flex justify-center">
+          <div className="grid grid-cols-5 gap-10">
             {icons.map((service, index) => {
               const IconComponent = service.icon;
               
@@ -40,8 +40,8 @@ const ServiceIcons = ({ icons }) => {
                     
                     {/* 텍스트 컨테이너 - 고정 높이 */}
                     <div className="h-10 flex items-center justify-center w-full">
-                      <span className="text-center text-gray-700 font-medium text-lg">
-                        {service.title}
+                      <span className="text-center text-gray-700 font-medium text-lg whitespace-pre-line">
+                      {service.title}
                       </span>
                     </div>
                   </a>
