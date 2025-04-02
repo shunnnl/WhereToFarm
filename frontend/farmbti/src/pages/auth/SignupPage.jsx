@@ -359,6 +359,7 @@ const SignupPage = () => {
                 <select
                   name="birthYear"
                   value={formData.birthYear}
+                  aria-label="출생 연도"
                   onChange={handleChange}
                   required
                   className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
@@ -370,6 +371,7 @@ const SignupPage = () => {
                 </select>
                 <select
                   name="birthMonth"
+                  aria-label="출생 월"
                   value={formData.birthMonth}
                   onChange={handleChange}
                   required
@@ -382,6 +384,7 @@ const SignupPage = () => {
                 </select>
                 <select
                   name="birthDay"
+                  aria-label="출생 일"
                   value={formData.birthDay}
                   onChange={handleChange}
                   required
@@ -403,6 +406,7 @@ const SignupPage = () => {
               <div className="grid grid-cols-3 gap-4">
                 <input
                   type="text"
+                  id="address"
                   name="address"
                   value={formData.address}
                   onChange={handleChange}
