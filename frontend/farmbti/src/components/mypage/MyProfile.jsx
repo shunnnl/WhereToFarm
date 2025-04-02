@@ -2,9 +2,13 @@ import { useEffect, useRef, useState } from "react";
 import leaveIcon from "../../asset/mypage/leaves.png";
 import { MessageSquare, User, Settings, Lock } from "lucide-react";
 import { toast } from "react-toastify";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
-import { putMyInfo, changePassword, putMentorInfo } from "../../API/mypage/MyPageAPI";
+import {
+  putMyInfo,
+  changePassword,
+  putMentorInfo,
+} from "../../API/mypage/MyPageAPI";
 
 import MyPageModal from "./MyPageModal";
 import MentorSettingContent from "./MentorSettingContent";
@@ -15,6 +19,7 @@ import { handleErrorToast } from "../../utils/ErrorUtils";
 
 const MyProfile = ({ myInfo: initialMyInfo }) => {
   const modalRef = useRef(null);
+  const passwordContentRef = useRef(null);
   const [modalType, setModalType] = useState("");
   const [modalTitle, setModalTitle] = useState("");
   const [myInfo, setMyInfo] = useState(initialMyInfo);
@@ -22,8 +27,6 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
   const [address, setAddress] = useState("");
   const [myImage, setMyImage] = useState({});
   const navigate = useNavigate();
-
-
 
   // 모달 타입 별 상태 분리
   const [mentorFormData, setMentorFormData] = useState({
@@ -37,7 +40,7 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
     errors: {},
   });
   const [passwordFormData, setPasswordFormData] = useState({
-    data: { password: "", newPassword: "", confirmPassword: "" },
+    data: { password: "", newPassword: "", confirmNewPassword: "" },
     isValid: true,
     errors: {},
   });
@@ -51,7 +54,7 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
     return {
       year: birthDate.getFullYear().toString(),
       month: (birthDate.getMonth() + 1).toString(),
-      day: birthDate.getDate().toString().padStart(2, "0"),
+      day: birthDate.getDate().toString(),
     };
   };
 
@@ -116,7 +119,7 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
 
   const handleChatting = () => {
     // chat 페이지로 넘어가기
-    navigate('/chat');
+    navigate("/chat");
 
     return;
   };
@@ -135,6 +138,12 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
   };
 
   const handleMyPasswordSetting = () => {
+    setPasswordFormData({
+      data: { password: "", newPassword: "", confirmNewPassword: "" },
+      isValid: true,
+      errors: {},
+    });
+
     setModalType("password");
     setModalTitle("비밀번호 수정");
     modalRef.current?.openModal();
@@ -186,9 +195,8 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
           }
 
           console.log("멘토 정보 업데이트:", mentorFormData.data);
-          const mentorResponse = await putMentorInfo(mentorFormData.data)
-          console.log(mentorResponse)
-
+          const mentorResponse = await putMentorInfo(mentorFormData.data);
+          console.log(mentorResponse);
 
           setMyInfo((prevInfo) => ({
             ...prevInfo,
@@ -246,6 +254,7 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
           break;
 
         case "password":
+          passwordContentRef.current?.resetForm();
           console.log("비밀번호 모드 - 제출 전 데이터:", passwordFormData.data);
           if (!passwordFormData.isValid) {
             // 첫 번째 오류 메시지 또는 기본 메시지 표시
@@ -264,7 +273,7 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
             currentPassword,
             newPassword,
           });
-
+          
           if (passwordResponse) {
             toast.success("비밀번호 정보가 수정 되었습니다.");
           }
@@ -282,6 +291,15 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
 
     // 최종 데이터 확인 (모든 경우에 실행)
     console.log("모달 닫기");
+    modalRef.current?.closeModal();
+  };
+
+  const handleCancel = () => {
+    // 모달 타입에 따라 폼 데이터 초기화
+    if (modalType === "password") {
+      passwordContentRef.current?.resetForm();
+    }
+
     modalRef.current?.closeModal();
   };
 
@@ -397,6 +415,7 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
         isLoading={isSubmitting}
         isFormValid={isCurrentFormValid()}
         onConfirm={handleConfirm}
+        onCancel={handleCancel}
       >
         {/* 조건부 콘텐츠 렌더링 */}
         {modalType === "mentor" && (
@@ -413,7 +432,7 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
         )}
         {modalType === "password" && (
           <MyPasswordContent
-            initialData={passwordFormData.data}
+            ref={passwordContentRef}
             onChange={setPasswordFormData}
           />
         )}

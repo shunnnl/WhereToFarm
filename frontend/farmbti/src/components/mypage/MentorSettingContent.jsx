@@ -3,52 +3,16 @@ import { useState, useEffect } from "react";
 const MentorSettingContent = ({ onChange, initialData }) => {
   // 작물 데이터 - 먼저 정의
   const topFood = [
-    {
-      id: "apple",
-      label: "사과",
-      iconSrc: "../../asset/crops-icons/apple.png",
-    },
-    {
-      id: "cucumber",
-      label: "오이",
-      iconSrc: "../../asset/crops-icons/cucumber.png",
-    },
-    {
-      id: "grape",
-      label: "포도",
-      iconSrc: "../../asset/crops-icons/grape.png",
-    },
-    {
-      id: "greenonion",
-      label: "대파",
-      iconSrc: "../../asset/crops-icons/greenonion.png",
-    },
-    {
-      id: "lettuce",
-      label: "상추",
-      iconSrc: "../../asset/crops-icons/lettuce.png",
-    },
-    {
-      id: "onion",
-      label: "양파",
-      iconSrc: "../../asset/crops-icons/onion.png",
-    },
-    { id: "pear", label: "배", iconSrc: "../../asset/crops-icons/pear.png" },
-    {
-      id: "sweetpotato",
-      label: "고구마",
-      iconSrc: "../../asset/crops-icons/sweetpotato.png",
-    },
-    {
-      id: "tangerine",
-      label: "감귤",
-      iconSrc: "../../asset/crops-icons/tangerine.png",
-    },
-    {
-      id: "watermelon",
-      label: "수박",
-      iconSrc: "../../asset/crops-icons/watermelon.png",
-    },
+    { id: "apple", name: "사과", img: "apple.png" },
+    { id: "pear", name: "배", img: "pear.png" },
+    { id: "tangerine", name: "감귤", img: "tangerine.png" },
+    { id: "grape", name: "포도", img: "grape.png" },
+    { id: "watermelon", name: "수박", img: "watermelon.png" },
+    { id: "cucumber", name: "오이", img: "cucumber.png" },
+    { id: "greenonion", name: "대파", img: "greenonion.png" },
+    { id: "onion", name: "양파", img: "onion.png" },
+    { id: "lettuce", name: "상추", img: "lettuce.png" },
+    { id: "sweetpotato", name: "고구마", img: "sweetpotato.png" },
   ];
 
   // 작물명과 ID 간 변환 도우미 함수
@@ -183,7 +147,7 @@ const MentorSettingContent = ({ onChange, initialData }) => {
 
     setFormData((prev) => ({
       ...prev,
-      cropNames: selectedLabels, 
+      cropNames: selectedLabels,
       bio,
     }));
   }, [selectedFoods, bio]);
@@ -242,15 +206,15 @@ const MentorSettingContent = ({ onChange, initialData }) => {
                 <label htmlFor={food.id} className="cursor-pointer pl-6">
                   <div className="w-16 h-16 bg-primaryGreen rounded-full flex items-center justify-center text-white">
                     <img
-                      src={food.iconSrc}
-                      alt={food.label}
+                      src={`https://farmbticropbucket.s3.ap-northeast-2.amazonaws.com/crop/${food.img}`}
+                      alt={food.name}
                       className="w-14 h-14"
                     />
                   </div>
                 </label>
                 <div className="absolute -top-1 -left-1"></div>
               </div>
-              <span className="mt-2 text-sm text-end">{food.label}</span>
+              <span className="mt-2 text-sm text-end">{food.name}</span>
             </div>
           ))}
         </div>
