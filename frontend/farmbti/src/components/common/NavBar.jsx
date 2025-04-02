@@ -288,12 +288,7 @@ return (
               </li>
               <li>
                 <Link to="/crop-calculator" className={menuItemClass}>
-                  작물 수확 계산기
-                </Link>
-              </li>
-              <li>
-                <Link to="/estate" className={menuItemClass}>
-                  귀농 매물 보기
+                  작물 수익 계산기
                 </Link>
               </li>
               <li>
