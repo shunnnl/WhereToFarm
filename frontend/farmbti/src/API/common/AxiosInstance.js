@@ -1,30 +1,98 @@
 import axios from "axios";
 
-// 인증 요구 api
-const authAxios = axios.create({
-  baseURL: import.meta.env.VITE_BASE_URL,
-  withCredentials: true,
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
+// 표준화된 오류 응답 객체 생성 함수
+const createErrorResponse = (code, message, originalError = null) => {
+  return {
+    success: false,
+    error: {
+      code,
+      message,
+      type: code >= 400 && code < 500 ? "BUSINESS" : "SYSTEM",
+      details: process.env.NODE_ENV === "development" ? originalError : null,
+    },
+  };
+};
 
-console.log("authAxios baseURL:", authAxios.defaults.baseURL);
+// 오류 처리 통합 함수
+const handleApiError = (error) => {
+  // HTTP 상태 코드별 오류 메시지
+  const statusMessages = {
+    400: "잘못된 요청입니다.",
+    401: "인증이 필요합니다.",
+    403: "접근 권한이 없습니다.",
+    404: "찾는 정보가 없어요!",
+    409: "요청이 충돌했습니다.",
+    422: "요청 데이터가 유효하지 않습니다.",
+    429: "요청이 너무 많습니다. 잠시 후 다시 시도해주세요.",
+    500: "서버에 문제가 생겼어요!",
+    502: "서버 게이트웨이에 문제가 발생했습니다.",
+    503: "서비스를 일시적으로 사용할 수 없습니다.",
+    504: "서버 응답 시간이 초과되었습니다.",
+  };
 
-// 인증 요구 API 요청 가로채기 (수정)
-authAxios.interceptors.request.use(
-  (config) => {
-    // 'token'이 아닌 'accessToken' 사용
-    const accessToken = localStorage.getItem("accessToken");
-    if (accessToken) {
-      config.headers["Authorization"] = `Bearer ${accessToken}`;
+  let errorResponse;
+
+  // 응답이 있는 경우의 에러 처리
+  if (error.response) {
+    const status = error.response.status;
+    const message =
+      statusMessages[status] || "요청을 처리하는 중 오류가 발생했습니다.";
+
+    // 사용자에게 알림 이벤트 발생
+    window.dispatchEvent(
+      new CustomEvent("api-error", {
+        detail: { code: status, message },
+      })
+    );
+
+    // 서버에서 이미 표준화된 오류 객체를 보냈는지 확인
+    if (error.response.data && error.response.data.error) {
+      return error.response.data;
     }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
+
+    errorResponse = createErrorResponse(status, message, error.response.data);
   }
-);
+  // 요청은 보냈지만 응답이 없는 경우 (네트워크 오류)
+  else if (error.request) {
+    console.error("네트워크 연결 오류:", error.request);
+
+    window.dispatchEvent(
+      new CustomEvent("api-error", {
+        detail: {
+          code: "NETWORK",
+          message: "서버에 연결할 수 없습니다. 네트워크 연결을 확인해주세요.",
+        },
+      })
+    );
+
+    errorResponse = createErrorResponse(
+      "NETWORK",
+      "서버에 연결할 수 없습니다. 네트워크 연결을 확인해주세요.",
+      error
+    );
+  }
+  // 요청 설정 중 오류 발생 (미처리 예외)
+  else {
+    console.error("요청 설정 오류:", error.message);
+
+    window.dispatchEvent(
+      new CustomEvent("api-error", {
+        detail: {
+          code: "ERROR",
+          message: "요청 처리 중 오류가 발생했습니다.",
+        },
+      })
+    );
+
+    errorResponse = createErrorResponse(
+      "ERROR",
+      "요청 처리 중 오류가 발생했습니다.",
+      error
+    );
+  }
+
+  return errorResponse;
+};
 
 // refreshToken을 이용한 토큰 갱신 함수
 const refreshAccessToken = async () => {
@@ -33,7 +101,7 @@ const refreshAccessToken = async () => {
     if (!refreshToken) {
       throw new Error("Refresh token not found");
     }
-    
+
     const response = await axios.post(
       `${import.meta.env.VITE_BASE_URL}/auth/refresh`,
       {},
@@ -43,15 +111,22 @@ const refreshAccessToken = async () => {
         },
       }
     );
-    
-    if (response.data.success && response.data.data && response.data.data.token) {
+
+    if (
+      response.data.success &&
+      response.data.data &&
+      response.data.data.token
+    ) {
       localStorage.setItem("accessToken", response.data.data.token.accessToken);
-      localStorage.setItem("refreshToken", response.data.data.token.refreshToken);
-      localStorage.setItem("tokenExpires", response.data.data.token.accessTokenExpiresInForHour);
-      
-      // 'token' 키도 일관성을 위해 설정 (기존 코드와의 호환성 위해)
-      localStorage.setItem("accessToken", response.data.data.token.accessToken);
-      
+      localStorage.setItem(
+        "refreshToken",
+        response.data.data.token.refreshToken
+      );
+      localStorage.setItem(
+        "tokenExpires",
+        response.data.data.token.accessTokenExpiresInForHour
+      );
+
       return response.data.data.token.accessToken;
     } else {
       throw new Error("Failed to refresh token");
@@ -62,16 +137,61 @@ const refreshAccessToken = async () => {
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("tokenExpires");
     localStorage.removeItem("user");
-    return Promise.reject(error);
+
+    // 인증 만료 이벤트 발생
+    window.dispatchEvent(
+      new CustomEvent("auth-logout", {
+        detail: { reason: "token-expired" },
+      })
+    );
+
+    return Promise.reject(
+      createErrorResponse(
+        "AUTH_EXPIRED",
+        "인증이 만료되었습니다. 다시 로그인해주세요.",
+        error
+      )
+    );
   }
 };
 
+// 인증 요구 api
+const authAxios = axios.create({
+  baseURL: import.meta.env.VITE_BASE_URL,
+  withCredentials: true,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
+// 인증 요구 API 요청 가로채기
+authAxios.interceptors.request.use(
+  (config) => {
+    const accessToken = localStorage.getItem("accessToken");
+    if (accessToken) {
+      config.headers["Authorization"] = `Bearer ${accessToken}`;
+    }
+    return config;
+  },
+  (error) => {
+    const errorResponse = handleApiError(error);
+    return Promise.reject(errorResponse);
+  }
+);
 
 // 응답 인터셉터
 authAxios.interceptors.response.use(
   (response) => {
-    return response.data;
+    // 데이터가 이미 표준화된 형식인지 확인
+    if (response.data && response.data.success !== undefined) {
+      return response.data;
+    }
+
+    // 표준화된 응답 객체로 변환
+    return {
+      success: true,
+      data: response.data,
+    };
   },
   async (error) => {
     const originalRequest = error.config;
@@ -80,7 +200,8 @@ authAxios.interceptors.response.use(
     if (
       error.response &&
       error.response.status === 401 &&
-      !originalRequest._retry
+      !originalRequest._retry &&
+      localStorage.getItem("refreshToken") // refreshToken이 있는 경우에만 시도
     ) {
       originalRequest._retry = true;
 
@@ -93,52 +214,8 @@ authAxios.interceptors.response.use(
       }
     }
 
-    // 응답이 있는 경우의 에러 처리
-    if (error.response) {
-      if (error.response.status === 404) {
-        // 이벤트 발생
-        window.dispatchEvent(
-          new CustomEvent("api-error", {
-            detail: { code: 404, message: "찾는 정보가 없어요!" },
-          })
-        );
-      }
-
-      // 서버 에러 발생!
-      if (error.response.status >= 500) {
-        window.dispatchEvent(
-          new CustomEvent("api-error", {
-            detail: { code: 500, message: "서버에 문제가 생겼어요!" },
-          })
-        );
-      }
-    }
-    // 요청은 보냈지만 응답이 없는 경우 (네트워크 오류)
-    else if (error.request) {
-      console.error("네트워크 연결 오류:", error.request);
-      window.dispatchEvent(
-        new CustomEvent("api-error", {
-          detail: {
-            code: "NETWORK",
-            message: "서버에 연결할 수 없습니다. 네트워크 연결을 확인해주세요.",
-          },
-        })
-      );
-    }
-    // 요청 설정 중 오류 발생 (미처리 예외)
-    else {
-      console.error("요청 설정 오류:", error.message);
-      window.dispatchEvent(
-        new CustomEvent("api-error", {
-          detail: {
-            code: "ERROR",
-            message: "요청 처리 중 오류가 발생했습니다.",
-          },
-        })
-      );
-    }
-
-    return Promise.reject(error.response?.data || error);
+    const errorResponse = handleApiError(error);
+    return Promise.reject(errorResponse);
   }
 );
 
@@ -149,75 +226,37 @@ const publicAxios = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-
 });
 
+// 요청 인터셉터
 publicAxios.interceptors.request.use(
   (config) => {
-    console.log("config =========", config)
-    console.log("authAxios public:", publicAxios.defaults.baseURL);
-
     return config;
   },
   (error) => {
-    return Promise.reject(error);
+    const errorResponse = handleApiError(error);
+    return Promise.reject(errorResponse);
   }
 );
 
+// 응답 인터셉터
 publicAxios.interceptors.response.use(
   (response) => {
-    return response.data;
+    // 데이터가 이미 표준화된 형식인지 확인
+    if (response.data && response.data.success !== undefined) {
+      return response.data;
+    }
+
+    // 표준화된 응답 객체로 변환
+    return {
+      success: true,
+      data: response.data,
+    };
   },
   (error) => {
-    // 응답이 있는 경우의 에러 처리
-    if (error.response) {
-      if (error.response.status === 404) {
-        window.dispatchEvent(
-          new CustomEvent("api-error", {
-            detail: { code: 404, message: "찾는 정보가 없어요!" },
-          })
-        );
-      }
-
-      if (error.response.status >= 500) {
-        window.dispatchEvent(
-          new CustomEvent("api-error", {
-            detail: { code: 500, message: "서버에 문제가 생겼어요!" },
-          })
-        );
-      }
-    }
-    // 네트워크 오류 처리
-    else if (error.request) {
-      console.error("네트워크 연결 오류:", error.request);
-      window.dispatchEvent(
-        new CustomEvent("api-error", {
-          detail: {
-            code: "NETWORK",
-            message: "서버에 연결할 수 없습니다. 네트워크 연결을 확인해주세요.",
-          },
-        })
-      );
-    }
-    // 기타 오류
-    else {
-      console.error("요청 설정 오류:", error.message);
-      window.dispatchEvent(
-        new CustomEvent("api-error", {
-          detail: {
-            code: "ERROR",
-            message: "요청 처리 중 오류가 발생했습니다.",
-          },
-        })
-      );
-    }
-
-    return Promise.reject(error.response?.data || error);
+    const errorResponse = handleApiError(error);
+    return Promise.reject(errorResponse);
   }
 );
-
-
-
-
 
 export { authAxios, publicAxios };
