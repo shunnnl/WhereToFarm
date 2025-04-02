@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, forwardRef, useImperativeHandle } from "react";
 
-const MyPasswordContent = ({ onChange }) => {
+const MyPasswordContent = forwardRef(({ onChange }, ref) => {
   const [formData, setFormData] = useState({
     password: "",
     newPassword: "",
@@ -8,6 +8,17 @@ const MyPasswordContent = ({ onChange }) => {
   });
 
   const [errors, setErrors] = useState({});
+
+  // ref를 통해 resetForm 함수를 외부에 노출
+  useImperativeHandle(ref, () => ({
+    resetForm: () => {
+      setFormData({
+        password: "",
+        newPassword: "",
+        confirmNewPassword: "",
+      });
+    }
+  }));
 
   // 폼 데이터 변경 핸들러 - 상태만 업데이트
   const handleChange = (e) => {
@@ -20,6 +31,11 @@ const MyPasswordContent = ({ onChange }) => {
 
   // 폼 제출 핸들러
   const handleSubmit = (e) => {
+    setFormData({
+      password: "",
+      newPassword: "",
+      confirmNewPassword: "",
+    });
     e.preventDefault();
   };
 
@@ -138,6 +154,6 @@ const MyPasswordContent = ({ onChange }) => {
       </div>
     </form>
   );
-};
+});
 
 export default MyPasswordContent;

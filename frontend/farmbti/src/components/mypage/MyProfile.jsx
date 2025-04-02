@@ -19,6 +19,7 @@ import { handleErrorToast } from "../../utils/ErrorUtils";
 
 const MyProfile = ({ myInfo: initialMyInfo }) => {
   const modalRef = useRef(null);
+  const passwordContentRef = useRef(null);
   const [modalType, setModalType] = useState("");
   const [modalTitle, setModalTitle] = useState("");
   const [myInfo, setMyInfo] = useState(initialMyInfo);
@@ -137,7 +138,6 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
   };
 
   const handleMyPasswordSetting = () => {
-
     setPasswordFormData({
       data: { password: "", newPassword: "", confirmNewPassword: "" },
       isValid: true,
@@ -254,6 +254,7 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
           break;
 
         case "password":
+          passwordContentRef.current?.resetForm();
           console.log("비밀번호 모드 - 제출 전 데이터:", passwordFormData.data);
           if (!passwordFormData.isValid) {
             // 첫 번째 오류 메시지 또는 기본 메시지 표시
@@ -272,7 +273,7 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
             currentPassword,
             newPassword,
           });
-
+          
           if (passwordResponse) {
             toast.success("비밀번호 정보가 수정 되었습니다.");
           }
@@ -293,18 +294,14 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
     modalRef.current?.closeModal();
   };
 
-const handleCancel = () => {
-  // 모달 타입에 따라 폼 데이터 초기화
-  if (modalType === "password") {
-    setPasswordFormData({
-      data: { password: "", newPassword: "", confirmNewPassword: "" },
-      isValid: true,
-      errors: {},
-    });
-  }
-  
-  modalRef.current?.closeModal();
-};
+  const handleCancel = () => {
+    // 모달 타입에 따라 폼 데이터 초기화
+    if (modalType === "password") {
+      passwordContentRef.current?.resetForm();
+    }
+
+    modalRef.current?.closeModal();
+  };
 
   return (
     <div>
@@ -435,7 +432,7 @@ const handleCancel = () => {
         )}
         {modalType === "password" && (
           <MyPasswordContent
-            initialData={passwordFormData.data}
+            ref={passwordContentRef}
             onChange={setPasswordFormData}
           />
         )}
