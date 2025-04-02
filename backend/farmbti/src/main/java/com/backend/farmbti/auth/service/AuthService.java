@@ -10,10 +10,13 @@ import com.backend.farmbti.common.exception.GlobalException;
 import com.backend.farmbti.common.service.S3Service;
 import com.backend.farmbti.security.dto.Token;
 import com.backend.farmbti.security.jwt.JwtTokenProvider;
+import com.backend.farmbti.users.exception.UsersErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -53,17 +56,27 @@ public class AuthService {
     }
 
     private void validateSignupRequest(SignUpRequest request) {
-        //이미 등록된 이메일인 경우 에러
-        if (usersRepository.existsByEmail(request.getEmail())) {
+
+        // 이메일로 사용자 조회
+        Optional<Users> userOptional = usersRepository.findByEmail(request.getEmail());
+
+        // 사용자가 존재하고, isOut이 0(탈퇴하지 않음)인 경우 예외 발생
+        if (userOptional.isPresent() && userOptional.get().getIsOut() == 0) {
             throw new GlobalException(AuthErrorCode.EMAIL_INVALID);
         }
     }
 
     public LoginResponse login(LoginRequest request) {
 
+
         //1. 이메일 검증
         Users users = usersRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new GlobalException(AuthErrorCode.EMAIL_NOT_FOUND));
+
+        //회원탈퇴 검증
+        if (users.getIsOut() == 1) {
+            throw new GlobalException(UsersErrorCode.ALREADY_DELETED_USER);
+        }
 
         //2. 비밀번호 검증
         if (!passwordEncoder.matches(request.getPassword(), users.getPassword())) {
