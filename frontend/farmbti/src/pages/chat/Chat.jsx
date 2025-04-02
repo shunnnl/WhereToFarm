@@ -6,27 +6,25 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 const Chat = () => {
   const location = useLocation();
-  const navigate = useNavigate(); // 추가: 네비게이션을 위한 훅
+  const navigate = useNavigate();
 
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const [currentTime, setCurrentTime] = useState('');
   const [connected, setConnected] = useState(false);
-  // roomId를 null로 초기화하고 navigate로 전달된 state에서 값을 가져옵니다
   const [roomId, setRoomId] = useState(null);
   const [chatRooms, setChatRooms] = useState([]);
   const stompClient = useRef(null);
-  const messagesEndRef = useRef(null);
+  const messagesEndRef = useRef(null); // 메시지 영역의 끝 참조
+  const chatContainerRef = useRef(null); // 채팅 컨테이너 참조 추가
   const [currentUser, setCurrentUser] = useState('');
   const messageIdCounter = useRef(0);
   const MAX_CHAR_LIMIT = 1000;
 
-  
-  // 뒤로가기 함수 추가
+  // 뒤로가기 함수
   const handleGoBack = () => {
-    navigate(-1); // 브라우저 히스토리에서 한 단계 뒤로 이동
+    navigate(-1);
   };
-
 
   // URL state에서 roomId 가져오기
   useEffect(() => {
@@ -142,6 +140,11 @@ const Chat = () => {
       
       // 상태 업데이트
       setMessages(fetchedMessages);
+      
+      // 메시지가 로드된 후 스크롤을 맨 아래로 이동 (setTimeout으로 상태 업데이트 후 실행)
+      setTimeout(() => {
+        scrollToBottom();
+      }, 100);
     } catch (error) {
       console.error(`채팅방 ${chatRoomId}의 메시지 조회 실패:`, error);
     }
@@ -157,6 +160,18 @@ const Chat = () => {
       connectWebSocket();
     }
   }, [roomId]);
+
+  // 메시지가 추가되거나 변경될 때마다 스크롤을 맨 아래로 이동
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  // 맨 아래로 스크롤하는 함수
+  const scrollToBottom = () => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  };
 
   // connectWebSocket 함수 수정 - 구독 관리 개선
   const connectWebSocket = () => {
@@ -260,6 +275,8 @@ const Chat = () => {
       
       // 메시지 목록에 추가
       setMessages(prev => [...prev, newMessage]);
+      
+      // 새 메시지가 추가되면 자동으로 맨 아래로 스크롤 (useEffect에서 처리)
     } catch (error) {
       console.error('메시지 처리 오류:', error);
     }
@@ -301,6 +318,8 @@ const Chat = () => {
       
       setMessages(prevMessages => [...prevMessages, newMessage]);
       setMessage('');
+      
+      // 메시지 전송 후 스크롤 맨 아래로 이동 (useEffect에서 처리)
     }
   };
 
@@ -405,8 +424,8 @@ const Chat = () => {
               </button>
             </div>
 
-            {/* 채팅 메시지 영역 */}
-            <div className="flex-1 p-4 overflow-y-auto">
+            {/* 채팅 메시지 영역 - chatContainerRef 추가 */}
+            <div className="flex-1 p-4 overflow-y-auto" ref={chatContainerRef}>
               <div className="space-y-4">
                 <div className="text-center text-gray-500 text-sm">
                   {new Date().toLocaleDateString('ko-KR', {year: 'numeric', month: 'long', day: 'numeric'})}
@@ -430,6 +449,8 @@ const Chat = () => {
                   </div>
                 )}
                 
+                {/* 메시지 끝 참조 지점 */}
+                <div ref={messagesEndRef} />
               </div>
             </div>
 
