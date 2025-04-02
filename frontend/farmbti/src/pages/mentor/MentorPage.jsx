@@ -15,9 +15,9 @@ const MentorPage = () => {
   return (
     <div className="w-full">
       {/* 배너 이미지 슬라이더 섹션 - 전체 너비 사용 */}
-      {/* <ContentLayout fullWidth> */}
+      <ContentLayout fullWidth>
         <GradientSection/>
-      {/* </ContentLayout> */}
+      </ContentLayout>
       
       {/* 일반 콘텐츠 - 너비 제한과 패딩 적용 */}
       <ContentLayout>

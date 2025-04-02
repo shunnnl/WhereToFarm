@@ -13,6 +13,12 @@ body {
   font-family: 'Pretendard Variable', sans-serif;
 }
 
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+  position: relative;
+}
+
 #root {
   max-width: 1200px; /* 원하는 최대 너비 */
   margin: 0 auto; /* 좌우 중앙 정렬 */
