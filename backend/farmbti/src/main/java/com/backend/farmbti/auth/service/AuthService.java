@@ -61,9 +61,15 @@ public class AuthService {
 
     public LoginResponse login(LoginRequest request) {
 
+
         //1. 이메일 검증
         Users users = usersRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new GlobalException(AuthErrorCode.EMAIL_NOT_FOUND));
+
+        //회원탈퇴 검증
+        if (users.getIsOut() == 1) {
+            throw new GlobalException(AuthErrorCode.USER_NOT_FOUND);
+        }
 
         //2. 비밀번호 검증
         if (!passwordEncoder.matches(request.getPassword(), users.getPassword())) {
