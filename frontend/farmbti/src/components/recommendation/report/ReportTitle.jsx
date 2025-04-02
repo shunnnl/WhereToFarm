@@ -1,23 +1,8 @@
 import React from 'react';
 
 const ReportTitle = ({ farmerType }) => {
-  const { id, title } = farmerType;
+  const { id, title, characterTypeImage } = farmerType;  // image -> characterTypeImage로 수정
   
-  // 동적 이미지 import
-  const getImageUrl = (id) => {
-    try {
-      const imageUrl = new URL(
-        `../../../asset/recommendation/report/farmer${String(id).padStart(2, '0')}.png`, 
-        import.meta.url
-      ).href;
-      console.log('Image URL:', imageUrl);
-      return imageUrl;
-    } catch (error) {
-      console.error('Error loading image:', error);
-      return '';
-    }
-  };
-
   return (
     <>
       {/* 흰색 상단 여백 */}
@@ -28,12 +13,12 @@ const ReportTitle = ({ farmerType }) => {
         {/* 농부 이미지 */}
         <div className="absolute -top-16 left-8">
           <img
-            src={getImageUrl(id)}
+            src={characterTypeImage}  // image -> characterTypeImage로 수정
             alt={title}
             className="h-48 object-contain"
             onError={(e) => {
               console.error('Image failed to load:', e);
-              console.log('Failed image path:', e.target.src);
+              console.log('Failed image URL:', e.target.src);
             }}
           />
         </div>

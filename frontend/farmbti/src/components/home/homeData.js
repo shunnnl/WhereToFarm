@@ -1,10 +1,6 @@
 import homeimage_1 from "../../asset/home/home_image_1.png";
 import homeimage_2 from "../../asset/home/home_image_2.png"; 
 import homeimage_3 from "../../asset/home/home_image_3.png"; 
-import icon_1 from "../../asset/home/가이드.svg";
-import icon_2 from "../../asset/home/매물.svg";
-import icon_3 from "../../asset/home/혜택.svg";
-import icon_4 from "../../asset/home/작물_계산기.svg";
 import { BookOpen, Home, Gift, Calculator, LandPlot } from "lucide-react";
 
 // 배너 슬라이더 데이터
@@ -31,7 +27,7 @@ export const bannerSlides = [
     text: {
       before: "나의 ",
       highlight: "귀농지",
-      after: "는?",
+      after: "는? ",
     },
   },
   {
@@ -60,12 +56,12 @@ export const serviceIcons = [
   },
   {
     icon: LandPlot,
-    title: "지역\n추천",  
-    link: "/crop-calculator"
+    title: "지역 추천",  
+    link: "/surveyintro"
   },
   {
     icon: Calculator,
-    title: "작물\n계산기", 
+    title: "작물 계산기", 
     link: "/crop-calculator"
   },
   {
@@ -113,3 +109,4 @@ export const newsItems = [
     moreLink: '/news/3'
   }
 ];
+
