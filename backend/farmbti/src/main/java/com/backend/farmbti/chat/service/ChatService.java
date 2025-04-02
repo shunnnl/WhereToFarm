@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -75,43 +76,45 @@ public class ChatService {
 
     @Transactional(readOnly = true)
     public List<ChatListResponse> getAllRooms(Long userId) {
-
-        //멘토는 멘티가 보여야 하고
-        //멘티는 멘토가 보여야 한다.
-        //멘티가 조회했을때만 채팅방 목록이 보인다.
-
-        //멘토나 멘티 중에서 현재 로그인한 사용자가 있다면 모두 가져온다.
         List<Chat> chats = chatRepository.findAllByMenteeIdOrMentorUserId(userId, userId);
 
-        //내가 채팅한 모든 chat 객체에 대해서
-        return chats.stream().map(chat -> {
-            //현재 로그인한 사용자가 멘티라면
-            boolean isUserMentee = chat.getMentee().getId().equals(userId);
+        return chats.stream()
+                .map(chat -> {
+                    boolean isUserMentee = chat.getMentee().getId().equals(userId);
+                    Long otherUserId = isUserMentee ? chat.getMentor().getUser().getId() : chat.getMentee().getId();
 
-            Long otherUserId = isUserMentee ? chat.getMentor().getUser().getId() : chat.getMentee().getId();
+                    // 상대방 유저 찾기
+                    Users user = usersRepository.findById(otherUserId)
+                            .orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
 
-            String otherUserName = isUserMentee
-                    ? chat.getMentor().getUser().getName()
-                    : chat.getMentee().getName();
+                    // 탈퇴한 유저면 null 리턴 (아래 filter에서 제거됨)
+                    if (user.getIsOut() == 1) {
+                        return null;
+                    }
 
-            String otherUserProfile = isUserMentee
-                    ? chat.getMentor().getUser().getProfileImage()
-                    : chat.getMentee().getProfileImage();
+                    String otherUserName = isUserMentee
+                            ? chat.getMentor().getUser().getName()
+                            : chat.getMentee().getName();
 
-            ChatMessage latestMessageObj = chatMessageRepository.findTopByChat_RoomIdOrderBySendAtDesc(chat.getRoomId());
-            String latestMessage = latestMessageObj != null ? latestMessageObj.getContent() : null;
+                    String otherUserProfile = isUserMentee
+                            ? chat.getMentor().getUser().getProfileImage()
+                            : chat.getMentee().getProfileImage();
 
-            return ChatListResponse.builder()
-                    .roomId(chat.getRoomId())
-                    .otherUserId(otherUserId)
-                    .otherUserName(otherUserName)
-                    .otherUserProfile(s3Service.getSignedUrl(otherUserProfile))
-                    .lastMessage(latestMessage)
-                    .build();
+                    ChatMessage latestMessageObj = chatMessageRepository.findTopByChat_RoomIdOrderBySendAtDesc(chat.getRoomId());
+                    String latestMessage = (latestMessageObj != null) ? latestMessageObj.getContent() : null;
 
-        }).collect(Collectors.toList());
-
+                    return ChatListResponse.builder()
+                            .roomId(chat.getRoomId())
+                            .otherUserId(otherUserId)
+                            .otherUserName(otherUserName)
+                            .otherUserProfile(s3Service.getSignedUrl(otherUserProfile))
+                            .lastMessage(latestMessage)
+                            .build();
+                })
+                .filter(Objects::nonNull)  // null 값 제거 (isOut=1이면 제외)
+                .collect(Collectors.toList());
     }
+
 
     public void deleteRoom(Long usersId, Long roomId) {
         // 채팅방 ID로 채팅방 찾기
