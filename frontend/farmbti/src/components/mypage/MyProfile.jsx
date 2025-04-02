@@ -2,9 +2,13 @@ import { useEffect, useRef, useState } from "react";
 import leaveIcon from "../../asset/mypage/leaves.png";
 import { MessageSquare, User, Settings, Lock } from "lucide-react";
 import { toast } from "react-toastify";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
-import { putMyInfo, changePassword, putMentorInfo } from "../../API/mypage/MyPageAPI";
+import {
+  putMyInfo,
+  changePassword,
+  putMentorInfo,
+} from "../../API/mypage/MyPageAPI";
 
 import MyPageModal from "./MyPageModal";
 import MentorSettingContent from "./MentorSettingContent";
@@ -22,8 +26,6 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
   const [address, setAddress] = useState("");
   const [myImage, setMyImage] = useState({});
   const navigate = useNavigate();
-
-
 
   // 모달 타입 별 상태 분리
   const [mentorFormData, setMentorFormData] = useState({
@@ -116,7 +118,7 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
 
   const handleChatting = () => {
     // chat 페이지로 넘어가기
-    navigate('/chat');
+    navigate("/chat");
 
     return;
   };
@@ -186,9 +188,8 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
           }
 
           console.log("멘토 정보 업데이트:", mentorFormData.data);
-          const mentorResponse = await putMentorInfo(mentorFormData.data)
-          console.log(mentorResponse)
-
+          const mentorResponse = await putMentorInfo(mentorFormData.data);
+          console.log(mentorResponse);
 
           setMyInfo((prevInfo) => ({
             ...prevInfo,
