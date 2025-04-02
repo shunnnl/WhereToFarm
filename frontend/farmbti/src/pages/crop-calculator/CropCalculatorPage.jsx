@@ -140,6 +140,7 @@ const CropCalculatorPage = () => {
     setConvertedArea(0);
     setSelectedCrop(null);
     setResult(null);
+    window.scrollTo(0, 0);
   };
 
   return (
