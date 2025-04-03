@@ -20,6 +20,7 @@ const Chat = () => {
   const [currentUser, setCurrentUser] = useState('');
   const messageIdCounter = useRef(0);
   const MAX_CHAR_LIMIT = 1000;
+  const textareaRef = useRef(null);
 
   // 뒤로가기 함수
   const handleGoBack = () => {
@@ -67,7 +68,56 @@ const Chat = () => {
 
     fetchChatRooms();
   }, []);
+
+/* 텍스트 영역 자동 높이 조절을 위한 함수 */
+const adjustTextareaHeight = (element) => {
+  if (!element) return;
   
+  // 기존 높이 초기화
+  element.style.height = 'auto';
+  
+  // 스크롤 높이 기반으로 새 높이 계산 (최대 높이 제한)
+  const newHeight = Math.min(element.scrollHeight, 120);
+  
+  // 새 높이 적용
+  element.style.height = `${newHeight}px`;
+
+};
+
+/* 컴포넌트에 useEffect 추가 */
+useEffect(() => {
+  // 메시지 상태가 변경될 때마다 높이 자동 조절
+  if (textareaRef.current) {
+    adjustTextareaHeight(textareaRef.current);
+  }
+}, [message]);
+
+
+
+const handleMessageChange = (e) => {
+  let input = e.target.value;
+  
+  // 연속된 특수문자 사이에 숨겨진 공백 추가 (선택적)
+  // 예: ",,,,," -> ", , , , ,"
+  // 정규식은 실제 필요에 맞게 조정
+  if (input.match(/([,;.!?]){5,}/g)) {
+    input = input.replace(/([,;.!?])([,;.!?])/g, '$1\u200B$2');
+  }
+  
+  if (input.length <= MAX_CHAR_LIMIT) {
+    setMessage(input);
+    
+    // 타이머로 높이 조정
+    setTimeout(() => {
+      if (textareaRef.current) {
+        textareaRef.current.style.height = 'auto';
+        const newHeight = Math.min(textareaRef.current.scrollHeight, 120);
+        textareaRef.current.style.height = `${newHeight}px`;
+      }
+    }, 0);
+  }
+};
+
   // 메시지 목록 가져오기 함수
   const fetchMessages = async (chatRoomId) => {
     if (!chatRoomId) {
@@ -462,19 +512,26 @@ const Chat = () => {
             <div className="bg-white p-4 border-t">
               <div className="flex items-center">
                 <div className="flex-1 relative">
-                  <textarea
-                    className="w-full border rounded-full py-2 px-4 pr-12 resize-none"
-                    placeholder="메시지를 입력해주세요. (최대 1000자)"
-                    rows={1}
-                    value={message}
-                    onChange={(e) => {
-                      const input = e.target.value;
-                      if (input.length <= MAX_CHAR_LIMIT) {
-                        setMessage(input);
-                      }
-                    }}
-                    onKeyPress={handleKeyPress}
-                  />
+                <textarea
+                  ref={textareaRef}
+                  className="w-full border rounded-lg py-2 px-4 pr-12 resize-none"
+                  placeholder="메시지를 입력해주세요. (최대 1000자)"
+                  rows={1}
+                  style={{ 
+                    whiteSpace: 'pre-wrap',
+                    wordBreak: 'break-all',
+                    overflowWrap: 'anywhere',
+                    minHeight: '40px',
+                    maxHeight: '120px',
+                    overflow: 'auto',
+                    lineHeight: '1.5',
+                    display: 'block',
+                    width: '100%'
+                  }}
+                  value={message}
+                  onChange={handleMessageChange}
+                  onKeyPress={handleKeyPress}
+                />
                   <span className="absolute right-3 bottom-2 text-gray-400 text-sm">
                     {message.length}/{MAX_CHAR_LIMIT}
                   </span>
