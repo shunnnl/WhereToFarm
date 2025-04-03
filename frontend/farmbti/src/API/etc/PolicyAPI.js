@@ -33,22 +33,11 @@ export const getAllPolicyList = async (page = 0, size = 10) => {
 // 지역별 정책 조회 (POST)
 export const getRegionPolicyList = async (page = 0, size = 10, do_ = "", city = "") => {
   try {
-    console.log('Sending POST request with params:', { page, size, do_, city });
-    const response = await publicAxios.post(`/policy/region`, {
+    const response = await publicAxios.post(`/policy/region?page=${page}&size=${size}`, {
       do_,
-      city,
-      page,
-      size
+      city
     });
     console.log('POST API Response:', response);
-    console.log('POST API Response Data:', response.data);
-    console.log('POST API Response Data Structure:', {
-      hasContent: !!response.data?.content,
-      contentLength: response.data?.content?.length,
-      totalElements: response.data?.totalElements,
-      totalPages: response.data?.totalPages,
-      number: response.data?.number
-    });
 
     const responseData = response.data;
     if (responseData?.content) {
