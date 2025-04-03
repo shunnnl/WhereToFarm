@@ -18,13 +18,16 @@ const BenefitForecastGraph = ({ myForecast, pastPrice, isInModal = false }) => {
 
     // svg 컨테이너 설정
     const svg = d3.select(svgRef.current);
-    const width = 900; // px - 약간 더 넓게 조정
-    const height = 500; // px - 더 높게 조정
+    // viewBox 사용으로 변경
+    svg
+      .attr("viewBox", "0 0 900 500")
+      .attr("preserveAspectRatio", "xMidYMid meet");
+
+    const width = 900;
+    const height = 500;
     const margin = { top: 30, right: 150, bottom: 60, left: 80 }; // 범례를 위한 오른쪽 여백 확대
     const innerWidth = width - margin.left - margin.right;
     const innerHeight = height - margin.top - margin.bottom;
-
-    svg.attr("width", width).attr("height", height);
 
     // 그래프 영역 초기화
     svg.selectAll("*").remove();
@@ -190,11 +193,7 @@ const BenefitForecastGraph = ({ myForecast, pastPrice, isInModal = false }) => {
     // 기존 툴팁 제거 (중복 방지)
     d3.selectAll(".price-tooltip").remove();
 
-    // 툴팁 컨테이너 선택 - isInModal이 true면 containerRef, 아니면 body
-    const tooltipContainer = isInModal
-      ? d3.select(containerRef.current)
-      : d3.select("body");
-
+    const tooltipContainer = d3.select(containerRef.current);
     // 새 툴팁 생성
     const tooltip = tooltipContainer
       .append("div")
@@ -231,22 +230,10 @@ const BenefitForecastGraph = ({ myForecast, pastPrice, isInModal = false }) => {
 
         tooltip.transition().duration(200).style("opacity", 0.9);
 
-        // 위치 계산 및 적용
-        let leftPos, topPos;
-
-        if (isInModal) {
-          // 모달 내부에서는 상대적 위치 계산
-          const svgRect = svgRef.current.getBoundingClientRect();
-          const containerRect = containerRef.current.getBoundingClientRect();
-
-          // 마우스 위치를 상대적으로 계산
-          leftPos = event.clientX - containerRect.left + 10 + "px";
-          topPos = event.clientY - containerRect.top - 28 + "px";
-        } else {
-          // 일반 페이지에서는 페이지 기준 위치
-          leftPos = event.pageX + 10 + "px";
-          topPos = event.pageY - 28 + "px";
-        }
+        // 위치 계산 및 적용 - 모두 컨테이너 기준으로 변경
+        const containerRect = containerRef.current.getBoundingClientRect();
+        const leftPos = event.clientX - containerRect.left + 10 + "px";
+        const topPos = event.clientY - containerRect.top - 28 + "px";
 
         tooltip
           .html(
@@ -325,8 +312,12 @@ const BenefitForecastGraph = ({ myForecast, pastPrice, isInModal = false }) => {
       ref={containerRef}
       className="bg-gray-50 rounded-lg shadow-lg m-8 p-6 flex flex-col justify-center items-center relative"
     >
-      <div className="w-full">
-        <svg ref={svgRef} className="w-full"></svg>
+      <div className="w-full overflow-x-auto">
+        <svg
+          ref={svgRef}
+          className="w-full"
+          style={{ maxHeight: "500px" }}
+        ></svg>
       </div>
       <div className="text-center mt-4 text-sm text-gray-600">
         <p>
