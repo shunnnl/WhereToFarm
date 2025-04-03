@@ -48,6 +48,18 @@ const Navbar = () => {
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
     const notificationRef = useRef(null);
     const stompClient = useRef(null);
+
+    const handleMouseLeave = () => {
+      setTimeout(() => {
+          setIsDropdownOpen(false);
+      }, 300);
+    };
+  
+    const handleNotificationMouseLeave = () => {
+        setTimeout(() => {
+            setIsNotificationOpen(false);
+        }, 300);
+    };
     
     // 드롭다운 외부 클릭 시 닫기
     useEffect(() => {
@@ -309,7 +321,10 @@ return (
           </div>
 
           <div className="flex items-center">
-            <div className="relative" ref={dropdownRef}>
+            <div className="relative" 
+            ref={dropdownRef}
+            onMouseLeave={handleMouseLeave}
+            >
               <button
                 className="p-2 hover:bg-gray-100 rounded-full"
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -361,7 +376,12 @@ return (
 
             {/* 알림 버튼 및 드롭다운 - 로그인 상태일 때만 표시 */}
             {isLoggedIn && (
-              <div className="relative" ref={notificationRef}>
+              <div className="relative" 
+              ref={notificationRef}
+              onMouseLeave={handleNotificationMouseLeave}
+              onMouseEnter={() => setIsNotificationOpen(true)}
+
+              >
                 <button
                   className={`p-2 ${unreadCount > 0 ? 'bg-red-100' : 'hover:bg-gray-100'} rounded-full relative`}
                   onClick={() => {
