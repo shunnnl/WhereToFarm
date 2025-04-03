@@ -355,92 +355,94 @@ return (
               )}
             </div>
 
-            {/* 알림 버튼 및 드롭다운 */}
-            <div className="relative" ref={notificationRef}>
-              <button
-                className={`p-2 ${unreadCount > 0 ? 'bg-red-100' : 'hover:bg-gray-100'} rounded-full relative`}
-                onClick={() => {
-                    setIsNotificationOpen(!isNotificationOpen);
-                }}
-              >
-                <img src={bellIcon} alt="알림" className="h-6 w-6" />
-                {/* 읽지 않은 알림 표시 */}
-                {unreadCount > 0 && (
-                    <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/3 -translate-y-1/3 bg-red-500 rounded-full">
-                    {unreadCount > 9 ? "9+" : unreadCount}
-                </span>
-            )}
-              </button>
+            {/* 알림 버튼 및 드롭다운 - 로그인 상태일 때만 표시 */}
+            {isLoggedIn && (
+              <div className="relative" ref={notificationRef}>
+                <button
+                  className={`p-2 ${unreadCount > 0 ? 'bg-red-100' : 'hover:bg-gray-100'} rounded-full relative`}
+                  onClick={() => {
+                      setIsNotificationOpen(!isNotificationOpen);
+                  }}
+                >
+                  <img src={bellIcon} alt="알림" className="h-6 w-6" />
+                  {/* 읽지 않은 알림 표시 */}
+                  {unreadCount > 0 && (
+                      <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/3 -translate-y-1/3 bg-red-500 rounded-full">
+                      {unreadCount > 9 ? "9+" : unreadCount}
+                  </span>
+              )}
+                </button>
 
-              {/* 알림 드롭다운 */}
-              {isNotificationOpen && (
-                <div className="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg py-1 z-[100] border border-gray-200 max-h-96 overflow-y-auto">
-                  <div className="flex items-center justify-between px-4 py-2 border-b">
-                    <h3 className="text-sm font-medium">알림</h3>
-                    {notifications.length > 0 && (
-                      <button
-                        className="text-xs text-blue-500 hover:text-blue-700"
-                        onClick={markAllAsRead}
-                      >
-                        모두 읽음 표시
-                      </button>
+                {/* 알림 드롭다운 */}
+                {isNotificationOpen && (
+                  <div className="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg py-1 z-[100] border border-gray-200 max-h-96 overflow-y-auto">
+                    <div className="flex items-center justify-between px-4 py-2 border-b">
+                      <h3 className="text-sm font-medium">알림</h3>
+                      {notifications.length > 0 && (
+                        <button
+                          className="text-xs text-blue-500 hover:text-blue-700"
+                          onClick={markAllAsRead}
+                        >
+                          모두 읽음 표시
+                        </button>
+                      )}
+                    </div>
+
+                    {notifications.length === 0 ? (
+                      <div className="px-4 py-6 text-center text-gray-500">
+                        알림이 없습니다.
+                      </div>
+                    ) : (
+                      notifications.map((notification) => (
+                        <div
+                          key={notification.id}
+                          className={`px-4 py-3 border-b hover:bg-gray-50 cursor-pointer ${
+                            !notification.read ? "bg-blue-50" : ""
+                          }`}
+                          onClick={() => {
+                            // 읽음 처리
+                            if (!notification.read) {
+                              markAsRead(notification.id);
+                            }
+
+                              // 단순히 채팅 페이지로 이동
+                            navigate('/chat');
+                            setIsNotificationOpen(false);
+
+                          }}
+                        >
+                          <div className="flex">
+                            <div className="ml-3 w-full">
+                              <p className="text-sm font-medium text-gray-900">
+                                {notification.title}
+                              </p>
+                              <p className="text-xs text-gray-500 mt-1">
+                                {notification.message}
+                              </p>
+                              <p className="text-xs text-gray-400 mt-1">
+                                {new Date(notification.createdAt).toLocaleString(
+                                  "ko-KR",
+                                  {
+                                    year: "numeric",
+                                    month: "numeric",
+                                    day: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  }
+                                )}
+                              </p>
+                            </div>
+                            {!notification.read && (
+                              <span className="h-2 w-2 bg-blue-500 rounded-full"></span>
+                            )}
+                          </div>
+                        </div>
+                      ))
                     )}
                   </div>
-
-                  {notifications.length === 0 ? (
-                    <div className="px-4 py-6 text-center text-gray-500">
-                      알림이 없습니다.
-                    </div>
-                  ) : (
-                    notifications.map((notification) => (
-                      <div
-                        key={notification.id}
-                        className={`px-4 py-3 border-b hover:bg-gray-50 cursor-pointer ${
-                          !notification.read ? "bg-blue-50" : ""
-                        }`}
-                        onClick={() => {
-                          // 읽음 처리
-                          if (!notification.read) {
-                            markAsRead(notification.id);
-                          }
-
-                            // 단순히 채팅 페이지로 이동
-                          navigate('/chat');
-                          setIsNotificationOpen(false);
-
-                        }}
-                      >
-                        <div className="flex">
-                          <div className="ml-3 w-full">
-                            <p className="text-sm font-medium text-gray-900">
-                              {notification.title}
-                            </p>
-                            <p className="text-xs text-gray-500 mt-1">
-                              {notification.message}
-                            </p>
-                            <p className="text-xs text-gray-400 mt-1">
-                              {new Date(notification.createdAt).toLocaleString(
-                                "ko-KR",
-                                {
-                                  year: "numeric",
-                                  month: "numeric",
-                                  day: "numeric",
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                }
-                              )}
-                            </p>
-                          </div>
-                          {!notification.read && (
-                            <span className="h-2 w-2 bg-blue-500 rounded-full"></span>
-                          )}
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </nav>
