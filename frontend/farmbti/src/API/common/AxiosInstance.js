@@ -39,41 +39,73 @@ const handleApiError = (error) => {
 
   let errorResponse;
 
+  let errorData = {
+    code: "UNKNOWN",
+    message: "알 수 없는 오류가 발생했습니다",
+    type: "SYSTEM",
+  };
+
   // 응답이 있는 경우의 에러 처리
   if (error.response) {
     const status = error.response.status;
     const message =
       statusMessages[status] || "요청을 처리하는 중 오류가 발생했습니다.";
 
-    // 사용자에게 알림 이벤트 발생
-    window.dispatchEvent(
-      new CustomEvent("api-error", {
-        detail: { code: status, message },
-      })
-    );
+    errorData = {
+      code: status,
+      message: message,
+      type: status >= 400 && status < 500 ? "BUSINESS" : "SYSTEM",
+    };
 
-    // 서버에서 이미 표준화된 오류 객체를 보냈는지 확인
-    // 서버 응답이 success: false 형태라면 그대로 반환
+    // 서버에서 표준화된 오류 객체를 보냈는지 확인
     if (
       error.response.data &&
       error.response.data.success === false &&
       error.response.data.error
     ) {
+      // 서버 오류 객체에서 데이터 추출
+      errorData = {
+        code: error.response.data.error.code,
+        message: error.response.data.error.message,
+        type:
+          error.response.data.error.type ||
+          (typeof error.response.data.error.code === "number" &&
+          error.response.data.error.code >= 400 &&
+          error.response.data.error.code < 500
+            ? "BUSINESS"
+            : "SYSTEM"),
+      };
+
+      // 사용자에게 알림 이벤트 발생 - 더 상세한 정보 포함
+      window.dispatchEvent(
+        new CustomEvent("api-error", {
+          detail: errorData,
+        })
+      );
+
       return error.response.data;
     }
 
+    // 사용자에게 알림 이벤트 발생
+    window.dispatchEvent(
+      new CustomEvent("api-error", {
+        detail: errorData,
+      })
+    );
+
     errorResponse = createErrorResponse(status, message, error.response.data);
   }
-  // 요청은 보냈지만 응답이 없는 경우 (네트워크 오류)
+  // 네트워크 오류 처리
   else if (error.request) {
-    console.error("네트워크 연결 오류:", error.request);
+    errorData = {
+      code: "NETWORK",
+      message: "서버에 연결할 수 없습니다. 네트워크 연결을 확인해주세요.",
+      type: "SYSTEM",
+    };
 
     window.dispatchEvent(
       new CustomEvent("api-error", {
-        detail: {
-          code: "NETWORK",
-          message: "서버에 연결할 수 없습니다. 네트워크 연결을 확인해주세요.",
-        },
+        detail: errorData,
       })
     );
 
@@ -83,16 +115,17 @@ const handleApiError = (error) => {
       error
     );
   }
-  // 요청 설정 중 오류 발생 (미처리 예외)
+  // 기타 오류 처리
   else {
-    console.error("요청 설정 오류:", error.message);
+    errorData = {
+      code: "ERROR",
+      message: "요청 처리 중 오류가 발생했습니다.",
+      type: "SYSTEM",
+    };
 
     window.dispatchEvent(
       new CustomEvent("api-error", {
-        detail: {
-          code: "ERROR",
-          message: "요청 처리 중 오류가 발생했습니다.",
-        },
+        detail: errorData,
       })
     );
 

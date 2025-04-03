@@ -15,7 +15,6 @@ import MentorSettingContent from "./MentorSettingContent";
 import MyInfoSettingContent from "./MyInfoSettingContent";
 import MyPasswordContent from "./MyPasswordContent";
 import MyProfileImage from "./MyProfileImage";
-import { handleErrorToast } from "../../utils/ErrorUtils";
 
 const MyProfile = ({ myInfo: initialMyInfo }) => {
   const modalRef = useRef(null);
@@ -284,7 +283,7 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
           break;
       }
     } catch (error) {
-      handleErrorToast(error, toast);
+      console.error(error);
     } finally {
       setIsSubmitting(false);
     }
