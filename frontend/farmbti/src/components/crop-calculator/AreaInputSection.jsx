@@ -7,8 +7,30 @@ const AreaInputSection = ({
   error,
 }) => {
   const handleAreaChange = (e) => {
-    setArea(e.target.value);
+    // 입력된 값의 길이 확인
+    if (e.target.value.length > 4) {
+      // 4자리 이상이면 자르기
+      e.target.value = e.target.value.slice(0, 4);
+    }
+
+    const value = parseInt(e.target.value, 10);
+
+    // 유효한 숫자인지 확인
+    if (isNaN(value)) {
+      setArea(null);
+      return;
+    }
+
+    // 최소값, 최대값 제한
+    if (value < 0) {
+      setArea(0);
+    } else if (value > 1500) {
+      setArea(1500);
+    } else {
+      setArea(value);
+    }
   };
+
   return (
     <div
       className={`transition-opacity duration-300 mx-6 ${
@@ -26,9 +48,11 @@ const AreaInputSection = ({
           차이가 있을 수 있습니다. 따라서 참고용으로만 활용하시길 바랍니다.
         </p>
 
-        {isActive && error && <p className="text-sm text-fail-highlight flex items-center justify-center mb-3">
-          {error}
-        </p>}
+        {isActive && error && (
+          <p className="text-sm text-fail-highlight flex items-center justify-center mb-3">
+            {error}
+          </p>
+        )}
 
         <div className="flex items-center justify-center mb-4">
           <label className="text-lg font-semibold mr-4 text-textColor-black">
@@ -42,6 +66,9 @@ const AreaInputSection = ({
             onChange={handleAreaChange}
             disabled={!isActive}
             step={100}
+            min={100}
+            max={1500}
+            maxLength={4}
           />
           <span className="mr-2 text-textColor-black">평</span>
           <span className="mx-2 text-textColor-black">×</span>
