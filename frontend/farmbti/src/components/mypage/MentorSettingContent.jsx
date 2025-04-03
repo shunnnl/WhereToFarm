@@ -22,7 +22,7 @@ const MentorSettingContent = forwardRef(({ onChange, initialData, birthYear }, r
   };
 
   const [formData, setFormData] = useState({
-    farmingYears: initialData?.farmingYears || "",
+    farmingYears: initialData?.farmingYears || birthYear || "",
     cropNames: initialData?.cropNames || "",
     bio: initialData?.bio || "",
   });
@@ -62,7 +62,7 @@ const MentorSettingContent = forwardRef(({ onChange, initialData, birthYear }, r
   // 폼 리셋 함수 정의
   const resetForm = () => {
     setFormData({
-      farmingYears: initialData?.farmingYears || "",
+      farmingYears: initialData?.farmingYears || birthYear || "",
       cropNames: initialData?.cropNames || "",
       bio: initialData?.bio || "",
     });
@@ -176,6 +176,18 @@ const MentorSettingContent = forwardRef(({ onChange, initialData, birthYear }, r
   const handleSubmit = (e) => {
     e.preventDefault();
   };
+
+  useEffect(() => {
+    const currentFarmingYear = Number(formData.farmingYears);
+    
+    // 현재 farmingYears가 출생연도보다 작으면 출생연도로 설정
+    if (userBirthYear > 0 && (currentFarmingYear < userBirthYear || isNaN(currentFarmingYear))) {
+      setFormData(prev => ({
+        ...prev,
+        farmingYears: String(userBirthYear)
+      }));
+    }
+  }, [userBirthYear, formData.farmingYears]);
 
   // 선택된 작물 ID를 작물명으로 변환하여 formData에 업데이트
   useEffect(() => {
