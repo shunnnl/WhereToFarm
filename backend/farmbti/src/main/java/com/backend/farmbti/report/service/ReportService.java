@@ -312,7 +312,7 @@ public class ReportService {
 
     private CharacterType determineCharacterType(Map<String, Object> params) {
         // FARM 값을 추출
-        Float fValue = convertToFloat(params.get("F"));
+        Float fValue = 1 - (convertToFloat(params.get("F")));
         Float aValue = convertToFloat(params.get("A"));
         Float rValue = convertToFloat(params.get("R"));
         Float mValue = convertToFloat(params.get("M"));
