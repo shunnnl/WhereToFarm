@@ -8,7 +8,6 @@ import {
 } from "../../API/mypage/MyReportsAPI";
 import { toast } from "react-toastify";
 import { Link } from "react-router";
-import { handleErrorToast } from "../../utils/ErrorUtils";
 
 const FarmbtiReport = () => {
   const [myFarmbtiReports, setMyFarmbtiReports] = useState([]);
@@ -19,7 +18,7 @@ const FarmbtiReport = () => {
         const data = await getMyFarmbtiReports();
         setMyFarmbtiReports(data);
       } catch (error) {
-        handleErrorToast(error, toast);
+        console.error(error);
       }
     };
     getReports();
@@ -86,7 +85,6 @@ const FarmbtiReport = () => {
       }
     } catch (error) {
       console.error(error);
-      handleErrorToast(error, toast);
     }
   };
 
