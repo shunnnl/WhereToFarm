@@ -453,6 +453,7 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
                 : {}
             }
             onChange={setMentorFormData}
+            birthYear={birth.year}
           />
         )}
         {modalType === "myInfo" && (

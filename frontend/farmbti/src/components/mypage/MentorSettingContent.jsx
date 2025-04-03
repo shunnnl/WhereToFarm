@@ -1,6 +1,6 @@
 import { useState, useEffect, forwardRef, useImperativeHandle } from "react";
 
-const MentorSettingContent = forwardRef(({ onChange, initialData }, ref) => {
+const MentorSettingContent = forwardRef(({ onChange, initialData, birthYear }, ref) => {
   // 작물 데이터
   const topFood = [
     { id: "apple", name: "사과", img: "apple.png" },
@@ -51,9 +51,13 @@ const MentorSettingContent = forwardRef(({ onChange, initialData }, ref) => {
   const [bio, setDescription] = useState(initialData?.bio || "");
   const [errors, setErrors] = useState({});
 
-  // 날짜 옵션 생성
   const currentYear = new Date().getFullYear();
-  const yearOptions = Array.from({ length: 50 }, (_, i) => currentYear - i);
+
+  const userBirthYear = Number(birthYear) || 0;
+  const yearOptions = Array.from(
+    { length: 100 },
+    (_, i) => currentYear - i
+  ).filter(year => userBirthYear === 0 || year >= userBirthYear);
 
   // 폼 리셋 함수 정의
   const resetForm = () => {
@@ -94,7 +98,7 @@ const MentorSettingContent = forwardRef(({ onChange, initialData }, ref) => {
     switch (name) {
       case "farmingYears":
         if (!value) return "연도를 선택해주세요";
-        if (value < 1980 || value > currentYear)
+        if (value < userBirthYear || value > currentYear)
           return "유효한 연도를 선택해주세요";
         return "";
 
