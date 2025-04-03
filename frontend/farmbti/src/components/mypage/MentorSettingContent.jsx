@@ -138,25 +138,26 @@ const MentorSettingContent = forwardRef(({ onChange, initialData, birthYear }, r
 
   // 작물 선택 토글
   const toggleFood = (foodId) => {
-    // 새로운 선택된 작물 배열 계산
-    const newSelectedFoods = selectedFoods.includes(foodId)
-      ? selectedFoods.filter((id) => id !== foodId)
-      : [...selectedFoods, foodId];
-
-    // 상태 업데이트
-    setSelectedFoods(newSelectedFoods);
-
-    // 유효성 검사 수행: 최소 1개 이상의 작물이 선택되어야 함
-    const errorMessage =
-      newSelectedFoods.length === 0
-        ? "최소 1개 이상의 작물을 선택해주세요"
-        : "";
-
-    // 오류 상태 업데이트
-    setErrors((prev) => ({
-      ...prev,
-      cropNames: errorMessage,
-    }));
+    setSelectedFoods(prevSelectedFoods => {
+      // 새로운 선택된 작물 배열 계산
+      const newSelectedFoods = prevSelectedFoods.includes(foodId)
+        ? prevSelectedFoods.filter((id) => id !== foodId)
+        : [...prevSelectedFoods, foodId];
+      
+      // 유효성 검사 수행: 최소 1개 이상의 작물이 선택되어야 함
+      const errorMessage =
+        newSelectedFoods.length === 0
+          ? "최소 1개 이상의 작물을 선택해주세요"
+          : "";
+  
+      // 오류 상태 업데이트
+      setErrors((prev) => ({
+        ...prev,
+        cropNames: errorMessage,
+      }));
+      
+      return newSelectedFoods;
+    });
   };
 
   // 소개 텍스트 핸들러
