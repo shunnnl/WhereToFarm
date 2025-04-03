@@ -325,9 +325,9 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
     <Modal
       isOpen={isOpen}
       onRequestClose={onRequestClose}
-      className="bg-white p-6 rounded-xl shadow-md max-w-4xl w-full mx-auto "
-      overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
-    >
+      className="bg-white p-6 rounded-xl shadow-md max-w-4xl w-full mx-auto"
+      overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]"
+        >
       <form onSubmit={handleSubmit} className="w-full">
         <div className='mb-4 text-center w-full'>
           <h2 className="text-2xl font-bold mb-2">멘토 등록</h2>
