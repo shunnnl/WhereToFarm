@@ -298,7 +298,4 @@ const MentorSettingContent = forwardRef(({ onChange, initialData }, ref) => {
   );
 });
 
-// 컴포넌트 이름 설정
-MentorSettingContent.displayName = "MentorSettingContent";
-
 export default MentorSettingContent;
