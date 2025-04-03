@@ -22,31 +22,55 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
   const [mentorData, setMentorData] = useState(null);
 
   const topFood = [
-    { id: "사과", label: "사과", iconSrc: "src/asset/crops-icons/apple.png" },
+    { 
+      id: "사과", 
+      label: "사과", 
+      iconSrc: "https://farmbticropbucket.s3.ap-northeast-2.amazonaws.com/crop/apple.png" 
+    },
     {
       id: "오이",
       label: "오이",
-      iconSrc: "src/asset/crops-icons/cucumber.png",
+      iconSrc: "https://farmbticropbucket.s3.ap-northeast-2.amazonaws.com/crop/cucumber.png",
     },
-    { id: "포도", label: "포도", iconSrc: "src/asset/crops-icons/grape.png" },
-    { id: "파", label: "파", iconSrc: "src/asset/crops-icons/greenonion.png" },
+    { 
+      id: "포도", 
+      label: "포도", 
+      iconSrc: "https://farmbticropbucket.s3.ap-northeast-2.amazonaws.com/crop/grape.png" 
+    },
+    { 
+      id: "파", 
+      label: "파", 
+      iconSrc: "https://farmbticropbucket.s3.ap-northeast-2.amazonaws.com/crop/greenonion.png" 
+    },
     {
       id: "상추",
       label: "상추",
-      iconSrc: "src/asset/crops-icons/lettuce.png",
+      iconSrc: "https://farmbticropbucket.s3.ap-northeast-2.amazonaws.com/crop/lettuce.png",
     },
-    { id: "양파", label: "양파", iconSrc: "src/asset/crops-icons/onion.png" },
-    { id: "배", label: "배", iconSrc: "src/asset/crops-icons/pear.png" },
+    { 
+      id: "양파", 
+      label: "양파", 
+      iconSrc: "https://farmbticropbucket.s3.ap-northeast-2.amazonaws.com/crop/onion.png" 
+    },
+    { 
+      id: "배", 
+      label: "배", 
+      iconSrc: "https://farmbticropbucket.s3.ap-northeast-2.amazonaws.com/crop/pear.png" 
+    },
     {
       id: "고구마",
       label: "고구마",
-      iconSrc: "src/asset/crops-icons/sweetpotato.png",
+      iconSrc: "https://farmbticropbucket.s3.ap-northeast-2.amazonaws.com/crop/sweetpotato.png",
     },
-    { id: "귤", label: "귤", iconSrc: "src/asset/crops-icons/tangerine.png" },
+    { 
+      id: "귤", 
+      label: "귤", 
+      iconSrc: "https://farmbticropbucket.s3.ap-northeast-2.amazonaws.com/crop/tangerine.png" 
+    },
     {
       id: "수박",
       label: "수박",
-      iconSrc: "src/asset/crops-icons/watermelon.png",
+      iconSrc: "https://farmbticropbucket.s3.ap-northeast-2.amazonaws.com/crop/watermelon.png",
     },
   ];
 
