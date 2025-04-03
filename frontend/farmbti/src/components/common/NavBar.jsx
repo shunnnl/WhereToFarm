@@ -12,7 +12,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../../store/slices/authSlice'; // 로그아웃 액션 import 경로 수정
 
 const Navbar = () => {
-    const menuItemClass = "py-1 px-4 text-gray-900 hover:text-green-700 dark:text-white dark:hover:text-blue-500";
+    const menuItemClass = "py-1 px-4 text-gray-900 hover:text-green-700";
     
     // Redux 스토어에서 로그인 상태 가져오기
     const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
