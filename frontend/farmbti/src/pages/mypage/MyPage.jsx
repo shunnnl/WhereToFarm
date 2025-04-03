@@ -3,6 +3,7 @@ import MyProfile from "../../components/mypage/MyProfile";
 import { getMyPage } from "../../API/mypage/MyPageAPI";
 
 import { Outlet, NavLink } from "react-router";
+import { handleError } from "../../utils/ErrorUtil";
 
 const MyPage = () => {
   const [myInfo, setMyInfo] = useState({});
@@ -12,9 +13,10 @@ const MyPage = () => {
     const getMyInfo = async () => {
       try {
         const userInfo = await getMyPage();
-        setMyInfo(userInfo)
+        setMyInfo(userInfo);
         console.log(userInfo);
       } catch (error) {
+        handleError(error);
         console.log(error);
       }
     };

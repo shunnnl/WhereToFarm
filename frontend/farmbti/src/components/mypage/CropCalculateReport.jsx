@@ -8,6 +8,7 @@ import {
 } from "../../API/mypage/MyReportsAPI";
 import { toast } from "react-toastify";
 import { Link } from "react-router";
+import { handleError } from "../../utils/ErrorUtil";
 
 const CropCalculateReport = () => {
   // 예시 데이터
@@ -19,6 +20,7 @@ const CropCalculateReport = () => {
         const data = await getCalculateReports();
         setMyCalculateResult(data);
       } catch (error) {
+        handleError(error);
         console.error(error);
       }
     };

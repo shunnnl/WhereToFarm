@@ -15,6 +15,7 @@ import MentorSettingContent from "./MentorSettingContent";
 import MyInfoSettingContent from "./MyInfoSettingContent";
 import MyPasswordContent from "./MyPasswordContent";
 import MyProfileImage from "./MyProfileImage";
+import { handleError } from "../../utils/ErrorUtil";
 
 const MyProfile = ({ myInfo: initialMyInfo }) => {
   const modalRef = useRef(null);
@@ -304,6 +305,7 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
       }
     } catch (error) {
       console.error(error);
+      handleError(error);
     } finally {
       setIsSubmitting(false);
     }

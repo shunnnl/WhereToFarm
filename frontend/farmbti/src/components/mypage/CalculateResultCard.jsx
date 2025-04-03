@@ -3,6 +3,7 @@ import CalculateResultModal from "./CalaulateResultModal";
 import { cropsReportsDeatil } from "../../API/mypage/MyReportsAPI";
 import { Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
+import { handleError } from "../../utils/ErrorUtil";
 
 const CalculateResultCard = ({
   id,
@@ -36,6 +37,7 @@ const CalculateResultCard = ({
       modalRef.current?.updateData(reportData);
     } catch (error) {
       console.error(error);
+      handleError(error)
       modalRef.current?.close();
     }
   };
