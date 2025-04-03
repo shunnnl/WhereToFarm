@@ -112,8 +112,12 @@ const Navbar = () => {
                             message: `${receivedData.sender}님이 메시지를 보냈습니다.`,
                             createdAt: receivedData.timestamp,
                             read: false,
-                            senderId: receivedData.sender
+                            senderId: receivedData.sender,
+                            roomId: receivedData.roomId // 서버에서 받은 roomId 저장
+
                         };
+                        console.log("생성된 알림 객체:", notification);
+
                         
                         // 새 알림 추가 및 읽지 않은 알림 카운트 증가
                         setNotifications(prev => [notification, ...prev]);
@@ -405,9 +409,22 @@ return (
                               markAsRead(notification.id);
                             }
 
-                              // 단순히 채팅 페이지로 이동
+                          // roomId가 있는 경우 해당 채팅방으로 이동
+                          if (notification.roomId) {
+                            console.log(`알림 클릭: 채팅방 ${notification.roomId}으로 이동합니다.`);
+                            navigate('/chat', { 
+                              state: { 
+                                roomId: notification.roomId,
+                                mentorName: notification.senderId // sender를 mentorName으로 사용
+                              } 
+                            });
+                          } else {
+                            // roomId가 없는 경우 기본 채팅 페이지로 이동
+                            console.log('채팅방 ID가 없어 기본 채팅 페이지로 이동합니다.');
                             navigate('/chat');
-                            setIsNotificationOpen(false);
+                          }
+                          setIsNotificationOpen(false);
+
 
                           }}
                         >
