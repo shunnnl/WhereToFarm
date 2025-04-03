@@ -277,6 +277,7 @@ const MentorSettingContent = forwardRef(({ onChange, initialData }, ref) => {
             focus:outline-none focus:ring-2 focus:ring-green-500 
             focus:border-transparent resize-y"
               placeholder="여기에 텍스트를 입력하세요"
+              maxLength={100}
               required
             />
             <div
