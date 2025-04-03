@@ -619,23 +619,37 @@ return (
                 {new Date().toLocaleDateString('ko-KR', {year: 'numeric', month: 'long', day: 'numeric'})}
               </div>
               
-              {/* 메시지들 */}
-              {messages.length > 0 ? (
-                messages.map((msg) => (
-                  <div key={msg.id} className={`flex ${msg.isMe ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-xs md:max-w-md relative ${msg.isMe ? 'bg-green-500 text-white rounded-2xl rounded-tr-sm' : 'bg-gray-300 rounded-2xl rounded-tl-sm'} px-4 py-2`}>
-                      <p className="whitespace-pre-line">{msg.text}</p>
-                      <span className={`text-xs absolute bottom-1 ${msg.isMe ? 'left-0 -ml-16 text-gray-500' : 'right-0 -mr-16 text-gray-500'}`}>
-                        {msg.time}
-                      </span>
+                {/* 메시지들 */}
+                {messages.length > 0 ? (
+                  messages.map((msg) => (
+                    <div key={msg.id} className={`flex ${msg.isMe ? 'justify-end' : 'justify-start'}`}>
+                      <div className="flex items-end mb-4">
+                        {/* 내 메시지일 경우 시간이 왼쪽에 표시됨 */}
+                        {msg.isMe && (
+                          <span className="text-xs text-gray-500 mr-2 mb-1.5">
+                            {msg.time}
+                          </span>
+                        )}
+                        
+                        {/* 메시지 버블 */}
+                        <div className={`max-w-xs md:max-w-md ${msg.isMe ? 'bg-green-500 text-white rounded-2xl rounded-tr-sm' : 'bg-gray-300 rounded-2xl rounded-tl-sm'} px-4 py-2`}>
+                          <p className="whitespace-pre-line">{msg.text}</p>
+                        </div>
+                        
+                        {/* 상대방 메시지일 경우 시간이 오른쪽에 표시됨 */}
+                        {!msg.isMe && (
+                          <span className="text-xs text-gray-500 ml-2 mb-1.5">
+                            {msg.time}
+                          </span>
+                        )}
+                      </div>
                     </div>
+                  ))
+                ) : (
+                  <div className="text-center text-gray-500 my-8">
+                    <p>멘토에게 질문을 시작해보세요!</p>
                   </div>
-                ))
-              ) : (
-                <div className="text-center text-gray-500 my-8">
-                  <p>멘토에게 질문을 시작해보세요!</p>
-                </div>
-              )}
+                )}
               
               {/* 메시지 끝 참조 지점 */}
               <div ref={messagesEndRef} />
