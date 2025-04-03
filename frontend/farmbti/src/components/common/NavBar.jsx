@@ -52,13 +52,13 @@ const Navbar = () => {
     const handleMouseLeave = () => {
       setTimeout(() => {
           setIsDropdownOpen(false);
-      }, 300);
+      }, 2000);
     };
   
     const handleNotificationMouseLeave = () => {
         setTimeout(() => {
             setIsNotificationOpen(false);
-        }, 300);
+        }, 2000);
     };
     
     // 드롭다운 외부 클릭 시 닫기
@@ -116,6 +116,17 @@ const Navbar = () => {
                     try {
                         const receivedData = JSON.parse(message.body);
                         console.log("백엔드에서 받은 원본 메시지:", receivedData);
+
+                          // 현재 localStorage에서 채팅방 ID 확인 (최신 상태 반영)
+                        const currentRoomId = localStorage.getItem('currentChatRoomId');
+                        
+                        // 수신된 메시지의 roomId와 현재 채팅방 ID 비교
+                        // 문자열과 숫자 타입을 처리하기 위해 == 연산자 사용
+                        if (currentRoomId && receivedData.roomId == currentRoomId) {
+                          console.log(`현재 채팅방(${currentRoomId})의 메시지 알림을 무시합니다.`);
+                          return; // 알림 처리하지 않고 종료
+                        }
+
     
                         // 백엔드 DTO 형식에 맞게 알림 객체 생성
                         const notification = {

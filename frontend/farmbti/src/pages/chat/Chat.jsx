@@ -57,6 +57,20 @@ const handleGoBack = () => {
   navigate(-1);
 };
 
+// 불필요한 Navbar 알람 필터링 용용
+useEffect(() => {
+  if (roomId) {
+    console.log(`현재 채팅방을 ${roomId}로 설정합니다.`);
+    localStorage.setItem('currentChatRoomId', roomId);
+  }
+  
+  // 컴포넌트 언마운트 시 현재 채팅방 초기화
+  return () => {
+    console.log(`채팅방에서 나갑니다.`);
+    localStorage.removeItem('currentChatRoomId');
+  };
+}, [roomId]);
+
 // URL state에서 roomId 가져오기
 useEffect(() => {
   if (location.state && location.state.roomId) {
@@ -370,12 +384,30 @@ const onMessageReceived = (payload, currentRoomId) => {
     
     // 메시지 목록에 추가
     setMessages(prev => [...prev, newMessage]);
+
+    // 채팅방 목록에서 현재 채팅방의 lastMessage 업데이트
+    updateChatRoomLastMessage(currentRoomId, messageContent);
+
     
     // 새 메시지가 추가되면 자동으로 맨 아래로 스크롤 (useEffect에서 처리)
   } catch (error) {
     console.error('메시지 처리 오류:', error);
   }
 };
+
+// 채팅방 목록 업데이트 함수 추가
+const updateChatRoomLastMessage = (roomId, lastMessage) => {
+  setChatRooms(prevRooms => {
+    return prevRooms.map(room => {
+      if (room.roomId === roomId) {
+        return { ...room, lastMessage };
+      }
+      return room;
+    });
+  });
+};
+
+
 
 
 // 시간 형식 변환 함수 - UTC를 KST로 변환하여 표시
@@ -499,9 +531,13 @@ const handleSendMessage = () => {
       time: formatTime(now),
       isMe: true // 내가 보낸 메시지
     };
-    
+     
     setMessages(prevMessages => [...prevMessages, newMessage]);
     setMessage('');
+
+    // 채팅방 목록에서 현재 채팅방의 lastMessage 업데이트
+    updateChatRoomLastMessage(roomId, message.trim());
+
     
     // 메시지 전송 후 스크롤 맨 아래로 이동 (useEffect에서 처리)
   }
