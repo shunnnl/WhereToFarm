@@ -17,7 +17,7 @@ const MentorSettingContent = ({ onChange, initialData }) => {
 
   // 작물명과 ID 간 변환 도우미 함수
   const getIdFromLabel = (label) => {
-    const food = topFood.find((food) => food.label === label);
+    const food = topFood.find((food) => food.name === label);
     return food ? food.id : null;
   };
 
@@ -71,9 +71,10 @@ const MentorSettingContent = ({ onChange, initialData }) => {
         return "";
 
       case "bio":
-        if (!value) return "멘토 소개를 입력해주세요";
-        if (value.length < 10) return "10자 이상 입력해주세요";
-        if (value.length > 100) return "100자 이내로 입력해주세요";
+        const trimmedValue = typeof value === "string" ? value.trim() : "";
+        if (!trimmedValue) return "멘토 소개를 입력해주세요";
+        if (trimmedValue.length < 10) return "10자 이상 입력해주세요";
+        if (trimmedValue.length > 100) return "100자 이내로 입력해주세요";
         return "";
 
       default:
@@ -122,10 +123,12 @@ const MentorSettingContent = ({ onChange, initialData }) => {
 
   // 소개 텍스트 핸들러
   const handleDescriptionChange = (e) => {
-    setDescription(e.target.value);
+    const value = e.target.value;
+    setDescription(value); // UI에서는 사용자가 입력한 그대로 표시
 
-    // 유효성 검사 실행 및 오류 상태 업데이트
-    const errorMessage = validateField("bio", e.target.value);
+    // 유효성 검사 실행 시에는 별도로 trim 처리를 하지 않음
+    // validateField 내부에서 trim 처리 후 검사함
+    const errorMessage = validateField("bio", value);
     setErrors((prev) => ({
       ...prev,
       bio: errorMessage,
@@ -137,21 +140,23 @@ const MentorSettingContent = ({ onChange, initialData }) => {
     e.preventDefault();
   };
 
+  // 선택된 작물 ID를 작물명으로 변환하여 formData에 업데이트
   useEffect(() => {
     const selectedLabels = selectedFoods
       .map((foodId) => {
         const food = topFood.find((item) => item.id === foodId);
-        return food ? food.label : "";
+        return food ? food.name : "";
       })
-      .filter((label) => label !== "");
+      .filter((name) => name !== "");
 
     setFormData((prev) => ({
       ...prev,
       cropNames: selectedLabels,
-      bio,
+      bio: bio.trim(), // formData에 저장할 때는 trim된 값 사용
     }));
   }, [selectedFoods, bio]);
 
+  // 부모 컴포넌트에 데이터 및 유효성 상태 전달
   useEffect(() => {
     if (onChange) {
       // 폼 데이터와 함께 유효성 검사 상태 포함
@@ -243,12 +248,12 @@ const MentorSettingContent = ({ onChange, initialData }) => {
             />
             <div
               className={`absolute bottom-2 right-2 text-sm ${
-                bio.length > 100 || bio.length < 10
+                bio.trim().length > 100 || bio.trim().length < 10
                   ? "text-red-500"
                   : "text-gray-500"
               }`}
             >
-              {bio.length}/100
+              {bio.trim().length}/100
             </div>
           </div>
         </div>
