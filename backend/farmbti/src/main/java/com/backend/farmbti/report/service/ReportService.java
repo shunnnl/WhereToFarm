@@ -170,8 +170,8 @@ public class ReportService {
         // 현재 로그인한 사용자 ID 가져오기
         Long userId = securityUtils.getCurrentUsersId();
 
-        // 사용자의 리포트 조회
-        List<Report> reports = reportRepository.findByUserId(userId);
+        // 쿼리 단계에서 내림차순 정렬 적용
+        List<Report> reports = reportRepository.findByUserIdOrderByIdDesc(userId);
 
         return reports.stream()
                 .map(report -> {
