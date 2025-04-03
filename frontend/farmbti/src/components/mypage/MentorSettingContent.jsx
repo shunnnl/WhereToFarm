@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, forwardRef, useImperativeHandle } from "react";
 
-const MentorSettingContent = ({ onChange, initialData }) => {
-  // 작물 데이터 - 먼저 정의
+const MentorSettingContent = forwardRef(({ onChange, initialData }, ref) => {
+  // 작물 데이터
   const topFood = [
     { id: "apple", name: "사과", img: "apple.png" },
     { id: "pear", name: "배", img: "pear.png" },
@@ -54,6 +54,40 @@ const MentorSettingContent = ({ onChange, initialData }) => {
   // 날짜 옵션 생성
   const currentYear = new Date().getFullYear();
   const yearOptions = Array.from({ length: 50 }, (_, i) => currentYear - i);
+
+  // 폼 리셋 함수 정의
+  const resetForm = () => {
+    setFormData({
+      farmingYears: initialData?.farmingYears || "",
+      cropNames: initialData?.cropNames || "",
+      bio: initialData?.bio || "",
+    });
+
+    setSelectedFoods(() => {
+      if (!initialData?.cropNames) return [];
+
+      const cropNamesArray = Array.isArray(initialData.cropNames)
+        ? initialData.cropNames
+        : initialData.cropNames.split(",");
+
+      return cropNamesArray
+        .map((cropName) => {
+          if (topFood.some((food) => food.id === cropName)) {
+            return cropName;
+          }
+          return getIdFromLabel(cropName);
+        })
+        .filter((id) => id !== null);
+    });
+
+    setDescription(initialData?.bio || "");
+    setErrors({});
+  };
+
+  // useImperativeHandle을 사용하여 리셋 함수 노출
+  useImperativeHandle(ref, () => ({
+    resetForm,
+  }));
 
   // 유효성 검사 함수
   const validateField = (name, value) => {
@@ -126,8 +160,7 @@ const MentorSettingContent = ({ onChange, initialData }) => {
     const value = e.target.value;
     setDescription(value); // UI에서는 사용자가 입력한 그대로 표시
 
-    // 유효성 검사 실행 시에는 별도로 trim 처리를 하지 않음
-    // validateField 내부에서 trim 처리 후 검사함
+    // 유효성 검사 실행
     const errorMessage = validateField("bio", value);
     setErrors((prev) => ({
       ...prev,
@@ -263,6 +296,9 @@ const MentorSettingContent = ({ onChange, initialData }) => {
       )}
     </form>
   );
-};
+});
+
+// 컴포넌트 이름 설정
+MentorSettingContent.displayName = "MentorSettingContent";
 
 export default MentorSettingContent;

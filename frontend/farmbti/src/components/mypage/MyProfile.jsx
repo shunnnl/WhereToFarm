@@ -19,6 +19,8 @@ import MyProfileImage from "./MyProfileImage";
 const MyProfile = ({ myInfo: initialMyInfo }) => {
   const modalRef = useRef(null);
   const passwordContentRef = useRef(null);
+  const mentorSettingRef = useRef(null);
+  const myInfoSettingRef = useRef(null); 
   const [modalType, setModalType] = useState("");
   const [modalTitle, setModalTitle] = useState("");
   const [myInfo, setMyInfo] = useState(initialMyInfo);
@@ -126,6 +128,10 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
   const handleMetorSetting = () => {
     setModalType("mentor");
     setModalTitle("멘토 정보 수정");
+    // 모달을 열기 전에 폼 초기화
+    if (mentorSettingRef.current) {
+      mentorSettingRef.current.resetForm();
+    }
     modalRef.current?.openModal();
   };
 
@@ -294,12 +300,16 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
   };
 
   const handleCancel = () => {
-    // 모달 타입에 따라 폼 데이터 초기화
-    if (modalType === "password") {
-      passwordContentRef.current?.resetForm();
-    }
+     if (modalType === "mentor" && mentorSettingRef.current) {
+       mentorSettingRef.current.resetForm();
+     } else if (modalType === "myInfo" && myInfoSettingRef.current) {
+       myInfoSettingRef.current.resetForm();
+     } else if (modalType === "password" && passwordContentRef.current) {
+       passwordContentRef.current.resetForm();
+     }
 
-    modalRef.current?.closeModal();
+     // 모달 닫기
+     modalRef.current?.closeModal();
   };
 
   return (
@@ -419,12 +429,22 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
         {/* 조건부 콘텐츠 렌더링 */}
         {modalType === "mentor" && (
           <MentorSettingContent
-            initialData={mentorFormData.data}
+            ref={mentorSettingRef} // ref 전달
+            initialData={
+              myInfo.isMentor
+                ? {
+                    farmingYears: myInfo.farmingYears,
+                    cropNames: myInfo.cropNames,
+                    bio: myInfo.bio,
+                  }
+                : {}
+            }
             onChange={setMentorFormData}
           />
         )}
         {modalType === "myInfo" && (
           <MyInfoSettingContent
+            ref={myInfoSettingRef} // ref 추가 (MyInfoSettingContent도 forwardRef로 수정 필요)
             initialData={myInfoFormData.data}
             onChange={setMyInfoFormData}
           />
