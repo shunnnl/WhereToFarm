@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, forwardRef, useImperativeHandle } from "react";
 
-const MentorSettingContent = ({ onChange, initialData }) => {
-  // 작물 데이터 - 먼저 정의
+const MentorSettingContent = forwardRef(({ onChange, initialData, birthYear }, ref) => {
+  // 작물 데이터
   const topFood = [
     { id: "apple", name: "사과", img: "apple.png" },
     { id: "pear", name: "배", img: "pear.png" },
@@ -17,12 +17,12 @@ const MentorSettingContent = ({ onChange, initialData }) => {
 
   // 작물명과 ID 간 변환 도우미 함수
   const getIdFromLabel = (label) => {
-    const food = topFood.find((food) => food.label === label);
+    const food = topFood.find((food) => food.name === label);
     return food ? food.id : null;
   };
 
   const [formData, setFormData] = useState({
-    farmingYears: initialData?.farmingYears || "",
+    farmingYears: initialData?.farmingYears || birthYear || "",
     cropNames: initialData?.cropNames || "",
     bio: initialData?.bio || "",
   });
@@ -51,16 +51,54 @@ const MentorSettingContent = ({ onChange, initialData }) => {
   const [bio, setDescription] = useState(initialData?.bio || "");
   const [errors, setErrors] = useState({});
 
-  // 날짜 옵션 생성
   const currentYear = new Date().getFullYear();
-  const yearOptions = Array.from({ length: 50 }, (_, i) => currentYear - i);
+
+  const userBirthYear = Number(birthYear) || 0;
+  const yearOptions = Array.from(
+    { length: 100 },
+    (_, i) => currentYear - i
+  ).filter(year => userBirthYear === 0 || year >= userBirthYear);
+
+  // 폼 리셋 함수 정의
+  const resetForm = () => {
+    setFormData({
+      farmingYears: initialData?.farmingYears || birthYear || "",
+      cropNames: initialData?.cropNames || "",
+      bio: initialData?.bio || "",
+    });
+
+    setSelectedFoods(() => {
+      if (!initialData?.cropNames) return [];
+
+      const cropNamesArray = Array.isArray(initialData.cropNames)
+        ? initialData.cropNames
+        : initialData.cropNames.split(",");
+
+      return cropNamesArray
+        .map((cropName) => {
+          if (topFood.some((food) => food.id === cropName)) {
+            return cropName;
+          }
+          return getIdFromLabel(cropName);
+        })
+        .filter((id) => id !== null);
+    });
+
+    setDescription(initialData?.bio || "");
+    setErrors({});
+  };
+
+  // useImperativeHandle을 사용하여 리셋 함수 노출
+  useImperativeHandle(ref, () => ({
+    resetForm,
+  }));
 
   // 유효성 검사 함수
   const validateField = (name, value) => {
     switch (name) {
       case "farmingYears":
         if (!value) return "연도를 선택해주세요";
-        if (value < 1980 || value > currentYear)
+        if (value < userBirthYear || value > currentYear)
           return "유효한 연도를 선택해주세요";
         return "";
 
@@ -71,9 +109,10 @@ const MentorSettingContent = ({ onChange, initialData }) => {
         return "";
 
       case "bio":
-        if (!value) return "멘토 소개를 입력해주세요";
-        if (value.length < 10) return "10자 이상 입력해주세요";
-        if (value.length > 100) return "100자 이내로 입력해주세요";
+        const trimmedValue = typeof value === "string" ? value.trim() : "";
+        if (!trimmedValue) return "멘토 소개를 입력해주세요";
+        if (trimmedValue.length < 10) return "10자 이상 입력해주세요";
+        if (trimmedValue.length > 100) return "100자 이내로 입력해주세요";
         return "";
 
       default:
@@ -99,33 +138,35 @@ const MentorSettingContent = ({ onChange, initialData }) => {
 
   // 작물 선택 토글
   const toggleFood = (foodId) => {
-    // 새로운 선택된 작물 배열 계산
-    const newSelectedFoods = selectedFoods.includes(foodId)
-      ? selectedFoods.filter((id) => id !== foodId)
-      : [...selectedFoods, foodId];
-
-    // 상태 업데이트
-    setSelectedFoods(newSelectedFoods);
-
-    // 유효성 검사 수행: 최소 1개 이상의 작물이 선택되어야 함
-    const errorMessage =
-      newSelectedFoods.length === 0
-        ? "최소 1개 이상의 작물을 선택해주세요"
-        : "";
-
-    // 오류 상태 업데이트
-    setErrors((prev) => ({
-      ...prev,
-      cropNames: errorMessage,
-    }));
+    setSelectedFoods(prevSelectedFoods => {
+      // 새로운 선택된 작물 배열 계산
+      const newSelectedFoods = prevSelectedFoods.includes(foodId)
+        ? prevSelectedFoods.filter((id) => id !== foodId)
+        : [...prevSelectedFoods, foodId];
+      
+      // 유효성 검사 수행: 최소 1개 이상의 작물이 선택되어야 함
+      const errorMessage =
+        newSelectedFoods.length === 0
+          ? "최소 1개 이상의 작물을 선택해주세요"
+          : "";
+  
+      // 오류 상태 업데이트
+      setErrors((prev) => ({
+        ...prev,
+        cropNames: errorMessage,
+      }));
+      
+      return newSelectedFoods;
+    });
   };
 
   // 소개 텍스트 핸들러
   const handleDescriptionChange = (e) => {
-    setDescription(e.target.value);
+    const value = e.target.value;
+    setDescription(value); // UI에서는 사용자가 입력한 그대로 표시
 
-    // 유효성 검사 실행 및 오류 상태 업데이트
-    const errorMessage = validateField("bio", e.target.value);
+    // 유효성 검사 실행
+    const errorMessage = validateField("bio", value);
     setErrors((prev) => ({
       ...prev,
       bio: errorMessage,
@@ -138,20 +179,34 @@ const MentorSettingContent = ({ onChange, initialData }) => {
   };
 
   useEffect(() => {
+    const currentFarmingYear = Number(formData.farmingYears);
+    
+    // 현재 farmingYears가 출생연도보다 작으면 출생연도로 설정
+    if (userBirthYear > 0 && (currentFarmingYear < userBirthYear || isNaN(currentFarmingYear))) {
+      setFormData(prev => ({
+        ...prev,
+        farmingYears: String(userBirthYear)
+      }));
+    }
+  }, [userBirthYear, formData.farmingYears]);
+
+  // 선택된 작물 ID를 작물명으로 변환하여 formData에 업데이트
+  useEffect(() => {
     const selectedLabels = selectedFoods
       .map((foodId) => {
         const food = topFood.find((item) => item.id === foodId);
-        return food ? food.label : "";
+        return food ? food.name : "";
       })
-      .filter((label) => label !== "");
+      .filter((name) => name !== "");
 
     setFormData((prev) => ({
       ...prev,
       cropNames: selectedLabels,
-      bio,
+      bio: bio.trim(), // formData에 저장할 때는 trim된 값 사용
     }));
   }, [selectedFoods, bio]);
 
+  // 부모 컴포넌트에 데이터 및 유효성 상태 전달
   useEffect(() => {
     if (onChange) {
       // 폼 데이터와 함께 유효성 검사 상태 포함
@@ -176,7 +231,6 @@ const MentorSettingContent = ({ onChange, initialData }) => {
             required
             className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
           >
-            <option value="">연도</option>
             {yearOptions.map((year) => (
               <option key={year} value={year}>
                 {year}
@@ -239,16 +293,17 @@ const MentorSettingContent = ({ onChange, initialData }) => {
             focus:outline-none focus:ring-2 focus:ring-green-500 
             focus:border-transparent resize-y"
               placeholder="여기에 텍스트를 입력하세요"
+              maxLength={100}
               required
             />
             <div
               className={`absolute bottom-2 right-2 text-sm ${
-                bio.length > 100 || bio.length < 10
+                bio.trim().length > 100 || bio.trim().length < 10
                   ? "text-red-500"
                   : "text-gray-500"
               }`}
             >
-              {bio.length}/100
+              {bio.trim().length}/100
             </div>
           </div>
         </div>
@@ -258,6 +313,6 @@ const MentorSettingContent = ({ onChange, initialData }) => {
       )}
     </form>
   );
-};
+});
 
 export default MentorSettingContent;

@@ -5,6 +5,7 @@ import { getEstateDetail } from "../../../API/etc/EstateAPI";
 import { toast } from "react-toastify";
 import LoadingSpinner from "../../../components/common/LoadingSpinner";
 import { ChevronLeft } from "lucide-react";
+import { handleError } from "../../../utils/ErrorUtil";
 
 const EstateDetailPage = () => {
   const { estateId } = useParams();
@@ -26,6 +27,7 @@ const EstateDetailPage = () => {
       } catch (error) {
         console.error("Error fetching property details:", error);
         setisLoading(false);
+        handleError(error);
         console.error(error);
       }
     };

@@ -14,6 +14,8 @@ const ErrorHandler = () => {
 
     // API 에러 처리 함수
     const handleApiError = (event) => {
+      console.log("ErrorHandler: API 에러 이벤트 수신", event.detail);
+      
       const { code, message, type } = event.detail;
       const now = Date.now();
 
@@ -23,6 +25,7 @@ const ErrorHandler = () => {
       // 최근에 동일한 오류가 표시되었는지 확인
       const lastErrorTime = recentErrors.get(toastId);
       if (lastErrorTime && now - lastErrorTime < ERROR_THRESHOLD_MS) {
+        console.log("ErrorHandler: 중복 에러 무시", code);
         return; // 중복 방지
       }
 
@@ -30,11 +33,16 @@ const ErrorHandler = () => {
       recentErrors.set(toastId, now);
 
       // 오류 유형에 따른 토스트 스타일 적용
+      console.log("ErrorHandler: 에러 타입", type);
+      
       if (type === "BUSINESS") {
+        console.log("ErrorHandler: 비즈니스 에러 토스트 표시", message);
         toast.warning(message, { toastId });
       } else if (code === "AUTH_EXPIRED") {
+        console.log("ErrorHandler: 인증 만료 토스트 표시", message);
         toast.info(message, { toastId });
       } else {
+        console.log("ErrorHandler: 시스템 에러 토스트 표시", message);
         toast.error(message || "오류가 발생했습니다", { toastId });
       }
 
@@ -52,10 +60,12 @@ const ErrorHandler = () => {
 
     // 이벤트 리스너 등록
     window.addEventListener("api-error", handleApiError);
+    console.log("ErrorHandler: API 에러 이벤트 리스너 등록됨");
 
     // 클린업 함수
     return () => {
       window.removeEventListener("api-error", handleApiError);
+      console.log("ErrorHandler: API 에러 이벤트 리스너 제거됨");
     };
   }, [navigate]);
 

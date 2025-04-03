@@ -31,8 +31,6 @@ import NotFoundPage from "./pages/etc/error-pages/NotFoundPage";
 import ErrorHandler from "./pages/etc/error-pages/ErrorHandler";
 import ServerErrorPage from "./pages/etc/error-pages/ServerErrorPage";
 
-
-
 const isAuthenticated = () => {
   return localStorage.getItem("accessToken") !== null;
 };
@@ -45,7 +43,6 @@ const ProtectedRoute = ({ children }) => {
 };
 
 function App() {
-
   return (
     <Provider store={store}>
       <BrowserRouter>
@@ -58,31 +55,31 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
-            <Route 
-              path="/mentors" 
+            <Route
+              path="/mentors"
               element={
                 <ProtectedRoute>
                   <MentorPage />
                 </ProtectedRoute>
-              
-              } />
+              }
+            />
 
             <Route path="/surveyintro" element={<SurveyIntroPage />} />
-            <Route 
-              path="/survey" 
+            <Route
+              path="/survey"
               element={
                 <ProtectedRoute>
                   <SurveyPage />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/report/:reportId" 
+            <Route
+              path="/report/:reportId"
               element={
                 <ProtectedRoute>
                   <ReportPage />
                 </ProtectedRoute>
-              } 
+              }
             />
             <Route
               path="/crop-calculator"
@@ -134,7 +131,14 @@ function App() {
                 element={<Navigate to="/mypage/farmbti-report" replace />}
               />
             </Route>
-            <Route path="/account/delete" element={<UserDeletePage />} />
+            <Route
+              path="/account/delete"
+              element={
+                <ProtectedRoute>
+                  <UserDeletePage />
+                </ProtectedRoute>
+              }
+            />
 
             <Route path="/error/server" element={<ServerErrorPage />} />
             <Route path="/error/not-found" element={<NotFoundPage />} />

@@ -12,6 +12,7 @@ import {
   saveResult,
 } from "../../API/crop-calculator/CropCalculatorAPI";
 import { toast } from "react-toastify";
+import { handleError } from "../../utils/ErrorUtil";
 
 const CropCalculatorPage = () => {
   const navigate = useNavigate();
@@ -107,6 +108,7 @@ const CropCalculatorPage = () => {
       setResult(data);
     } catch (error) {
       console.error(error);
+      handleError(error);
       handleResetCalculate();
     } finally {
       setIsLoading(false); // 로딩 종료
@@ -126,6 +128,7 @@ const CropCalculatorPage = () => {
       }
     } catch (error) {
       console.error(error);
+      handleError(error);
       handleResetCalculate();
     } finally {
       setIsLoading(false); // 로딩 종료

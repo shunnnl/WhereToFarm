@@ -6,6 +6,7 @@ import PaginationComponent from "../../../components/common/Pagination";
 import { getAllEstate, getFilteredEstate } from "../../../API/etc/EstateAPI";
 import { toast } from "react-toastify";
 import KoreaCityData from "../../../asset/data/KoreaCityData";
+import { handleError } from "../../../utils/ErrorUtil";
 
 const EstatePage = () => {
   const [selectedProvince, setSelectedProvince] = useState("");
@@ -57,6 +58,7 @@ const EstatePage = () => {
       setProperties(response.content);
       setTotalItemsCount(response.totalElements);
     } catch (error) {
+      handleError(error);
       console.error("매물 데이터를 불러오는 중 오류가 발생했습니다:", error);
       setError("매물 데이터를 불러오는 중 오류가 발생했습니다.");
     } finally {
@@ -85,6 +87,7 @@ const EstatePage = () => {
         setTotalItemsCount(response.length);
       }
     } catch (error) {
+      handleError(error);
       // 에러 처리
       console.error(
         "필터링된 매물 데이터를 불러오는 중 오류가 발생했습니다:",
@@ -142,7 +145,11 @@ const EstatePage = () => {
               부동산 매물 목록
             </h2>
             <div className="text-sm text-gray-500">
-              총 <span className="font-medium text-green-700">{totalItemsCount}</span>개의 매물
+              총{" "}
+              <span className="font-medium text-green-700">
+                {totalItemsCount}
+              </span>
+              개의 매물
             </div>
           </div>
 

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Camera, RefreshCw } from "lucide-react";
 import { toast } from "react-toastify";
 import { uploadImage, deleteImage } from "../../API/mypage/MyPageAPI";
+import { handleError } from "../../utils/ErrorUtil";
 
 const MyProfileImage = ({ imageUrl, isDefaultImage }) => {
   const [profileData, setProfileData] = useState({
@@ -142,6 +143,7 @@ const MyProfileImage = ({ imageUrl, isDefaultImage }) => {
 
           toast.success("프로필 이미지가 업로드되었습니다.");
         } catch (error) {
+          handleError(error);
           console.error("이미지 업로드 실패:", error);
           URL.revokeObjectURL(imageUrl);
         } finally {
@@ -159,6 +161,7 @@ const MyProfileImage = ({ imageUrl, isDefaultImage }) => {
 
       img.src = imageUrl;
     } catch (error) {
+      handleError(error);
       console.error("이미지 유효성 검사 오류:", error);
       e.target.value = "";
       setIsLoading(false);
@@ -183,6 +186,7 @@ const MyProfileImage = ({ imageUrl, isDefaultImage }) => {
 
       toast.success("기본 프로필 이미지로 변경되었습니다.");
     } catch (error) {
+      handleError(error);
       console.error("이미지 초기화 실패:", error);
     } finally {
       setIsLoading(false);

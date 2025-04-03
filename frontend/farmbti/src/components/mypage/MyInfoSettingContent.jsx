@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, forwardRef, useImperativeHandle } from "react";
 import { Link } from "react-router";
 import useKakaoAddressService from "../../API/useKakaoAddressService";
 
-const MyInfoSettingContent = ({ onChange, initialData }) => {
+const MyInfoSettingContent = forwardRef(({ onChange, initialData }, ref) => {
   const [formData, setFormData] = useState({
     name: initialData?.name || "",
     gender: initialData?.gender !== undefined ? Number(initialData.gender) : "",
@@ -13,10 +13,30 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
   });
 
   const [errors, setErrors] = useState({});
+  const [nameInput, setNameInput] = useState(initialData?.name || "");
 
   const currentYear = new Date().getFullYear();
   const yearOptions = Array.from({ length: 100 }, (_, i) => currentYear - i);
   const monthOptions = Array.from({ length: 12 }, (_, i) => i + 1);
+
+  const resetForm = () => {
+    setFormData({
+      name: initialData?.name || "",
+      gender:
+        initialData?.gender !== undefined ? Number(initialData.gender) : "",
+      year: initialData?.year || "",
+      month: initialData?.month || "",
+      day: initialData?.day || "",
+      address: initialData?.address || "",
+    });
+    
+    setNameInput(initialData?.name || "");
+    setErrors({});
+  };
+
+  useImperativeHandle(ref, () => ({
+    resetForm,
+  }));
 
   const getDaysInMonth = (year, month) => {
     return new Date(year, month, 0).getDate();
@@ -33,10 +53,11 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
   const validateField = (name, value) => {
     switch (name) {
       case "name":
-        if (!value) return "이름을 입력해주세요";
-        if (value.length < 2) return "이름은 최소 2자 이상이어야 합니다";
-        if (value.length > 20) return "이름은 최대 20자까지 입력 가능합니다";
-        if (/[0-9!@#$%^&*(),.?":{}|<>]/.test(value))
+        const trimmedValue = typeof value === 'string' ? value.trim() : '';
+        if (!trimmedValue) return "이름을 입력해주세요";
+        if (trimmedValue.length < 2) return "이름은 최소 2자 이상이어야 합니다";
+        if (trimmedValue.length > 20) return "이름은 최대 20자까지 입력 가능합니다";
+        if (/[^가-힣a-zA-Z\s]/.test(trimmedValue))
           return "이름에는 특수문자와 숫자를 사용할 수 없습니다";
         return "";
 
@@ -58,7 +79,8 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
         return "";
 
       case "address":
-        if (!value) return "주소를 입력해주세요";
+        const trimmedAddress = typeof value === 'string' ? value.trim() : '';
+        if (!trimmedAddress) return "주소를 입력해주세요";
         return "";
       default:
         return "";
@@ -67,10 +89,15 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    
+    if (name === "name") {
+      setNameInput(value); // UI에는 사용자가 입력한 그대로 표시
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
 
     const errorMessage = validateField(name, value);
     setErrors((prev) => ({
@@ -95,9 +122,16 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
   };
 
   const handleAddressSelected = (addressData) => {
+    const address = addressData.address.trim();
     setFormData((prev) => ({
       ...prev,
-      address: addressData.address,
+      address: address,
+    }));
+    
+    const errorMessage = validateField("address", address);
+    setErrors((prev) => ({
+      ...prev,
+      address: errorMessage,
     }));
   };
 
@@ -106,6 +140,14 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
   };
+
+  // 이름 입력값 변경 시 trim된 값으로 formData 업데이트
+  useEffect(() => {
+    setFormData((prev) => ({
+      ...prev,
+      name: nameInput.trim(),
+    }));
+  }, [nameInput]);
 
   // 컴포넌트가 마운트될 때 초기 데이터 검증
   useEffect(() => {
@@ -139,10 +181,11 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
           <input
             type="text"
             name="name"
-            value={formData.name}
+            value={nameInput}
             onChange={handleChange}
             placeholder="이름를 입력하세요"
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-supportGreen"
+            maxLength={20}
           />
           {errors.name && (
             <div className="text-red-500 text-sm mt-1">{errors.name}</div>
@@ -191,7 +234,6 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
               onChange={handleChange}
               className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-supportGreen"
             >
-              <option value="">연도</option>
               {yearOptions.map((year) => (
                 <option key={year} value={year}>
                   {year}
@@ -204,7 +246,6 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
               onChange={handleChange}
               className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-supportGreen"
             >
-              <option value="">월</option>
               {monthOptions.map((month) => (
                 <option key={month} value={month}>
                   {month}
@@ -217,7 +258,6 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
               onChange={handleChange}
               className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-supportGreen"
             >
-              <option value="">일</option>
               {dayOptions.map((day) => (
                 <option key={day} value={day}>
                   {day}
@@ -262,6 +302,6 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
       </div>
     </>
   );
-};
+});
 
 export default MyInfoSettingContent;
