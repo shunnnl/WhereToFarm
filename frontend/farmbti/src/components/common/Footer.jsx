@@ -12,17 +12,6 @@ const Footer = () => {
           지자체 공공데이터
         </p>
       </div>
-      <div className="flex gap-4 md:gap-8">
-        <p className="text-sm text-gray-700 hover:text-green-600 cursor-pointer">
-          이용약관
-        </p>
-        <p className="text-sm text-gray-700 hover:text-green-600 cursor-pointer">
-          개인정보처리방침
-        </p>
-        <p className="text-sm text-gray-700 hover:text-green-600 cursor-pointer">
-          문의하기
-        </p>
-      </div>
     </footer>
   );
 };
