@@ -191,7 +191,7 @@ const MyInfoSettingContent = forwardRef(({ onChange, initialData }, ref) => {
             <div className="text-red-500 text-sm mt-1">{errors.name}</div>
           )}
         </div>
-        
+
         {/* 성별 */}
         <div className="space-y-2">
           <h2 className="text-lg font-medium">성별</h2>
@@ -234,7 +234,6 @@ const MyInfoSettingContent = forwardRef(({ onChange, initialData }, ref) => {
               onChange={handleChange}
               className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-supportGreen"
             >
-              <option value="">연도</option>
               {yearOptions.map((year) => (
                 <option key={year} value={year}>
                   {year}
@@ -247,7 +246,6 @@ const MyInfoSettingContent = forwardRef(({ onChange, initialData }, ref) => {
               onChange={handleChange}
               className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-supportGreen"
             >
-              <option value="">월</option>
               {monthOptions.map((month) => (
                 <option key={month} value={month}>
                   {month}
@@ -260,7 +258,6 @@ const MyInfoSettingContent = forwardRef(({ onChange, initialData }, ref) => {
               onChange={handleChange}
               className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-supportGreen"
             >
-              <option value="">일</option>
               {dayOptions.map((day) => (
                 <option key={day} value={day}>
                   {day}
