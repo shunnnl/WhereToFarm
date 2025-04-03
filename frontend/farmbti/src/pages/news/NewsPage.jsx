@@ -5,8 +5,6 @@ import { getNewsList } from "../../API/etc/NewsAPI";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
 import { toast } from "react-toastify";
 import { Calendar } from "lucide-react";
-import { handleErrorToast } from "../../utils/ErrorUtils";
-
 const NewsPage = () => {
   const [newsList, setNewsList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -21,7 +19,6 @@ const NewsPage = () => {
         setIsLoading(false);
       } catch (error) {
         console.log("뉴스 불러오기 에러: ", error);
-        handleErrorToast(error, toast);
       }
     };
 

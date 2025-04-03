@@ -6,7 +6,6 @@ import PaginationComponent from "../../../components/common/Pagination";
 import { getAllEstate, getFilteredEstate } from "../../../API/etc/EstateAPI";
 import { toast } from "react-toastify";
 import KoreaCityData from "../../../asset/data/KoreaCityData";
-import { handleErrorToast } from "../../../utils/ErrorUtils";
 
 const EstatePage = () => {
   const [selectedProvince, setSelectedProvince] = useState("");
@@ -60,7 +59,6 @@ const EstatePage = () => {
     } catch (error) {
       console.error("매물 데이터를 불러오는 중 오류가 발생했습니다:", error);
       setError("매물 데이터를 불러오는 중 오류가 발생했습니다.");
-      handleErrorToast(error, toast);
     } finally {
       setLoading(false);
     }
@@ -93,7 +91,6 @@ const EstatePage = () => {
         error
       );
       setError("필터링된 매물 데이터를 불러오는 중 오류가 발생했습니다.");
-      handleErrorToast(error, toast);
     } finally {
       setLoading(false);
     }

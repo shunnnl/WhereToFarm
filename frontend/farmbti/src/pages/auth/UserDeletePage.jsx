@@ -2,7 +2,6 @@ import { toast } from "react-toastify";
 import { deleteUser } from "../../API/mypage/MyPageAPI";
 import authImage from "../../asset/auth/login.png";
 import { useState } from "react";
-import { handleErrorToast } from "../../utils/ErrorUtils";
 
 const UserDeletePage = () => {
   const [password, setPassword] = useState("");
@@ -63,7 +62,7 @@ const UserDeletePage = () => {
         }, 1500);
       }
     } catch (error) {
-      handleErrorToast(error, toast);
+      console.error(error);
     } finally {
       setIsLoading(false);
     }
