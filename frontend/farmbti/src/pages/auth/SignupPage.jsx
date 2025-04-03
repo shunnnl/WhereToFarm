@@ -143,7 +143,6 @@ const SignupPage = () => {
     const isValid = validateForm();
   
     if (isValid) {
-      console.log('Signup attempt with:', formData);
       try {
         const birthDate = new Date(
           formData.birthYear,
@@ -159,51 +158,47 @@ const SignupPage = () => {
           gender: formData.gender === 'male' ? "0" : "1",
           birth: birthDate
         };
-        console.log("요청할 데이터:", userData);
-  
-        // axios를 사용하여 회원가입 API 호출
+        
+        // API 호출
         const response = await publicAxios.post('/auth/signUp', userData);
         
-        console.log('전체 응답 객체:', response);
-        
-        // response 객체가 직접 데이터를 가지고 있는 경우
-        if (response && response.success === false && response.error) {
-          console.log('에러 감지됨:', response.error);
-          
-          // 이메일 중복 에러 처리
-          if (response.error.code === "EMAIL_INVALID") {
-            setErrors(prev => ({
-              ...prev,
-              email: response.error.message
-            }));
-            return;
-          } else {
-            // 다른 에러 케이스 처리
-            toast.error(`회원가입 실패: ${response.error.message}`);
-            return;
-          }
-        }
-        
-        // 성공 케이스 (success가 true이거나 에러가 없는 경우)
-        console.log('회원가입 성공');
-        
-        toast.success('회원가입이 완료되었습니다!', {
-          position: "top-center",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true
-        });
-        
+        // 성공 응답 처리 
+        toast.success('회원가입이 완료되었습니다!');
         navigate('/');
+        
       } catch (error) {
-        console.error('회원가입 실패 (예외 발생):', error);
-        toast.error('서버 연결 오류가 발생했습니다. 다시 시도해주세요.');
+        console.error('회원가입 오류:', error);
+        
+        // 에러 객체 확인
+        if (error && error.error) {
+          // 400번대 에러 처리 (비즈니스 로직 에러)
+          if (error.error.type === 'BUSINESS') {
+            // 특정 필드 관련 에러
+            if (error.error.code === 'EMAIL_INVALID' || error.error.code === 'EMAIL_DUPLICATE') {
+              setErrors(prev => ({
+                ...prev,
+                email: error.error.message
+              }));
+            } else if (error.error.code === 'PASSWORD_INVALID') {
+              setErrors(prev => ({
+                ...prev,
+                password: error.error.message
+              }));
+            } else {
+              // 기타 비즈니스 에러는 토스트로 표시
+              toast.warning(error.error.message || '입력 정보를 확인해주세요.');
+            }
+          } else {
+            // SYSTEM 에러나 기타 에러는 토스트로 표시
+            toast.error(error.error.message || '서버 오류가 발생했습니다.');
+          }
+        } else {
+          // 형식에 맞지 않는 에러
+          toast.error('알 수 없는 오류가 발생했습니다.');
+        }
       }
     }
   };
-
 
 
   // 연도 옵션 생성 (현재 연도부터 100년 전까지)

@@ -33,81 +33,78 @@ const LoginPage = () => {
       email: '',
       password: '',
       server: ''
-
     };
-
-    // 이메일 유효성 검사
+    
+    // 클라이언트 측 이메일 유효성 검사
     if (!email.trim()) {
       newErrors.email = '이메일을 입력해주세요.';
     } else if (!validateEmail(email)) {
       newErrors.email = '유효한 이메일 형식이 아닙니다.';
     }
-
-    // 비밀번호 유효성 검사
+    
+    // 클라이언트 측 비밀번호 유효성 검사
     if (!password.trim()) {
       newErrors.password = '비밀번호를 입력해주세요.';
     }
-
+    
     // 오류가 있으면 상태 업데이트 및 제출 방지
     if (newErrors.email || newErrors.password) {
       setErrors(newErrors);
       return;
     }
-
-    // 유효성 검사 통과 시 로그인 시도
-    console.log('로그인 시도:', { email, password });
     
+    // 유효성 검사 통과 시 로그인 시도
     try {
       const response = await publicAxios.post('/auth/login', {
         email,
         password
       });
       
-      console.log('서버 응답:', response);
+      // 로그인 성공 로직
+      localStorage.setItem('accessToken', response.data.token.accessToken);
+      localStorage.setItem('refreshToken', response.data.token.refreshToken);
+      localStorage.setItem('tokenExpires', response.data.token.accessTokenExpiresInForHour);
       
-      // 응답 확인 - Axios가 이미 응답을 파싱했거나 인터셉터가 적용된 것 같습니다
-      if (response.success) {
-        // 로그인 성공 로직
-        localStorage.setItem('accessToken', response.data.token.accessToken);
-        localStorage.setItem('refreshToken', response.data.token.refreshToken);
-        localStorage.setItem('tokenExpires', response.data.token.accessTokenExpiresInForHour);
-        
-        const userData = {
-          id: response.data.id,
-          email: response.data.email,
-          name: response.data.name,
-          address: response.data.address,
-          gender: response.data.gender,
-          profileImage: response.data.profileImage
-        };
-        
-        localStorage.setItem('user', JSON.stringify(userData));
-        dispatch(login(userData));
-        
-        toast.success('로그인 성공!', {
-          position: "top-center",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true
-        });
-        
-        navigate('/');
-      } else {
-        // 로그인 실패 로직
-        const errorMessage = response.error?.message || '로그인에 실패했습니다. 다시 시도해주세요.';
-        newErrors.server = errorMessage;
-        setErrors(newErrors);
-      }
+      const userData = {
+        id: response.data.id,
+        email: response.data.email,
+        name: response.data.name,
+        address: response.data.address,
+        gender: response.data.gender,
+        profileImage: response.data.profileImage
+      };
+      
+      localStorage.setItem('user', JSON.stringify(userData));
+      dispatch(login(userData));
+      
+      toast.success('로그인 성공!');
+      navigate('/');
     } catch (error) {
-      console.error('로그인 실패 (네트워크 오류):', error);
-      newErrors.server = '서버 연결에 실패했습니다. 다시 시도해주세요.';
-      setErrors(newErrors);
+      console.error('로그인 실패:', error);
+      
+      // 에러 객체 확인
+      if (error && error.error) {
+        // 특정 필드 관련 에러
+        if (error.error.code === 'EMAIL_INVALID' || error.error.code === 'EMAIL_NOT_FOUND') {
+          newErrors.email = error.error.message;
+        } else if (error.error.code === 'PASSWORD_INVALID' || error.error.code === 'PASSWORD_WRONG') {
+          newErrors.password = error.error.message;
+        } else if (error.error.code === 'USER_DISABLED' || error.error.code === 'AUTH_FAILED') {
+          // 인증 관련 일반 에러는 서버 에러로 표시
+          newErrors.server = error.error.message;
+        } else {
+          // 기타 에러는 토스트로 표시
+          toast.error(error.error.message || '로그인 처리 중 오류가 발생했습니다.');
+        }
+        setErrors(newErrors);
+      } else {
+        // 형식에 맞지 않는 에러 (네트워크 오류 등)
+        toast.error('서버 연결에 실패했습니다. 네트워크 연결을 확인해주세요.');
+      }
     }
-    
   };
 
+  
   return (
     <div className="w-full h-screen flex">
       {/* 좌측 이미지 섹션 */}

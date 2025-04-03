@@ -5,10 +5,11 @@ import { useState, useEffect } from 'react';
 import { publicAxios, authAxios } from '../../API/common/AxiosInstance';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../store/slices/authSlice'; 
+import { toast } from 'react-toastify'; // Toast 알림 import 추가
 
 const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
-  const dispatch = useDispatch(); // Redux dispatch 추가
-  const { isLoggedIn, user } = useSelector(state => state.auth); // Redux 상태 가져오기
+  const dispatch = useDispatch();
+  const { isLoggedIn, user } = useSelector(state => state.auth);
   const [selectedFoods, setSelectedFoods] = useState([]);
   const [description, setDescription] = useState('');
   const [formData, setFormData] = useState({
@@ -17,33 +18,59 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitResult, setSubmitResult] = useState(null);
   const [isCheckingMentorStatus, setIsCheckingMentorStatus] = useState(false);
+  const [isAlreadyMentor, setIsAlreadyMentor] = useState(false);
+  const [mentorData, setMentorData] = useState(null);
 
   const topFood = [
-    { id: "사과", label: "사과", iconSrc: "src/asset/crops-icons/apple.png" },
+    { 
+      id: "사과", 
+      label: "사과", 
+      iconSrc: "https://farmbticropbucket.s3.ap-northeast-2.amazonaws.com/crop/apple.png" 
+    },
     {
       id: "오이",
       label: "오이",
-      iconSrc: "src/asset/crops-icons/cucumber.png",
+      iconSrc: "https://farmbticropbucket.s3.ap-northeast-2.amazonaws.com/crop/cucumber.png",
     },
-    { id: "포도", label: "포도", iconSrc: "src/asset/crops-icons/grape.png" },
-    { id: "파", label: "파", iconSrc: "src/asset/crops-icons/greenonion.png" },
+    { 
+      id: "포도", 
+      label: "포도", 
+      iconSrc: "https://farmbticropbucket.s3.ap-northeast-2.amazonaws.com/crop/grape.png" 
+    },
+    { 
+      id: "파", 
+      label: "파", 
+      iconSrc: "https://farmbticropbucket.s3.ap-northeast-2.amazonaws.com/crop/greenonion.png" 
+    },
     {
       id: "상추",
       label: "상추",
-      iconSrc: "src/asset/crops-icons/lettuce.png",
+      iconSrc: "https://farmbticropbucket.s3.ap-northeast-2.amazonaws.com/crop/lettuce.png",
     },
-    { id: "양파", label: "양파", iconSrc: "src/asset/crops-icons/onion.png" },
-    { id: "배", label: "배", iconSrc: "src/asset/crops-icons/pear.png" },
+    { 
+      id: "양파", 
+      label: "양파", 
+      iconSrc: "https://farmbticropbucket.s3.ap-northeast-2.amazonaws.com/crop/onion.png" 
+    },
+    { 
+      id: "배", 
+      label: "배", 
+      iconSrc: "https://farmbticropbucket.s3.ap-northeast-2.amazonaws.com/crop/pear.png" 
+    },
     {
       id: "고구마",
       label: "고구마",
-      iconSrc: "src/asset/crops-icons/sweetpotato.png",
+      iconSrc: "https://farmbticropbucket.s3.ap-northeast-2.amazonaws.com/crop/sweetpotato.png",
     },
-    { id: "귤", label: "귤", iconSrc: "src/asset/crops-icons/tangerine.png" },
+    { 
+      id: "귤", 
+      label: "귤", 
+      iconSrc: "https://farmbticropbucket.s3.ap-northeast-2.amazonaws.com/crop/tangerine.png" 
+    },
     {
       id: "수박",
       label: "수박",
-      iconSrc: "src/asset/crops-icons/watermelon.png",
+      iconSrc: "https://farmbticropbucket.s3.ap-northeast-2.amazonaws.com/crop/watermelon.png",
     },
   ];
 
@@ -146,35 +173,45 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
     console.log("formData 업데이트됨:", updatedFormData);
   };
 
+  // 유효성 검사 함수 (Toast 알림 포함)
+  const validateForm = () => {
+    // 귀농 연도 체크
+    if (!formData.Year) {
+      toast.error('귀농 연도를 선택해주세요.');
+      return false;
+    }
+    
+    // 재배 작물 선택 체크
+    if (selectedFoods.length === 0) {
+      toast.error('하나 이상의 재배 작물을 선택해주세요.');
+      return false;
+    }
+    
+    // 멘토 소개 5자 이상 체크
+    if (!description.trim() || description.trim().length <= 5) {
+      toast.error('멘토 소개는 5자 이상 입력해주세요.');
+      return false;
+    }
+    
+    return true;
+  };
+
   // 멘토 등록 데이터 제출 함수
   const handleSubmit = async (e) => {
     e.preventDefault(); // 폼 제출 기본 동작 방지 추가
     
+    // 폼 유효성 검사
+    if (!validateForm()) {
+      return;
+    }
+    
     try {
-      // 제출 전 데이터 유효성 검사 추가
-      if (!formData.Year) {
-        console.error("귀농 연도가 비어있습니다");
-        setSubmitResult({ success: false, message: '귀농 연도를 선택해주세요.' });
-        return;
-      }
-      
-      if (selectedFoods.length === 0) {
-        console.error("선택된 작물이 없습니다");
-        setSubmitResult({ success: false, message: '하나 이상의 재배 작물을 선택해주세요.' });
-        return;
-      }
-      
-      if (!description.trim()) {
-        console.error("멘토 소개가 비어있습니다");
-        setSubmitResult({ success: false, message: '멘토 소개를 입력해주세요.' });
-        return;
-      }
-      
       console.log("제출 시작:", { formData, selectedFoods, description });
 
       // 로그인 상태 및 토큰 확인
       if (!isLoggedIn) {
         console.error("Redux 상태: 로그인되어 있지 않음");
+        toast.error('로그인이 필요합니다.');
         setSubmitResult({ 
           success: false, 
           message: '로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?' 
@@ -188,6 +225,7 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
       
       if (!accessToken && !refreshToken) {
         console.error("토큰이 존재하지 않음");
+        toast.error('로그인 정보가 유효하지 않습니다.');
         setSubmitResult({ 
           success: false, 
           message: '로그인 정보가 유효하지 않습니다. 다시 로그인해주세요.' 
@@ -216,6 +254,7 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
       const response = await authAxios.post('/mentors', mentorData);
       
       console.log('멘토 등록 성공:', response);
+      toast.success('멘토 등록이 성공적으로 완료되었습니다.');
       setSubmitResult({ success: true, message: '멘토 등록이 성공적으로 완료되었습니다.' });
       
       // 성공 시 폼 초기화
@@ -246,16 +285,29 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
       if (error.response && error.response.status === 401) {
         console.error('인증 오류 - 로그아웃 처리');
         dispatch(logout()); // 로그아웃 액션 디스패치
+        toast.error('세션이 만료되었습니다. 다시 로그인해주세요.');
         setSubmitResult({ 
           success: false, 
           message: '세션이 만료되었습니다. 다시 로그인해주세요.' 
         });
       } else {
-        const errorMessage = error.response?.data?.message || error.message || '알 수 없는 오류';
-        setSubmitResult({ 
-          success: false, 
-          message: `멘토 등록에 실패했습니다: ${errorMessage}` 
-        });
+        // 서버에서 온 오류 메시지를 그대로 사용
+        const serverErrorMessage = error.response?.data?.error?.message;
+        
+        if (serverErrorMessage) {
+          toast.error(serverErrorMessage);
+          setSubmitResult({ 
+            success: false, 
+            message: serverErrorMessage
+          });
+        } else {
+          const fallbackErrorMessage = error.message || '알 수 없는 오류';
+          toast.error(fallbackErrorMessage);
+          setSubmitResult({ 
+            success: false, 
+            message: fallbackErrorMessage
+          });
+        }
       }
     } finally {
       setIsSubmitting(false);
@@ -346,7 +398,7 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
                 className="w-full max-w-4xl px-3 py-2 border border-gray-300 rounded-lg 
                 focus:outline-none focus:ring-2 focus:ring-green-500
                 focus:border-transparent resize-y"
-                placeholder="여기에 텍스트를 입력하세요"
+                placeholder="5자 이상 100자 이내로 멘토 소개를 입력해주세요"
                 rows={5}
                 required
               />
