@@ -20,7 +20,7 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
   const modalRef = useRef(null);
   const passwordContentRef = useRef(null);
   const mentorSettingRef = useRef(null);
-  const myInfoSettingRef = useRef(null); 
+  const myInfoSettingRef = useRef(null);
   const [modalType, setModalType] = useState("");
   const [modalTitle, setModalTitle] = useState("");
   const [myInfo, setMyInfo] = useState(initialMyInfo);
@@ -128,7 +128,7 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
   const handleMetorSetting = () => {
     setModalType("mentor");
     setModalTitle("멘토 정보 수정");
-    // 모달을 열기 전에 폼 초기화
+
     if (mentorSettingRef.current) {
       mentorSettingRef.current.resetForm();
     }
@@ -136,21 +136,35 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
   };
 
   const handleMyInfoSetting = () => {
-    // 현재 사용자 정보로 폼 초기화
     setModalType("myInfo");
     setModalTitle("회원 정보 수정");
-    modalRef.current?.openModal();
-  };
 
-  const handleMyPasswordSetting = () => {
-    setPasswordFormData({
-      data: { password: "", newPassword: "", confirmNewPassword: "" },
+    setMyInfoFormData({
+      data: {
+        name: myInfo.name || "",
+        gender: myInfo.gender || 0,
+        year: birth.year,
+        month: birth.month,
+        day: birth.day,
+        address: myInfo.address || "",
+      },
       isValid: true,
       errors: {},
     });
 
+    if (myInfoSettingRef.current) {
+      myInfoSettingRef.current.resetForm();
+    }
+    modalRef.current?.openModal();
+  };
+
+  const handleMyPasswordSetting = () => {
     setModalType("password");
     setModalTitle("비밀번호 수정");
+    // 비밀번호 폼 초기화
+    if (passwordContentRef.current) {
+      passwordContentRef.current.resetForm();
+    }
     modalRef.current?.openModal();
   };
 
@@ -278,7 +292,7 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
             currentPassword,
             newPassword,
           });
-          
+
           if (passwordResponse) {
             toast.success("비밀번호 정보가 수정 되었습니다.");
           }
@@ -300,16 +314,15 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
   };
 
   const handleCancel = () => {
-     if (modalType === "mentor" && mentorSettingRef.current) {
-       mentorSettingRef.current.resetForm();
-     } else if (modalType === "myInfo" && myInfoSettingRef.current) {
-       myInfoSettingRef.current.resetForm();
-     } else if (modalType === "password" && passwordContentRef.current) {
-       passwordContentRef.current.resetForm();
-     }
+    if (modalType === "mentor" && mentorSettingRef.current) {
+      mentorSettingRef.current.resetForm();
+    } else if (modalType === "myInfo" && myInfoSettingRef.current) {
+      myInfoSettingRef.current.resetForm();
+    } else if (modalType === "password" && passwordContentRef.current) {
+      passwordContentRef.current.resetForm();
+    }
 
-     // 모달 닫기
-     modalRef.current?.closeModal();
+    modalRef.current?.closeModal();
   };
 
   return (
@@ -445,7 +458,14 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
         {modalType === "myInfo" && (
           <MyInfoSettingContent
             ref={myInfoSettingRef} // ref 추가 (MyInfoSettingContent도 forwardRef로 수정 필요)
-            initialData={myInfoFormData.data}
+            initialData={{
+              name: myInfo.name || "",
+              gender: myInfo.gender || 0,
+              year: birth.year,
+              month: birth.month,
+              day: birth.day,
+              address: myInfo.address || "",
+            }}
             onChange={setMyInfoFormData}
           />
         )}

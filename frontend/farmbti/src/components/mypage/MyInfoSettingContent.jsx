@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, forwardRef, useImperativeHandle } from "react";
 import { Link } from "react-router";
 import useKakaoAddressService from "../../API/useKakaoAddressService";
 
-const MyInfoSettingContent = ({ onChange, initialData }) => {
+const MyInfoSettingContent = forwardRef(({ onChange, initialData }, ref) => {
   const [formData, setFormData] = useState({
     name: initialData?.name || "",
     gender: initialData?.gender !== undefined ? Number(initialData.gender) : "",
@@ -17,6 +17,24 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
   const currentYear = new Date().getFullYear();
   const yearOptions = Array.from({ length: 100 }, (_, i) => currentYear - i);
   const monthOptions = Array.from({ length: 12 }, (_, i) => i + 1);
+
+  const resetForm = () => {
+    setFormData({
+      name: initialData?.name || "",
+      gender:
+        initialData?.gender !== undefined ? Number(initialData.gender) : "",
+      year: initialData?.year || "",
+      month: initialData?.month || "",
+      day: initialData?.day || "",
+      address: initialData?.address || "",
+    });
+    
+    setErrors({});
+  };
+
+  useImperativeHandle(ref, () => ({
+    resetForm,
+  }));
 
   const getDaysInMonth = (year, month) => {
     return new Date(year, month, 0).getDate();
@@ -262,6 +280,6 @@ const MyInfoSettingContent = ({ onChange, initialData }) => {
       </div>
     </>
   );
-};
+});
 
 export default MyInfoSettingContent;
