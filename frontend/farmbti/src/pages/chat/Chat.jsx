@@ -367,8 +367,8 @@ const Chat = () => {
                   className={`flex items-center p-2 hover:bg-gray-100 rounded cursor-pointer ${room.roomId === roomId ? 'bg-green-100' : ''}`}
                   onClick={() => setRoomId(room.roomId)}
                 >
-                  <div className="w-12 h-12 rounded-full overflow-hidden mr-3">
-                    <img 
+                  <div className="w-12 h-12 rounded-full overflow-hidden mr-3 flex-shrink-0">
+                      <img 
                       src={room.otherUserProfile && room.otherUserProfile.startsWith('http') 
                         ? room.otherUserProfile 
                         : `/api/placeholder/48/48`} 
@@ -376,12 +376,16 @@ const Chat = () => {
                       className="w-full h-full object-cover" 
                     />
                   </div>
-                  <div>
-                    <p className="font-bold">{room.otherUserName}</p>
-                    <p className="text-sm text-gray-500">
-                      {room.lastMessage || "멘토와의 대화를 시작합니다"}
-                    </p>
-                  </div>
+                  <div className="min-w-0 flex-1">
+                      <p className="font-bold truncate">{room.otherUserName}</p>
+                      <p className="text-sm text-gray-500 truncate">
+                        {room.lastMessage 
+                          ? (room.lastMessage.length > 20 
+                            ? room.lastMessage.substring(0, 20) + '...' 
+                            : room.lastMessage)
+                          : "대화를 시작합니다"}
+                      </p>
+                    </div>
                 </div>
               ))
             ) : (
