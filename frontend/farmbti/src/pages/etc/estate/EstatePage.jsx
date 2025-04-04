@@ -26,9 +26,12 @@ const EstatePage = () => {
   // 도(province) 목록을 KoreaCityData에서 가져오기
   const provinces = Object.keys(KoreaCityData);
 
-  // 초기 로드 및 페이지 변경 시 데이터 로드
   useEffect(() => {
     window.scrollTo(0, 0);
+  }, []);
+
+  // 초기 로드 및 페이지 변경 시 데이터 로드
+  useEffect(() => {
     if (isFiltered) {
       // 필터링된 상태에서 페이지네이션
       getFilteredPropertiesWithPagination(activePage);
