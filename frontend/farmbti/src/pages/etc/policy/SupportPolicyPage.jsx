@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import PageHeader from '../../../components/common/PageHeader';
 import PolicyCard from '../../../components/etc/policy/PolicyCard';
 import PaginationComponent from '../../../components/common/Pagination';
@@ -23,6 +23,8 @@ const SupportPolicyPage = () => {
   const [siGunGuList, setSiGunGuList] = useState([]);
   const [isFiltering, setIsFiltering] = useState(false);
   const [filterParams, setFilterParams] = useState({ do_: '', city: '' });
+  const prevFilterParams = useRef({ do_: '', city: '' });
+  const isFilterButtonDisabled = useRef(false);
 
   // 도 선택 시 시군구 리스트 업데이트
   useEffect(() => {
@@ -35,6 +37,7 @@ const SupportPolicyPage = () => {
     }
   }, [selectedDo]);
 
+  // API 호출 useEffect 수정
   useEffect(() => {
     const fetchPolicies = async () => {
       try {
@@ -42,19 +45,16 @@ const SupportPolicyPage = () => {
         let response;
         
         if (isFiltering) {
-          // 지역 필터링
+          // 도만 선택했을 때도 지역 필터링 API 호출
           response = await getRegionPolicyList(
-            activePage - 1, 
-            itemsPerPage, 
-            filterParams.do_, 
-            filterParams.city
+            activePage - 1,
+            itemsPerPage,
+            filterParams.do_,
+            filterParams.city || ''  // 시/군/구가 없으면 빈 문자열 전달
           );
         } else {
-          // 전체 조회
           response = await getAllPolicyList(activePage - 1, itemsPerPage);
         }
-        
-        console.log('API Response:', response);
         
         if (response?.content) {
           setAllPolicies(response.content);
@@ -76,7 +76,47 @@ const SupportPolicyPage = () => {
     };
 
     fetchPolicies();
-  }, [activePage, isFiltering, filterParams]);
+  }, [activePage, isFiltering, filterParams, itemsPerPage]);
+
+  // 필터 적용 핸들러 수정
+  const handleFilterApply = useCallback(() => {
+    // 필터 값이 변경되지 않았으면 무시
+    if (prevFilterParams.current.do_ === selectedDo && 
+        prevFilterParams.current.city === selectedSiGunGu) {
+      return;
+    }
+
+    setActivePage(1);
+    const newFilterParams = {
+      do_: selectedDo,
+      city: selectedSiGunGu
+    };
+    
+    // 도가 선택되었으면 필터링 모드로 전환
+    if (selectedDo) {
+      setIsFiltering(true);
+    } else {
+      setIsFiltering(false);
+    }
+    
+    prevFilterParams.current = newFilterParams;
+    setFilterParams(newFilterParams);
+  }, [selectedDo, selectedSiGunGu]);
+
+  // 도 선택 핸들러 수정
+  const handleDoChange = useCallback((e) => {
+    const value = e.target.value;
+    setSelectedDo(value);
+    setSelectedSiGunGu('');
+    
+    // 도 선택이 해제된 경우에도 필터링 상태는 유지
+    // 실제 필터링은 '필터 적용' 버튼을 통해서만 이루어짐
+  }, []);
+
+  // 시/군/구 선택 핸들러 수정
+  const handleSiGunGuChange = useCallback((e) => {
+    setSelectedSiGunGu(e.target.value);
+  }, []);
 
   // 페이지 변경 핸들러
   const handlePageChange = (pageNumber) => {
@@ -87,39 +127,32 @@ const SupportPolicyPage = () => {
     });
   };
 
-  // 필터 적용 핸들러
-  const handleFilterApply = () => {
-    setActivePage(1);
-    setIsFiltering(true);
-    setFilterParams({
-      do_: selectedDo,
-      city: selectedSiGunGu
-    });
-  };
-
-  // 도 선택 핸들러
-  const handleDoChange = (e) => {
-    const value = e.target.value;
-    setSelectedDo(value);
-    setSelectedSiGunGu('');
-    if (!value) {
-      setIsFiltering(false);
-      setFilterParams({ do_: '', city: '' });
-      setActivePage(1);
-    }
-  };
-
-  // 시/군/구 선택 핸들러
-  const handleSiGunGuChange = (e) => {
-    setSelectedSiGunGu(e.target.value);
-  };
-
   if (loading) {
-    return <LoadingSpinner text="정책 정보 불러오는 중..." />;
+    return (
+      <div className="bg-gray-50 min-h-screen pb-12">
+        <PageHeader 
+          title="지원 정책" 
+          description="관심있는 혜택을 찾아보세요."
+        />
+        <div className="max-w-5xl mx-auto mt-6 px-4">
+          <LoadingSpinner text="정책 정보 불러오는 중..." />
+        </div>
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="text-red-500 text-center">{error}</div>;
+    return (
+      <div className="bg-gray-50 min-h-screen pb-12">
+        <PageHeader 
+          title="지원 정책" 
+          description="관심있는 혜택을 찾아보세요."
+        />
+        <div className="max-w-5xl mx-auto mt-6 px-4">
+          <div className="text-red-500 text-center">{error}</div>
+        </div>
+      </div>
+    );
   }
 
   return (
