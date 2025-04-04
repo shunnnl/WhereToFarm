@@ -89,3 +89,10 @@ management:
     distribution:
       percentiles-histogram:
         http.server.requests: true
+      slo:
+        http.server.requests: 100ms, 300ms, 500ms, 1s
+    web:
+      server:
+        request:
+          autotime:
+            enabled: true
