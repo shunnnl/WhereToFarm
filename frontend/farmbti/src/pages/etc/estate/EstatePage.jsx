@@ -21,6 +21,8 @@ const EstatePage = () => {
   const itemsPerPage = 10;
 
   const [isFiltered, setIsFiltered] = useState(false);
+  // 이 부분이 중요: 필터 파라미터를 상태로 관리
+  const [filterParams, setFilterParams] = useState({ province: "", city: "" });
   const prevFilterParams = useRef({ province: "", city: "" });
 
   // 도(province) 목록을 KoreaCityData에서 가져오기
@@ -39,7 +41,7 @@ const EstatePage = () => {
       // 전체 데이터 페이지네이션
       getProperties(activePage);
     }
-  }, [activePage, isFiltered]);
+  }, [activePage, isFiltered, filterParams]); // filterParams 의존성 추가
 
   // 도(province) 선택 시 해당 시/군/구 목록 업데이트
   useEffect(() => {
@@ -76,8 +78,8 @@ const EstatePage = () => {
 
     try {
       const response = await getFilteredEstate(
-        prevFilterParams.current.province,
-        prevFilterParams.current.city,
+        filterParams.province, // 상태에서 값을 가져옴
+        filterParams.city, // 상태에서 값을 가져옴
         page - 1,
         itemsPerPage
       );
@@ -125,28 +127,34 @@ const EstatePage = () => {
 
   // 도/시 필터 적용 핸들러
   const handleFilter = () => {
-    // 필터 값이 변경되지 않았으면 무시
-    if (
-      prevFilterParams.current.province === selectedProvince &&
-      prevFilterParams.current.city === selectedCity
-    ) {
-      return;
-    }
-
     // 새로운 필터 상태 설정
     const newFilterParams = {
       province: selectedProvince,
-      city: selectedCity
+      city: selectedCity,
     };
+
+    // 이전 필터와 동일한지 확인
+    const isSameFilter =
+      prevFilterParams.current.province === newFilterParams.province &&
+      prevFilterParams.current.city === newFilterParams.city;
 
     // 도가 선택되었으면 필터링 모드로 전환
     if (selectedProvince) {
       setIsFiltered(true);
+      // 필터 참조값 업데이트
       prevFilterParams.current = newFilterParams;
-      setActivePage(1); // 필터링 시 첫 페이지로 돌아가기
+
+      // 필터가 변경된 경우에만 새 API 요청 트리거
+      if (!isSameFilter) {
+        setFilterParams(newFilterParams); // 상태 업데이트로 useEffect 트리거
+      }
+
+      // 필터 적용 시 API 호출을 위해 페이지 상태 리셋
+      setActivePage(1);
     } else {
       setIsFiltered(false);
       prevFilterParams.current = { province: "", city: "" };
+      setFilterParams({ province: "", city: "" });
       setActivePage(1);
     }
   };
