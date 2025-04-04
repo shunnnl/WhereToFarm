@@ -28,8 +28,7 @@ import java.util.UUID;
 @Slf4j
 public class S3Service {
 
-    // 이미지 리사이징 최대 크기 (가로 기준 픽셀)
-    private static final int MAX_WIDTH = 400;
+    private static final int MAX_WIDTH = 400; // 이미지 리사이징 최대 크기 (평균 : 800)
     private final AmazonS3 amazonS3;
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
@@ -63,12 +62,6 @@ public class S3Service {
 
     // 이미지 리사이징 메소드
     private InputStream resizeImage(MultipartFile file) throws IOException {
-        String contentType = file.getContentType();
-
-        // GIF 파일인 경우 리사이징 없이 원본 그대로 반환
-        if (contentType != null && contentType.contains("gif")) {
-            return file.getInputStream();
-        }
 
         // 원본 이미지 읽기
         BufferedImage originalImage = ImageIO.read(file.getInputStream());
@@ -131,9 +124,6 @@ public class S3Service {
             if (contentType.contains("png")) {
                 extension = ".png";
                 finalContentType = "image/png";
-            } else if (contentType.contains("gif")) {
-                extension = ".gif";
-                finalContentType = "image/gif";
             } else if (contentType.contains("jpeg") || contentType.contains("jpg")) {
                 extension = ".jpg";
                 finalContentType = "image/jpeg";
@@ -141,14 +131,7 @@ public class S3Service {
 
             String key = "uploads/" + userId + "/profile_" + uuid + extension;
 
-            InputStream inputStream;
-            // GIF 파일은 리사이징하지 않고 원본 사용 (애니메이션 유지)
-            if (contentType.contains("gif")) {
-                inputStream = file.getInputStream();
-            } else {
-                // 다른 이미지 타입은 리사이징
-                inputStream = resizeImage(file);
-            }
+            InputStream inputStream = resizeImage(file);
 
             byte[] imageBytes = inputStream.readAllBytes();
 
