@@ -142,6 +142,7 @@ const handleApiError = (error) => {
 // refreshToken을 이용한 토큰 갱신 함수
 const refreshAccessToken = async () => {
   try {
+    // 기존 코드 유지
     const refreshToken = localStorage.getItem("refreshToken");
     if (!refreshToken) {
       throw new Error("Refresh token not found");
@@ -177,28 +178,12 @@ const refreshAccessToken = async () => {
       throw new Error("Failed to refresh token");
     }
   } catch (error) {
-    // 리프레시 토큰 실패 시 로그아웃 처리
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("tokenExpires");
-    localStorage.removeItem("user");
-
-    // 인증 만료 이벤트 발생
-    window.dispatchEvent(
-      new CustomEvent("auth-logout", {
-        detail: { reason: "token-expired" },
-      })
-    );
-
-    return Promise.reject(
-      createErrorResponse(
-        "AUTH_EXPIRED",
-        "인증이 만료되었습니다. 다시 로그인해주세요.",
-        error
-      )
-    );
+    // 로컬 스토리지 정리
+    handleLogout();
+    return Promise.reject(error);
   }
 };
+
 
 // 인증 요구 api
 const authAxios = axios.create({
@@ -227,30 +212,24 @@ authAxios.interceptors.request.use(
 // 응답 인터셉터
 authAxios.interceptors.response.use(
   (response) => {
-    // 데이터가 이미 표준화된 형식인지 확인
+    // 기존 코드 유지
     if (response.data && response.data.success !== undefined) {
-      // success가 false인 경우 오류로 처리
       if (response.data.success === false) {
         return Promise.reject(response.data);
       }
       return response.data;
     }
-
-    // 표준화된 응답 객체로 변환
-    return {
-      success: true,
-      data: response.data,
-    };
+    return { success: true, data: response.data };
   },
   async (error) => {
     const originalRequest = error.config;
 
-    // 토큰 만료로 인한 401 에러이고, 이전에 재시도하지 않은 경우
+    // 401 오류 시 토큰 갱신 시도
     if (
       error.response &&
       error.response.status === 401 &&
       !originalRequest._retry &&
-      localStorage.getItem("refreshToken") // refreshToken이 있는 경우에만 시도
+      localStorage.getItem("refreshToken")
     ) {
       originalRequest._retry = true;
 
@@ -259,14 +238,43 @@ authAxios.interceptors.response.use(
         originalRequest.headers["Authorization"] = `Bearer ${accessToken}`;
         return authAxios(originalRequest);
       } catch (refreshError) {
+        // 토큰 갱신 실패 시 로그아웃
+        handleLogout();
         return Promise.reject(refreshError);
       }
+    }
+
+    // 403 오류도 로그아웃 처리
+    if (error.response && error.response.status === 403) {
+      handleLogout();
     }
 
     const errorResponse = handleApiError(error);
     return Promise.reject(errorResponse);
   }
 );
+
+
+// AxiosInstance.js에 간단한 로그아웃 함수 추가
+function handleLogout() {
+  // 로컬 스토리지 정리
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("refreshToken");
+  localStorage.removeItem("tokenExpires");
+  localStorage.removeItem("user");
+  
+  // 페이지 리디렉션 (로그인 페이지가 아닌 경우에만)
+  if (window.location.pathname !== '/login') {
+    window.location.href = '/login?reason=session_expired';
+  }
+}
+
+
+
+
+
+
+
 
 // 인증이 필요없는 api
 const publicAxios = axios.create({

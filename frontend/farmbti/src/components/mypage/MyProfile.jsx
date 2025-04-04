@@ -15,9 +15,10 @@ import MentorSettingContent from "./MentorSettingContent";
 import MyInfoSettingContent from "./MyInfoSettingContent";
 import MyPasswordContent from "./MyPasswordContent";
 import MyProfileImage from "./MyProfileImage";
+import ProfileSkeleton from "./skeleton/ProfileSkeleton";
 import { handleError } from "../../utils/ErrorUtil";
 
-const MyProfile = ({ myInfo: initialMyInfo }) => {
+const MyProfile = ({ myInfo: initialMyInfo, isLoading = false }) => {
   const modalRef = useRef(null);
   const passwordContentRef = useRef(null);
   const mentorSettingRef = useRef(null);
@@ -29,6 +30,9 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
   const [address, setAddress] = useState("");
   const [myImage, setMyImage] = useState({});
   const navigate = useNavigate();
+
+  // 내부 로딩 상태 추가
+  const [internalLoading, setInternalLoading] = useState(true);
 
   // 모달 타입 별 상태 분리
   const [mentorFormData, setMentorFormData] = useState({
@@ -68,6 +72,25 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
 
     return address;
   };
+
+  // 초기 데이터 로딩 처리
+  useEffect(() => {
+    // 외부에서 전달된 로딩 상태가 true이면 내부 로딩 상태도 true로 유지
+    if (isLoading) {
+      setInternalLoading(true);
+      return;
+    }
+
+    // 초기 데이터 로딩 효과를 위해 짧은 지연 설정
+    const timer = setTimeout(() => {
+      if (initialMyInfo && Object.keys(initialMyInfo).length > 0) {
+        setMyInfo(initialMyInfo);
+        setInternalLoading(false);
+      }
+    }, 300); // 300ms의 지연으로 로딩 효과 부여
+
+    return () => clearTimeout(timer);
+  }, [initialMyInfo, isLoading]);
 
   useEffect(() => {
     if (!myInfo) {
@@ -327,8 +350,20 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
     modalRef.current?.closeModal();
   };
 
+  // 스켈레톤 UI를 위한 최소 높이 클래스
+  const containerStyle = "min-h-screen";
+
+  // 로딩 중이거나 데이터가 없을 때 스켈레톤 표시
+  if (internalLoading || !myInfo) {
+    return (
+      <div className={containerStyle}>
+        <ProfileSkeleton />
+      </div>
+    );
+  }
+
   return (
-    <div>
+    <div className={containerStyle}>
       <div className="flex flex-col items-center pt-10">
         <MyProfileImage
           imageUrl={myImage.imageUrl}

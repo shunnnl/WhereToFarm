@@ -52,8 +52,14 @@ const SignupPage = () => {
   const isValidName = (name) => {
     if (!name || name.trim() === "") return false;
     const trimmedName = name.trim();
-    return trimmedName.length >= 2 && trimmedName.length <= 20;
-  };
+    
+    // 길이 검증 (2~20자)
+    if (trimmedName.length < 2 || trimmedName.length > 20) return false;
+    
+    // 특수문자가 없는지 검증 (영문, 한글, 숫자만 허용)
+    const nameRegex = /^[A-Za-z가-힣0-9\s]+$/;
+    return nameRegex.test(trimmedName);
+    };
 
   // Email validation function
   const isValidEmail = (email) => {
@@ -87,10 +93,12 @@ const SignupPage = () => {
     // 이름 검증
     if (!formData.name || formData.name.trim() === "") {
       newErrors.name = '이름은 필수 입력 항목입니다.';
-    } else if (!isValidName(formData.name)) {
+    } else if (formData.name.trim().length < 2 || formData.name.trim().length > 20) {
       newErrors.name = '이름은 2자 이상 20자 이하로 입력해주세요.';
+    } else if (!/^[A-Za-z가-힣0-9\s]+$/.test(formData.name.trim())) {
+      newErrors.name = '이름에는 특수문자를 사용할 수 없습니다.';
     }
-    
+      
     // 이메일 검증
     if (!formData.email) {
       newErrors.email = '이메일은 필수 입력 항목입니다.';
