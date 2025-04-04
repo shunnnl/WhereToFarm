@@ -18,6 +18,7 @@ public class ChatMessage {
     @Column(name = "message_id")
     private Long messageId;
 
+    @Column(nullable = false, length = 1000)
     private String content;
 
     @Column(name = "sender_id")
