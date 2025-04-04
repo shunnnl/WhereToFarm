@@ -5,10 +5,9 @@ import Pagination from 'react-js-pagination';
 import PaginationComponent from '../common/Pagination.jsx';
 import MentorSelect from './MentorSelect'; 
 import KoreaCityData from '../../asset/data/KoreaCityData.js'
-
-
-
 import { useRef, useEffect, useState } from 'react';
+
+
 const MapSection = () => {
     const [hoveredRegion, setHoveredRegion] = useState(null);
     const svgRef = useRef(null);
@@ -126,6 +125,10 @@ const MapSection = () => {
                     const candidateList = findCandidateRegion(region.name);
                     setCandidate(candidateList);
                     console.log("candidate = ", candidateList);
+
+                    // 다른 region을 선택할 때마다 페이지네이션 초기화
+                    setActivePage(1);
+
                     
                     // 이전에 선택한 지역이 있으면 원래 색상으로 복원
                     if (selectedRegion && selectedRegion.id !== region.id) {
