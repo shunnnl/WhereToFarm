@@ -55,13 +55,13 @@ const Navbar = () => {
     const handleMouseLeave = () => {
       setTimeout(() => {
           setIsDropdownOpen(false);
-      }, 2000);
+      }, 3000);
     };
   
     const handleNotificationMouseLeave = () => {
         setTimeout(() => {
             setIsNotificationOpen(false);
-        }, 2000);
+        }, 3000);
     };
     
     // 드롭다운 외부 클릭 시 닫기
@@ -152,7 +152,7 @@ const Navbar = () => {
                         
                         // 토스트 알림 표시
                         toast.info(`${receivedData.sender}님의 새 메시지가 도착했습니다.`, {
-                            position: "top-right",
+                            position: "bottom-right",
                             autoClose: 5000,
                             hideProgressBar: false,
                             closeOnClick: true,

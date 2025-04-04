@@ -157,6 +157,7 @@ function App() {
             rtl={false}
             pauseOnFocusLoss
             draggable
+            style={{ zIndex: 10000 }}
           />
         </div>
       </BrowserRouter>
