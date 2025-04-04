@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
 
 @RestController
 @RequestMapping("/news")
@@ -32,7 +33,7 @@ public class NewsController {
 
     @GetMapping("/list")
     @Operation(summary = "뉴스 목록", description = "뉴스 목록들을 불러옵니다.")
-    public CommonResponseDto getList() throws UnsupportedEncodingException, JsonProcessingException {
+    public CommonResponseDto getList() throws UnsupportedEncodingException, JsonProcessingException, ParseException {
         String keyword = "귀농";
         return CommonResponseDto.ok(newsService.getNewsList(keyword));
     }
