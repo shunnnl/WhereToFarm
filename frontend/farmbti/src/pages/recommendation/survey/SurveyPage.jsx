@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import ProgressBar from '../../../components/recommendation/survey/ProgressBar';
 import SurveyQuestion from '../../../components/recommendation/survey/SurveyQuestion';
 import NavigationButtons from '../../../components/recommendation/survey/NavigationButtons';
-import { questions } from '../../../data/surveyQuestions';
+import { questions } from '../../../asset/data/surveyQuestions';
 import { createReport } from '../../../API/report/ReportAPI';
 import { toast } from 'react-toastify';
 import LoadingSpinner from '../../../components/common/LoadingSpinner';
