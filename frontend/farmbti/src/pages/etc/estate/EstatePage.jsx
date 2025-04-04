@@ -1,10 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import PageHeader from "../../../components/common/PageHeader";
 import PropertyCard from "../../../components/etc/estate/PropertyCard";
 import LoadingSpinner from "../../../components/common/LoadingSpinner";
 import PaginationComponent from "../../../components/common/Pagination";
 import { getAllEstate, getFilteredEstate } from "../../../API/etc/EstateAPI";
-import { toast } from "react-toastify";
 import KoreaCityData from "../../../asset/data/KoreaCityData";
 import { handleError } from "../../../utils/ErrorUtil";
 
@@ -22,6 +21,9 @@ const EstatePage = () => {
   const itemsPerPage = 10;
 
   const [isFiltered, setIsFiltered] = useState(false);
+  // 이 부분이 중요: 필터 파라미터를 상태로 관리
+  const [filterParams, setFilterParams] = useState({ province: "", city: "" });
+  const prevFilterParams = useRef({ province: "", city: "" });
 
   // 도(province) 목록을 KoreaCityData에서 가져오기
   const provinces = Object.keys(KoreaCityData);
@@ -39,7 +41,7 @@ const EstatePage = () => {
       // 전체 데이터 페이지네이션
       getProperties(activePage);
     }
-  }, [activePage, isFiltered]);
+  }, [activePage, isFiltered, filterParams]); // filterParams 의존성 추가
 
   // 도(province) 선택 시 해당 시/군/구 목록 업데이트
   useEffect(() => {
@@ -76,8 +78,8 @@ const EstatePage = () => {
 
     try {
       const response = await getFilteredEstate(
-        selectedProvince,
-        selectedCity,
+        filterParams.province, // 상태에서 값을 가져옴
+        filterParams.city, // 상태에서 값을 가져옴
         page - 1,
         itemsPerPage
       );
@@ -125,14 +127,36 @@ const EstatePage = () => {
 
   // 도/시 필터 적용 핸들러
   const handleFilter = () => {
+    // 새로운 필터 상태 설정
+    const newFilterParams = {
+      province: selectedProvince,
+      city: selectedCity,
+    };
+
+    // 이전 필터와 동일한지 확인
+    const isSameFilter =
+      prevFilterParams.current.province === newFilterParams.province &&
+      prevFilterParams.current.city === newFilterParams.city;
+
+    // 도가 선택되었으면 필터링 모드로 전환
     if (selectedProvince) {
       setIsFiltered(true);
-      getFilteredPropertiesWithPagination(1);
+      // 필터 참조값 업데이트
+      prevFilterParams.current = newFilterParams;
+
+      // 필터가 변경된 경우에만 새 API 요청 트리거
+      if (!isSameFilter) {
+        setFilterParams(newFilterParams); // 상태 업데이트로 useEffect 트리거
+      }
+
+      // 필터 적용 시 API 호출을 위해 페이지 상태 리셋
+      setActivePage(1);
     } else {
       setIsFiltered(false);
-      getProperties(1);
+      prevFilterParams.current = { province: "", city: "" };
+      setFilterParams({ province: "", city: "" });
+      setActivePage(1);
     }
-    setActivePage(1); // 필터링 시 첫 페이지로 돌아가기
   };
 
   return (
@@ -197,7 +221,7 @@ const EstatePage = () => {
           </div>
 
           {/* 매물 카드 목록 */}
-          <div className="max-w-3xl mx-auto space-y-4 p-4 min-h-[500px]">
+          <div className="max-w-3xl mx-auto space-y-4 p-4">
             {loading ? (
               // 로딩 중에는 이 부분만 표시
               <div className="py-12 flex justify-center items-center">
@@ -234,18 +258,15 @@ const EstatePage = () => {
             )}
           </div>
 
-          {/* 페이지네이션 컴포넌트 */}
-          {!loading && !error && totalItemsCount > itemsPerPage && (
-            <div className="p-4 border-t border-gray-200">
-              <PaginationComponent
-                activePage={activePage}
-                totalItemsCount={totalItemsCount}
-                onChange={handlePageChange}
-                itemsPerPage={itemsPerPage}
-                className="flex justify-center"
-              />
-            </div>
-          )}
+          <div className="p-4 border-t border-gray-200">
+            <PaginationComponent
+              activePage={activePage}
+              totalItemsCount={totalItemsCount}
+              onChange={handlePageChange}
+              itemsPerPage={itemsPerPage}
+              className="flex justify-center"
+            />
+          </div>
         </div>
       </div>
     </div>
