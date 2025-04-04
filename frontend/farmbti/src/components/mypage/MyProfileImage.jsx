@@ -26,18 +26,18 @@ const MyProfileImage = ({ imageUrl, isDefaultImage }) => {
   const validateFile = (file) => {
     // 1. 파일 확장자 확인
     const fileName = file.name.toLowerCase();
-    const validExtensions = [".jpg", ".jpeg", ".png", ".gif"];
+    const validExtensions = [".jpg", ".jpeg", ".png"];
     const fileExtension = "." + fileName.split(".").pop();
 
     if (!validExtensions.includes(fileExtension)) {
-      toast.warning("JPG, JPEG, PNG, GIF 형식의 이미지만 업로드 가능합니다.");
+      toast.warning("JPG, JPEG, PNG 형식의 이미지만 업로드 가능합니다.");
       return false;
     }
 
     // 2. MIME 타입 확인
-    const validMimeTypes = ["image/jpeg", "image/png", "image/gif"];
+    const validMimeTypes = ["image/jpeg", "image/png"];
     if (!validMimeTypes.includes(file.type)) {
-      toast.warning("JPG, JPEG, PNG, GIF 형식의 이미지만 업로드 가능합니다.");
+      toast.warning("JPG, JPEG, PNG 형식의 이미지만 업로드 가능합니다.");
       return false;
     }
 
@@ -75,16 +75,7 @@ const MyProfileImage = ({ imageUrl, isDefaultImage }) => {
           ) {
             isValid = true;
           }
-          // GIF: 47 49 46 38
-          else if (
-            uint[0] === 0x47 &&
-            uint[1] === 0x49 &&
-            uint[2] === 0x46 &&
-            uint[3] === 0x38
-          ) {
-            isValid = true;
-          }
-
+          
           if (isValid) {
             resolve(true);
           } else {
@@ -217,7 +208,7 @@ const MyProfileImage = ({ imageUrl, isDefaultImage }) => {
             <button
               className="bg-primaryGreen text-white p-1 rounded-md w-8 h-8 flex justify-center items-center"
               onClick={handleButtonClick}
-              title="이미지 업로드는 5MB 이하의 JPG, PNG, GIF 형식만 가능합니다."
+              title="이미지 업로드는 5MB 이하의 JPG, PNG 형식만 가능합니다."
               disabled={isLoading}
             >
               <Camera size={20} strokeWidth={1} />
