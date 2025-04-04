@@ -7,13 +7,16 @@ import bellIcon from "../../asset/navbar/bell_icon.svg";
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
 import { authAxios } from '../../API/common/AxiosInstance';
+import { useLocation } from 'react-router-dom';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../../store/slices/authSlice'; // 로그아웃 액션 import 경로 수정
 
 const Navbar = () => {
     const menuItemClass = "py-1 px-4 text-gray-900 hover:text-green-700";
-    
+    const location = useLocation();
+    const isInChatPage = location.pathname === '/chat';
+
     // Redux 스토어에서 로그인 상태 가져오기
     const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
     
@@ -140,6 +143,7 @@ const Navbar = () => {
 
                         };
                         console.log("생성된 알림 객체:", notification);
+                        console.log("메세지 길이=", notification.message.length)
 
                         
                         // 새 알림 추가 및 읽지 않은 알림 카운트 증가
