@@ -1,5 +1,7 @@
 import { Provider } from "react-redux";
 import { store } from "./store";
+import { logout } from './store/slices/authSlice';
+
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -43,6 +45,8 @@ const ProtectedRoute = ({ children }) => {
 };
 
 function App() {
+
+
   return (
     <Provider store={store}>
       <BrowserRouter>
