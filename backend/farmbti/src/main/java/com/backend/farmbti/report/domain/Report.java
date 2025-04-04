@@ -5,7 +5,6 @@ import com.backend.farmbti.common.entity.TimeStampEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +41,7 @@ public class Report extends TimeStampEntity {
     @Column(name = "p_ratio", nullable = false)
     private Float pRatio;
 
+    @Builder.Default
     @OneToMany(mappedBy = "report", cascade = CascadeType.ALL)
     private List<ReportRegion> reportRegions = new ArrayList<>();
 

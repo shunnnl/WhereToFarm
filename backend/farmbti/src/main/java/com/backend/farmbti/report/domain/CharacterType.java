@@ -31,6 +31,7 @@ public class CharacterType {
     @Column(name = "character_image", length = 255, nullable = false)
     private String image;
 
+    @Builder.Default
     @OneToMany(mappedBy = "characterType", cascade = CascadeType.ALL)
     private List<Report> reports = new ArrayList<>();
 }

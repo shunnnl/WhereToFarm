@@ -320,7 +320,7 @@ public class UsersService {
         // 4. 새 이미지 업로드
         String newProfileImageKey;
         try {
-            newProfileImageKey = s3Service.uploadUserProfileImage(file, userId);
+            newProfileImageKey = s3Service.uploadResizedProfileImage(file, userId);
             if (newProfileImageKey == null) {
                 throw new GlobalException(S3ErrorCode.PROFILE_IMAGE_UPLOAD_FAILED);
             }

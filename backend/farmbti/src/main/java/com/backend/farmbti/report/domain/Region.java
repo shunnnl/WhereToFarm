@@ -28,9 +28,11 @@ public class Region {
     @Column(name = "recommendation_reason", length = 500, nullable = false)
     private String recommendationReason;
 
+    @Builder.Default
     @OneToMany(mappedBy = "region", cascade = CascadeType.ALL)
     private List<RegionCrop> regionCrops = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "region", cascade = CascadeType.ALL)
     private List<ReportRegion> reportRegions = new ArrayList<>();
 }
