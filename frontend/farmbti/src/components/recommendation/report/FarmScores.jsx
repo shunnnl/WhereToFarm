@@ -1,56 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 
 const FarmScores = ({ scores }) => {
-  const [animated, setAnimated] = useState(false);
-  const [animatedScores, setAnimatedScores] = useState({
-    F: 0, A: 0, R: 0, M: 0
-  });
-  const [displayScores, setDisplayScores] = useState({
-    F: 0, A: 0, R: 0, M: 0
-  });
-
-  const frameRef = useRef();
-  const startTimeRef = useRef();
-
-  useEffect(() => {
-    // 컴포넌트가 마운트되면 애니메이션 시작
-    setAnimated(true);
-    
-    const animationDuration = 2000; // 2초로 변경
-
-    const animate = (currentTime) => {
-      if (!startTimeRef.current) {
-        startTimeRef.current = currentTime;
-      }
-
-      const elapsedTime = currentTime - startTimeRef.current;
-      const progress = Math.min(elapsedTime / animationDuration, 1);
-
-      // easeOutQuart 이징 함수 적용
-      const easeProgress = 1 - Math.pow(1 - progress, 4);
-
-      const newScores = {};
-      Object.entries(scores).forEach(([key, targetScore]) => {
-        newScores[key] = targetScore * easeProgress;
-      });
-
-      setDisplayScores(newScores);
-      setAnimatedScores(newScores);
-
-      if (progress < 1) {
-        frameRef.current = requestAnimationFrame(animate);
-      }
-    };
-
-    frameRef.current = requestAnimationFrame(animate);
-
-    return () => {
-      if (frameRef.current) {
-        cancelAnimationFrame(frameRef.current);
-      }
-    };
-  }, [scores]);
-
   const farmCategories = {
     F: { 
       title: ['F', 'unds'],
@@ -94,15 +44,14 @@ const FarmScores = ({ scores }) => {
                 <div 
                   className={`h-full ${farmCategories[key].color}`}
                   style={{ 
-                    width: `${displayScores[key]*100}%`,
-                    transition: 'width 0.1s linear'
+                    width: `${score*100}%`
                   }}
                 />
               </div>
             </div>
             <div className="w-16 text-right">
               <span className="text-gray-900 font-bold">
-                {Math.round(displayScores[key]*100)}점
+                {Math.round(score*100)}점
               </span>
             </div>
           </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import ReportTitle from '../../../components/recommendation/report/ReportTitle';
 import FarmerDescription from '../../../components/recommendation/report/FarmerDescription';
 import FarmScores from '../../../components/recommendation/report/FarmScores';
@@ -7,9 +7,11 @@ import RecommendedRegions from '../../../components/recommendation/report/Recomm
 import { getReport } from '../../../API/report/ReportAPI';
 import LoadingSpinner from '../../../components/common/LoadingSpinner';
 import { toast } from 'react-toastify';
+import { handleError } from '../../../utils/ErrorUtil';
 
 const ReportPage = () => {
   const { reportId } = useParams();
+  const navigate = useNavigate();
   const [reportData, setReportData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -24,8 +26,7 @@ const ReportPage = () => {
         setError(null);
       } catch (error) {
         console.error('리포트 조회 실패:', error);
-        setError('리포트를 불러오는데 실패했습니다.');
-        toast.error('리포트를 불러오는데 실패했습니다.');
+        handleError(error)
       } finally {
         setLoading(false);
       }
@@ -35,6 +36,10 @@ const ReportPage = () => {
       fetchReportData();
     }
   }, [reportId]);
+
+  const handleNavigate = (path) => {
+    navigate(path);
+  };
 
   if (loading) {
     return <LoadingSpinner text="리포트를 불러오는 중..." />;
@@ -70,6 +75,33 @@ const ReportPage = () => {
           </div>
         </div>
         <RecommendedRegions regions={reportData.topRegions} />
+        
+        {/* 네비게이션 버튼 섹션 */}
+        <div className="flex justify-center gap-4 mt-8 mb-12">
+          <button
+            onClick={() => handleNavigate('/mypage')}
+            className="px-6 py-3 bg-[#7AB98E] text-white rounded-lg hover:bg-[#3B6E54] transition-colors flex items-center gap-2"
+          >
+            <span>마이페이지</span>
+            <span>→</span>
+          </button>
+          
+          <button
+            onClick={() => handleNavigate('/surveyintro')}
+            className="px-6 py-3 bg-white text-[#7AB98E] border-2 border-[#7AB98E] rounded-lg hover:bg-[#F8F9F3] transition-colors flex items-center gap-2"
+          >
+            <span>다시 설문하기</span>
+            <span>↻</span>
+          </button>
+          
+          <button
+            onClick={() => handleNavigate('/')}
+            className="px-6 py-3 bg-white text-gray-600 border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2"
+          >
+            <span>홈으로</span>
+            <span>🏠</span>
+          </button>
+        </div>
       </div>
     </div>
   );
