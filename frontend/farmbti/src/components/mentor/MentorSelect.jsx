@@ -81,91 +81,49 @@ const MentorSelect = ({ candidateList, regionName, cityName }) => {
     }
   
     try {
-      // 디버깅을 위한 로그
       console.log('도시명으로 멘토 조회 요청:', city);
       
       // API 요청
       const response = await authAxios.post('/mentors/by-location', { city: city });
       
-      // 응답 로깅
-      console.log('API 응답 전체 객체:', response);
+      console.log('API 응답:', response);
       
-      // 기본 응답 구조 확인
-      if (!response || !response.data) {
-        setError("멘토정보가 없습니다");
-        return;
-      }
-      
-      const responseData = response.data;
-      console.log('서버 응답 데이터:', responseData);
-      
-      // 응답이 배열인 경우 (직접 멘토 데이터가 오는 경우)
-      if (Array.isArray(responseData)) {
-        if (responseData.length === 0) {
+      // 응답 데이터 처리
+      // authAxios의 인터셉터가 이미 표준 형식으로 변환해줌
+      if (response && response.data) {
+        // 데이터가 있는 경우 멘토 목록 설정
+        setMentors(response.data);
+        
+        // 빈 배열인 경우 메시지 표시
+        if (response.data.length === 0) {
           setNoDataMessage("해당 지역에 멘토가 없습니다");
-        } else {
-          setMentors(responseData);
         }
-        return;
+      } else {
+        // 데이터가 없는 경우
+        setNoDataMessage("멘토 데이터가 없습니다");
       }
-      
-      // 응답이 success/data/error 형태인 경우
-      if (responseData && typeof responseData === 'object') {
-        // 지역에 멘토가 없는 경우 (NO_MENTORS_IN_LOCATION)
-        if (responseData.success === false && 
-            responseData.error && 
-            responseData.error.code === "NO_MENTORS_IN_LOCATION") {
-          setNoDataMessage(responseData.error.message);
-          return;
-        }
-        
-        // 다른 에러인 경우
-        if (responseData.success === false && responseData.error) {
-          setError(responseData.error.message);
-          return;
-        }
-        
-        // 성공 케이스지만 데이터가 없는 경우
-        if (responseData.success === true && 
-            (!responseData.data || responseData.data.length === 0)) {
-          setNoDataMessage("멘토 데이터가 없습니다");
-          return;
-        }
-        
-        // 성공 케이스이고 데이터가 있는 경우
-        if (responseData.success === true && responseData.data) {
-          setMentors(responseData.data);
-          return;
-        }
-      }
-      
-      // 예상치 못한 응답 형식
-      setError("예상치 못한 응답 형식입니다");
       
     } catch (err) {
       console.error('멘토 정보 로딩 에러:', err);
       
-      // 서버 응답이 있는 에러
-      if (err.response) {
-        console.error('에러 응답 상태:', err.response.status);
-        console.error('에러 데이터:', err.response.data);
-        
-        // 응답에 에러 메시지가 있으면 사용
-        if (err.response.data && err.response.data.error && err.response.data.error.message) {
-          setError(err.response.data.error.message);
-        } else {
-          setError(`서버 오류 (${err.response.status})`);
-        }
+      // 서버에서 제공하는 오류 메시지 직접 사용
+      if (err.error && err.error.message) {
+        // authAxios의 interceptor에서 이미 처리된 오류 객체
+        setError(err.error.message);
       } 
-      // 네트워크 오류 등
+      else if (err.response && err.response.data && err.response.data.error && err.response.data.error.message) {
+        // 직접적인 axios 응답에서 오류 메시지 추출
+        setError(err.response.data.error.message);
+      } 
       else {
+        // 기타 오류는 일반 메시지 표시
         setError(err.message || "멘토 정보를 불러오는데 문제가 발생했습니다");
       }
     } finally {
       setIsLoading(false);
     }
   };
-
+    
   return (
     <div className="w-full h-auto"
       style={{
