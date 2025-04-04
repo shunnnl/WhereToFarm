@@ -289,13 +289,12 @@ public class UsersService {
             throw new GlobalException(S3ErrorCode.FILE_NOT_PROVIDED);
         }
 
-        // 파일 타입 체크 - jpg, jpeg, gif, png만 허용
+        // 파일 타입 체크 - jpg, jpeg, png만 허용
         String contentType = file.getContentType();
         if (contentType == null || !(
                 contentType.equals("image/jpeg") ||
                         contentType.equals("image/jpg") ||
-                        contentType.equals("image/png") ||
-                        contentType.equals("image/gif"))) {
+                        contentType.equals("image/png"))) {
             throw new GlobalException(S3ErrorCode.UNSUPPORTED_FILE_TYPE);
         }
 
