@@ -10,7 +10,7 @@ const SurveyQuestion = ({ questionNumber, question, selectedValue, onValueChange
 
       {/* 응답 옵션 */}
       <div className="flex justify-between items-center gap-4">
-        <span className="text-gray-500">낮음</span>
+        <span className="text-gray-500 text-center">선호하지<br/>않음</span>
         <div className="flex-1 flex justify-between gap-4">
           {[1, 2, 3, 4, 5].map((value) => (
             <button
@@ -26,7 +26,7 @@ const SurveyQuestion = ({ questionNumber, question, selectedValue, onValueChange
             </button>
           ))}
         </div>
-        <span className="text-gray-500">높음</span>
+        <span className="text-gray-500 text-center">매우<br/>선호함</span>
       </div>
     </div>
   );
