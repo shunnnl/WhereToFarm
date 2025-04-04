@@ -1,3 +1,6 @@
+import React from "react";
+import ReactDOM from "react-dom";
+
 const DeleteConfirmModal = ({
   isOpen,
   onClose,
@@ -10,8 +13,8 @@ const DeleteConfirmModal = ({
 }) => {
   if (!isOpen) return null;
 
-
-  return (
+  // React Portal을 사용해 body에 직접 렌더링
+  return ReactDOM.createPortal(
     <div className="fixed inset-0 flex items-center justify-center z-50">
       {/* 백드롭 - 더 연한 검은색 */}
       <div
@@ -27,6 +30,7 @@ const DeleteConfirmModal = ({
           <br />
           삭제된 데이터는 복구할 수 없습니다.
         </p>
+        {itemName && <p className="text-gray-600 mb-4">"{itemName}"</p>}
         <div className="flex justify-end space-x-3">
           <button
             onClick={onClose}
@@ -42,7 +46,8 @@ const DeleteConfirmModal = ({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body // body에 직접 렌더링
   );
 };
 
