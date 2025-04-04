@@ -1,10 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import PageHeader from "../../../components/common/PageHeader";
 import PropertyCard from "../../../components/etc/estate/PropertyCard";
 import LoadingSpinner from "../../../components/common/LoadingSpinner";
 import PaginationComponent from "../../../components/common/Pagination";
 import { getAllEstate, getFilteredEstate } from "../../../API/etc/EstateAPI";
-import { toast } from "react-toastify";
 import KoreaCityData from "../../../asset/data/KoreaCityData";
 import { handleError } from "../../../utils/ErrorUtil";
 
@@ -22,6 +21,7 @@ const EstatePage = () => {
   const itemsPerPage = 10;
 
   const [isFiltered, setIsFiltered] = useState(false);
+  const prevFilterParams = useRef({ province: "", city: "" });
 
   // 도(province) 목록을 KoreaCityData에서 가져오기
   const provinces = Object.keys(KoreaCityData);
@@ -76,8 +76,8 @@ const EstatePage = () => {
 
     try {
       const response = await getFilteredEstate(
-        selectedProvince,
-        selectedCity,
+        prevFilterParams.current.province,
+        prevFilterParams.current.city,
         page - 1,
         itemsPerPage
       );
@@ -125,14 +125,30 @@ const EstatePage = () => {
 
   // 도/시 필터 적용 핸들러
   const handleFilter = () => {
+    // 필터 값이 변경되지 않았으면 무시
+    if (
+      prevFilterParams.current.province === selectedProvince &&
+      prevFilterParams.current.city === selectedCity
+    ) {
+      return;
+    }
+
+    // 새로운 필터 상태 설정
+    const newFilterParams = {
+      province: selectedProvince,
+      city: selectedCity
+    };
+
+    // 도가 선택되었으면 필터링 모드로 전환
     if (selectedProvince) {
       setIsFiltered(true);
-      getFilteredPropertiesWithPagination(1);
+      prevFilterParams.current = newFilterParams;
+      setActivePage(1); // 필터링 시 첫 페이지로 돌아가기
     } else {
       setIsFiltered(false);
-      getProperties(1);
+      prevFilterParams.current = { province: "", city: "" };
+      setActivePage(1);
     }
-    setActivePage(1); // 필터링 시 첫 페이지로 돌아가기
   };
 
   return (
