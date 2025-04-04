@@ -29,7 +29,7 @@ public class WebSocketController {
     @SendTo("/topic/chat/{roomId}")
     public MessageResponse sendMessage(@DestinationVariable Long roomId, MessageRequest messageRequest) {
 
-        if (messageRequest.getMessage().length() >= 1000) {
+        if (messageRequest.getMessage().length() >= 2000) {
             throw new GlobalException(ChatErrorCode.MESSAGE_TO_LONG);
         }
 

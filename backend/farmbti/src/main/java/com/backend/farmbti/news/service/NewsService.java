@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -16,10 +17,9 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -125,10 +125,11 @@ public class NewsService {
     }
 
     private String cleanHtmlTags(String text) {
-        return text.replaceAll("<[^>]*>", "");
+        text = text.replaceAll("<[^>]*>", ""); // 기존 HTML 태그 제거
+        return StringEscapeUtils.unescapeHtml4(text); // HTML 엔티티 디코딩
     }
 
-    public List<NewsResponse> getNewsList(String keyword) throws UnsupportedEncodingException, JsonProcessingException {
+    public List<NewsResponse> getNewsList(String keyword) throws UnsupportedEncodingException, JsonProcessingException, ParseException {
 
         String word = URLEncoder.encode(keyword, "UTF-8");
 
@@ -146,21 +147,30 @@ public class NewsService {
         JsonNode itemsNode = rootNode.get("items");
 
         List<NewsResponse> newsList = new ArrayList<>();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH); // 날짜 파싱용
+
 
         for (JsonNode item : itemsNode) {
             String title = cleanHtmlTags(item.get("title").asText());
+            title = StringEscapeUtils.unescapeHtml4(title); // HTML 엔터티 복원
             String link = item.get("link").asText();
-            String createdAt = item.get("pubDate").asText();
+            String createdAtStr = item.get("pubDate").asText();
+
+            Date createdAt = dateFormat.parse(createdAtStr); // 문자열을 날짜로 변환
 
             NewsResponse newsResponse = NewsResponse.builder()
                     .title(title)
                     .link(link)
-                    .createdAt(createdAt)
+                    .createdAt(createdAtStr)
+                    .parsedDate(createdAt) // 정렬을 위해 추가
                     .build();
 
             newsList.add(newsResponse);
 
         }
+
+        // 날짜 기준으로 최신순 정렬
+        newsList.sort(Comparator.comparing(NewsResponse::getParsedDate).reversed());
 
         return newsList;
 
