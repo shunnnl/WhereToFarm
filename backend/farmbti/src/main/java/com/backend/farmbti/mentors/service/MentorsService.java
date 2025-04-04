@@ -186,7 +186,13 @@ public class MentorsService {
     }
 
     private List<Mentors> findMentorsByCity(String city) {
-        List<Mentors> allMentors = mentorsRepository.findByUser_AddressContaining(city);
+        // 검색어 전처리 - 끝에 "시"나 "군"이 있으면 제거
+        String searchTerm = city;
+        if (city.endsWith("시") || city.endsWith("군")) {
+            searchTerm = city.substring(0, city.length() - 1);
+        }
+        
+        List<Mentors> allMentors = mentorsRepository.findByUser_AddressContaining(searchTerm);
 
         // 탈퇴하지 않은 사용자(isOut = 0)의 멘토만 필터링
         List<Mentors> activeMentors = allMentors.stream()
