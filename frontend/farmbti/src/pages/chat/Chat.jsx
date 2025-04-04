@@ -51,11 +51,26 @@ const [currentUser, setCurrentUser] = useState('');
 const messageIdCounter = useRef(0);
 const MAX_CHAR_LIMIT = 1000;
 const textareaRef = useRef(null);
+const [unreadMessages, setUnreadMessages] = useState({});
 
 // 뒤로가기 함수
 const handleGoBack = () => {
   navigate(-1);
 };
+
+// 불필요한 Navbar 알람 필터링 용용
+useEffect(() => {
+  if (roomId) {
+    console.log(`현재 채팅방을 ${roomId}로 설정합니다.`);
+    localStorage.setItem('currentChatRoomId', roomId);
+  }
+  
+  // 컴포넌트 언마운트 시 현재 채팅방 초기화
+  return () => {
+    console.log(`채팅방에서 나갑니다.`);
+    localStorage.removeItem('currentChatRoomId');
+  };
+}, [roomId]);
 
 // URL state에서 roomId 가져오기
 useEffect(() => {
@@ -129,10 +144,17 @@ let input = e.target.value;
 
 // 연속된 특수문자 사이에 숨겨진 공백 추가 (선택적)
 // 예: ",,,,," -> ", , , , ,"
-// 정규식은 실제 필요에 맞게 조정
-if (input.match(/([,;.!?]){5,}/g)) {
-  input = input.replace(/([,;.!?])([,;.!?])/g, '$1\u200B$2');
+const specialCharsRegex = /([!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]){5,}/g;
+  if (input.match(specialCharsRegex)) {
+    input = input.replace(/([!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])([!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])/g, '$1\u200B$2');
+  }
+
+  
+const longEnglishWordRegex = /[a-zA-Z]{15,}/g;
+if (input.match(longEnglishWordRegex)) {
+  input = input.replace(/([a-zA-Z]{10})([a-zA-Z])/g, '$1\u200B$2');
 }
+
 
 if (input.length <= MAX_CHAR_LIMIT) {
   setMessage(input);
@@ -334,11 +356,25 @@ const onMessageReceived = (payload, currentRoomId) => {
     // 현재 사용자 정보 가져오기
     const userInfo = localStorage.getItem('user');
     const currentUserId = userInfo ? JSON.parse(userInfo).id : null;
+
+    const messageContent = receivedMessage.content || receivedMessage.message;
+
     
     // 메시지에 roomId가 있고 현재 채팅방과 다르면 무시
     const messageRoomId = receivedMessage.roomId || receivedMessage.chatRoomId;
     if (messageRoomId && messageRoomId !== currentRoomId) {
       console.log(`다른 채팅방 메시지(${messageRoomId}), 현재 채팅방(${currentRoomId})에서 무시`);
+      
+      // 읽지 않은 메시지 카운트 증가
+      setUnreadMessages(prev => ({
+        ...prev,
+        [messageRoomId]: (prev[messageRoomId] || 0) + 1
+      }));
+      
+      // 채팅방 목록에서 해당 채팅방의 lastMessage 업데이트
+      updateChatRoomLastMessage(messageRoomId, receivedMessage.content || receivedMessage.message);
+      
+      
       return;
     }
     
@@ -370,12 +406,42 @@ const onMessageReceived = (payload, currentRoomId) => {
     
     // 메시지 목록에 추가
     setMessages(prev => [...prev, newMessage]);
+
+    // 채팅방 목록에서 현재 채팅방의 lastMessage 업데이트
+    updateChatRoomLastMessage(currentRoomId, messageContent);
+
     
     // 새 메시지가 추가되면 자동으로 맨 아래로 스크롤 (useEffect에서 처리)
   } catch (error) {
     console.error('메시지 처리 오류:', error);
   }
 };
+
+// 채팅방 목록 업데이트 함수 추가
+const updateChatRoomLastMessage = (roomId, lastMessage) => {
+  setChatRooms(prevRooms => {
+    return prevRooms.map(room => {
+      if (room.roomId === roomId) {
+        return { ...room, lastMessage };
+      }
+      return room;
+    });
+  });
+};
+
+// 채팅방 선택 시 읽지 않은 메시지 카운트 초기화
+const handleRoomSelect = (selectedRoomId) => {
+  setRoomId(selectedRoomId);
+  
+  // 선택한 채팅방의 읽지 않은 메시지 카운트 초기화
+  setUnreadMessages(prev => ({
+    ...prev,
+    [selectedRoomId]: 0
+  }));
+};
+
+
+
 
 
 // 시간 형식 변환 함수 - UTC를 KST로 변환하여 표시
@@ -499,9 +565,13 @@ const handleSendMessage = () => {
       time: formatTime(now),
       isMe: true // 내가 보낸 메시지
     };
-    
+     
     setMessages(prevMessages => [...prevMessages, newMessage]);
     setMessage('');
+
+    // 채팅방 목록에서 현재 채팅방의 lastMessage 업데이트
+    updateChatRoomLastMessage(roomId, message.trim());
+
     
     // 메시지 전송 후 스크롤 맨 아래로 이동 (useEffect에서 처리)
   }
@@ -542,41 +612,51 @@ return (
       
       {/* 대화 중인 멘토 목록 */}
       <div className="p-4 flex-1 overflow-y-auto">
-        <h3 className="text-lg font-bold mb-3">대화 중인 멘토 목록</h3>
-        <div className="space-y-4">
-          {chatRooms.length > 0 ? (
-            chatRooms.map((room) => (
-              <div 
-                key={room.roomId} 
-                className={`flex items-center p-2 hover:bg-gray-100 rounded cursor-pointer ${room.roomId === roomId ? 'bg-green-100' : ''}`}
-                onClick={() => setRoomId(room.roomId)}
-              >
-                <div className="w-12 h-12 rounded-full overflow-hidden mr-3 flex-shrink-0">
-                    <img 
-                    src={room.otherUserProfile && room.otherUserProfile.startsWith('http') 
-                      ? room.otherUserProfile 
-                      : `/api/placeholder/48/48`} 
-                    alt={room.otherUserName} 
-                    className="w-full h-full object-cover" 
-                  />
-                </div>
-                <div className="min-w-0 flex-1">
-                    <p className="font-bold truncate">{room.otherUserName}</p>
-                    <p className="text-sm text-gray-500 truncate">
-                      {room.lastMessage 
-                        ? (room.lastMessage.length > 20 
-                          ? room.lastMessage.substring(0, 20) + '...' 
-                          : room.lastMessage)
-                        : "대화를 시작합니다"}
-                    </p>
+      <h3 className="text-lg font-bold mb-3">대화 중인 멘토 목록</h3>
+            <div className="space-y-4">
+              {chatRooms.length > 0 ? (
+                chatRooms.map((room) => (
+                  <div 
+                    key={room.roomId} 
+                    className={`flex items-center p-2 hover:bg-gray-100 rounded cursor-pointer ${room.roomId === roomId ? 'bg-green-100' : ''}`}
+                    onClick={() => handleRoomSelect(room.roomId)}
+                  >
+                    <div className="w-12 h-12 rounded-full overflow-hidden mr-3 flex-shrink-0">
+                      <img 
+                        src={room.otherUserProfile && room.otherUserProfile.startsWith('http') 
+                          ? room.otherUserProfile 
+                          : `/api/placeholder/48/48`} 
+                        alt={room.otherUserName} 
+                        className="w-full h-full object-cover" 
+                      />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center justify-between">
+                        <p className="font-bold truncate">{room.otherUserName}</p>
+                        
+                        {/* 읽지 않은 메시지 카운트 표시 */}
+                        {unreadMessages[room.roomId] > 0 && (
+                          <span className="ml-2 bg-green-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                            {unreadMessages[room.roomId] > 9 ? '9+' : unreadMessages[room.roomId]}
+                          </span>
+                        )}
+                      </div>
+                      <p className={`text-sm ${unreadMessages[room.roomId] > 0 ? 'font-bold text-gray-800' : 'text-gray-500'} truncate`}>
+                        {room.lastMessage 
+                          ? (room.lastMessage.length > 20 
+                            ? room.lastMessage.substring(0, 20) + '...' 
+                            : room.lastMessage)
+                          : "대화를 시작합니다"}
+                      </p>
+                    </div>
                   </div>
-              </div>
-            ))
-          ) : (
-            <p className="text-gray-500">대화 중인 멘토가 없습니다.</p>
-          )}
-        </div>
-      </div>
+                ))
+              ) : (
+                <p className="text-gray-500">대화 중인 멘토가 없습니다.</p>
+              )}
+            </div>
+          </div>
+
     </div>
     
     
