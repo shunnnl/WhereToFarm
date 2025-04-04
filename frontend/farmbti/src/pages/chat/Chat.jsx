@@ -149,12 +149,11 @@ const specialCharsRegex = /([!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]){5,}/g;
     input = input.replace(/([!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])([!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])/g, '$1\u200B$2');
   }
 
-  
+
 const longEnglishWordRegex = /[a-zA-Z]{15,}/g;
 if (input.match(longEnglishWordRegex)) {
   input = input.replace(/([a-zA-Z]{10})([a-zA-Z])/g, '$1\u200B$2');
 }
-
 
 if (input.length <= MAX_CHAR_LIMIT) {
   setMessage(input);

@@ -38,8 +38,8 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
       iconSrc: "https://farmbticropbucket.s3.ap-northeast-2.amazonaws.com/crop/grape.png" 
     },
     { 
-      id: "파", 
-      label: "파", 
+      id: "대파", 
+      label: "대파", 
       iconSrc: "https://farmbticropbucket.s3.ap-northeast-2.amazonaws.com/crop/greenonion.png" 
     },
     {
@@ -63,8 +63,8 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
       iconSrc: "https://farmbticropbucket.s3.ap-northeast-2.amazonaws.com/crop/sweetpotato.png",
     },
     { 
-      id: "귤", 
-      label: "귤", 
+      id: "감귤", 
+      label: "감귤", 
       iconSrc: "https://farmbticropbucket.s3.ap-northeast-2.amazonaws.com/crop/tangerine.png" 
     },
     {
@@ -187,12 +187,11 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
       return false;
     }
     
-    // 멘토 소개 5자 이상 체크
-    if (!description.trim() || description.trim().length <= 5) {
-      toast.error('멘토 소개는 5자 이상 입력해주세요.');
-      return false;
+    if (!description.trim() || description.trim().length < 10) {
+      toast.error('멘토 소개는 10자 이상 입력해주세요.');
+      isValid = false;
     }
-    
+      
     return true;
   };
 
@@ -344,7 +343,6 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
                 name="Year"
                 value={formData.Year}
                 onChange={handleChange}
-                required
                 className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
               >
                 <option value="">연도 선택</option>
@@ -398,9 +396,8 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
                 className="w-full max-w-4xl px-3 py-2 border border-gray-300 rounded-lg 
                 focus:outline-none focus:ring-2 focus:ring-green-500
                 focus:border-transparent resize-y"
-                placeholder="5자 이상 100자 이내로 멘토 소개를 입력해주세요"
-                rows={5}
-                required
+                placeholder="10자 이상 100자 이내로 멘토 소개를 입력해주세요"
+                rows={10}
               />
               <div className="w-full text-right text-sm text-gray-500">
                 {description.length}/100
