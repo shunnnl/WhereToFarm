@@ -86,3 +86,6 @@ management:
       all: true
     tags:
       application: farmbti-backend
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
