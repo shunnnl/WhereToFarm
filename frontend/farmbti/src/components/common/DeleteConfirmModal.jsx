@@ -15,7 +15,7 @@ const DeleteConfirmModal = ({
 
   // React Portal을 사용해 body에 직접 렌더링
   return ReactDOM.createPortal(
-    <div className="fixed inset-0 flex items-center justify-center z-50">
+    <div className="fixed inset-0 flex items-center justify-center z-[200]">
       {/* 백드롭 - 더 연한 검은색 */}
       <div
         className="fixed inset-0 bg-black bg-opacity-30"
