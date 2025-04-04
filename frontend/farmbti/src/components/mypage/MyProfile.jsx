@@ -15,11 +15,13 @@ import MentorSettingContent from "./MentorSettingContent";
 import MyInfoSettingContent from "./MyInfoSettingContent";
 import MyPasswordContent from "./MyPasswordContent";
 import MyProfileImage from "./MyProfileImage";
-import { handleErrorToast } from "../../utils/ErrorUtils";
+import { handleError } from "../../utils/ErrorUtil";
 
 const MyProfile = ({ myInfo: initialMyInfo }) => {
   const modalRef = useRef(null);
   const passwordContentRef = useRef(null);
+  const mentorSettingRef = useRef(null);
+  const myInfoSettingRef = useRef(null);
   const [modalType, setModalType] = useState("");
   const [modalTitle, setModalTitle] = useState("");
   const [myInfo, setMyInfo] = useState(initialMyInfo);
@@ -127,25 +129,43 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
   const handleMetorSetting = () => {
     setModalType("mentor");
     setModalTitle("멘토 정보 수정");
+
+    if (mentorSettingRef.current) {
+      mentorSettingRef.current.resetForm();
+    }
     modalRef.current?.openModal();
   };
 
   const handleMyInfoSetting = () => {
-    // 현재 사용자 정보로 폼 초기화
     setModalType("myInfo");
     setModalTitle("회원 정보 수정");
-    modalRef.current?.openModal();
-  };
 
-  const handleMyPasswordSetting = () => {
-    setPasswordFormData({
-      data: { password: "", newPassword: "", confirmNewPassword: "" },
+    setMyInfoFormData({
+      data: {
+        name: myInfo.name || "",
+        gender: myInfo.gender || 0,
+        year: birth.year,
+        month: birth.month,
+        day: birth.day,
+        address: myInfo.address || "",
+      },
       isValid: true,
       errors: {},
     });
 
+    if (myInfoSettingRef.current) {
+      myInfoSettingRef.current.resetForm();
+    }
+    modalRef.current?.openModal();
+  };
+
+  const handleMyPasswordSetting = () => {
     setModalType("password");
     setModalTitle("비밀번호 수정");
+    // 비밀번호 폼 초기화
+    if (passwordContentRef.current) {
+      passwordContentRef.current.resetForm();
+    }
     modalRef.current?.openModal();
   };
 
@@ -273,7 +293,7 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
             currentPassword,
             newPassword,
           });
-          
+
           if (passwordResponse) {
             toast.success("비밀번호 정보가 수정 되었습니다.");
           }
@@ -284,7 +304,8 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
           break;
       }
     } catch (error) {
-      handleErrorToast(error, toast);
+      console.error(error);
+      handleError(error);
     } finally {
       setIsSubmitting(false);
     }
@@ -295,9 +316,12 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
   };
 
   const handleCancel = () => {
-    // 모달 타입에 따라 폼 데이터 초기화
-    if (modalType === "password") {
-      passwordContentRef.current?.resetForm();
+    if (modalType === "mentor" && mentorSettingRef.current) {
+      mentorSettingRef.current.resetForm();
+    } else if (modalType === "myInfo" && myInfoSettingRef.current) {
+      myInfoSettingRef.current.resetForm();
+    } else if (modalType === "password" && passwordContentRef.current) {
+      passwordContentRef.current.resetForm();
     }
 
     modalRef.current?.closeModal();
@@ -420,13 +444,31 @@ const MyProfile = ({ myInfo: initialMyInfo }) => {
         {/* 조건부 콘텐츠 렌더링 */}
         {modalType === "mentor" && (
           <MentorSettingContent
-            initialData={mentorFormData.data}
+            ref={mentorSettingRef} // ref 전달
+            initialData={
+              myInfo.isMentor
+                ? {
+                    farmingYears: myInfo.farmingYears,
+                    cropNames: myInfo.cropNames,
+                    bio: myInfo.bio,
+                  }
+                : {}
+            }
             onChange={setMentorFormData}
+            birthYear={birth.year}
           />
         )}
         {modalType === "myInfo" && (
           <MyInfoSettingContent
-            initialData={myInfoFormData.data}
+            ref={myInfoSettingRef} // ref 추가 (MyInfoSettingContent도 forwardRef로 수정 필요)
+            initialData={{
+              name: myInfo.name || "",
+              gender: myInfo.gender || 0,
+              year: birth.year,
+              month: birth.month,
+              day: birth.day,
+              address: myInfo.address || "",
+            }}
             onChange={setMyInfoFormData}
           />
         )}

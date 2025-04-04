@@ -3,7 +3,7 @@ import CalculateResultModal from "./CalaulateResultModal";
 import { cropsReportsDeatil } from "../../API/mypage/MyReportsAPI";
 import { Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
-import { handleErrorToast } from "../../utils/ErrorUtils";
+import { handleError } from "../../utils/ErrorUtil";
 
 const CalculateResultCard = ({
   id,
@@ -36,7 +36,8 @@ const CalculateResultCard = ({
       const reportData = await cropsReportsDeatil(id);
       modalRef.current?.updateData(reportData);
     } catch (error) {
-      handleErrorToast(error, toast);
+      console.error(error);
+      handleError(error)
       modalRef.current?.close();
     }
   };

@@ -7,13 +7,16 @@ import bellIcon from "../../asset/navbar/bell_icon.svg";
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
 import { authAxios } from '../../API/common/AxiosInstance';
+import { useLocation } from 'react-router-dom';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../../store/slices/authSlice'; // 로그아웃 액션 import 경로 수정
 
 const Navbar = () => {
-    const menuItemClass = "py-1 px-4 text-gray-900 hover:text-green-700 dark:text-white dark:hover:text-blue-500";
-    
+    const menuItemClass = "py-1 px-4 text-gray-900 hover:text-green-700";
+    const location = useLocation();
+    const isInChatPage = location.pathname === '/chat';
+
     // Redux 스토어에서 로그인 상태 가져오기
     const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
     
@@ -48,6 +51,18 @@ const Navbar = () => {
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
     const notificationRef = useRef(null);
     const stompClient = useRef(null);
+
+    const handleMouseLeave = () => {
+      setTimeout(() => {
+          setIsDropdownOpen(false);
+      }, 2000);
+    };
+  
+    const handleNotificationMouseLeave = () => {
+        setTimeout(() => {
+            setIsNotificationOpen(false);
+        }, 2000);
+    };
     
     // 드롭다운 외부 클릭 시 닫기
     useEffect(() => {
@@ -104,6 +119,17 @@ const Navbar = () => {
                     try {
                         const receivedData = JSON.parse(message.body);
                         console.log("백엔드에서 받은 원본 메시지:", receivedData);
+
+                          // 현재 localStorage에서 채팅방 ID 확인 (최신 상태 반영)
+                        const currentRoomId = localStorage.getItem('currentChatRoomId');
+                        
+                        // 수신된 메시지의 roomId와 현재 채팅방 ID 비교
+                        // 문자열과 숫자 타입을 처리하기 위해 == 연산자 사용
+                        if (currentRoomId && receivedData.roomId == currentRoomId) {
+                          console.log(`현재 채팅방(${currentRoomId})의 메시지 알림을 무시합니다.`);
+                          return; // 알림 처리하지 않고 종료
+                        }
+
     
                         // 백엔드 DTO 형식에 맞게 알림 객체 생성
                         const notification = {
@@ -112,8 +138,13 @@ const Navbar = () => {
                             message: `${receivedData.sender}님이 메시지를 보냈습니다.`,
                             createdAt: receivedData.timestamp,
                             read: false,
-                            senderId: receivedData.sender
+                            senderId: receivedData.sender,
+                            roomId: receivedData.roomId // 서버에서 받은 roomId 저장
+
                         };
+                        console.log("생성된 알림 객체:", notification);
+                        console.log("메세지 길이=", notification.message.length)
+
                         
                         // 새 알림 추가 및 읽지 않은 알림 카운트 증가
                         setNotifications(prev => [notification, ...prev]);
@@ -305,7 +336,10 @@ return (
           </div>
 
           <div className="flex items-center">
-            <div className="relative" ref={dropdownRef}>
+            <div className="relative" 
+            ref={dropdownRef}
+            onMouseLeave={handleMouseLeave}
+            >
               <button
                 className="p-2 hover:bg-gray-100 rounded-full"
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -355,92 +389,112 @@ return (
               )}
             </div>
 
-            {/* 알림 버튼 및 드롭다운 */}
-            <div className="relative" ref={notificationRef}>
-              <button
-                className={`p-2 ${unreadCount > 0 ? 'bg-red-100' : 'hover:bg-gray-100'} rounded-full relative`}
-                onClick={() => {
-                    setIsNotificationOpen(!isNotificationOpen);
-                }}
+            {/* 알림 버튼 및 드롭다운 - 로그인 상태일 때만 표시 */}
+            {isLoggedIn && (
+              <div className="relative" 
+              ref={notificationRef}
+              onMouseLeave={handleNotificationMouseLeave}
+              onMouseEnter={() => setIsNotificationOpen(true)}
+
               >
-                <img src={bellIcon} alt="알림" className="h-6 w-6" />
-                {/* 읽지 않은 알림 표시 */}
-                {unreadCount > 0 && (
-                    <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/3 -translate-y-1/3 bg-red-500 rounded-full">
-                    {unreadCount > 9 ? "9+" : unreadCount}
-                </span>
-            )}
-              </button>
+                <button
+                  className={`p-2 ${unreadCount > 0 ? 'bg-red-100' : 'hover:bg-gray-100'} rounded-full relative`}
+                  onClick={() => {
+                      setIsNotificationOpen(!isNotificationOpen);
+                  }}
+                >
+                  <img src={bellIcon} alt="알림" className="h-6 w-6" />
+                  {/* 읽지 않은 알림 표시 */}
+                  {unreadCount > 0 && (
+                      <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/3 -translate-y-1/3 bg-red-500 rounded-full">
+                      {unreadCount > 9 ? "9+" : unreadCount}
+                  </span>
+              )}
+                </button>
 
-              {/* 알림 드롭다운 */}
-              {isNotificationOpen && (
-                <div className="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg py-1 z-[100] border border-gray-200 max-h-96 overflow-y-auto">
-                  <div className="flex items-center justify-between px-4 py-2 border-b">
-                    <h3 className="text-sm font-medium">알림</h3>
-                    {notifications.length > 0 && (
-                      <button
-                        className="text-xs text-blue-500 hover:text-blue-700"
-                        onClick={markAllAsRead}
-                      >
-                        모두 읽음 표시
-                      </button>
-                    )}
-                  </div>
-
-                  {notifications.length === 0 ? (
-                    <div className="px-4 py-6 text-center text-gray-500">
-                      알림이 없습니다.
+                {/* 알림 드롭다운 */}
+                {isNotificationOpen && (
+                  <div className="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg py-1 z-[100] border border-gray-200 max-h-96 overflow-y-auto">
+                    <div className="flex items-center justify-between px-4 py-2 border-b">
+                      <h3 className="text-sm font-medium">알림</h3>
+                      {notifications.length > 0 && (
+                        <button
+                          className="text-xs text-blue-500 hover:text-blue-700"
+                          onClick={markAllAsRead}
+                        >
+                          모두 읽음 표시
+                        </button>
+                      )}
                     </div>
-                  ) : (
-                    notifications.map((notification) => (
-                      <div
-                        key={notification.id}
-                        className={`px-4 py-3 border-b hover:bg-gray-50 cursor-pointer ${
-                          !notification.read ? "bg-blue-50" : ""
-                        }`}
-                        onClick={() => {
-                          // 읽음 처리
-                          if (!notification.read) {
-                            markAsRead(notification.id);
-                          }
 
-                            // 단순히 채팅 페이지로 이동
-                          navigate('/chat');
+                    {notifications.length === 0 ? (
+                      <div className="px-4 py-6 text-center text-gray-500">
+                        알림이 없습니다.
+                      </div>
+                    ) : (
+                      notifications.map((notification) => (
+                        <div
+                          key={notification.id}
+                          className={`px-4 py-3 border-b hover:bg-gray-50 cursor-pointer ${
+                            !notification.read ? "bg-blue-50" : ""
+                          }`}
+                          onClick={() => {
+                            // 읽음 처리
+                            if (!notification.read) {
+                              markAsRead(notification.id);
+                            }
+
+                          // roomId가 있는 경우 해당 채팅방으로 이동
+                          if (notification.roomId) {
+                            console.log(`알림 클릭: 채팅방 ${notification.roomId}으로 이동합니다.`);
+                            navigate('/chat', { 
+                              state: { 
+                                roomId: notification.roomId,
+                                mentorName: notification.senderId // sender를 mentorName으로 사용
+                              } 
+                            });
+                          } else {
+                            // roomId가 없는 경우 기본 채팅 페이지로 이동
+                            console.log('채팅방 ID가 없어 기본 채팅 페이지로 이동합니다.');
+                            navigate('/chat');
+                          }
                           setIsNotificationOpen(false);
 
-                        }}
-                      >
-                        <div className="flex">
-                          <div className="ml-3 w-full">
-                            <p className="text-sm font-medium text-gray-900">
-                              {notification.title}
-                            </p>
-                            <p className="text-xs text-gray-500 mt-1">
-                              {notification.message}
-                            </p>
-                            <p className="text-xs text-gray-400 mt-1">
-                              {new Date(notification.createdAt).toLocaleString(
-                                "ko-KR",
-                                {
-                                  year: "numeric",
-                                  month: "numeric",
-                                  day: "numeric",
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                }
-                              )}
-                            </p>
+
+                          }}
+                        >
+                          <div className="flex">
+                            <div className="ml-3 w-full">
+                              <p className="text-sm font-medium text-gray-900">
+                                {notification.title}
+                              </p>
+                              <p className="text-xs text-gray-500 mt-1">
+                                {notification.message}
+                              </p>
+                              <p className="text-xs text-gray-400 mt-1">
+                                {new Date(notification.createdAt).toLocaleString(
+                                  "ko-KR",
+                                  {
+                                    year: "numeric",
+                                    month: "numeric",
+                                    day: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  }
+                                )}
+                              </p>
+                            </div>
+                            {!notification.read && (
+                              <span className="h-2 w-2 bg-blue-500 rounded-full"></span>
+                            )}
                           </div>
-                          {!notification.read && (
-                            <span className="h-2 w-2 bg-blue-500 rounded-full"></span>
-                          )}
                         </div>
-                      </div>
-                    ))
-                  )}
-                </div>
-              )}
-            </div>
+                      ))
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </nav>

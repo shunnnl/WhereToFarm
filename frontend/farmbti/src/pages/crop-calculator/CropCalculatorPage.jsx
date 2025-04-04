@@ -12,7 +12,7 @@ import {
   saveResult,
 } from "../../API/crop-calculator/CropCalculatorAPI";
 import { toast } from "react-toastify";
-import { handleErrorToast } from "../../utils/ErrorUtils";
+import { handleError } from "../../utils/ErrorUtil";
 
 const CropCalculatorPage = () => {
   const navigate = useNavigate();
@@ -107,7 +107,8 @@ const CropCalculatorPage = () => {
       const data = await estimateCrops(area, selectedCropName);
       setResult(data);
     } catch (error) {
-      handleErrorToast(error, toast);
+      console.error(error);
+      handleError(error);
       handleResetCalculate();
     } finally {
       setIsLoading(false); // 로딩 종료
@@ -126,7 +127,8 @@ const CropCalculatorPage = () => {
         }, 1000);
       }
     } catch (error) {
-      handleErrorToast(error, toast);
+      console.error(error);
+      handleError(error);
       handleResetCalculate();
     } finally {
       setIsLoading(false); // 로딩 종료

@@ -6,7 +6,7 @@ import PaginationComponent from "../../../components/common/Pagination";
 import { getAllEstate, getFilteredEstate } from "../../../API/etc/EstateAPI";
 import { toast } from "react-toastify";
 import KoreaCityData from "../../../asset/data/KoreaCityData";
-import { handleErrorToast } from "../../../utils/ErrorUtils";
+import { handleError } from "../../../utils/ErrorUtil";
 
 const EstatePage = () => {
   const [selectedProvince, setSelectedProvince] = useState("");
@@ -26,9 +26,12 @@ const EstatePage = () => {
   // 도(province) 목록을 KoreaCityData에서 가져오기
   const provinces = Object.keys(KoreaCityData);
 
-  // 초기 로드 및 페이지 변경 시 데이터 로드
   useEffect(() => {
     window.scrollTo(0, 0);
+  }, []);
+
+  // 초기 로드 및 페이지 변경 시 데이터 로드
+  useEffect(() => {
     if (isFiltered) {
       // 필터링된 상태에서 페이지네이션
       getFilteredPropertiesWithPagination(activePage);
@@ -58,9 +61,9 @@ const EstatePage = () => {
       setProperties(response.content);
       setTotalItemsCount(response.totalElements);
     } catch (error) {
+      handleError(error);
       console.error("매물 데이터를 불러오는 중 오류가 발생했습니다:", error);
       setError("매물 데이터를 불러오는 중 오류가 발생했습니다.");
-      handleErrorToast(error, toast);
     } finally {
       setLoading(false);
     }
@@ -87,13 +90,13 @@ const EstatePage = () => {
         setTotalItemsCount(response.length);
       }
     } catch (error) {
+      handleError(error);
       // 에러 처리
       console.error(
         "필터링된 매물 데이터를 불러오는 중 오류가 발생했습니다:",
         error
       );
       setError("필터링된 매물 데이터를 불러오는 중 오류가 발생했습니다.");
-      handleErrorToast(error, toast);
     } finally {
       setLoading(false);
     }
@@ -145,7 +148,11 @@ const EstatePage = () => {
               부동산 매물 목록
             </h2>
             <div className="text-sm text-gray-500">
-              총 <span className="font-medium text-green-700">{totalItemsCount}</span>개의 매물
+              총{" "}
+              <span className="font-medium text-green-700">
+                {totalItemsCount}
+              </span>
+              개의 매물
             </div>
           </div>
 
