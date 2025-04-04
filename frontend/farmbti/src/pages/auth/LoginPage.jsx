@@ -6,10 +6,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { publicAxios } from '../../API/common/AxiosInstance'
 import { useEffect } from 'react';
 import { login } from '../../store/slices/authSlice';
+import { Eye, EyeOff } from 'lucide-react';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false); 
   const [errors, setErrors] = useState({
     email: '',
     password: '',
@@ -25,6 +27,12 @@ const LoginPage = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
+
+  // 비밀번호 표시/숨김 토글 함수
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -140,15 +148,25 @@ const LoginPage = () => {
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
                 비밀번호
               </label>
-              <input
-                type="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                placeholder="비밀번호를 입력해주세요"
-                className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  placeholder="비밀번호를 입력해주세요"
+                  className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={togglePasswordVisibility}
+                  className="absolute inset-y-0 right-3 flex items-center justify-center text-gray-500 focus:outline-none"
+                  style={{ backgroundColor: 'transparent' }}
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
               {errors.password && (<p className="mt-1 text-sm text-red-600">{errors.password}</p>)}
               {errors.server && (<p className="mt-1 text-sm text-red-600">{errors.server}</p>)}
             </div>
@@ -189,6 +207,7 @@ const LoginPage = () => {
         </div>
       </div>
     </div>
+    
   );
 };
 
