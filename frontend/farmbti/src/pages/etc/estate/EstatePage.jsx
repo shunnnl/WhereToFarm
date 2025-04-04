@@ -221,7 +221,7 @@ const EstatePage = () => {
           </div>
 
           {/* 매물 카드 목록 */}
-          <div className="max-w-3xl mx-auto space-y-4 p-4 min-h-[500px]">
+          <div className="max-w-3xl mx-auto space-y-4 p-4">
             {loading ? (
               // 로딩 중에는 이 부분만 표시
               <div className="py-12 flex justify-center items-center">
