@@ -144,11 +144,12 @@ let input = e.target.value;
 
 // 연속된 특수문자 사이에 숨겨진 공백 추가 (선택적)
 // 예: ",,,,," -> ", , , , ,"
-// 정규식은 실제 필요에 맞게 조정
-if (input.match(/([,;.!?]){5,}/g)) {
-  input = input.replace(/([,;.!?])([,;.!?])/g, '$1\u200B$2');
-}
+const specialCharsRegex = /([!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]){5,}/g;
+  if (input.match(specialCharsRegex)) {
+    input = input.replace(/([!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])([!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])/g, '$1\u200B$2');
+  }
 
+  
 const longEnglishWordRegex = /[a-zA-Z]{15,}/g;
 if (input.match(longEnglishWordRegex)) {
   input = input.replace(/([a-zA-Z]{10})([a-zA-Z])/g, '$1\u200B$2');
