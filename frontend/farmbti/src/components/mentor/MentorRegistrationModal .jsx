@@ -20,6 +20,12 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
   const [isCheckingMentorStatus, setIsCheckingMentorStatus] = useState(false);
   const [isAlreadyMentor, setIsAlreadyMentor] = useState(false);
   const [mentorData, setMentorData] = useState(null);
+  const resetForm = () => {
+    setSelectedFoods([]);
+    setDescription('');
+    setFormData({ Year: '' });
+    setSubmitResult(null);
+  };
 
   const topFood = [
     { 
@@ -73,6 +79,21 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
       iconSrc: "https://farmbticropbucket.s3.ap-northeast-2.amazonaws.com/crop/watermelon.png",
     },
   ];
+
+  const handleClose = () => {
+    resetForm();
+    onRequestClose();
+  };
+
+  //모달 닫을때 폼 초기화
+  useEffect(() => {
+    if (isOpen) {
+      if (isLoggedIn) {
+        checkUserStatus();
+      }
+      resetForm(); // 모달이 열릴 때마다 폼 초기화
+    }
+  }, [isOpen, isLoggedIn]);
 
     // 사용자 정보 및 멘토 상태 확인
     const checkUserStatus = async () => {
@@ -417,8 +438,8 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
           <button
             type="button"
             className="mt-8 bg-gray-100 text-black py-2 px-4 rounded"
-            onClick={onRequestClose}
-          >
+            onClick={handleClose}   
+            >
             닫기
           </button>
 
