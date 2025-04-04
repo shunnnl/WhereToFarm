@@ -203,9 +203,9 @@ const MyProfileImage = ({ imageUrl, isDefaultImage }) => {
             </div>
           ) : (
             <img
-              src={profileData.imageUrl || "/api/placeholder/200/200"} // 기본 이미지 폴백 추가
+              src={profileData.imageUrl} // 기본 이미지 폴백 추가
               alt="Profile"
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover bg-[#4891E0] rounded-full text-[#4891E0]"
             />
           )}
         </div>
