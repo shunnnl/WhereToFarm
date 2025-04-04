@@ -107,7 +107,7 @@ const MentorSelectModal = ({ isOpen, onClose, mentor }) => {
         {/* 멘토 소개 텍스트 */}
         <div className="text-center mb-6">
           <p className="text-lg mb-2">
-            안녕하세요, 저는 {mentor.farmingYears || 0}년 째 경작중인 멘토 {mentor.name || ''}입니다.
+            안녕하세요, 저는 {mentor.farmingYears || 0}년부터 경작중인 멘토 {mentor.name || ''}입니다.
           </p>
           <p className="text-lg mb-4">
             {mentor.bio || '궁금한 거 있으면 언제든지 물어보세요!!!'}
@@ -115,12 +115,12 @@ const MentorSelectModal = ({ isOpen, onClose, mentor }) => {
         </div>
 
         {/* 멘토링 신청 버튼 */}
-        <div className="mt-6">
+        <div className="mt-6 flex justify-center">
           <button
             onClick={handleCreateChat}
             disabled={isLoading}
-            className={`px-8 py-3 bg-green-600 text-white rounded hover:bg-green-700 flex items-center justify-center w-full ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
-          >
+            className={`px-8 py-3 bg-green-600 text-white rounded hover:bg-green-700 flex items-center justify-center ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
+            >
             {isLoading ? (
               <span>연결 중...</span>
             ) : (
