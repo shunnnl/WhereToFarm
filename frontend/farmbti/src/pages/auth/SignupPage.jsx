@@ -4,9 +4,13 @@ import { toast } from 'react-toastify'; // 추가: 토스트 알림을 위한 im
 import signup_image from '../../asset/auth/login.png';
 import useKakaoAddressService from '../../API/useKakaoAddressService';
 import { publicAxios } from '../../API/common/AxiosInstance';
+import { Eye, EyeOff } from 'lucide-react'; 
 
 const SignupPage = () => {
   const navigate = useNavigate(); // 추가: 페이지 이동을 위한 navigate 함수
+  // 비밀번호 표시 상태 추가
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -18,6 +22,17 @@ const SignupPage = () => {
     birthDay: '',
     address: ''
   });
+
+  // 비밀번호 표시/숨김 토글 함수
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+  
+  // 비밀번호 확인 표시/숨김 토글 함수
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
+  
 
   const [errors, setErrors] = useState({});
   console.log("errors = ", errors);
@@ -171,8 +186,8 @@ const SignupPage = () => {
         const response = await publicAxios.post('/auth/signUp', userData);
         
         // 성공 응답 처리 
-        toast.success('회원가입이 완료되었습니다!');
-        navigate('/');
+        toast.success('회원가입이 완료되었습니다! 로그인 해주세요');
+        navigate('/login');
         
       } catch (error) {
         console.error('회원가입 오류:', error);
@@ -276,32 +291,50 @@ const SignupPage = () => {
                 <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
                   비밀번호
                 </label>
-                <input
-                  type="password"
-                  id="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                  placeholder="비밀번호를 입력해주세요"
-                  className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                />
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    id="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                    placeholder="비밀번호를 입력해주세요"
+                    className="block w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    />
+                  <button
+                    type="button"
+                    onClick={togglePasswordVisibility}
+                    className="absolute inset-y-0 right-3 flex items-center justify-center text-gray-500 focus:outline-none"
+                  >
+                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
+                </div>
                 {errors.password && (<p className="mt-1 text-sm text-red-600">{errors.password}</p>)}
               </div>
               <div>
                 <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
                   비밀번호 확인
                 </label>
-                <input
-                  type="password"
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  required
-                  placeholder="비밀번호를 다시 입력해주세요"
-                  className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                />
+                <div className="relative">
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    required
+                    placeholder="비밀번호를 다시 입력해주세요"
+                    className="block w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    />
+                  <button
+                    type="button"
+                    onClick={toggleConfirmPasswordVisibility}
+                    className="absolute inset-y-0 right-3 flex items-center justify-center text-gray-500 focus:outline-none"
+                  >
+                    {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
+                </div>
                 {errors.confirmPassword && (<p className="mt-1 text-sm text-red-600">{errors.confirmPassword}</p>)}
               </div>
             </div>
