@@ -686,9 +686,7 @@ return (
                 <h2 className="font-bold">{getMentorName()}</h2>
               </div>
             </div>
-            <button className="text-gray-600">
-              ⋮
-            </button>
+    
           </div>
 
           {/* 채팅 메시지 영역 - chatContainerRef 추가 */}
