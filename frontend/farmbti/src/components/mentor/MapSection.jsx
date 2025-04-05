@@ -13,7 +13,7 @@ const MapSection = () => {
     const svgRef = useRef(null);
     const [selectedRegion, setSelectedRegion] = useState(null);
     const [selectedCity, setSelectedCity] = useState(null);
-    const [displayRegion, setDisplayRegion] = useState(null);
+    // displayRegion 상태 제거 - 이제 selectedRegion만 사용할 것임
     const [candidate, setCandidate] = useState(null);
     // 원래 색상을 저장할 객체 추가
     const originalFillsRef = useRef({});
@@ -40,12 +40,9 @@ const MapSection = () => {
         return KoreaCityData[regionName] || [];
     };
     
-    
-
     const handleCardSelect = (cityName) => {
         console.log("선택된 도시:", cityName);
         setSelectedCity(cityName);
-
 
         // 도시 선택 시 MentorSelect 영역으로 스크롤
         setTimeout(() => {
@@ -56,10 +53,7 @@ const MapSection = () => {
                 });
             }
         }, 100); // 약간의 지연을 두어 DOM이 업데이트된 후 스크롤
-
-      };
-
-
+    };
 
     // SVG 파일을 직접 로드한 후 paths 요소들에 이벤트 리스너 추가
     useEffect(() => {
@@ -86,14 +80,14 @@ const MapSection = () => {
                         path.setAttribute('fill', getHoverColor(pathId));
                     }
                     
-                    // 지역 이름 표시
+                    // 지역 정보 저장
                     const region = {
                         id: pathId,
                         name: path.getAttribute('name') || pathId
                     };
 
                     setHoveredRegion(region);
-                    setDisplayRegion(region);
+                    // displayRegion 설정 제거 - 이제 호버 시 표시되는 이름을 업데이트하지 않음
                 });
                 
                 // Hover 해제 이벤트
@@ -106,12 +100,7 @@ const MapSection = () => {
                     }
                     
                     setHoveredRegion(null);
-                    
-                    // 중요: 호버가 해제될 때 항상 선택된 지역 정보를 표시하거나 유지
-                    if (selectedRegion) {
-                        setDisplayRegion(selectedRegion);
-                    }
-                    // 선택된 지역이 없더라도 표시 정보는 null로 설정하지 않음
+                    // displayRegion 업데이트 제거 - 여기서 호버가 해제되어도 표시되는 이름을 변경하지 않음
                 });
 
                 // Click 이벤트
@@ -129,7 +118,6 @@ const MapSection = () => {
                     // 다른 region을 선택할 때마다 페이지네이션 초기화
                     setActivePage(1);
 
-                    
                     // 이전에 선택한 지역이 있으면 원래 색상으로 복원
                     if (selectedRegion && selectedRegion.id !== region.id) {
                         const prevSelectedPath = svgRef.current.querySelector(`path[id="${selectedRegion.id}"]`);
@@ -143,13 +131,12 @@ const MapSection = () => {
                         // 선택 해제
                         path.setAttribute('fill', originalFillsRef.current[pathId]);
                         setSelectedRegion(null);
-                        // 중요: 선택 해제 시에도 마지막 선택 지역 정보 유지 (null로 설정하지 않음)
-                        setDisplayRegion(region);
+                        // displayRegion 설정 코드 제거
                     } else {
                         // 새로운 지역 선택
                         path.setAttribute('fill', getHoverColor(pathId));
                         setSelectedRegion(region);
-                        setDisplayRegion(region);
+                        // displayRegion 설정 코드 제거
                     }
                 });
                 
@@ -189,9 +176,6 @@ const MapSection = () => {
             });
         }
     }, [selectedRegion, hoveredRegion]);
-
-
-
     
     // 지역별 hover 색상 가져오기
     const getHoverColor = (regionId) => {
@@ -311,58 +295,57 @@ const MapSection = () => {
     />
        
         </svg>
-    </div>
-    <div className="w-1/2  h-[680px] overflow-auto">
-        <div> 
-                {/* 호버 시 지역명 표시 */}
-                <h3 className="flex items-center text-xl py-4">
-                선택한 지역: {displayRegion && <span className="ml-2 text-xl font-bold text-green-500">{displayRegion.name}</span>}
-                </h3>
-                
-                {/* 후보 지역 표시 */}
-                    {candidate && candidate.length > 0 ? (
-                        <>
-                        {/* 카드 그리드 배치 */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mb-6">
-                        {currentItems.map((regionName, index) => (
-                                  <RegionCard
-                                  key={startIndex + index}
-                                  regionName={regionName}
-                                  index={startIndex + index}
-                                  onSelectCard={handleCardSelect}
-                                  isSelected={selectedCity === regionName}
-                                />
-                            ))}
-                        </div>
-                        
-                        {/* 페이지네이션 컴포넌트 */}
-                        <PaginationComponent
-                            activePage={activePage}
-                            totalItemsCount={candidate.length}
-                            onChange={handlePageChange}
-                            itemsPerPage={itemsPerPage}
-                        />
-                        </>
-                    ) : (
-                        <div className="text-center p-4 text-xl">등록된 지역이 없습니다.</div>
-                    )}
-             
-            </div>
         </div>
-        
-    </div>
-           {/* 멘토 선택 영역 - 지도/지역 목록 아래에 배치 */}
-           {selectedRegion && (
-            <div className="mt-8 w-full" ref={mentorSelectRef}>
-                 <MentorSelect
-                    candidateList={selectedCity ? [selectedCity] : candidate}
-                    regionName={selectedRegion.name} // 도 이름
-                    cityName={selectedCity || ''} // 시 이름
-                    />
+          <div className="w-1/2  h-[680px] overflow-auto">
+            <div> 
+              {/* 선택한 지역명만 표시 */}
+              <h3 className="flex items-center text-xl py-4">
+                선택한 지역: {selectedRegion && <span className="ml-2 text-xl font-bold text-green-500">{selectedRegion.name}</span>}
+              </h3>
+                
+              {/* 후보 지역 표시 */}
+              {candidate && candidate.length > 0 ? (
+                <>
+                  {/* 카드 그리드 배치 */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mb-6">
+                    {currentItems.map((regionName, index) => (
+                      <RegionCard
+                        key={startIndex + index}
+                        regionName={regionName}
+                        index={startIndex + index}
+                        onSelectCard={handleCardSelect}
+                        isSelected={selectedCity === regionName}
+                      />
+                    ))}
+                  </div>
+                        
+                  {/* 페이지네이션 컴포넌트 */}
+                  <PaginationComponent
+                    activePage={activePage}
+                    totalItemsCount={candidate.length}
+                    onChange={handlePageChange}
+                    itemsPerPage={itemsPerPage}
+                  />
+                </>
+              ) : (
+                <div className="text-center p-4 text-xl">등록된 지역이 없습니다.</div>
+              )}
             </div>
+          </div>
+        </div>
+           
+        {/* 멘토 선택 영역 - 지도/지역 목록 아래에 배치 */}
+        {selectedRegion && (
+          <div className="mt-8 w-full" ref={mentorSelectRef}>
+            <MentorSelect
+              candidateList={selectedCity ? [selectedCity] : candidate}
+              regionName={selectedRegion.name} // 도 이름
+              cityName={selectedCity || ''} // 시 이름
+            />
+          </div>
         )}
-    </div>
-  )
+      </div>
+    )
 };
 
 export default MapSection;
