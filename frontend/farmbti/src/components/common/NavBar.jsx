@@ -450,13 +450,21 @@ return (
                             navigate('/chat', { 
                               state: { 
                                 roomId: notification.roomId,
-                                mentorName: notification.senderId // sender를 mentorName으로 사용
+                                mentorName: notification.senderId, // sender를 mentorName으로 사용
+                                refreshChatRooms: true // 새로운 플래그 추가
+
                               } 
                             });
                           } else {
                             // roomId가 없는 경우 기본 채팅 페이지로 이동
                             console.log('채팅방 ID가 없어 기본 채팅 페이지로 이동합니다.');
-                            navigate('/chat');
+                            navigate('/chat', {
+                              state: {
+                                refreshChatRooms: true // 새로운 플래그 추가
+                              }
+                            });
+                        
+
                           }
                           setIsNotificationOpen(false);
 
