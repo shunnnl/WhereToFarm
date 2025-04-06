@@ -1,3 +1,5 @@
+import { useCallback } from "react";
+
 const AreaInputSection = ({
   area,
   setArea,
@@ -31,6 +33,19 @@ const AreaInputSection = ({
     }
   };
 
+  // 기호 입력 방지 핸들러
+  const handleKeyDown = useCallback((event) => {
+    // 마이너스, 플러스, 소수점 기호 입력 방지
+    if (event.key === "-" || event.key === "+" || event.key === ".") {
+      event.preventDefault();
+    }
+
+    // e 문자 방지 (지수 표기법)
+    if (event.key.toLowerCase() === "e") {
+      event.preventDefault();
+    }
+  }, []);
+
   return (
     <div
       className={`transition-opacity duration-300 mx-6 ${
@@ -63,7 +78,9 @@ const AreaInputSection = ({
             className="border border-textColor-gray rounded-lg px-3 py-2 w-48 mr-2"
             placeholder="평수 입력(100~1500)"
             value={area === null ? "" : area}
+            pattern="[0-9]*"
             onChange={handleAreaChange}
+            onKeyDown={handleKeyDown}
             disabled={!isActive}
             step={100}
             min={100}
