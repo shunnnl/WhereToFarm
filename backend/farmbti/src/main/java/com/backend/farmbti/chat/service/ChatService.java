@@ -78,6 +78,7 @@ public class ChatService {
 
     }
 
+    @Transactional
     public List<ChatListResponse> getAllRooms(Long userId) {
         List<Chat> chats = chatRepository.findAllByMenteeIdOrMentorUserId(userId, userId);
 
