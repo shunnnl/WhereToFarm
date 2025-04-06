@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -50,6 +51,15 @@ public class AuthService {
 
         //4. db에 저장
         usersRepository.save(users);
+
+        //5. URL 생성 및 저장 (DB에 저장한 후 ID가 필요하여 save 이후에 실행)
+        try {
+            String profileImageUrl = s3Service.getOrCreateSignedUrl(users);
+            users.updateProfileImageUrl(profileImageUrl, LocalDateTime.now().plusDays(6));
+            usersRepository.save(users);
+        } catch (Exception e) {
+            
+        }
 
         log.info("회원가입 완료");
     }

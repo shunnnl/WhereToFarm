@@ -2,8 +2,10 @@ package com.backend.farmbti.common.service;
 
 import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.backend.farmbti.auth.domain.Users;
 import com.backend.farmbti.common.exception.GlobalException;
 import com.backend.farmbti.common.exception.S3ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
 
@@ -35,18 +38,72 @@ public class S3Service {
 
     // 서명된 URL 생성하기
     public String getSignedUrl(String objectKey) {
+        if (objectKey == null || objectKey.isEmpty()) {
+            log.error("Object key is null or empty");
+            throw new IllegalArgumentException("Object key cannot be null or empty");
+        }
+
         Date expiration = new Date();
         long expTimeMillis = expiration.getTime();
         expTimeMillis += 1000 * 60 * 60 * 24 * 7; // 7일 유효
         expiration.setTime(expTimeMillis);
 
-        GeneratePresignedUrlRequest generatePresignedUrlRequest =
-                new GeneratePresignedUrlRequest(bucket, objectKey)
-                        .withMethod(HttpMethod.GET)
-                        .withExpiration(expiration);
+        try {
+            GeneratePresignedUrlRequest generatePresignedUrlRequest =
+                    new GeneratePresignedUrlRequest(bucket, objectKey)
+                            .withMethod(HttpMethod.GET)
+                            .withExpiration(expiration);
 
-        URL url = amazonS3.generatePresignedUrl(generatePresignedUrlRequest);
-        return url.toString();
+            URL url = amazonS3.generatePresignedUrl(generatePresignedUrlRequest);
+            return url.toString();
+        } catch (AmazonS3Exception e) {
+            throw e;
+        }
+    }
+
+    // 사용자 엔티티에서 URL 가져오거나 필요시 생성
+    public String getOrCreateSignedUrl(Users user) {
+        if (user == null) {
+            throw new IllegalArgumentException("User cannot be null");
+        }
+
+
+        // 1. 이미 생성된 URL이 있고 만료되지 않았으면 그대로 반환
+        if (user.getProfileImageUrl() != null && !user.isProfileImageUrlExpired()) {
+            log.debug("Using existing URL for user: {}", user.getId());
+            return user.getProfileImageUrl();
+        }
+
+        // 2. 없거나 만료된 경우 새로 생성
+        log.debug("Generating new URL for user: {}", user.getId());
+
+        // profileImage 필드에서 objectKey 가져오기
+        String objectKey = user.getProfileImage();
+
+        // objectKey가 없으면 성별에 따른 기본 이미지 키 가져오기
+        if (objectKey == null || objectKey.isEmpty()) {
+            log.debug("Profile image key is null, using default image for gender: {}", user.getGender());
+            objectKey = getDefaultProfileImageKey(user.getGender());
+
+            // 기본 이미지 키도 설정되지 않은 경우 (DB의 profileImage 필드가 비어있는 경우)
+            if (objectKey == null || objectKey.isEmpty()) {
+                log.error("Default profile image key is null for gender: {}", user.getGender());
+                throw new IllegalStateException("Cannot determine profile image key for user: " + user.getId());
+            }
+
+            // DB에 기본 이미지 키 업데이트
+            user.updateProfileImage(objectKey);
+        }
+
+        // 서명된 URL 생성
+        String newUrl = getSignedUrl(objectKey);
+
+        // 3. 사용자 객체에 URL과 만료 시간 설정 (만료 시간은 URL 생성 시간보다 안전하게 1일 짧게 설정)
+        user.updateProfileImageUrl(newUrl, LocalDateTime.now().plusDays(6));
+
+        log.debug("Generated new URL for user: {} with expiration: {}", user.getId(), user.getProfileImageUrlExpiresAt());
+
+        return newUrl;
     }
 
     // 기본 프로필 이미지 객체 키 가져오기
