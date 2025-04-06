@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useSearchParams, useLocation } from "react-router-dom";
 import PageHeader from "../../../components/common/PageHeader";
 import PropertyCard from "../../../components/etc/estate/PropertyCard";
 import LoadingSpinner from "../../../components/common/LoadingSpinner";
@@ -8,31 +9,69 @@ import KoreaCityData from "../../../asset/data/KoreaCityData";
 import { handleError } from "../../../utils/ErrorUtil";
 
 const EstatePage = () => {
-  const [selectedProvince, setSelectedProvince] = useState("");
-  const [selectedCity, setSelectedCity] = useState("");
+  // URL 쿼리 파라미터 관리를 위한 훅
+  const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
+
+  // URL에서 필터 및 페이지 정보 가져오기
+  const getParamsFromUrl = () => {
+    return {
+      page: searchParams.get("page") ? parseInt(searchParams.get("page")) : 1,
+      province: searchParams.get("province") || "",
+      city: searchParams.get("city") || "",
+    };
+  };
+
+  const urlParams = getParamsFromUrl();
+
+  const [selectedProvince, setSelectedProvince] = useState(urlParams.province);
+  const [selectedCity, setSelectedCity] = useState(urlParams.city);
   const [cities, setCities] = useState([]);
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // 페이지네이션 상태
-  const [activePage, setActivePage] = useState(1);
+  // 페이지네이션 상태 - URL에서 초기값 가져오기
+  const [activePage, setActivePage] = useState(urlParams.page);
   const [totalItemsCount, setTotalItemsCount] = useState(0);
   const itemsPerPage = 10;
 
-  const [isFiltered, setIsFiltered] = useState(false);
-  // 이 부분이 중요: 필터 파라미터를 상태로 관리
-  const [filterParams, setFilterParams] = useState({ province: "", city: "" });
-  const prevFilterParams = useRef({ province: "", city: "" });
+  const [isFiltered, setIsFiltered] = useState(!!urlParams.province);
+  // 필터 파라미터를 상태로 관리
+  const [filterParams, setFilterParams] = useState({
+    province: urlParams.province,
+    city: urlParams.city,
+  });
+  const prevFilterParams = useRef({
+    province: urlParams.province,
+    city: urlParams.city,
+  });
 
   // 도(province) 목록을 KoreaCityData에서 가져오기
   const provinces = Object.keys(KoreaCityData);
+
+  // URL 쿼리 파라미터가 변경될 때 상태 업데이트
+  useEffect(() => {
+    const params = getParamsFromUrl();
+    setActivePage(params.page);
+
+    // 필터 파라미터가 변경된 경우에만 상태 업데이트
+    if (
+      params.province !== filterParams.province ||
+      params.city !== filterParams.city
+    ) {
+      setSelectedProvince(params.province);
+      setSelectedCity(params.city);
+      setFilterParams({ province: params.province, city: params.city });
+      setIsFiltered(!!params.province);
+    }
+  }, [location.search]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  // 초기 로드 및 페이지 변경 시 데이터 로드
+  // 초기 로드 및 페이지/필터 변경 시 데이터 로드
   useEffect(() => {
     if (isFiltered) {
       // 필터링된 상태에서 페이지네이션
@@ -47,11 +86,13 @@ const EstatePage = () => {
   useEffect(() => {
     if (selectedProvince) {
       setCities(KoreaCityData[selectedProvince] || []);
-      setSelectedCity(""); // 도 변경 시 시/군/구 선택 초기화
+      if (!KoreaCityData[selectedProvince]?.includes(selectedCity)) {
+        setSelectedCity(""); // 도 변경 시 선택된 시/군/구가 없으면 초기화
+      }
     } else {
       setCities([]);
     }
-  }, [selectedProvince]);
+  }, [selectedProvince, selectedCity]);
 
   // 매물 데이터 가져오는 함수
   const getProperties = async (page = 1) => {
@@ -78,8 +119,8 @@ const EstatePage = () => {
 
     try {
       const response = await getFilteredEstate(
-        filterParams.province, // 상태에서 값을 가져옴
-        filterParams.city, // 상태에서 값을 가져옴
+        filterParams.province,
+        filterParams.city,
         page - 1,
         itemsPerPage
       );
@@ -104,10 +145,15 @@ const EstatePage = () => {
     }
   };
 
-  // 페이지 변경 핸들러
+  // 페이지 변경 핸들러 - URL 쿼리 파라미터 업데이트
   const handlePageChange = (pageNumber) => {
     // 페이지 상단으로 스크롤
     window.scrollTo({ top: 0, behavior: "smooth" });
+
+    // URL 쿼리 파라미터 업데이트
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set("page", pageNumber);
+    setSearchParams(newParams);
 
     // 페이지 번호 상태 업데이트
     setActivePage(pageNumber);
@@ -138,25 +184,34 @@ const EstatePage = () => {
       prevFilterParams.current.province === newFilterParams.province &&
       prevFilterParams.current.city === newFilterParams.city;
 
+    // URL 쿼리 파라미터 업데이트
+    const newParams = new URLSearchParams();
+    newParams.set("page", "1"); // 필터 적용 시 항상 1페이지로 이동
+
     // 도가 선택되었으면 필터링 모드로 전환
     if (selectedProvince) {
       setIsFiltered(true);
       // 필터 참조값 업데이트
       prevFilterParams.current = newFilterParams;
 
+      // URL에 필터 파라미터 추가
+      newParams.set("province", selectedProvince);
+      if (selectedCity) {
+        newParams.set("city", selectedCity);
+      }
+
       // 필터가 변경된 경우에만 새 API 요청 트리거
       if (!isSameFilter) {
         setFilterParams(newFilterParams); // 상태 업데이트로 useEffect 트리거
       }
-
-      // 필터 적용 시 API 호출을 위해 페이지 상태 리셋
-      setActivePage(1);
     } else {
       setIsFiltered(false);
       prevFilterParams.current = { province: "", city: "" };
       setFilterParams({ province: "", city: "" });
-      setActivePage(1);
     }
+
+    setSearchParams(newParams);
+    setActivePage(1);
   };
 
   return (

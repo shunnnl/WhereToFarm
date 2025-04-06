@@ -1,10 +1,22 @@
-import { useNavigate } from "react-router";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const PropertyCard = ({ property }) => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleClickButton = (estateId) => {
-    navigate(`/estate/${estateId}`);
+    // 현재 URL의 쿼리 파라미터를 상태 객체에 저장
+    const currentUrlParams = new URLSearchParams(location.search);
+    const state = {
+      from: location.pathname,
+      search: location.search,
+      page: currentUrlParams.get("page") || "1",
+      province: currentUrlParams.get("province") || "",
+      city: currentUrlParams.get("city") || "",
+    };
+
+    // 쿼리 파라미터를 state로 전달하면서 페이지 이동
+    navigate(`/estate/${estateId}`, { state });
   };
 
   // 숫자에 콤마 추가하는 함수
