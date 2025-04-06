@@ -172,20 +172,22 @@ let input = e.target.value;
 
 // 연속된 특수문자 사이에 숨겨진 공백 추가 (선택적)
 // 예: ",,,,," -> ", , , , ,"
-const specialCharsRegex = /([!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]){5,}/g;
-  if (input.match(specialCharsRegex)) {
-    input = input.replace(/([!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])([!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])/g, '$1\u200B$2');
-  }
+// const specialCharsRegex = /([!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]){5,}/g;
+// if (input.match(specialCharsRegex)) {
+//   input = input.replace(/([!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{5})([!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])/g, '$1\u200B$2');
+// }
 
-
-const longEnglishWordRegex = /[a-zA-Z]{15,}/g;
-if (input.match(longEnglishWordRegex)) {
-  input = input.replace(/([a-zA-Z]{10})([a-zA-Z])/g, '$1\u200B$2');
-}
+// const longEnglishWordRegex = /[a-zA-Z]{15,}/g;
+// if (input.match(longEnglishWordRegex)) {
+//   input = input.replace(/([a-zA-Z]{10})([a-zA-Z])/g, '$1\u200B$2');
+// }
 
 if (input.length <= MAX_CHAR_LIMIT) {
   setMessage(input);
-  
+
+
+
+
   // 타이머로 높이 조정
   setTimeout(() => {
     if (textareaRef.current) {
@@ -624,7 +626,7 @@ const getMentorName = () => {
 };
 
 return (
-  <div className="flex h-screen bg-gray-100">
+  <div className="flex h-[90vh] bg-gray-100 border border-gray-300"> 
     {/* 좌측 멘토 목록 */}
     <div className="w-1/4 bg-white border-r flex flex-col">
       {/* 뒤로가기 버튼 - 헤더와 높이 맞춤 */}
@@ -738,7 +740,16 @@ return (
           )}
           
                 {/* 메시지 버블 */}
-                  <div className={`max-w-xs md:max-w-md ${msg.isMe ? 'bg-green-500 text-white rounded-2xl rounded-tr-sm' : 'bg-gray-300 rounded-2xl rounded-tl-sm'} px-4 py-2`}>
+                <div 
+                    className={`max-w-xs md:max-w-md ${msg.isMe ? 'bg-green-500 text-white rounded-2xl rounded-tr-sm' : 'bg-gray-300 rounded-2xl rounded-tl-sm'} px-4 py-2`}
+                    style={{
+                      wordBreak: 'break-all',
+                      wordWrap: 'break-word',
+                      overflowWrap: 'break-word',
+                      whiteSpace: 'pre-wrap',
+                      hyphens: 'auto'
+                    }}
+                  >
                     <p className="whitespace-pre-line">{msg.text}</p>
                   </div>
                   
@@ -787,9 +798,11 @@ return (
                 rows={1}
                 style={{ 
                   whiteSpace: 'pre-wrap',
-                  wordBreak: 'break-all',
-                  overflowWrap: 'anywhere',
-                  minHeight: '40px',
+                  wordBreak: 'break-all',        // 모든 문자에서 줄바꿈 허용
+                  wordWrap: 'break-word',        // 단어 내에서도 줄바꿈 허용
+                  overflowWrap: 'break-word',    // 길이가 긴 단어도 적절히 줄바꿈
+                  hyphens: 'auto',               // 가능한 경우 하이픈 추가
+                                minHeight: '40px',
                   maxHeight: '120px',
                   overflow: 'auto',
                   lineHeight: '1.5',
