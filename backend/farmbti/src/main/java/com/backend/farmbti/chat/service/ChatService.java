@@ -20,6 +20,7 @@ import com.backend.farmbti.mentors.exception.MentorsErrorCode;
 import com.backend.farmbti.mentors.repository.MentorsRepository;
 import com.backend.farmbti.users.exception.UsersErrorCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +31,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ChatService {
 
     private final ChatRepository chatRepository;
@@ -167,19 +169,34 @@ public class ChatService {
 
     private String getProfileImageUrl(Users user) {
         try {
+            log.debug("ProfileImageURL 조회 시작 - 사용자 ID: {}", user.getId());
+
             // 1. 이미 생성된 URL이 있고 만료되지 않았으면 그대로 반환
             if (user.getProfileImageUrl() != null && !user.isProfileImageUrlExpired()) {
+                log.debug("기존 URL 사용 - 사용자 ID: {}, 만료 시간: {}",
+                        user.getId(), user.getProfileImageUrlExpiresAt());
                 return user.getProfileImageUrl();
             }
 
+            log.debug("URL 없거나 만료됨 - 사용자 ID: {}, 현재 URL: {}, 만료 시간: {}",
+                    user.getId(), user.getProfileImageUrl(), user.getProfileImageUrlExpiresAt());
+
             // 2. URL이 없거나 만료된 경우 새로 생성
+            String profileImageKey = user.getProfileImage();
+            log.debug("프로필 이미지 키: {}", profileImageKey);
+
             String profileImageUrl = s3Service.getOrCreateSignedUrl(user);
+            log.debug("새 URL 생성 완료 - 사용자 ID: {}, 새 URL: {}", user.getId(), profileImageUrl);
 
             // 3. 생성된 URL 저장
             usersRepository.save(user);
+            log.debug("URL DB 저장 완료 - 사용자 ID: {}, 만료 시간: {}",
+                    user.getId(), user.getProfileImageUrlExpiresAt());
 
             return profileImageUrl;
         } catch (Exception e) {
+            log.error("URL 생성 실패 - 사용자 ID: {}, 오류 메시지: {}",
+                    user.getId(), e.getMessage(), e);
             throw new GlobalException(UsersErrorCode.PROFILE_IMAGE_URL_GENERATION_FAILED);
         }
     }
