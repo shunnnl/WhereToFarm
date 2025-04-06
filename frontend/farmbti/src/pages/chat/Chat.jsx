@@ -52,6 +52,7 @@ const messageIdCounter = useRef(0);
 const MAX_CHAR_LIMIT = 1000;
 const textareaRef = useRef(null);
 const [unreadMessages, setUnreadMessages] = useState({});
+const [failedMessages, setFailedMessages] = useState(new Set());
 
 // 뒤로가기 함수
 const handleGoBack = () => {
@@ -72,13 +73,40 @@ useEffect(() => {
   };
 }, [roomId]);
 
+
+
 // URL state에서 roomId 가져오기
 useEffect(() => {
-  if (location.state && location.state.roomId) {
-    console.log(`URL state에서 채팅방 ID ${location.state.roomId} 로드`);
-    setRoomId(location.state.roomId);
+  if (location.state) {
+    if (location.state.roomId) {
+      console.log(`URL state에서 채팅방 ID ${location.state.roomId} 로드`);
+      setRoomId(location.state.roomId);
+    }
+    
+    // 새로 추가: refreshChatRooms 플래그가 true일 경우 채팅방 목록 다시 로드
+    if (location.state.refreshChatRooms) {
+      console.log('채팅방 목록 새로고침 플래그 감지, 목록을 다시 로드합니다.');
+      const fetchChatRooms = async () => {
+        try {
+          const response = await authAxios.get('/chat/get/rooms');
+          console.log('채팅방 목록 응답:', response);
+          
+          if (Array.isArray(response.data)) {
+            setChatRooms(response.data);
+          } else if (response.data && response.data.success) {
+            setChatRooms(response.data.data);
+          }
+        } catch (error) {
+          console.error('채팅방 목록 조회 실패:', error);
+        }
+      };
+      
+      fetchChatRooms();
+    }
   }
 }, [location]);
+
+
 
 // 사용자 정보 가져오기
 useEffect(() => {
@@ -686,9 +714,7 @@ return (
                 <h2 className="font-bold">{getMentorName()}</h2>
               </div>
             </div>
-            <button className="text-gray-600">
-              ⋮
-            </button>
+    
           </div>
 
           {/* 채팅 메시지 영역 - chatContainerRef 추가 */}
@@ -700,36 +726,51 @@ return (
               
                 {/* 메시지들 */}
                 {messages.length > 0 ? (
-                  messages.map((msg) => (
-                    <div key={msg.id} className={`flex ${msg.isMe ? 'justify-end' : 'justify-start'}`}>
-                      <div className="flex items-end mb-4">
-                        {/* 내 메시지일 경우 시간이 왼쪽에 표시됨 */}
-                        {msg.isMe && (
-                          <span className="text-xs text-gray-500 mr-2 mb-1.5">
-                            {msg.time}
-                          </span>
-                        )}
-                        
-                        {/* 메시지 버블 */}
-                        <div className={`max-w-xs md:max-w-md ${msg.isMe ? 'bg-green-500 text-white rounded-2xl rounded-tr-sm' : 'bg-gray-300 rounded-2xl rounded-tl-sm'} px-4 py-2`}>
-                          <p className="whitespace-pre-line">{msg.text}</p>
-                        </div>
-                        
-                        {/* 상대방 메시지일 경우 시간이 오른쪽에 표시됨 */}
-                        {!msg.isMe && (
-                          <span className="text-xs text-gray-500 ml-2 mb-1.5">
-                            {msg.time}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-center text-gray-500 my-8">
-                    <p>멘토에게 질문을 시작해보세요!</p>
+  messages.map((msg) => (
+    <div key={msg.id} className={`flex ${msg.isMe ? 'justify-end' : 'justify-start'}`}>
+      <div className="flex flex-col">
+        <div className="flex items-end mb-1">
+          {/* 내 메시지일 경우 시간이 왼쪽에 표시됨 */}
+          {msg.isMe && (
+            <span className="text-xs text-gray-500 mr-2 mb-1.5">
+              {msg.time}
+            </span>
+          )}
+          
+                {/* 메시지 버블 */}
+                  <div className={`max-w-xs md:max-w-md ${msg.isMe ? 'bg-green-500 text-white rounded-2xl rounded-tr-sm' : 'bg-gray-300 rounded-2xl rounded-tl-sm'} px-4 py-2`}>
+                    <p className="whitespace-pre-line">{msg.text}</p>
+                  </div>
+                  
+                  {/* 상대방 메시지일 경우 시간이 오른쪽에 표시됨 */}
+                  {!msg.isMe && (
+                    <span className="text-xs text-gray-500 ml-2 mb-1.5">
+                      {msg.time}
+                    </span>
+                  )}
+                </div>
+                
+                {/* 전송 실패 표시 - 내 메시지이고 실패한 경우에만 */}
+                {msg.isMe && failedMessages.has(msg.id) && (
+                  <div className="flex items-center text-xs text-red-500 mt-1 justify-end">
+                    <span>전송 실패</span>
+                    <button 
+                      onClick={() => handleRetryMessage(msg.id)}
+                      className="ml-2 underline focus:outline-none"
+                    >
+                      재시도
+                    </button>
                   </div>
                 )}
-              
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="text-center text-gray-500 my-8">
+            <p>멘토에게 질문을 시작해보세요!</p>
+          </div>
+        )}
+                      
               {/* 메시지 끝 참조 지점 */}
               <div ref={messagesEndRef} />
             </div>

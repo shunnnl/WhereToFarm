@@ -64,3 +64,10 @@ dialog {
   background: #a1a1a1; /* 마우스 오버시 색상 변경 */
 }
 
+/* 브라우저 기본 숨김표시 아이콘 제거 */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear,
+input[type="password"]::-webkit-contacts-auto-fill-button,
+input[type="password"]::-webkit-credentials-auto-fill-button {
+  display: none !important;
+}
