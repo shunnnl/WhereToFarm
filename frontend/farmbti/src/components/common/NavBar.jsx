@@ -8,6 +8,7 @@ import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
 import { authAxios } from '../../API/common/AxiosInstance';
 import { useLocation } from 'react-router-dom';
+import { MessageSquare } from 'lucide-react';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../../store/slices/authSlice'; // 로그아웃 액션 import 경로 수정
@@ -152,13 +153,24 @@ const Navbar = () => {
                         
                         // 토스트 알림 표시
                         toast.info(`${receivedData.sender}님의 새 메시지가 도착했습니다.`, {
-                            position: "bottom-right",
-                            autoClose: 5000,
-                            hideProgressBar: false,
-                            closeOnClick: true,
-                            pauseOnHover: true,
-                            draggable: true
-                        });
+                          position: "top-right",
+                          autoClose: 5000,
+                          hideProgressBar: false,
+                          closeOnClick: true,
+                          pauseOnHover: true,
+                          draggable: true,
+                          icon: <MessageSquare size={18} color="#4a9eff" />, // lucide-react 아이콘 사용
+                          style: { 
+                              background: "#e8f4fd", 
+                              border: "1px solid #4a9eff", 
+                              borderLeft: "5px solid #4a9eff" 
+                          },
+                          className: 'message-toast'
+                      });
+                      
+
+
+                        
                     } catch (error) {
                         console.error('알림 처리 중 오류 발생:', error);
                         console.error('원본 메시지:', message.body);
