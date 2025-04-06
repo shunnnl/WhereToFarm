@@ -53,6 +53,8 @@ const MAX_CHAR_LIMIT = 1000;
 const textareaRef = useRef(null);
 const [unreadMessages, setUnreadMessages] = useState({});
 const [failedMessages, setFailedMessages] = useState(new Set());
+const roomsClient = useRef(null);
+
 
 // 뒤로가기 함수
 const handleGoBack = () => {
@@ -141,6 +143,84 @@ useEffect(() => {
 
   fetchChatRooms();
 }, []);
+
+
+// 채팅방 목록용 웹소켓 연결 설정 (컴포넌트 마운트 시 1회만 실행)
+useEffect(() => {
+  // 웹소켓 클라이언트 생성
+  const client = new Client({
+    webSocketFactory: () => new SockJS('https://j12d209.p.ssafy.io/gs-guide-websocket'),
+    connectHeaders: {
+      Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+    },
+    debug: function (str) {
+      console.log('ROOMS STOMP: ' + str);
+    },
+    reconnectDelay: 5000,
+    
+    onConnect: () => {
+      console.log('채팅방 목록 웹소켓 연결 완료');
+      
+      // 백엔드에서 제공한 구독 경로 사용
+      client.subscribe('/user/queue/room-updates', (payload) => {
+        handleRoomsUpdate(payload);
+      });
+    },
+    onStompError: (frame) => {
+      console.error('채팅방 목록 STOMP 에러:', frame);
+    }
+  });
+
+  client.activate();
+  roomsClient.current = client;
+  
+  // 컴포넌트 언마운트 시 연결 해제
+  return () => {
+    if (roomsClient.current && roomsClient.current.connected) {
+      roomsClient.current.deactivate();
+    }
+  };
+}, []);
+
+
+// 채팅방 목록 업데이트 처리 함수
+const handleRoomsUpdate = (payload) => {
+  try {
+    const update = JSON.parse(payload.body);
+    console.log('채팅방 업데이트 수신:', update);
+    
+    // 단일 채팅방 업데이트 처리
+    if (update && update.type === "roomUpdate" && update.roomId) {
+      // 해당 roomId의 채팅방 찾아서 lastMessage 업데이트
+      setChatRooms(prevRooms => {
+        return prevRooms.map(room => {
+          if (room.roomId === update.roomId) {
+            return { 
+              ...room, 
+              lastMessage: update.lastMessage 
+            };
+          }
+          return room;
+        });
+      });
+      
+      // 현재 보고 있는 채팅방이 아닌 경우에만 읽지 않은 메시지 카운트 증가
+      if (roomId !== update.roomId) {
+        setUnreadMessages(prev => ({
+          ...prev,
+          [update.roomId]: (prev[update.roomId] || 0) + 1
+        }));
+      }
+      
+      console.log(`채팅방 ${update.roomId} 업데이트 완료: ${update.lastMessage}`);
+    } else {
+      console.warn('처리할 수 없는 채팅방 업데이트 형식:', update);
+    }
+  } catch (error) {
+    console.error('채팅방 업데이트 처리 오류:', error);
+  }
+};
+
 
 /* 텍스트 영역 자동 높이 조절을 위한 함수 */
 const adjustTextareaHeight = (element) => {
