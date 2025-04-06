@@ -6,6 +6,16 @@ const PropertyCard = ({ property }) => {
   const handleClickButton = (estateId) => {
     navigate(`/estate/${estateId}`);
   };
+
+  // 숫자에 콤마 추가하는 함수
+  const formatNumber = (num) => {
+    // 입력값이 숫자가 아니면 그대로 반환
+    if (isNaN(Number(num))) return num;
+
+    // 숫자로 변환 후 toLocaleString 적용
+    return Number(num).toLocaleString("ko-KR");
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-md p-6 m-4 border border-gray-200 hover:shadow-lg transition-shadow">
       <div className="mb-4">
@@ -18,7 +28,7 @@ const PropertyCard = ({ property }) => {
       <div className="grid gap-4 mb-4">
         <div>
           <p className="text-sm text-gray-600">매매 금액</p>
-          <p className="font-semibold">{property.deposit} 만원</p>
+          <p className="font-semibold">{formatNumber(property.deposit)} 만원</p>
         </div>
         <div>
           <p className="text-sm text-gray-600">면적</p>
