@@ -258,15 +258,17 @@ const EstatePage = () => {
             )}
           </div>
 
-          <div className="p-4 border-t border-gray-200">
-            <PaginationComponent
-              activePage={activePage}
-              totalItemsCount={totalItemsCount}
-              onChange={handlePageChange}
-              itemsPerPage={itemsPerPage}
-              className="flex justify-center"
-            />
-          </div>
+          {properties.length > 0 && (
+            <div className="p-4 border-t border-gray-200">
+              <PaginationComponent
+                activePage={activePage}
+                totalItemsCount={totalItemsCount}
+                onChange={handlePageChange}
+                itemsPerPage={itemsPerPage}
+                className="flex justify-center"
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>
