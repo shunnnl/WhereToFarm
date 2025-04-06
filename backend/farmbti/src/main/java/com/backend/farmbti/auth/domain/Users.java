@@ -4,6 +4,7 @@ import com.backend.farmbti.common.entity.TimeStampEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @AllArgsConstructor
@@ -41,6 +42,12 @@ public class Users extends TimeStampEntity {
     @Column(name = "profile_image")
     private String profileImage;
 
+    @Column(name = "profile_image_url", columnDefinition = "TEXT")
+    private String profileImageUrl; // ImageUrl 속도 빨리!!!
+
+    @Column(name = "profile_image_url_expires_at")
+    private LocalDateTime profileImageUrlExpiresAt;
+
 //    @Enumerated(EnumType.STRING) //데이터베이스에서 직접 값을 볼 때 "ROLE_USER"로 읽힘
 //    @Column(nullable = false)
 //    private Role role;
@@ -73,6 +80,17 @@ public class Users extends TimeStampEntity {
         this.birth = birth;
         this.address = address;
         this.gender = gender;
+    }
+
+    // URL 관련 메서드
+    public void updateProfileImageUrl(String url, LocalDateTime expiresAt) {
+        this.profileImageUrl = url;
+        this.profileImageUrlExpiresAt = expiresAt;
+    }
+
+    public boolean isProfileImageUrlExpired() {
+        return profileImageUrlExpiresAt == null ||
+                LocalDateTime.now().isAfter(profileImageUrlExpiresAt);
     }
 
 //    public enum Role {

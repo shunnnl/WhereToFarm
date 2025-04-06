@@ -25,7 +25,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -191,7 +190,7 @@ public class MentorsService {
         if (city.endsWith("시") || city.endsWith("군")) {
             searchTerm = city.substring(0, city.length() - 1);
         }
-        
+
         List<Mentors> allMentors = mentorsRepository.findByUser_AddressContaining(searchTerm);
 
         // 탈퇴하지 않은 사용자(isOut = 0)의 멘토만 필터링
@@ -270,11 +269,21 @@ public class MentorsService {
 
     private String getProfileImageUrl(Users user) {
         try {
-            String profileImageKey = Optional.ofNullable(user.getProfileImage())
-                    .orElse(s3Service.getDefaultProfileImageKey(user.getGender()));
+            // 1. 이미 생성된 URL이 있고 만료되지 않았으면 그대로 반환
+            if (user.getProfileImageUrl() != null && !user.isProfileImageUrlExpired()) {
+                log.debug("Using existing URL for user: {}", user.getId());
+                return user.getProfileImageUrl();
+            }
 
-            return s3Service.getSignedUrl(profileImageKey);
+            // 2. URL이 없거나 만료된 경우 새로 생성
+            String profileImageUrl = s3Service.getOrCreateSignedUrl(user);
+
+            // 3. 생성된 URL 저장
+            usersRepository.save(user);
+
+            return profileImageUrl;
         } catch (Exception e) {
+            log.error("Failed to generate profile image URL for user: {}", user.getId(), e);
             throw new GlobalException(UsersErrorCode.PROFILE_IMAGE_URL_GENERATION_FAILED);
         }
     }

@@ -34,8 +34,8 @@ import java.util.stream.Collectors;
 public class UsersService {
 
     private final UsersRepository usersRepository;
-    private final MentorsRepository mentorsRepository;  // 멘토 리포지토리 추가
-    private final MentorsCropsRepository mentorsCropsRepository;  // 멘토-작물 리포지토리 추가
+    private final MentorsRepository mentorsRepository;
+    private final MentorsCropsRepository mentorsCropsRepository;
     private final PasswordEncoder passwordEncoder;
     private final S3Service s3Service;
 
@@ -87,6 +87,9 @@ public class UsersService {
 
         user.updateRefreshToken(null); // 리프레쉬토큰 null로 처리
 
+        // URL 관련 정보 초기화
+        user.updateProfileImageUrl(null, null);
+
         // 사용자 상태를 탈퇴(1)로 변경
         user.updateIsOut((byte) 1);
 
@@ -129,6 +132,10 @@ public class UsersService {
                 }
 
                 user.updateProfileImage(newDefaultProfileImageKey);
+
+                // URL 정보 초기화 (성별이 바뀌면 이미지가 바뀌므로)
+                user.updateProfileImageUrl(null, null);
+
             } catch (AmazonS3Exception s3e) {
                 throw new GlobalException(S3ErrorCode.S3_SERVICE_ERROR);
             } catch (Exception e) {
@@ -149,7 +156,7 @@ public class UsersService {
     /**
      * 현재 로그인한 사용자 정보 조회 (멘토 정보 포함)
      */
-    @Transactional(readOnly = true)
+    @Transactional // readOnly 제거: URL 저장 필요함
     public CurrentUserResponse getCurrentUserInfo(Long userId) {
         // 1. 사용자 기본 정보 조회
         Users user = usersRepository.findById(userId)
@@ -159,10 +166,14 @@ public class UsersService {
         String profileImageKey = Optional.ofNullable(user.getProfileImage())
                 .orElseThrow(() -> new GlobalException(S3ErrorCode.DEFAULT_PROFILE_IMAGE_NOT_FOUND));
 
+        // URL 생성 또는 가져오기
         String profileImageUrl;
         try {
-            profileImageUrl = s3Service.getSignedUrl(profileImageKey);
+            profileImageUrl = s3Service.getOrCreateSignedUrl(user);
+            // URL이 생성되었거나 갱신되었을 수 있으므로 저장
+            usersRepository.save(user);
         } catch (Exception e) {
+            log.error("Failed to generate profile image URL for user: {}", userId, e);
             throw new GlobalException(UsersErrorCode.PROFILE_IMAGE_URL_GENERATION_FAILED);
         }
 
@@ -253,19 +264,22 @@ public class UsersService {
             }
         }
 
-        // 4. 프로필 이미지 업데이트
+        // 4. 프로필 이미지 키 업데이트
         user.updateProfileImage(defaultProfileImageKey);
-        usersRepository.save(user);
 
-        // 5. 서명된 URL 생성 및 응답 객체 반환
+        // 5. 기존 URL 정보 초기화 (이미지가 바뀌므로)
+        user.updateProfileImageUrl(null, null);
+
+        // 6. 새 URL 생성 및 저장
         try {
-            String signedUrl = s3Service.getSignedUrl(defaultProfileImageKey);
+            String signedUrl = s3Service.getOrCreateSignedUrl(user);
+            usersRepository.save(user);
+
             return UploadProfileImageResponse.builder()
                     .imageUrl(signedUrl)
                     .build();
-        } catch (AmazonS3Exception s3e) {
-            throw new GlobalException(S3ErrorCode.PROFILE_IMAGE_URL_GENERATION_FAILED);
         } catch (Exception e) {
+            log.error("Failed to generate profile image URL for user: {}", userId, e);
             throw new GlobalException(S3ErrorCode.PROFILE_IMAGE_URL_GENERATION_FAILED);
         }
     }
@@ -331,17 +345,20 @@ public class UsersService {
 
         // 5. 사용자 프로필 이미지 키 업데이트
         user.updateProfileImage(newProfileImageKey);
-        usersRepository.save(user);
 
-        // 6. 서명된 URL 생성 및 응답 객체 반환
+        // 6. 기존 URL 정보 초기화 (이미지가 바뀌므로)
+        user.updateProfileImageUrl(null, null);
+
+        // 7. 새 URL 생성 및 저장
         try {
-            String signedUrl = s3Service.getSignedUrl(newProfileImageKey);
+            String signedUrl = s3Service.getOrCreateSignedUrl(user);
+            usersRepository.save(user);
+
             return UploadProfileImageResponse.builder()
                     .imageUrl(signedUrl)
                     .build();
-        } catch (AmazonS3Exception s3e) {
-            throw new GlobalException(S3ErrorCode.PROFILE_IMAGE_URL_GENERATION_FAILED);
         } catch (Exception e) {
+            log.error("Failed to generate profile image URL for user: {}", userId, e);
             throw new GlobalException(S3ErrorCode.PROFILE_IMAGE_URL_GENERATION_FAILED);
         }
     }
@@ -389,7 +406,6 @@ public class UsersService {
         if (!password.matches(".*[a-zA-Z].*")) {
             throw new GlobalException(UsersErrorCode.PASSWORD_REQUIRES_LETTER);
         }
-
     }
 
     // 멘토 정보 유효성 검사 메서드 추가
@@ -402,5 +418,4 @@ public class UsersService {
             throw new GlobalException(MentorsErrorCode.INVALID_FARMING_YEARS);
         }
     }
-
 }

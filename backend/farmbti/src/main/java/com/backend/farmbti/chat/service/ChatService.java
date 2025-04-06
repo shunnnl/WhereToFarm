@@ -18,6 +18,7 @@ import com.backend.farmbti.common.service.S3Service;
 import com.backend.farmbti.mentors.domain.Mentors;
 import com.backend.farmbti.mentors.exception.MentorsErrorCode;
 import com.backend.farmbti.mentors.repository.MentorsRepository;
+import com.backend.farmbti.users.exception.UsersErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,13 +69,13 @@ public class ChatService {
                 .otherUserId(chat.getMentor().getId())
                 .currentUserName(chat.getMentee().getName())
                 .otherUserName(chat.getMentor().getUser().getName())
-                .otherUserProfile(s3Service.getSignedUrl(chat.getMentor().getUser().getProfileImage()))
+                .otherUserProfile(getProfileImageUrl(chat.getMentor().getUser()))
+                //.otherUserProfile(s3Service.getSignedUrl(chat.getMentor().getUser().getProfileImage()))
                 .isCurrentUserMentee(true)
                 .build();
 
     }
 
-    @Transactional(readOnly = true)
     public List<ChatListResponse> getAllRooms(Long userId) {
         List<Chat> chats = chatRepository.findAllByMenteeIdOrMentorUserId(userId, userId);
 
@@ -97,9 +98,15 @@ public class ChatService {
                             ? chat.getMentor().getUser().getName()
                             : chat.getMentee().getName();
 
+                    /*
                     String otherUserProfile = isUserMentee
                             ? chat.getMentor().getUser().getProfileImage()
                             : chat.getMentee().getProfileImage();
+
+                     */
+                    Users otherUser = isUserMentee
+                            ? chat.getMentor().getUser()
+                            : chat.getMentee();
 
                     ChatMessage latestMessageObj = chatMessageRepository.findTopByChat_RoomIdOrderBySendAtDesc(chat.getRoomId());
                     String latestMessage = (latestMessageObj != null) ? latestMessageObj.getContent() : null;
@@ -108,7 +115,8 @@ public class ChatService {
                             .roomId(chat.getRoomId())
                             .otherUserId(otherUserId)
                             .otherUserName(otherUserName)
-                            .otherUserProfile(s3Service.getSignedUrl(otherUserProfile))
+                            //.otherUserProfile(s3Service.getSignedUrl(otherUserProfile))
+                            .otherUserProfile(getProfileImageUrl(otherUser))
                             .lastMessage(latestMessage)
                             .build();
                 })
@@ -155,6 +163,24 @@ public class ChatService {
                             .build();
 
                 }).collect(Collectors.toList());
+    }
 
+    private String getProfileImageUrl(Users user) {
+        try {
+            // 1. 이미 생성된 URL이 있고 만료되지 않았으면 그대로 반환
+            if (user.getProfileImageUrl() != null && !user.isProfileImageUrlExpired()) {
+                return user.getProfileImageUrl();
+            }
+
+            // 2. URL이 없거나 만료된 경우 새로 생성
+            String profileImageUrl = s3Service.getOrCreateSignedUrl(user);
+
+            // 3. 생성된 URL 저장
+            usersRepository.save(user);
+
+            return profileImageUrl;
+        } catch (Exception e) {
+            throw new GlobalException(UsersErrorCode.PROFILE_IMAGE_URL_GENERATION_FAILED);
+        }
     }
 }
