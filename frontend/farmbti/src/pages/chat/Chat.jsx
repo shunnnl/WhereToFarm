@@ -626,7 +626,7 @@ const getMentorName = () => {
 };
 
 return (
-  <div className="flex h-screen bg-gray-100">
+  <div className="flex h-[90vh] bg-gray-100">
     {/* 좌측 멘토 목록 */}
     <div className="w-1/4 bg-white border-r flex flex-col">
       {/* 뒤로가기 버튼 - 헤더와 높이 맞춤 */}
