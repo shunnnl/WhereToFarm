@@ -1,10 +1,12 @@
 package com.backend.farmbti.chat.repository;
 
+import com.backend.farmbti.auth.domain.Users;
 import com.backend.farmbti.chat.entity.Chat;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,5 +24,9 @@ public interface ChatRepository extends JpaRepository<Chat, Long> {
     List<Chat> findAllByMenteeIdOrMentorUserId(
             @Param("menteeId") Long menteeId,
             @Param("mentorUserId") Long mentorUserId);
+
+    List<Chat> findAllByMentorUser(Users user);
+
+    List<Chat> findAllByMenteeId(Long userId);
     //"mentee의 id가 주어진 값과 일치하거나 mentor의 user의 id가 주어진 값과 일치하는 모든 Chat 엔티티를 찾아라"
 }
