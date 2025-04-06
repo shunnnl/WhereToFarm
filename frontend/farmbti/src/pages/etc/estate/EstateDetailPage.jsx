@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import PageHeader from "../../../components/common/PageHeader";
 import { getEstateDetail } from "../../../API/etc/EstateAPI";
 import { toast } from "react-toastify";
@@ -10,11 +10,20 @@ import { handleError } from "../../../utils/ErrorUtil";
 const EstateDetailPage = () => {
   const { estateId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [property, setProperty] = useState(null);
   const [isLoading, setisLoading] = useState(true);
 
+  // 수정된 뒤로 가기 함수
   const handleGoBack = () => {
-    navigate(-1); // 이전 페이지로 이동
+    // location.state에서 이전 페이지 정보 확인
+    if (location.state && location.state.from) {
+      // 이전 페이지 경로와 쿼리 파라미터를 조합하여 이동
+      navigate(`${location.state.from}${location.state.search}`);
+    } else {
+      // 상태 정보가 없으면 기본 뒤로 가기
+      navigate(-1);
+    }
   };
 
   useEffect(() => {
@@ -51,7 +60,7 @@ const EstateDetailPage = () => {
               요청하신 매물 정보가 존재하지 않습니다.
             </p>
             <button
-              onClick={() => window.history.back()}
+              onClick={handleGoBack}
               className="bg-primaryGreen text-white px-6 py-2 rounded text-sm flex items-center mx-auto gap-2"
             >
               <ChevronLeft size={16} /> 이전 페이지로
