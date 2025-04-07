@@ -405,9 +405,9 @@ public class UsersService {
             throw new GlobalException(UsersErrorCode.INVALID_USER_ADDRESS);
         }
 
-        // 주소에 영어 포함 여부 검증
+        // 주소에 영어 포함 여부만 검증 (특수문자는 허용)
         String trimmedAddress = request.getAddress().trim();
-        if (!trimmedAddress.matches("^[가-힣0-9\\s]+$")) {
+        if (trimmedAddress.matches(".*[a-zA-Z].*")) {
             throw new GlobalException(UsersErrorCode.ADDRESS_CONTAINS_ENGLISH);
         }
 
