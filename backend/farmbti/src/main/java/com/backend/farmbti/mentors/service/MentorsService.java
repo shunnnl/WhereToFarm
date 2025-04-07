@@ -159,9 +159,7 @@ public class MentorsService {
         }
     }
 
-    /**
-     * 도/시 정보를 사용한 지역별 멘토 조회
-     */
+
     /**
      * 도/시 정보를 사용한 지역별 멘토 조회
      */
@@ -172,12 +170,55 @@ public class MentorsService {
 
             List<Mentors> mentors;
 
-            // 세종특별자치시는 예외 처리
-            if (doName.equals("세종특별자치시")) {
-                mentors = mentorsRepository.findByUser_AddressContaining(doName);
+            // 특별/광역시 및 도 약칭 처리
+            String searchDoName = doName;
+            // 특별/광역시 약칭
+            if (doName.equals("서울특별시")) {
+                searchDoName = "서울";
+            } else if (doName.equals("부산광역시")) {
+                searchDoName = "부산";
+            } else if (doName.equals("인천광역시")) {
+                searchDoName = "인천";
+            } else if (doName.equals("대구광역시")) {
+                searchDoName = "대구";
+            } else if (doName.equals("광주광역시")) {
+                searchDoName = "광주";
+            } else if (doName.equals("대전광역시")) {
+                searchDoName = "대전";
+            } else if (doName.equals("울산광역시")) {
+                searchDoName = "울산";
+            }
+            // 도 매핑
+            else if (doName.equals("경기도")) {
+                searchDoName = "경기";
+            } else if (doName.equals("강원도")) {
+                searchDoName = "강원특별자치도";
+            } else if (doName.equals("충청북도")) {
+                searchDoName = "충북";
+            } else if (doName.equals("충청남도")) {
+                searchDoName = "충남";
+            } else if (doName.equals("전라북도")) {
+                searchDoName = "전북특별자치도";
+            } else if (doName.equals("전라남도")) {
+                searchDoName = "전남";
+            } else if (doName.equals("경상북도")) {
+                searchDoName = "경북";
+            } else if (doName.equals("경상남도")) {
+                searchDoName = "경남";
+            } else if (doName.equals("제주도")) {
+                searchDoName = "제주특별자치도";
+            }
+
+// 세종특별자치시는 예외 처리
+            if (doName.equals("세종특별자치시") || doName.equals("세종시")) {
+                // 원래 형태인 "세종특별자치시"로 검색
+                mentors = mentorsRepository.findByUser_AddressContaining("세종특별자치시");
             } else {
                 // 도와 시/군/구 조합으로 검색
-                String searchTerm = doName + " " + cityName;
+                String searchTerm = searchDoName;
+                if (cityName != null && !cityName.isEmpty()) {
+                    searchTerm += " " + cityName;
+                }
                 mentors = mentorsRepository.findByUser_AddressContaining(searchTerm);
             }
 
@@ -196,7 +237,7 @@ public class MentorsService {
         } catch (GlobalException e) {
             throw e;
         } catch (Exception e) {
-            log.error("지역별 멘토 조회 실패: doName={}, cityName={}, error={}", doName, cityName, e.getMessage());
+            log.error("지역별 멘토 조회 실패: doName={}, cityName={}, error={}", doName, cityName, e.getMessage(), e);
             throw new GlobalException(MentorsErrorCode.MENTOR_LOCATION_SEARCH_FAILED);
         }
     }
