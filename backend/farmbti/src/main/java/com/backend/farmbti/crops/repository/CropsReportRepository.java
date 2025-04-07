@@ -12,5 +12,7 @@ public interface CropsReportRepository extends JpaRepository<CropsReport, Long> 
 
     Optional<CropsReport> findByUsers_IdAndId(Long usersId, Long cropsReportId);
 
-    List<CropsReport> findByUsersIdAndBookmarkedTrue(Long usersId);
+   // List<CropsReport> findByUsersIdAndBookmarkedTrue(Long usersId);
+
+    List<CropsReport> findByUsersIdAndBookmarkedTrueOrderByCreatedAtDesc(Long usersId);
 }

@@ -136,7 +136,7 @@ public class CropsService {
     public List<CropsAllResponse> getCrops(Long usersId) {
 
         //userId에 해당하는 모든 리포트 객체를 리스트로 가져옴
-        List<CropsReport> cropsReport = cropsReportRepository.findByUsersIdAndBookmarkedTrue(usersId);
+        List<CropsReport> cropsReport = cropsReportRepository.findByUsersIdAndBookmarkedTrueOrderByCreatedAtDesc(usersId);
 
         //결과를 담을 리스트를 생성
         List<CropsAllResponse> responses = new ArrayList<>();
