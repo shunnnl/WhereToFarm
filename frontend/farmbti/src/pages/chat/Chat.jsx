@@ -64,8 +64,18 @@ const handleGoBack = () => {
 // 불필요한 Navbar 알람 필터링 용용
 useEffect(() => {
   if (roomId) {
-    console.log(`현재 채팅방을 ${roomId}로 설정합니다.`);
-    localStorage.setItem('currentChatRoomId', roomId);
+    console.log(`현재 채팅방을 ${roomId}(타입: ${typeof roomId})로 설정합니다.`);
+    localStorage.setItem('currentChatRoomId', String(roomId));
+    
+    // 디버깅: localStorage에 제대로 저장되었는지 확인
+    const savedRoomId = localStorage.getItem('currentChatRoomId');
+    console.log(`localStorage에 저장된 roomId: ${savedRoomId} (타입: ${typeof savedRoomId})`);
+    
+    // 선택한 채팅방의 읽지 않은 메시지 카운트 초기화
+    setUnreadMessages(prev => ({
+      ...prev,
+      [roomId]: 0
+    }));
   }
   
   // 컴포넌트 언마운트 시 현재 채팅방 초기화
@@ -74,7 +84,6 @@ useEffect(() => {
     localStorage.removeItem('currentChatRoomId');
   };
 }, [roomId]);
-
 
 
 // URL state에서 roomId 가져오기
@@ -204,12 +213,29 @@ const handleRoomsUpdate = (payload) => {
         });
       });
       
-      // 현재 보고 있는 채팅방이 아닌 경우에만 읽지 않은 메시지 카운트 증가
-      if (roomId !== update.roomId) {
+      // 중요: 현재 활성화된 채팅방인지 확인하기 위한 ID 가져오기
+      const currentChatRoomId = localStorage.getItem('currentChatRoomId');
+      
+      // 타입 변환하여 비교
+      const updateRoomIdNum = Number(update.roomId);
+      const currentRoomIdNum = Number(currentChatRoomId);
+      
+      console.log(`비교: updateRoomIdNum=${updateRoomIdNum}, currentRoomIdNum=${currentRoomIdNum}, 동일여부=${updateRoomIdNum === currentRoomIdNum}`);
+      
+      // 중요: 조건문 로직 직접 확인
+      const isSameRoom = updateRoomIdNum === currentRoomIdNum;
+      console.log(`isSameRoom=${isSameRoom}`);
+      
+      if (isSameRoom) {
+        // 현재 활성화된 채팅방의 메시지는 알림 표시 안함
+        console.log(`현재 활성화된 채팅방(${currentChatRoomId})의 메시지, 알림 표시 안함`);
+      } else {
+        // 다른 채팅방의 메시지는 알림 표시
         setUnreadMessages(prev => ({
           ...prev,
           [update.roomId]: (prev[update.roomId] || 0) + 1
         }));
+        console.log(`채팅방 ${update.roomId}에 새 메시지 알림 추가 (현재 활성 채팅방: ${currentChatRoomId})`);
       }
       
       console.log(`채팅방 ${update.roomId} 업데이트 완료: ${update.lastMessage}`);
@@ -471,6 +497,9 @@ const onMessageReceived = (payload, currentRoomId) => {
     
     // 메시지에 roomId가 있고 현재 채팅방과 다르면 무시
     const messageRoomId = receivedMessage.roomId || receivedMessage.chatRoomId;
+    // 중요: localStorage에서 현재 활성화된 채팅방 ID 확인
+    const activeChatRoomId = localStorage.getItem('currentChatRoomId');
+
     if (messageRoomId && messageRoomId !== currentRoomId) {
       console.log(`다른 채팅방 메시지(${messageRoomId}), 현재 채팅방(${currentRoomId})에서 무시`);
       
@@ -540,7 +569,13 @@ const updateChatRoomLastMessage = (roomId, lastMessage) => {
 
 // 채팅방 선택 시 읽지 않은 메시지 카운트 초기화
 const handleRoomSelect = (selectedRoomId) => {
+  const previousRoomId = roomId;
+
   setRoomId(selectedRoomId);
+
+  // localStorage에 현재 채팅방 ID 저장 (즉시 적용)
+  localStorage.setItem('currentChatRoomId', selectedRoomId);
+  console.log(`현재 채팅방 ID를 localStorage에 저장: ${selectedRoomId}`);
   
   // 선택한 채팅방의 읽지 않은 메시지 카운트 초기화
   setUnreadMessages(prev => ({
