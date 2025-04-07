@@ -31,6 +31,7 @@ public class WebSocketService {
     // 사용자 ID와 사용자명을 매핑하는 맵 (스레드 안전한 ConcurrentHashMap 사용)
     private final Map<Long, String> userUsernameMap = new ConcurrentHashMap<>();
 
+    @Transactional
     public MessageResponse saveAndGetMessage(Long roomId, String message, Long senderId) {
 
         Chat chat = chatRepository.findById(roomId)
@@ -48,6 +49,7 @@ public class WebSocketService {
         chatMessageRepository.save(chatMessage);
 
         return MessageResponse.builder()
+                .roomId(chat.getRoomId())
                 .messageId(chatMessage.getMessageId())
                 .content(chatMessage.getContent())
                 .sentAt(chatMessage.getSendAt())
