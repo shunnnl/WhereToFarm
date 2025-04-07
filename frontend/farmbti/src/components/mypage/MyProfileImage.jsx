@@ -108,13 +108,14 @@ const MyProfileImage = ({ imageUrl, isDefaultImage }) => {
         return;
       }
 
-      // 매직 넘버를 통한 파일 내용 검증
-      await validateImageContent(file).catch((error) => {
+      try {
+        await validateImageContent(file);
+      } catch (error) {
         toast.warning(error.message);
         e.target.value = "";
         setIsLoading(false);
-        throw error;
-      });
+        return; // ← 여기서 함수 종료, 외부 catch로 가지 않음
+      }
 
       // 이미지 로드 가능 여부 확인 (손상된 이미지 감지)
       const imageUrl = URL.createObjectURL(file);

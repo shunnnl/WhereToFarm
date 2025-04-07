@@ -7,7 +7,6 @@ import ResultSummary from "./ResultSummary";
 const ResultSection = ({
   step,
   result,
-  userName,
   isLoading,
   onSaveReport,
   onResetResult,
@@ -39,7 +38,7 @@ const ResultSection = ({
             <div className="report-name mx-14 my-8">
               <span className="text-3xl pr-2">📜 </span>
               <span className="text-3xl font-bold text-supportGreen">
-                {userName}{" "}
+                {result.usersName}{" "}
               </span>
               <span className="text-xl font-semibold text-textColor-black mr-3">
                 님의{" "}

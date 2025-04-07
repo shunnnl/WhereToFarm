@@ -25,22 +25,6 @@ const CropCalculatorPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // 화면 렌더링 시 설정
-  useEffect(() => {
-    window.scrollTo(0, 0);
-    // 사용자 이름 가져오기
-    const user = localStorage.getItem("user");
-    if (user) {
-      try {
-        const userObj = JSON.parse(user);
-        setUserName(userObj.name);
-      } catch (error) {
-        console.error("사용자 정보 파싱 오류:", error);
-        setUserName("사용자");
-      }
-    }
-  }, []);
-
   const handleAreaSubmit = () => {
     // 평수 입력이 없을 경우
     if (area === null || area === undefined || area === "") {
@@ -172,7 +156,6 @@ const CropCalculatorPage = () => {
         <ResultSection
           step={step}
           result={result}
-          userName={userName}
           isLoading={isLoading}
           onSaveReport={handleSaveResult}
           onResetResult={handleResetCalculate}
