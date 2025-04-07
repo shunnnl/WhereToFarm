@@ -347,6 +347,16 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
       onRequestClose={onRequestClose}
       className="bg-white p-6 rounded-xl shadow-md max-w-4xl w-full mx-auto"
       overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]"
+      shouldCloseOnOverlayClick={false}
+      shouldCloseOnEsc={true}
+      ariaHideApp={false}
+      style={{
+        overlay: {
+          position: 'fixed',
+          overflowY: 'hidden'
+        }
+      }}
+
         >
       <form onSubmit={handleSubmit} className="w-full">
         <div className='mb-4 text-center w-full'>
