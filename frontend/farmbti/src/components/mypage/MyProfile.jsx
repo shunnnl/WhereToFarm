@@ -239,10 +239,21 @@ const MyProfile = ({ myInfo: initialMyInfo, isLoading = false }) => {
             gender,
           });
 
+          
+
           // 성공했다면 로컬 상태 업데이트
           if (myInfoResponse.success) {
             // UI에 즉시 반영하기 위해 상태 업데이트
             setMyInfo(myInfoResponse.data);
+            const userData = {
+              id: myInfoResponse.data.userId,
+              email: myInfoResponse.data.email,
+              name: myInfoResponse.data.name,
+              address: myInfoResponse.data.address,
+              gender: myInfoResponse.data.gender,
+              profileImage: myInfoResponse.data.profileImage
+            };;
+            localStorage.setItem("user", JSON.stringify(userData));
             toast.success("회원 정보가 수정 되었습니다.");
           }
           break;
