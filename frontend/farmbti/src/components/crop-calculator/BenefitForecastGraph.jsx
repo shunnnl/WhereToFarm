@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import * as d3 from "d3";
 
-const BenefitForecastGraph = ({ myForecast, pastPrice, isInModal = false }) => {
+const BenefitForecastGraph = ({ cropsName, myForecast, pastPrice, isInModal = false }) => {
   const svgRef = useRef();
   const containerRef = useRef(); // 툴팁 컨테이너를 위한 ref 추가
 
@@ -299,7 +299,7 @@ const BenefitForecastGraph = ({ myForecast, pastPrice, isInModal = false }) => {
       .attr("text-anchor", "middle")
       .style("font-size", "16px")
       .style("font-weight", "bold")
-      .text("월별 1Kg당 작물 매출액 추이 및 예측");
+      .text(`${cropsName}의 월별 1Kg당 작물 매출액 추이 및 예측`);
 
     // 컴포넌트가 언마운트될 때 툴팁 제거
     return () => {
