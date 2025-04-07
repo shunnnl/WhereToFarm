@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify'; // 추가: toast 알림 import
 import logo from "../../asset/navbar/main_logo.svg";
 import userIcon from "../../asset/navbar/user_icon.svg";
@@ -7,7 +7,6 @@ import bellIcon from "../../asset/navbar/bell_icon.svg";
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
 import { authAxios } from '../../API/common/AxiosInstance';
-import { useLocation } from 'react-router-dom';
 import { MessageSquare } from 'lucide-react';
 
 import { useSelector, useDispatch } from 'react-redux';
@@ -16,7 +15,7 @@ import { logout } from '../../store/slices/authSlice'; // 로그아웃 액션 im
 const Navbar = () => {
     const menuItemClass = "py-1 px-4 text-gray-900 hover:text-green-700";
     const location = useLocation();
-    const isInChatPage = location.pathname === '/chat';
+    const [isInChatPage, setIsInChatPage] = useState(false);
 
     // Redux 스토어에서 로그인 상태 가져오기
     const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
@@ -39,6 +38,15 @@ const Navbar = () => {
             setUser(null);
         }
     }, [isLoggedIn]);
+
+
+    // location이 변경될 때마다 현재 페이지가 채팅 페이지인지 확인
+    useEffect(() => {
+      setIsInChatPage(location.pathname === '/chat');
+      console.log("현재 페이지 위치:", location.pathname, "채팅 페이지 여부:", location.pathname === '/chat');
+    }, [location]);
+
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
     
@@ -121,7 +129,20 @@ const Navbar = () => {
                         const receivedData = JSON.parse(message.body);
                         console.log("백엔드에서 받은 원본 메시지:", receivedData);
 
-                          // 현재 localStorage에서 채팅방 ID 확인 (최신 상태 반영)
+                        // 현재 경로를 실시간으로 다시 확인 (더 확실하게 하기 위해)
+                        const currentPathname = window.location.pathname;
+                        const currentlyInChatPage = currentPathname === '/chat';
+
+                        
+
+                        // 현재 채팅 페이지에 있는 경우 알림 표시하지 않음
+                        if (currentlyInChatPage || isInChatPage) {
+                          console.log("현재 채팅 페이지에 있어 알림을 표시하지 않습니다.");
+                          return;
+                        }
+
+
+                        // 현재 localStorage에서 채팅방 ID 확인 (최신 상태 반영)
                         const currentRoomId = localStorage.getItem('currentChatRoomId');
                         
                         // 수신된 메시지의 roomId와 현재 채팅방 ID 비교
