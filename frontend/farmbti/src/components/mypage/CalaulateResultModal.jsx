@@ -1,40 +1,112 @@
-import { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import { forwardRef, useImperativeHandle, useRef, useState, useEffect } from "react";
 import { X } from "lucide-react";
 import ResultSummary from "../crop-calculator/ResultSummary";
 import AnnualBenefitResult from "../crop-calculator/AnnualBenefitResult";
 import BenefitForecastGraph from "../crop-calculator/BenefitForecastGraph";
 
 const CalculateResultModal = forwardRef(({ reportId }, ref) => {
-  // reportId를 가지고 api 호출
-
   const [report, setReport] = useState({});
   const dialogRef = useRef(null);
+  const contentRef = useRef(null);
+
+  // 모달 열렸을 때 스크롤 방지
+  useEffect(() => {
+    const preventBackdropScroll = (e) => {
+      if (dialogRef.current && dialogRef.current.open) {
+        if (e.target === dialogRef.current) {
+          e.preventDefault();
+        }
+      }
+    };
+
+    document.addEventListener('wheel', preventBackdropScroll, { passive: false });
+    document.addEventListener('touchmove', preventBackdropScroll, { passive: false });
+
+    return () => {
+      document.removeEventListener('wheel', preventBackdropScroll);
+      document.removeEventListener('touchmove', preventBackdropScroll);
+    };
+  }, []);
 
   // 부모 컴포넌트에서 접근할 수 있는 메소드 노출
   useImperativeHandle(ref, () => ({
-    showModal: () => dialogRef.current?.showModal(),
-    close: () => dialogRef.current?.close(),
-    updateData: (data) => setReport(data),
+    showModal: () => {
+      dialogRef.current?.showModal();
+      // 모달 열릴 때 body 스크롤 비활성화
+      document.body.style.overflow = 'hidden';
+      
+      // 스크롤 위치 초기화
+      if (contentRef.current) {
+        contentRef.current.scrollTop = 0;
+      }
+    },
+    close: () => {
+      dialogRef.current?.close();
+      // 모달 닫힐 때 body 스크롤 다시 활성화
+      document.body.style.overflow = '';
+    },
+    updateData: (data) => {
+      setReport(data);
+      // 데이터 업데이트 시에도 스크롤 위치 초기화
+      setTimeout(() => {
+        if (contentRef.current) {
+          contentRef.current.scrollTop = 0;
+        }
+      }, 0);
+    },
   }));
 
   const handleCancel = () => {
     dialogRef.current?.close();
+    document.body.style.overflow = '';
   };
+
+  // 배경 클릭시 닫힘 방지 (필요시 사용)
+  const handleDialogClick = (e) => {
+    if (e.target === dialogRef.current) {
+      e.preventDefault();
+    }
+  };
+
+  // 모달이 닫힐 때 이벤트 리스너
+  useEffect(() => {
+    const resetScroll = () => {
+      if (contentRef.current) {
+        contentRef.current.scrollTop = 0;
+      }
+    };
+
+    dialogRef.current?.addEventListener('close', resetScroll);
+    
+    return () => {
+      dialogRef.current?.removeEventListener('close', resetScroll);
+    };
+  }, []);
 
   return (
     <dialog
       ref={dialogRef}
-      className="w-full max-w-5xl mx-auto p-6 rounded-xl bg-white shadow-lg overflow-hidden"
+      className="w-full max-w-5xl mx-auto p-0 rounded-xl bg-white shadow-lg"
+      onClick={handleDialogClick}
+      onClose={() => { document.body.style.overflow = ''; }}
     >
-      <div className="p-6 pr-8 max-h-[80vh] overflow-y-auto custom-scrollbar">
-        <div className="relative">
-          {/* 닫기 버튼 */}
+      {/* 스크롤 영역을 모달 내부에 있도록 처리 */}
+      <div className="relative w-full h-full">
+        {/* 상단 닫기 버튼 영역 - 스크롤되지 않음 */}
+        <div className="sticky top-0 right-0 pt-4 pr-4 flex justify-end z-10 bg-white">
           <button
             onClick={handleCancel}
-            className="absolute right-0 top-0 text-gray-700 hover:text-gray-900"
+            className="text-gray-700 hover:text-gray-900"
           >
             <X size={24} />
           </button>
+        </div>
+
+        {/* 스크롤 컨테이너 */}
+        <div 
+          ref={contentRef}
+          className="px-6 pb-6 max-h-[80vh] overflow-y-auto custom-scrollbar"
+        >
           {/* 타이틀 */}
           <h2 className="text-2xl font-bold text-center mb-8">
             나의 예상 수익 보고서
@@ -70,7 +142,7 @@ const CalculateResultModal = forwardRef(({ reportId }, ref) => {
           )}
 
           {/* 버튼 영역 */}
-          <div className="flex justify-center space-x-4">
+          <div className="flex justify-center space-x-4 mt-6">
             <button
               onClick={handleCancel}
               className="px-8 py-3 bg-green-700 text-white rounded-lg hover:bg-green-800 transition-colors"
