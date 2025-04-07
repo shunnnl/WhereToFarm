@@ -20,7 +20,6 @@ import com.backend.farmbti.users.exception.UsersErrorCode;
 import com.backend.farmbti.users.service.UsersService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -161,48 +160,45 @@ public class MentorsService {
     }
 
     /**
-     * 지역별 멘토 조회
+     * 도/시 정보를 사용한 지역별 멘토 조회
      */
-    @Transactional(readOnly = true)
-    public List<MentorListResponse> getMentorsByLocation(String city) {
+    /**
+     * 도/시 정보를 사용한 지역별 멘토 조회
+     */
+    @Transactional
+    public List<MentorListResponse> getMentorsByLocation(String doName, String cityName) {
         try {
-            validateLocationInput(city);
-            List<Mentors> mentors = findMentorsByCity(city);
-            return mentors.stream()
+            log.debug("지역별 멘토 조회: doName={}, cityName={}", doName, cityName);
+
+            List<Mentors> mentors;
+
+            // 세종특별자치시는 예외 처리
+            if (doName.equals("세종특별자치시")) {
+                mentors = mentorsRepository.findByUser_AddressContaining(doName);
+            } else {
+                // 도와 시/군/구 조합으로 검색
+                String searchTerm = doName + " " + cityName;
+                mentors = mentorsRepository.findByUser_AddressContaining(searchTerm);
+            }
+
+            // 탈퇴하지 않은 사용자의 멘토만 필터링
+            List<Mentors> activeMentors = mentors.stream()
+                    .filter(mentor -> mentor.getUser().getIsOut() == (byte) 0)
+                    .collect(Collectors.toList());
+
+            if (activeMentors.isEmpty()) {
+                throw new GlobalException(MentorsErrorCode.NO_MENTORS_IN_LOCATION);
+            }
+
+            return activeMentors.stream()
                     .map(this::convertToMentorListResponse)
                     .collect(Collectors.toList());
         } catch (GlobalException e) {
             throw e;
         } catch (Exception e) {
+            log.error("지역별 멘토 조회 실패: doName={}, cityName={}, error={}", doName, cityName, e.getMessage());
             throw new GlobalException(MentorsErrorCode.MENTOR_LOCATION_SEARCH_FAILED);
         }
-    }
-
-    private void validateLocationInput(String city) {
-        if (StringUtils.isBlank(city)) {
-            throw new GlobalException(MentorsErrorCode.INVALID_LOCATION_PARAMETER);
-        }
-    }
-
-    private List<Mentors> findMentorsByCity(String city) {
-        // 검색어 전처리 - 끝에 "시"나 "군"이 있으면 제거
-        String searchTerm = city;
-        if (city.endsWith("시") || city.endsWith("군")) {
-            searchTerm = city.substring(0, city.length() - 1);
-        }
-
-        List<Mentors> allMentors = mentorsRepository.findByUser_AddressContaining(searchTerm);
-
-        // 탈퇴하지 않은 사용자(isOut = 0)의 멘토만 필터링
-        List<Mentors> activeMentors = allMentors.stream()
-                .filter(mentor -> mentor.getUser().getIsOut() == (byte) 0)
-                .collect(Collectors.toList());
-
-        if (activeMentors.isEmpty()) {
-            throw new GlobalException(MentorsErrorCode.NO_MENTORS_IN_LOCATION);
-        }
-
-        return activeMentors;
     }
 
     private MentorListResponse convertToMentorListResponse(Mentors mentor) {
