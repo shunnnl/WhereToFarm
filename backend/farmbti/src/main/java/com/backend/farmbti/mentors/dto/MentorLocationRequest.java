@@ -1,10 +1,13 @@
 package com.backend.farmbti.mentors.dto;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class MentorLocationRequest {
-    private String city;
+    private String doName;
+    private String cityName;
 }

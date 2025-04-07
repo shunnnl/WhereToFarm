@@ -41,9 +41,9 @@ public class MentorsController {
     }
 
     @PostMapping("/by-location")
-    @Operation(summary = "지역별 멘토 조회", description = "특정 도시의 멘토를 조회합니다. 도시명이 포함된 모든 멘토를 반환합니다.")
+    @Operation(summary = "지역별 멘토 조회", description = "도 및 시/군/구 정보를 사용하여 멘토를 조회합니다.")
     public CommonResponseDto<List<MentorListResponse>> getMentorsByLocation(@RequestBody MentorLocationRequest request) {
-        List<MentorListResponse> mentors = mentorsService.getMentorsByLocation(request.getCity());
+        List<MentorListResponse> mentors = mentorsService.getMentorsByLocation(request.getDoName(), request.getCityName());
         return CommonResponseDto.ok(mentors);
     }
 }
