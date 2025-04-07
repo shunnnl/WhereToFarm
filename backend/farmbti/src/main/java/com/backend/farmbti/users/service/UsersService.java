@@ -405,6 +405,12 @@ public class UsersService {
             throw new GlobalException(UsersErrorCode.INVALID_USER_ADDRESS);
         }
 
+        // 주소에 영어 포함 여부 검증
+        String trimmedAddress = request.getAddress().trim();
+        if (!trimmedAddress.matches("^[가-힣0-9\\s]+$")) {
+            throw new GlobalException(UsersErrorCode.ADDRESS_CONTAINS_ENGLISH);
+        }
+
         // 생년월일 검증
         if (request.getBirth() == null) {
             throw new GlobalException(UsersErrorCode.INVALID_USER_BIRTH);
