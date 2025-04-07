@@ -21,7 +21,7 @@ public enum UsersErrorCode implements ErrorCode {
     // 회원 정보 수정 관련 에러 코드
     INVALID_BIRTH_DATE_FUTURE(400, "생년월일은 미래 날짜가 될 수 없습니다."),
     USER_NAME_TOO_LONG(400, "이름은 20자 이하여야 합니다."),
-    ADDRESS_CONTAINS_ENGLISH(400, "주소는 한글과 숫자만 입력 가능합니다."),
+    ADDRESS_CONTAINS_ENGLISH(400, "주소는 영어 입력이 허용되지 않습니다."),
 
     // 필수 입력값 관련 에러 코드
     INVALID_USER_NAME(400, "이름은 필수입니다."),
