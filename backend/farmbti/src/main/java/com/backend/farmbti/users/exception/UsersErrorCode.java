@@ -20,6 +20,7 @@ public enum UsersErrorCode implements ErrorCode {
 
     // 회원 정보 수정 관련 에러 코드
     INVALID_BIRTH_DATE_FUTURE(400, "생년월일은 미래 날짜가 될 수 없습니다."),
+    USER_NAME_TOO_LONG(400, "이름은 20자 이하여야 합니다."),
 
     // 필수 입력값 관련 에러 코드
     INVALID_USER_NAME(400, "이름은 필수입니다."),
@@ -35,6 +36,7 @@ public enum UsersErrorCode implements ErrorCode {
 
     private final int status;
     private final String message;
+
     @Override
     public String code() {
         return name();

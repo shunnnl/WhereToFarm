@@ -181,15 +181,15 @@ public class UsersService {
 
         // ✅ Redis 캐싱 추가
         profileImageUrl = redisService.getProfileImageUrl(user.getId())
-            .orElseGet(() -> {
-                try {
-                    String signedUrl = s3Service.getSignedUrl(profileImageKey);
-                    redisService.cacheProfileImageUrl(user.getId(), signedUrl, 3600); // 1시간 TTL
-                    return signedUrl;
-                } catch (Exception e) {
-                    throw new GlobalException(UsersErrorCode.PROFILE_IMAGE_URL_GENERATION_FAILED);
-                }
-            });
+                .orElseGet(() -> {
+                    try {
+                        String signedUrl = s3Service.getSignedUrl(profileImageKey);
+                        redisService.cacheProfileImageUrl(user.getId(), signedUrl, 3600); // 1시간 TTL
+                        return signedUrl;
+                    } catch (Exception e) {
+                        throw new GlobalException(UsersErrorCode.PROFILE_IMAGE_URL_GENERATION_FAILED);
+                    }
+                });
 
         boolean isDefaultImage = profileImageKey.startsWith("basic/");
 
@@ -392,6 +392,12 @@ public class UsersService {
         // 이름 검증
         if (request.getName() == null || request.getName().trim().isEmpty()) {
             throw new GlobalException(UsersErrorCode.INVALID_USER_NAME);
+        }
+
+        // 이름 길이 검증
+        String trimmedName = request.getName().trim();
+        if (trimmedName.length() > 20) {
+            throw new GlobalException(UsersErrorCode.USER_NAME_TOO_LONG);
         }
 
         // 주소 검증

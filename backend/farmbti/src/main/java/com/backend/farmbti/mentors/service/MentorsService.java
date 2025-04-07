@@ -209,7 +209,7 @@ public class MentorsService {
                 searchDoName = "제주특별자치도";
             }
 
-// 세종특별자치시는 예외 처리
+            // 세종특별자치시는 예외 처리
             if (doName.equals("세종특별자치시") || doName.equals("세종시")) {
                 // 원래 형태인 "세종특별자치시"로 검색
                 mentors = mentorsRepository.findByUser_AddressContaining("세종특별자치시");
