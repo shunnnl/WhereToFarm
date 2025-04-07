@@ -57,6 +57,7 @@ const CalculateResultModal = forwardRef(({ reportId }, ref) => {
                 isHouse={report.house}
               />
               <BenefitForecastGraph
+                cropsName={report.cropsName}
                 myForecast={report.myMonthlyPrice}
                 pastPrice={report.myPastPrice}
                 isInModal={true}
