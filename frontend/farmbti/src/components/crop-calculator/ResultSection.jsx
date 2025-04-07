@@ -62,6 +62,7 @@ const ResultSection = ({
               isHouse={result.house}
             />
             <BenefitForecastGraph
+              cropsName={result.cropsName}
               myForecast={result.myMonthlyPrice}
               pastPrice={result.myPastPrice}
             />
