@@ -8,6 +8,7 @@ import lombok.Getter;
 public class CropsEstimateResponse {
 
     private Long reportId;
+    private String usersName;
     private String cropsName;
     private double myAreaVolume;
     private double myAreaField;

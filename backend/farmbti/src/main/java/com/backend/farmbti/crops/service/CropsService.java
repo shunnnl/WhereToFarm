@@ -88,6 +88,7 @@ public class CropsService {
 
         return CropsEstimateResponse.builder()
                 .reportId(cropsReport.getId())  // 저장 후 생성된 ID 사용
+                .usersName(users.getName())
                 .cropsName(request.getCropsName())
                 .myAreaVolume(request.getMyAreaVolume())
                 .myAreaField(areaField)
