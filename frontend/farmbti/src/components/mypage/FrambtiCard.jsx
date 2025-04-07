@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Trash2 } from "lucide-react";
 
 const FarmbtiCard = ({
@@ -11,6 +11,8 @@ const FarmbtiCard = ({
   onDelete,
 }) => {
   const navigate = useNavigate();
+  const location = useLocation();
+
   const formattedDate = new Date(date)
     .toLocaleDateString("ko-KR", {
       year: "numeric",
@@ -20,8 +22,18 @@ const FarmbtiCard = ({
     .replace(/\. /g, ". ")
     .replace(/\.$/, "");
 
+  // 현재 URL의 쿼리 파라미터를 유지하기 위한 상태 저장
   const handleNavigate = (reportId) => {
-    navigate(`/report/${reportId}`);
+    // 현재 URL의 쿼리 파라미터를 추출
+    const currentUrlParams = new URLSearchParams(location.search);
+    // 상태 객체에 현재 쿼리 파라미터 저장
+    const state = {
+      from: location.pathname,
+      page: currentUrlParams.get("page") || "1",
+    };
+
+    // 쿼리 파라미터를 state로 전달하면서 페이지 이동
+    navigate(`/report/${reportId}`, { state });
   };
 
   const handleDelete = (e) => {

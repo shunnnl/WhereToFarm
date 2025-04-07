@@ -33,6 +33,8 @@ const NewsPage = () => {
 
   // 페이지 변경 핸들러
   const handlePageChange = (pageNumber) => {
+    // 페이지 상단으로 스크롤
+    window.scrollTo({ top: 0, behavior: "smooth" });
     setActivePage(pageNumber);
   };
 

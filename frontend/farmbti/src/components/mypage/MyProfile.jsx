@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import leaveIcon from "../../asset/mypage/leaves.png";
 import { MessageSquare, User, Settings, Lock } from "lucide-react";
 import { toast } from "react-toastify";
@@ -25,14 +25,8 @@ const MyProfile = ({ myInfo: initialMyInfo, isLoading = false }) => {
   const myInfoSettingRef = useRef(null);
   const [modalType, setModalType] = useState("");
   const [modalTitle, setModalTitle] = useState("");
-  const [myInfo, setMyInfo] = useState(initialMyInfo);
-  const [birth, setBirth] = useState({ year: "", month: "", day: "" });
-  const [address, setAddress] = useState("");
-  const [myImage, setMyImage] = useState({});
+  const [myInfo, setMyInfo] = useState(null);
   const navigate = useNavigate();
-
-  // 내부 로딩 상태 추가
-  const [internalLoading, setInternalLoading] = useState(true);
 
   // 모달 타입 별 상태 분리
   const [mentorFormData, setMentorFormData] = useState({
@@ -54,54 +48,40 @@ const MyProfile = ({ myInfo: initialMyInfo, isLoading = false }) => {
   // 상태, 예외 처리
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const formatBirthDate = (birthString) => {
-    if (!birthString) return { year: "", month: "", day: "" };
-    const birthDate = new Date(birthString);
+  // 데이터에서 파생되는 값은 useMemo로 계산 (불필요한 재계산 방지)
+  const birth = useMemo(() => {
+    if (!myInfo?.birth) return { year: "", month: "", day: "" };
+    const birthDate = new Date(myInfo.birth);
     return {
       year: birthDate.getFullYear().toString(),
       month: (birthDate.getMonth() + 1).toString(),
       day: birthDate.getDate().toString(),
     };
-  };
+  }, [myInfo?.birth]);
 
-  const formatAddress = (addressString) => {
-    if (!addressString) return "";
-    const address = `${addressString.split(" ")[0]} ${
-      addressString.split(" ")[1]
-    }`;
+  const address = useMemo(() => {
+    if (!myInfo?.address) return "";
+    const addressParts = myInfo.address.split(" ");
+    return `${addressParts[0]} ${addressParts[1] || ""}`;
+  }, [myInfo?.address]);
 
-    return address;
-  };
+  const myImage = useMemo(() => {
+    return {
+      isDefaultImage: myInfo?.isDefaultImage || false,
+      imageUrl: myInfo?.profileImage || "",
+    };
+  }, [myInfo?.isDefaultImage, myInfo?.profileImage]);
 
-  // 초기 데이터 로딩 처리
+  // 초기 데이터 로딩 처리 - 지연 없이 바로 상태 업데이트
   useEffect(() => {
-    // 외부에서 전달된 로딩 상태가 true이면 내부 로딩 상태도 true로 유지
-    if (isLoading) {
-      setInternalLoading(true);
-      return;
+    if (!isLoading && initialMyInfo && Object.keys(initialMyInfo).length > 0) {
+      setMyInfo(initialMyInfo);
     }
-
-    // 초기 데이터 로딩 효과를 위해 짧은 지연 설정
-    const timer = setTimeout(() => {
-      if (initialMyInfo && Object.keys(initialMyInfo).length > 0) {
-        setMyInfo(initialMyInfo);
-        setInternalLoading(false);
-      }
-    }, 300); // 300ms의 지연으로 로딩 효과 부여
-
-    return () => clearTimeout(timer);
   }, [initialMyInfo, isLoading]);
 
+  // MyInfoFormData 초기화 (myInfo가 변경될 때만)
   useEffect(() => {
-    if (!myInfo) {
-      return;
-    }
-
-    const birth = formatBirthDate(myInfo.birth);
-    setBirth(birth);
-
-    const address = formatAddress(myInfo.address);
-    setAddress(address);
+    if (!myInfo) return;
 
     setMyInfoFormData({
       data: {
@@ -116,11 +96,6 @@ const MyProfile = ({ myInfo: initialMyInfo, isLoading = false }) => {
       errors: {},
     });
 
-    setMyImage({
-      isDefaultImage: myInfo.isDefaultImage,
-      imageUrl: myInfo.profileImage,
-    });
-
     // 멘토 정보도 초기화
     if (myInfo.isMentor) {
       setMentorFormData({
@@ -133,20 +108,10 @@ const MyProfile = ({ myInfo: initialMyInfo, isLoading = false }) => {
         errors: {},
       });
     }
-  }, [myInfo]);
-
-  useEffect(() => {
-    console.log("initialMyInfo changed:", initialMyInfo);
-    if (initialMyInfo && Object.keys(initialMyInfo).length > 0) {
-      setMyInfo(initialMyInfo);
-    }
-  }, [initialMyInfo]);
+  }, [myInfo, birth]); // birth는 useMemo로 계산되므로 의존성에 추가해도 됨
 
   const handleChatting = () => {
-    // chat 페이지로 넘어가기
     navigate("/chat");
-
-    return;
   };
 
   const handleMetorSetting = () => {
@@ -163,6 +128,7 @@ const MyProfile = ({ myInfo: initialMyInfo, isLoading = false }) => {
     setModalType("myInfo");
     setModalTitle("회원 정보 수정");
 
+    // 최신 데이터로 폼 초기화
     setMyInfoFormData({
       data: {
         name: myInfo.name || "",
@@ -222,9 +188,6 @@ const MyProfile = ({ myInfo: initialMyInfo, isLoading = false }) => {
   };
 
   const handleConfirm = async () => {
-    console.log("수정 시작...");
-    console.log("현재 modalType:", modalType);
-
     try {
       setIsSubmitting(true);
 
@@ -237,9 +200,7 @@ const MyProfile = ({ myInfo: initialMyInfo, isLoading = false }) => {
             return;
           }
 
-          console.log("멘토 정보 업데이트:", mentorFormData.data);
           const mentorResponse = await putMentorInfo(mentorFormData.data);
-          console.log(mentorResponse);
 
           setMyInfo((prevInfo) => ({
             ...prevInfo,
@@ -261,7 +222,6 @@ const MyProfile = ({ myInfo: initialMyInfo, isLoading = false }) => {
           }
 
           // 유효한 경우 API 호출 및 처리
-          console.log("회원 정보 업데이트:", myInfoFormData.data);
           const birth = createISODate(
             myInfoFormData.data.year,
             myInfoFormData.data.month,
@@ -283,22 +243,11 @@ const MyProfile = ({ myInfo: initialMyInfo, isLoading = false }) => {
           if (myInfoResponse.success) {
             // UI에 즉시 반영하기 위해 상태 업데이트
             setMyInfo(myInfoResponse.data);
-
-            // 추가로 필요한 상태 업데이트
-            setBirth(formatBirthDate(myInfoResponse.data.birth));
-            setAddress(formatAddress(myInfoResponse.data.address));
-            setMyImage({
-              isDefaultImage: myInfoResponse.data.isDefaultImage,
-              imageUrl: myInfoResponse.data.profileImage,
-            });
-
             toast.success("회원 정보가 수정 되었습니다.");
           }
           break;
 
         case "password":
-          passwordContentRef.current?.resetForm();
-          console.log("비밀번호 모드 - 제출 전 데이터:", passwordFormData.data);
           if (!passwordFormData.isValid) {
             // 첫 번째 오류 메시지 또는 기본 메시지 표시
             const errorMessage =
@@ -308,10 +257,8 @@ const MyProfile = ({ myInfo: initialMyInfo, isLoading = false }) => {
           }
 
           // 유효한 경우 API 호출 및 처리
-          console.log("비밀번호 정보 업데이트:", passwordFormData.data);
           const currentPassword = passwordFormData.data.password;
           const newPassword = passwordFormData.data.newPassword;
-          console.log("newPassword:", passwordFormData.data.newPassword);
           const passwordResponse = await changePassword({
             currentPassword,
             newPassword,
@@ -323,19 +270,14 @@ const MyProfile = ({ myInfo: initialMyInfo, isLoading = false }) => {
           break;
 
         default:
-          console.log("알 수 없는 modalType:", modalType);
           break;
       }
     } catch (error) {
-      console.error(error);
       handleError(error);
     } finally {
       setIsSubmitting(false);
+      modalRef.current?.closeModal();
     }
-
-    // 최종 데이터 확인 (모든 경우에 실행)
-    console.log("모달 닫기");
-    modalRef.current?.closeModal();
   };
 
   const handleCancel = () => {
@@ -354,7 +296,7 @@ const MyProfile = ({ myInfo: initialMyInfo, isLoading = false }) => {
   const containerStyle = "min-h-screen";
 
   // 로딩 중이거나 데이터가 없을 때 스켈레톤 표시
-  if (internalLoading || !myInfo) {
+  if (isLoading || !myInfo) {
     return (
       <div className={containerStyle}>
         <ProfileSkeleton />
@@ -413,9 +355,28 @@ const MyProfile = ({ myInfo: initialMyInfo, isLoading = false }) => {
         {myInfo.isMentor && (
           <div className="flex justify-between mb-1">
             <p className="text-md text-textColor-gray text-start">재배 작물</p>
-            <p className="text-lg text-textColor-black text-end">
-              {myInfo.cropNames.join(", ")}
-            </p>
+            <div className="relative group">
+              {/* 최대 3개 작물만 표시하고 나머지는 +N개로 표시 */}
+              <p className="text-lg text-textColor-black text-end max-w-[200px] truncate">
+                {myInfo.cropNames.length <= 3
+                  ? myInfo.cropNames.join(", ")
+                  : `${myInfo.cropNames.slice(0, 3).join(", ")} +${
+                      myInfo.cropNames.length - 3
+                    }개`}
+              </p>
+              {/* 호버 시 모든 작물 표시 */}
+              {myInfo.cropNames.length > 0 && (
+                <div className="absolute hidden group-hover:block right-0 bg-white shadow-md p-2 rounded-md z-10 min-w-[150px] max-w-[300px]">
+                  <ul className="text-sm text-textColor-black whitespace-normal break-words">
+                    {myInfo.cropNames.map((crop, index) => (
+                      <li key={index} className="py-1">
+                        {crop}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
           </div>
         )}
       </div>
@@ -495,7 +456,7 @@ const MyProfile = ({ myInfo: initialMyInfo, isLoading = false }) => {
         )}
         {modalType === "myInfo" && (
           <MyInfoSettingContent
-            ref={myInfoSettingRef} // ref 추가 (MyInfoSettingContent도 forwardRef로 수정 필요)
+            ref={myInfoSettingRef} // ref 추가
             initialData={{
               name: myInfo.name || "",
               gender: myInfo.gender || 0,

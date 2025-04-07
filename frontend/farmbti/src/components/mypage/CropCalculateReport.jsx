@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import CalculateResultCard from "./CalculateResultCard";
 import PaginationComponent from "../common/Pagination";
 import DeleteConfirmModal from "../common/DeleteConfirmModal";
+import LoadingSpinner from "../common/LoadingSpinner";
 import {
   deleteCropsReports,
   getCalculateReports,
@@ -13,15 +14,19 @@ import { handleError } from "../../utils/ErrorUtil";
 const CropCalculateReport = () => {
   // 예시 데이터
   const [myCalculateResult, setMyCalculateResult] = useState([]);
+  const [isLoading, setIsLoading] = useState(true); // 로딩 상태 추가
 
   useEffect(() => {
     const getReports = async () => {
+      setIsLoading(true); // 데이터 로딩 시작
       try {
         const data = await getCalculateReports();
         setMyCalculateResult(data);
       } catch (error) {
         handleError(error);
         console.error(error);
+      } finally {
+        setIsLoading(false); // 데이터 로딩 완료
       }
     };
     getReports();
@@ -85,6 +90,7 @@ const CropCalculateReport = () => {
         closeModal();
       }
     } catch (error) {
+      handleError(error);
       console.error(error);
     }
   };
@@ -93,21 +99,29 @@ const CropCalculateReport = () => {
     <div className="relative pb-20">
       <div className="flex justify-between items-center mt-4 mb-2">
         <p className="text-xl font-semibold">나의 작물 계산 리포트</p>
-        <button
-          onClick={toggleDeleteMode}
-          className={`px-3 py-1 rounded-md text-sm ${
-            deleteMode ? "bg-red-500 text-white" : "bg-gray-200 text-gray-700"
-          }`}
-        >
-          {deleteMode ? "삭제 취소" : "삭제하기"}
-        </button>
+        {/* 로딩 중이 아니고 데이터가 있을 때만 삭제 버튼 표시 */}
+        {!isLoading && myCalculateResult.length > 0 && (
+          <button
+            onClick={toggleDeleteMode}
+            className={`px-3 py-1 rounded-md text-sm ${
+              deleteMode ? "bg-red-500 text-white" : "bg-gray-200 text-gray-700"
+            }`}
+          >
+            {deleteMode ? "삭제 취소" : "삭제하기"}
+          </button>
+        )}
       </div>
       <p className="text-sm font-light text-primaryGreen mb-4">
         *모든 리포트는 최신순으로 정렬되어 있습니다.
       </p>
 
       <div className="h-auto">
-        {myCalculateResult.length > 0 ? (
+        {/* 로딩 상태 표시 */}
+        {isLoading ? (
+          <div className="flex justify-center items-center p-24">
+            <LoadingSpinner text="리포트 불러오는 중..."/>
+          </div>
+        ) : myCalculateResult.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {currentItems.map((report) => (
               <CalculateResultCard
@@ -138,7 +152,7 @@ const CropCalculateReport = () => {
       </div>
 
       {/* 페이지네이션 - 절대 위치로 고정 */}
-      {myCalculateResult.length > itemsPerPage && (
+      {!isLoading && myCalculateResult.length > itemsPerPage && (
         <div
           className="absolute bottom-0 left-0 w-full flex justify-center"
           style={{ marginBottom: "20px" }}

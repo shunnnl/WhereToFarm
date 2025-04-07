@@ -157,11 +157,8 @@ const SupportPolicyPage = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen pb-12">
-      <PageHeader 
-        title="지원 정책" 
-        description="관심있는 혜택을 찾아보세요."
-      />
-      
+      <PageHeader title="지원 정책" description="관심있는 혜택을 찾아보세요." />
+
       <div className="max-w-5xl mx-auto mt-6 px-4">
         <div className="bg-white rounded shadow-sm overflow-hidden">
           <div className="p-4 border-b border-gray-100 bg-gray-100 flex justify-between items-center">
@@ -169,7 +166,11 @@ const SupportPolicyPage = () => {
               지원 정책 목록
             </h2>
             <div className="text-sm text-gray-500">
-              총 <span className="font-medium text-green-700">{totalElements}</span>개의 정책
+              총{" "}
+              <span className="font-medium text-green-700">
+                {totalElements}
+              </span>
+              개의 정책
             </div>
           </div>
 
@@ -189,8 +190,12 @@ const SupportPolicyPage = () => {
                 ))}
               </select>
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                  <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                <svg
+                  className="fill-current h-4 w-4"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
                 </svg>
               </div>
             </div>
@@ -210,8 +215,12 @@ const SupportPolicyPage = () => {
                 ))}
               </select>
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                  <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                <svg
+                  className="fill-current h-4 w-4"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
                 </svg>
               </div>
             </div>
@@ -235,16 +244,18 @@ const SupportPolicyPage = () => {
               </div>
             )}
           </div>
-
-          <div className="p-4 border-t border-gray-200">
-            <PaginationComponent
-              activePage={activePage}
-              totalItemsCount={totalElements}
-              onChange={handlePageChange}
-              itemsPerPage={itemsPerPage}
-              className="flex justify-center"
-            />
-          </div>
+          {/* 페이지네이션 - 정책이 있을 때만 표시 */}
+          {allPolicies.length > 0 && (
+            <div className="p-4 border-t border-gray-200">
+              <PaginationComponent
+                activePage={activePage}
+                totalItemsCount={totalElements}
+                onChange={handlePageChange}
+                itemsPerPage={itemsPerPage}
+                className="flex justify-center"
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>
