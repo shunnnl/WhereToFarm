@@ -51,27 +51,27 @@ const MentorSelect = ({ candidateList, regionName, cityName }) => {
   
   
 
-  // cityName이 변경될 때마다 API 호출
+  // cityName이나 regionName이 변경될 때마다 API 호출
   useEffect(() => {
-    // cityName이 있을 때만 API 호출
-    if (cityName) {
-      fetchMentorsByLocation(cityName);
+    // cityName과 regionName이 있을 때만 API 호출
+    if (cityName && regionName) {
+      fetchMentorsByLocation(regionName, cityName);
     } else {
-      // cityName이 없으면 상태 초기화
+      // cityName이나 regionName이 없으면 상태 초기화
       setMentors([]);
       setNoDataMessage(null);
       setError(null);
     }
-  }, [cityName]);
+  }, [cityName, regionName]);
 
   // 멘토 데이터 가져오기
-  const fetchMentorsByLocation = async (city) => {
+  const fetchMentorsByLocation = async (doName, city) => {
     setIsLoading(true);
     setError(null);
     setNoDataMessage(null);
     // 로그인 상태 확인 (LocalStorage, SessionStorage 등에서 토큰 확인)
     const accessToken = localStorage.getItem('accessToken'); // 실제 토큰 저장 키 이름에 맞게 수정
-
+    
     if (!accessToken) {
       // 로그인하지 않은 상태
       toast.error("로그인 후 이용해주세요!");
@@ -79,21 +79,24 @@ const MentorSelect = ({ candidateList, regionName, cityName }) => {
       setIsLoading(false);
       return;
     }
-  
+    
     try {
-      console.log('도시명으로 멘토 조회 요청:', city);
-      
-      // API 요청
-      const response = await authAxios.post('/mentors/by-location', { city: city });
-      
+      console.log('지역으로 멘토 조회 요청:', { doName, cityName: city });
+          
+      // 변경된 API 요청 형식
+      const response = await authAxios.post('/mentors/by-location', { 
+        doName: doName,
+        cityName: city 
+      });
+          
       console.log('API 응답:', response);
-      
+          
       // 응답 데이터 처리
       // authAxios의 인터셉터가 이미 표준 형식으로 변환해줌
       if (response && response.data) {
         // 데이터가 있는 경우 멘토 목록 설정
         setMentors(response.data);
-        
+              
         // 빈 배열인 경우 메시지 표시
         if (response.data.length === 0) {
           setNoDataMessage("해당 지역에 멘토가 없습니다");
@@ -102,10 +105,10 @@ const MentorSelect = ({ candidateList, regionName, cityName }) => {
         // 데이터가 없는 경우
         setNoDataMessage("멘토 데이터가 없습니다");
       }
-      
+        
     } catch (err) {
       console.error('멘토 정보 로딩 에러:', err);
-      
+          
       // 서버에서 제공하는 오류 메시지 직접 사용
       if (err.error && err.error.message) {
         // authAxios의 interceptor에서 이미 처리된 오류 객체
