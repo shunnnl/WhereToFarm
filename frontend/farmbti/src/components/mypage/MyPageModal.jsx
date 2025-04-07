@@ -43,23 +43,6 @@ const MyPageModal = forwardRef(
       dialogRef.current?.close();
     };
 
-    // 백드롭 클릭 처리
-    useEffect(() => {
-      const dialog = dialogRef.current;
-
-      const handleBackdropClick = (event) => {
-        if (event.target === dialog) {
-          dialog.close();
-        }
-      };
-
-      dialog?.addEventListener("click", handleBackdropClick);
-
-      return () => {
-        dialog?.removeEventListener("click", handleBackdropClick);
-      };
-    }, []);
-
     return (
       <dialog
         ref={dialogRef}

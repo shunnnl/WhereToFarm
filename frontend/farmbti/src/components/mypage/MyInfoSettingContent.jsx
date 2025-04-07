@@ -56,7 +56,7 @@ const MyInfoSettingContent = forwardRef(({ onChange, initialData }, ref) => {
         const trimmedValue = typeof value === 'string' ? value.trim() : '';
         if (!trimmedValue) return "이름을 입력해주세요";
         if (trimmedValue.length < 2) return "이름은 최소 2자 이상이어야 합니다";
-        if (trimmedValue.length > 20) return "이름은 최대 20자까지 입력 가능합니다";
+        if (trimmedValue.length > 10) return "이름은 최대 10자까지 입력 가능합니다";
         if (/[^가-힣a-zA-Z\s]/.test(trimmedValue))
           return "이름에는 특수문자와 숫자를 사용할 수 없습니다";
         return "";
@@ -282,6 +282,8 @@ const MyInfoSettingContent = forwardRef(({ onChange, initialData }, ref) => {
               value={formData.address}
               onChange={handleChange}
               placeholder="주소를 입력하세요"
+              readOnly={true}
+              onFocus={(e) => e.target.blur()}
               className="flex-grow px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-supportGreen"
             />
             <button
