@@ -31,6 +31,6 @@ public class ChatMessage {
     @JoinColumn(name = "chat_id")
     private Chat chat;
 
-    @Column(name = "is_read", nullable = false)
+    @Column(name = "is_read")
     private boolean isRead = false; // 기본값은 읽지 않음 상태
 }
