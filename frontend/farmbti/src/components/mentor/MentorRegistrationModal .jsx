@@ -350,7 +350,7 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
       onRequestClose={onRequestClose}
       className="bg-white p-6 rounded-xl shadow-md max-w-4xl w-full mx-auto"
       overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]"
-        >
+    >
       <form onSubmit={handleSubmit} className="w-full">
         <div className='mb-4 text-center w-full'>
           <h2 className="text-2xl font-bold mb-2">멘토 등록</h2>
@@ -358,16 +358,16 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
           <p className="text-gray-600 text-sm">멘토로 등록한 후, 멘티들과 많은 이야기를 나누어보세요!</p>
         </div>
 
-        <div className="mb-4 space-y-4">
+        <div className="space-y-3">
           {/* 연도선택 */}
           <div className='flex items-center space-x-4'>
-            <h3 className="text-xl font-bold">귀농 연도</h3>
+            <h3 className="text-lg font-bold">귀농 연도</h3>
             <div className="w-80">
               <select
                 name="Year"
                 value={formData.Year}
                 onChange={handleChange}
-                className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
               >
                 <option value="">연도 선택</option>
                 {yearOptions.map(year => (
@@ -378,11 +378,11 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
           </div>
 
           {/* 재배 작물 선택 */}
-          <div className="flex items-center space-x-4">
-            <h3 className="text-xl font-bold whitespace-nowrap">재배 작물</h3>
+          <div className="flex items-start space-x-4">
+            <h3 className="text-lg font-bold whitespace-nowrap mt-2">재배 작물</h3>
             <div className="flex flex-wrap justify-center">
               {topFood.map((food) => (
-                <div key={food.id} className="w-1/5 p-2 flex flex-col items-center">
+                <div key={food.id} className="w-1/5 p-1 flex flex-col items-center">
                   <div className="relative flex items-center">
                     <input
                       type="checkbox"
@@ -396,32 +396,30 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
                       htmlFor={food.id}
                       className="cursor-pointer pl-6"
                     >
-                      <div className="w-16 h-16 bg-green-700 rounded-full flex items-center justify-center text-white">
-                        <img src={food.iconSrc} alt={food.label} className="w-16 h-16 rounded-full" />
+                      <div className="w-14 h-14 bg-green-700 rounded-full flex items-center justify-center text-white">
+                        <img src={food.iconSrc} alt={food.label} className="w-14 h-14 rounded-full" />
                       </div>
                     </label>
-                    <div className="absolute -top-1 -left-1">
-                    </div>
                   </div>
-                  <span className="mt-2 text-sm">{food.label}</span>
+                  <span className="mt-1 text-xs">{food.label}</span>
                 </div>
               ))}
             </div>
           </div>
 
           {/* 멘토 소개 */}
-          <div className="flex items-center space-x-4">
-            <h3 className="text-xl font-bold whitespace-nowrap">멘토 소개</h3>
-            <div className="flex flex-wrap justify-center w-full">
+          <div className="flex items-start space-x-4">
+            <h3 className="text-lg font-bold whitespace-nowrap mt-2">멘토 소개</h3>
+            <div className="flex flex-col w-full">
               <textarea
                 id="description"
                 value={description}
                 onChange={handleDescriptionChange}
-                className="w-full max-w-4xl px-3 py-2 border border-gray-300 rounded-lg 
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg 
                 focus:outline-none focus:ring-2 focus:ring-green-500
-                focus:border-transparent resize-y"
+                focus:border-transparent resize-none"
                 placeholder="10자 이상 100자 이내로 멘토 소개를 입력해주세요"
-                rows={10}
+                rows={4}
               />
               <div className="w-full text-right text-sm text-gray-500">
                 {description.length}/100
@@ -432,23 +430,23 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
 
         {/* 에러/성공 메시지 표시 */}
         {submitResult && (
-          <div className={`${submitResult.success ? 'bg-green-100 border-green-400 text-green-700' : 'bg-red-100 border-red-400 text-red-700'} px-4 py-3 rounded mb-4 border`}>
+          <div className={`${submitResult.success ? 'bg-green-100 border-green-400 text-green-700' : 'bg-red-100 border-red-400 text-red-700'} px-4 py-2 rounded mt-3 mb-2 border`}>
             {submitResult.message}
           </div>
         )}
 
-        <div className="flex justify-center gap-4">
+        <div className="flex justify-center gap-4 mt-4">
           <button
             type="button"
-            className="mt-8 bg-gray-100 text-black py-2 px-4 rounded"
+            className="bg-gray-100 text-black py-2 px-4 rounded"
             onClick={handleClose}   
-            >
+          >
             닫기
           </button>
 
           <button 
             type="submit"
-            className={`mt-8 ${isSubmitting ? 'bg-green-600' : 'bg-green-800 hover:bg-green-700'} text-white py-2 px-4 rounded transition-colors flex items-center justify-center`}
+            className={`${isSubmitting ? 'bg-green-600' : 'bg-green-800 hover:bg-green-700'} text-white py-2 px-4 rounded transition-colors flex items-center justify-center`}
             disabled={isSubmitting}
           >
             {isSubmitting ? (
