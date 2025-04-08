@@ -1,5 +1,5 @@
 import React from 'react';
-import FarmerImage from '../../asset/home/calculator.svg';
+import FarmerImage from '../../asset/home/calculator.png';
 import { Link } from 'react-router-dom'; 
 
 const Mentor = () => {

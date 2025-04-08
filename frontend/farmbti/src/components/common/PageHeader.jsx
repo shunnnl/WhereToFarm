@@ -1,4 +1,4 @@
-import headerBackground from "../../asset/common/header-background.svg";
+import headerBackground from "../../asset/common/header-background.png";
 
 const PageHeader = ({ title, description }) => {
   return (
