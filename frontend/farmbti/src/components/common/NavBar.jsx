@@ -129,6 +129,9 @@ const Navbar = () => {
                         const receivedData = JSON.parse(message.body);
                         console.log("백엔드에서 받은 원본 메시지:", receivedData);
 
+                        console.log("실제 브라우저 경로:", window.location.pathname);
+                        console.log("React Router 경로:", location.pathname);
+
                         // 현재 경로를 실시간으로 다시 확인 (더 확실하게 하기 위해)
                         const currentPathname = window.location.pathname;
                         const currentlyInChatPage = currentPathname === '/chat';
@@ -136,10 +139,10 @@ const Navbar = () => {
                         
 
                         // 현재 채팅 페이지에 있는 경우 알림 표시하지 않음
-                        if (currentlyInChatPage || isInChatPage) {
+                        if (currentlyInChatPage) {
                           console.log("현재 채팅 페이지에 있어 알림을 표시하지 않습니다.");
                           return;
-                        }
+                      }
 
 
                         // 현재 localStorage에서 채팅방 ID 확인 (최신 상태 반영)
@@ -376,7 +379,7 @@ return (
               <button
                 className="p-2 hover:bg-gray-100 rounded-full"
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                onMouseEnter={() => setIsDropdownOpen(true)}
+                // onMouseEnter={() => setIsDropdownOpen(true)}
               >
                 <img src={userIcon} alt="사용자" className="h-6 w-6" />
               </button>
@@ -427,7 +430,7 @@ return (
               <div className="relative" 
               ref={notificationRef}
               onMouseLeave={handleNotificationMouseLeave}
-              onMouseEnter={() => setIsNotificationOpen(true)}
+              // onMouseEnter={() => setIsNotificationOpen(true)}
 
               >
                 <button

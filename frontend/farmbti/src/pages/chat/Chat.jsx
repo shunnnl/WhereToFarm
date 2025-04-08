@@ -276,6 +276,7 @@ if (textareaRef.current) {
 const handleMessageChange = (e) => {
 let input = e.target.value;
 
+
 // 연속된 특수문자 사이에 숨겨진 공백 추가 (선택적)
 // 예: ",,,,," -> ", , , , ,"
 // const specialCharsRegex = /([!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]){5,}/g;
@@ -287,6 +288,7 @@ let input = e.target.value;
 // if (input.match(longEnglishWordRegex)) {
 //   input = input.replace(/([a-zA-Z]{10})([a-zA-Z])/g, '$1\u200B$2');
 // }
+
 
 if (input.length <= MAX_CHAR_LIMIT) {
   setMessage(input);
@@ -678,7 +680,7 @@ const getKSTISOString = () => {
 
 // 메시지 전송 처리 함수
 const handleSendMessage = () => {
-  if (message.trim() && connected && roomId) {
+  if (message.trim() !== '' && connected && roomId) {  // 공백만 있는 메시지는 여전히 제외
     // 현재 한국 시간으로 타임스탬프 생성 (KST 오프셋 포함)
     const now = new Date();
     const kstTimeString = getKSTISOString();
@@ -693,7 +695,7 @@ const handleSendMessage = () => {
     stompClient.current.publish({
       destination: `/chat/${roomId}/send`,
       body: JSON.stringify({ 
-        message: message.trim(),
+        message: message,
         senderName: userInfo.name,
         senderId: userInfo.id,      // 사용자 ID 명시적으로 추가
         sentAt: kstTimeString,      // KST ISO 문자열(+09:00 포함)
@@ -862,10 +864,10 @@ return (
                       wordWrap: 'break-word',
                       overflowWrap: 'break-word',
                       whiteSpace: 'pre-wrap',
-                      hyphens: 'auto'
+                      hyphens: 'auto',
                     }}
                   >
-                    <p className="whitespace-pre-line">{msg.text}</p>
+                    <p className="whitespace-pre-wrap break-all">{msg.text}</p>
                   </div>
                   
                   {/* 상대방 메시지일 경우 시간이 오른쪽에 표시됨 */}
