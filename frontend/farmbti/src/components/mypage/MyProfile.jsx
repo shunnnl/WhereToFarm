@@ -48,6 +48,14 @@ const MyProfile = ({ myInfo: initialMyInfo, isLoading = false }) => {
   // 상태, 예외 처리
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const [isMentorState, setIsMentorState] = useState(false);
+
+  useEffect(() => {
+    // 컴포넌트 마운트 시 localStorage에서 값 읽기
+    const storedIsMentor = localStorage.getItem("isMentor") === "true";
+    setIsMentorState(storedIsMentor);
+  }, []);
+
   // 데이터에서 파생되는 값은 useMemo로 계산 (불필요한 재계산 방지)
   const birth = useMemo(() => {
     if (!myInfo?.birth) return { year: "", month: "", day: "" };
@@ -239,8 +247,6 @@ const MyProfile = ({ myInfo: initialMyInfo, isLoading = false }) => {
             gender,
           });
 
-          
-
           // 성공했다면 로컬 상태 업데이트
           if (myInfoResponse.success) {
             // UI에 즉시 반영하기 위해 상태 업데이트
@@ -251,8 +257,8 @@ const MyProfile = ({ myInfo: initialMyInfo, isLoading = false }) => {
               name: myInfoResponse.data.name,
               address: myInfoResponse.data.address,
               gender: myInfoResponse.data.gender,
-              profileImage: myInfoResponse.data.profileImage
-            };;
+              profileImage: myInfoResponse.data.profileImage,
+            };
             localStorage.setItem("user", JSON.stringify(userData));
             toast.success("회원 정보가 수정 되었습니다.");
           }
@@ -310,7 +316,7 @@ const MyProfile = ({ myInfo: initialMyInfo, isLoading = false }) => {
   if (isLoading || !myInfo) {
     return (
       <div className={containerStyle}>
-        <ProfileSkeleton />
+        <ProfileSkeleton isMentor={isMentorState} />
       </div>
     );
   }
