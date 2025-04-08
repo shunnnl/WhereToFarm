@@ -17,10 +17,7 @@ const ResultSection = ({
     setIsSaving(true);
     try {
       await onSaveReport();
-      // The navigation will happen in the onSaveReport function 
-      // so we don't need to reset isSaving here
     } catch (error) {
-      // If there's an error, we should reset the saving state
       setIsSaving(false);
       console.error("Error saving report:", error);
     }
@@ -28,7 +25,6 @@ const ResultSection = ({
 
   return (
     <div className="relative">
-      {/* Full-screen overlay when saving */}
       {isSaving && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
             <LoadingSpinner text="저장 중..." />
