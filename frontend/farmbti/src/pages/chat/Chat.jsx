@@ -14,10 +14,7 @@ const convertUTCtoKST = (utcTimestamp) => {
     
     // UTC 시간에 9시간(한국 시간대) 추가
     const kstDate = new Date(utcDate.getTime() + (9 * 60 * 60 * 1000));
-    
-    console.log('원본 UTC 시간:', utcDate.toISOString());
-    console.log('변환된 KST 시간:', kstDate.toISOString());
-    
+        
     // KST 시간을 형식에 맞게 포맷팅하여 반환
     return new Intl.DateTimeFormat('ko-KR', {
       hour: '2-digit',
@@ -140,11 +137,25 @@ useEffect(() => {
       const response = await authAxios.get('/chat/get/rooms');
       console.log('채팅방 목록 응답:', response);
       
+      let roomsData = [];
       if (Array.isArray(response.data)) {
-        setChatRooms(response.data);
+        roomsData = response.data;
       } else if (response.data && response.data.success) {
-        setChatRooms(response.data.data);
+        roomsData = response.data.data;
       }
+      
+      // lastMessageTime 필드가 없는 경우 추가
+      const roomsWithTime = roomsData.map(room => ({
+        ...room,
+        lastMessageTime: room.lastMessageTime || new Date().toISOString()
+      }));
+      
+      // 최신 메시지 기준으로 정렬
+      const sortedRooms = roomsWithTime.sort((a, b) => 
+        new Date(b.lastMessageTime).getTime() - new Date(a.lastMessageTime).getTime()
+      );
+      
+      setChatRooms(sortedRooms);
     } catch (error) {
       console.error('채팅방 목록 조회 실패:', error);
     }
@@ -200,17 +211,26 @@ const handleRoomsUpdate = (payload) => {
     
     // 단일 채팅방 업데이트 처리
     if (update && update.type === "roomUpdate" && update.roomId) {
-      // 해당 roomId의 채팅방 찾아서 lastMessage 업데이트
+      // 업데이트된 채팅방을 찾아서 lastMessage 업데이트 후 목록 최상단으로 이동
       setChatRooms(prevRooms => {
-        return prevRooms.map(room => {
-          if (room.roomId === update.roomId) {
-            return { 
-              ...room, 
-              lastMessage: update.lastMessage 
-            };
-          }
-          return room;
-        });
+        // 먼저 기존 목록에서 업데이트할 채팅방과 나머지 채팅방 분리
+        const updatedRoom = prevRooms.find(room => room.roomId === update.roomId);
+        const otherRooms = prevRooms.filter(room => room.roomId !== update.roomId);
+        
+        if (!updatedRoom) {
+          console.warn(`채팅방 ${update.roomId}를 찾을 수 없음`);
+          return prevRooms;
+        }
+        
+        // 해당 채팅방의 lastMessage 업데이트
+        const newUpdatedRoom = { 
+          ...updatedRoom, 
+          lastMessage: update.lastMessage,
+          lastMessageTime: new Date().toISOString() // 최신 시간 정보 추가
+        };
+        
+        // 업데이트된 채팅방을 목록 최상단에 위치시키고 반환
+        return [newUpdatedRoom, ...otherRooms];
       });
       
       // 중요: 현재 활성화된 채팅방인지 확인하기 위한 ID 가져오기
@@ -584,6 +604,8 @@ const handleRoomSelect = (selectedRoomId) => {
     ...prev,
     [selectedRoomId]: 0
   }));
+  
+  // 채팅방 클릭 시에는 순서 변경하지 않음
 };
 
 
@@ -689,7 +711,6 @@ const handleSendMessage = () => {
     const userInfo = JSON.parse(localStorage.getItem('user'));
     
     console.log("백엔드에 보내고있는 senderId==", userInfo.id);
-    console.log("현재 시간(KST, 오프셋 포함):", kstTimeString);
     
     // 웹소켓으로 메시지 전송 - 두 필드 모두 전송하여 호환성 확보
     stompClient.current.publish({
@@ -715,13 +736,29 @@ const handleSendMessage = () => {
     setMessages(prevMessages => [...prevMessages, newMessage]);
     setMessage('');
 
-    // 채팅방 목록에서 현재 채팅방의 lastMessage 업데이트
-    updateChatRoomLastMessage(roomId, message.trim());
-
+    // 현재 채팅방을 최상단으로 이동 및 lastMessage 업데이트
+    setChatRooms(prevRooms => {
+      // 현재 채팅방과 나머지 채팅방 분리
+      const currentRoom = prevRooms.find(room => room.roomId === roomId);
+      const otherRooms = prevRooms.filter(room => room.roomId !== roomId);
+      
+      if (!currentRoom) return prevRooms;
+      
+      // 현재 채팅방 정보 업데이트
+      const updatedCurrentRoom = {
+        ...currentRoom,
+        lastMessage: message.trim(),
+        lastMessageTime: now.toISOString()
+      };
+      
+      // 현재 채팅방을 최상단에 위치시키고 반환
+      return [updatedCurrentRoom, ...otherRooms];
+    });
     
     // 메시지 전송 후 스크롤 맨 아래로 이동 (useEffect에서 처리)
   }
 };
+
 
 // 엔터키 처리
 const handleKeyPress = (e) => {
