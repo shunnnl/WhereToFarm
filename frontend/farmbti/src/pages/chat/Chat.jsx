@@ -768,7 +768,7 @@ return (
       
       {/* 대화 중인 멘토 목록 */}
       <div className="p-4 flex-1 overflow-y-auto">
-      <h3 className="text-lg font-bold mb-3">대화 중인 멘토 목록</h3>
+      <h3 className="text-lg font-bold mb-3">대화 목록</h3>
             <div className="space-y-4">
               {chatRooms.length > 0 ? (
                 chatRooms.map((room) => (
