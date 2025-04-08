@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSearchParams, useLocation } from "react-router-dom";
 import CalculateResultCard from "./CalculateResultCard";
 import PaginationComponent from "../common/Pagination";
 import DeleteConfirmModal from "../common/DeleteConfirmModal";
@@ -8,13 +9,36 @@ import {
   getCalculateReports,
 } from "../../API/mypage/MyReportsAPI";
 import { toast } from "react-toastify";
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 import { handleError } from "../../utils/ErrorUtil";
 
 const CropCalculateReport = () => {
-  // 예시 데이터
   const [myCalculateResult, setMyCalculateResult] = useState([]);
   const [isLoading, setIsLoading] = useState(true); // 로딩 상태 추가
+
+  // URL 쿼리 파라미터 관리를 위한 훅
+  const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
+
+  // URL에서 페이지 번호를 가져오는 함수
+  const getPageFromUrl = () => {
+    const page = searchParams.get("page");
+    return page ? parseInt(page) : 1;
+  };
+
+  // 페이지네이션 상태 - URL에서 초기값 가져오기
+  const [activePage, setActivePage] = useState(getPageFromUrl());
+  const itemsPerPage = 4;
+
+  // URL 쿼리 파라미터가 변경될 때 페이지 상태 업데이트
+  useEffect(() => {
+    setActivePage(getPageFromUrl());
+  }, [location.search]);
+
+  // 페이지 변경 핸들러 - URL 쿼리 파라미터 업데이트
+  const handlePageChange = (pageNumber) => {
+    setSearchParams({ page: pageNumber });
+  };
 
   useEffect(() => {
     const getReports = async () => {
@@ -31,15 +55,6 @@ const CropCalculateReport = () => {
     };
     getReports();
   }, []);
-
-  // 페이지네이션 상태
-  const [activePage, setActivePage] = useState(1);
-  const itemsPerPage = 4;
-
-  // 페이지 변경 핸들러
-  const handlePageChange = (pageNumber) => {
-    setActivePage(pageNumber);
-  };
 
   // 현재 페이지에 표시할 아이템 계산
   const indexOfLastItem = activePage * itemsPerPage;
@@ -88,6 +103,13 @@ const CropCalculateReport = () => {
         );
         toast.success("리포트가 삭제되었습니다.");
         closeModal();
+
+        // 현재 페이지에 아이템이 없어지면 이전 페이지로 이동
+        const remainingItems = myCalculateResult.length - 1;
+        const maxPage = Math.ceil(remainingItems / itemsPerPage);
+        if (activePage > maxPage && maxPage > 0) {
+          handlePageChange(maxPage);
+        }
       }
     } catch (error) {
       handleError(error);
@@ -119,7 +141,7 @@ const CropCalculateReport = () => {
         {/* 로딩 상태 표시 */}
         {isLoading ? (
           <div className="flex justify-center items-center p-24">
-            <LoadingSpinner text="리포트 불러오는 중..."/>
+            <LoadingSpinner text="리포트 불러오는 중..." />
           </div>
         ) : myCalculateResult.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
