@@ -7,12 +7,14 @@ import com.backend.farmbti.security.util.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/chat")
 @Tag(name = "채팅 컨트롤러", description = "실시간 채팅을 전반적으로 관리하는 컨트롤러")
 @RequiredArgsConstructor
+@Slf4j
 public class ChatController {
 
     private final ChatService chatService;
@@ -23,6 +25,9 @@ public class ChatController {
     public CommonResponseDto createChatRoom(@RequestBody ChatRequest chatRequest) {
 
         Long userId = securityUtils.getCurrentUsersId();
+
+        log.info("로그인한 사용자: " + userId + " / 채팅 건 사용자: " + chatRequest.getOtherId());
+
         return CommonResponseDto.ok(chatService.create(userId, chatRequest));
 
     }

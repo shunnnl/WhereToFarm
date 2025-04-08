@@ -43,27 +43,45 @@ public class ChatService {
     @Transactional
     public ChatResponse create(Long userId, ChatRequest chatRequest) {
 
-        //로그인한 사용자와 상대방이 있는 채팅이 있을 때 사용
-        //우리는 멘티만 채팅을 걸 수 있다.
+        log.info("🔍 채팅 생성 요청 - 사용자 ID: {}, 상대방 ID: {}", userId, chatRequest.getOtherId());
+
+        // 로그인한 사용자와 상대방이 있는 채팅이 있을 때 사용
         Optional<Chat> existingChat = chatRepository.findChatBetweenUsers(userId, chatRequest.getOtherId());
 
         Chat chat = existingChat.orElseGet(() -> {
+            log.info("📨 기존 채팅방 없음 - 새로 생성 시작");
 
-            //멘티
+            // 멘티
             Users user = usersRepository.findById(userId)
-                    .orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
+                    .orElseThrow(() -> {
+                        log.error("❌ 멘티 조회 실패 - ID: {}", userId);
+                        return new GlobalException(AuthErrorCode.USER_NOT_FOUND);
+                    });
 
-            //멘토
+            log.info("✅ 멘티 조회 완료 - 이름: {}", user.getName());
+
+            // 멘토
             Mentors mentor = mentorsRepository.findById(chatRequest.getOtherId())
-                    .orElseThrow(() -> new GlobalException(MentorsErrorCode.MENTOR_NOT_FOUND));
+                    .orElseThrow(() -> {
+                        log.error("❌ 멘토 조회 실패 - ID: {}", chatRequest.getOtherId());
+                        return new GlobalException(MentorsErrorCode.MENTOR_NOT_FOUND);
+                    });
+
+            log.info("✅ 멘토 조회 완료 - 이름: {}", mentor.getUser().getName());
 
             Chat newChat = Chat.builder()
                     .mentee(user)
                     .mentor(mentor)
                     .build();
-            return chatRepository.save(newChat);
 
+            Chat savedChat = chatRepository.save(newChat);
+            log.info("💾 채팅방 저장 완료 - Room ID: {}", savedChat.getRoomId());
+            return savedChat;
         });
+
+        String profileImageUrl = getProfileImageUrl(chat.getMentor().getUser());
+
+        log.info("📦 채팅방 응답 생성 완료 - Room ID: {}, 상대방 이름: {}", chat.getRoomId(), chat.getMentor().getUser().getName());
 
         return ChatResponse.builder()
                 .roomId(chat.getRoomId())
@@ -71,12 +89,11 @@ public class ChatService {
                 .otherUserId(chat.getMentor().getId())
                 .currentUserName(chat.getMentee().getName())
                 .otherUserName(chat.getMentor().getUser().getName())
-                .otherUserProfile(getProfileImageUrl(chat.getMentor().getUser()))
-                //.otherUserProfile(s3Service.getSignedUrl(chat.getMentor().getUser().getProfileImage()))
+                .otherUserProfile(profileImageUrl)
                 .isCurrentUserMentee(true)
                 .build();
-
     }
+
 
     @Transactional
     public List<ChatListResponse> getAllRooms(Long userId) {
