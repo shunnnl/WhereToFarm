@@ -31,52 +31,52 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
     { 
       id: "사과", 
       label: "사과", 
-      iconSrc: "https://farmbticropbucket.s3.ap-northeast-2.amazonaws.com/crop/apple.png" 
+      iconSrc: "https://farmbticropbuckets.s3.ap-northeast-2.amazonaws.com/apple.png" 
     },
     {
       id: "오이",
       label: "오이",
-      iconSrc: "https://farmbticropbucket.s3.ap-northeast-2.amazonaws.com/crop/cucumber.png",
+      iconSrc: "https://farmbticropbuckets.s3.ap-northeast-2.amazonaws.com/cucumber.png",
     },
     { 
       id: "포도", 
       label: "포도", 
-      iconSrc: "https://farmbticropbucket.s3.ap-northeast-2.amazonaws.com/crop/grape.png" 
+      iconSrc: "https://farmbticropbuckets.s3.ap-northeast-2.amazonaws.com/grape.png" 
     },
     { 
       id: "대파", 
       label: "대파", 
-      iconSrc: "https://farmbticropbucket.s3.ap-northeast-2.amazonaws.com/crop/greenonion.png" 
+      iconSrc: "https://farmbticropbuckets.s3.ap-northeast-2.amazonaws.com/greenonion.png" 
     },
     {
       id: "상추",
       label: "상추",
-      iconSrc: "https://farmbticropbucket.s3.ap-northeast-2.amazonaws.com/crop/lettuce.png",
+      iconSrc: "https://farmbticropbuckets.s3.ap-northeast-2.amazonaws.com/lettuce.png",
     },
     { 
       id: "양파", 
       label: "양파", 
-      iconSrc: "https://farmbticropbucket.s3.ap-northeast-2.amazonaws.com/crop/onion.png" 
+      iconSrc: "https://farmbticropbuckets.s3.ap-northeast-2.amazonaws.com/onion.png" 
     },
     { 
       id: "배", 
       label: "배", 
-      iconSrc: "https://farmbticropbucket.s3.ap-northeast-2.amazonaws.com/crop/pear.png" 
+      iconSrc: "https://farmbticropbuckets.s3.ap-northeast-2.amazonaws.com/pear.png" 
     },
     {
       id: "고구마",
       label: "고구마",
-      iconSrc: "https://farmbticropbucket.s3.ap-northeast-2.amazonaws.com/crop/sweetpotato.png",
+      iconSrc: "https://farmbticropbuckets.s3.ap-northeast-2.amazonaws.com/sweetpotato.png",
     },
     { 
       id: "감귤", 
       label: "감귤", 
-      iconSrc: "https://farmbticropbucket.s3.ap-northeast-2.amazonaws.com/crop/tangerine.png" 
+      iconSrc: "https://farmbticropbuckets.s3.ap-northeast-2.amazonaws.com/tangerine.png" 
     },
     {
       id: "수박",
       label: "수박",
-      iconSrc: "https://farmbticropbucket.s3.ap-northeast-2.amazonaws.com/crop/watermelon.png",
+      iconSrc: "https://farmbticropbuckets.s3.ap-northeast-2.amazonaws.com/watermelon.png",
     },
   ];
 

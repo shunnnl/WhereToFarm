@@ -289,10 +289,6 @@ let input = e.target.value;
 //   input = input.replace(/([a-zA-Z]{10})([a-zA-Z])/g, '$1\u200B$2');
 // }
 
- // 연속된 스페이스를 비분해 공백으로 변환 (2개 이상 연속된 경우)
- input = input.replace(/ {2,}/g, match => {
-  return '\u00A0'.repeat(match.length);
-});
 
 if (input.length <= MAX_CHAR_LIMIT) {
   setMessage(input);
@@ -684,7 +680,7 @@ const getKSTISOString = () => {
 
 // 메시지 전송 처리 함수
 const handleSendMessage = () => {
-  if (message.trim() && connected && roomId) {
+  if (message.trim() !== '' && connected && roomId) {  // 공백만 있는 메시지는 여전히 제외
     // 현재 한국 시간으로 타임스탬프 생성 (KST 오프셋 포함)
     const now = new Date();
     const kstTimeString = getKSTISOString();
@@ -699,7 +695,7 @@ const handleSendMessage = () => {
     stompClient.current.publish({
       destination: `/chat/${roomId}/send`,
       body: JSON.stringify({ 
-        message: message.trim(),
+        message: message,
         senderName: userInfo.name,
         senderId: userInfo.id,      // 사용자 ID 명시적으로 추가
         sentAt: kstTimeString,      // KST ISO 문자열(+09:00 포함)
