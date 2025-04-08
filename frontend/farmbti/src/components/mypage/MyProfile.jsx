@@ -60,8 +60,6 @@ const MyProfile = ({ myInfo: initialMyInfo, isLoading = false }) => {
     }
   });
 
-
-
   // 데이터에서 파생되는 값은 useMemo로 계산 (불필요한 재계산 방지)
   const birth = useMemo(() => {
     if (!myInfo?.birth) return { year: "", month: "", day: "" };
@@ -389,7 +387,7 @@ const MyProfile = ({ myInfo: initialMyInfo, isLoading = false }) => {
               </p>
               {/* 호버 시 모든 작물 표시 */}
               {myInfo.cropNames.length > 0 && (
-                <div className="absolute hidden group-hover:block right-0 bg-white shadow-md p-2 rounded-md z-10 min-w-[150px] max-w-[300px]">
+                <div className="absolute hidden group-hover:block right-0 bottom-full mb-2 bg-white shadow-md p-2 rounded-md z-10 min-w-[150px] max-w-[300px]">
                   <ul className="text-sm text-textColor-black whitespace-normal break-words">
                     {myInfo.cropNames.map((crop, index) => (
                       <li key={index} className="py-1">
