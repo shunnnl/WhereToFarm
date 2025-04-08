@@ -100,6 +100,7 @@ const MyPasswordContent = forwardRef(({ onChange }, ref) => {
           name="password"
           value={formData.password}
           onChange={handleChange}
+          maxLength={100}
           required
           placeholder="비밀번호를 입력해주세요"
           className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
@@ -121,6 +122,7 @@ const MyPasswordContent = forwardRef(({ onChange }, ref) => {
           name="newPassword"
           value={formData.newPassword}
           onChange={handleChange}
+          maxLength={100}
           required
           placeholder="새 비밀번호를 입력해주세요"
           className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
@@ -142,6 +144,7 @@ const MyPasswordContent = forwardRef(({ onChange }, ref) => {
           name="confirmNewPassword"
           value={formData.confirmNewPassword}
           onChange={handleChange}
+          maxLength={100}
           required
           placeholder="새 비밀번호를 다시 입력해주세요"
           className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
