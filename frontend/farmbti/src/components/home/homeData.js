@@ -1,6 +1,6 @@
 import homeimage_1 from "../../asset/home/home_image_1.png";
-import homeimage_2 from "../../asset/home/home_image_2.png"; 
-import homeimage_3 from "../../asset/home/home_image_3.png"; 
+import homeimage_2 from "../../asset/home/home_image_2.png";
+import homeimage_3 from "../../asset/home/home_image_3.png";
 import { BookOpen, Home, Gift, Calculator, LandPlot } from "lucide-react";
 
 // 배너 슬라이더 데이터
@@ -52,61 +52,38 @@ export const serviceIcons = [
   {
     icon: BookOpen,
     title: "가이드북",
-    link: "/guidebook"
+    link: "/guidebook",
   },
   {
     icon: LandPlot,
-    title: "지역 추천",  
-    link: "/surveyintro"
+    title: "지역 추천",
+    link: "/surveyintro",
   },
   {
     icon: Calculator,
-    title: "작물 계산기", 
-    link: "/crop-calculator"
+    title: "작물 계산기",
+    link: "/crop-calculator",
   },
   {
     icon: Home,
     title: "매물",
-    link: "/estate"
+    link: "/estate",
   },
   {
     icon: Gift,
     title: "혜택",
-    link: "/support"
-  }
+    link: "/support",
+  },
 ];
 
 // 주요 서비스 데이터
 export const mainServices = [
   {
     title: "귀농희망자를 위한 원스톱 서비스",
-    description: "귀농을 꿈꾸는 도시민에게 필요한 정보와 서비스를 한곳에서 제공합니다."
+    description:
+      "귀농을 꿈꾸는 도시민에게 필요한 정보와 서비스를 한곳에서 제공합니다.",
   },
   // 추가 서비스 항목들을 여기에 추가할 수 있습니다.
 ];
 
-import tempimgae from '../../asset/home/news_image.svg' 
-export const newsItems = [
-  {
-    id: 1,
-    imageUrl: tempimgae,
-    title: '정남중 귀농 이유 물었더니',
-    subtitle: '농업의 미래과 변천 가능성 많아..',
-    moreLink: '/news/1'
-  },
-  {
-    id: 2,
-    imageUrl: tempimgae,
-    title: '귀농·귀촌 정보 보급자리',
-    subtitle: '지원 대상자 4곳 추가 선정',
-    moreLink: '/news/2'
-  },
-  {
-    id: 3, 
-    imageUrl: tempimgae,
-    title: '후계농 육성 자금 1조원으로 확대..',
-    subtitle: '청년 농업인 지원 강화',
-    moreLink: '/news/3'
-  }
-];
-
+export const newsItems = [];

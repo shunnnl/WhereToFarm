@@ -260,7 +260,7 @@ const MentorSettingContent = forwardRef(({ onChange, initialData, birthYear }, r
                 <label htmlFor={food.id} className="cursor-pointer pl-6">
                   <div className="w-16 h-16 bg-primaryGreen rounded-full flex items-center justify-center text-white">
                     <img
-                      src={`https://farmbticropbucket.s3.ap-northeast-2.amazonaws.com/crop/${food.img}`}
+                      src={`https://farmbticropbuckets.s3.ap-northeast-2.amazonaws.com/${food.img}`}
                       alt={food.name}
                       className="w-14 h-14"
                     />

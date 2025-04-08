@@ -69,7 +69,7 @@ const CropSelectSection = ({
               disabled={!isActive}
             >
               <img
-                src={`https://farmbticropbucket.s3.ap-northeast-2.amazonaws.com/crop/${crop.img}`}
+                src={`https://farmbticropbuckets.s3.ap-northeast-2.amazonaws.com/${crop.img}`}
                 alt={crop.name}
                 className={`w-14 h-14 transition-transform ${
                   isSelected ? "scale-110" : ""
