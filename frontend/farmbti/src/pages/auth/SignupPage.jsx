@@ -68,8 +68,8 @@ const SignupPage = () => {
     if (!name || name.trim() === "") return false;
     const trimmedName = name.trim();
     
-    // 길이 검증 (2~20자)
-    if (trimmedName.length < 2 || trimmedName.length > 20) return false;
+    // 길이 검증 (2~10자)
+    if (trimmedName.length < 2 || trimmedName.length > 10) return false;
     
     // 특수문자가 없는지 검증 (영문, 한글, 숫자만 허용)
     const nameRegex = /^[A-Za-z가-힣0-9\s]+$/;
@@ -84,7 +84,7 @@ const SignupPage = () => {
 
   // Password validation (minimum 8 characters, at least one letter and one number)
   const isValidPassword = (password) => {
-    return password.length >= 8 && /[A-Za-z]/.test(password) && /\d/.test(password);
+    return password.length >= 8 && password.length <= 100 && /[A-Za-z]/.test(password) && /\d/.test(password);
   };
 
   // Date validation
@@ -108,8 +108,8 @@ const SignupPage = () => {
     // 이름 검증
     if (!formData.name || formData.name.trim() === "") {
       newErrors.name = '이름은 필수 입력 항목입니다.';
-    } else if (formData.name.trim().length < 2 || formData.name.trim().length > 20) {
-      newErrors.name = '이름은 2자 이상 20자 이하로 입력해주세요.';
+    } else if (formData.name.trim().length < 2 || formData.name.trim().length > 10) {
+      newErrors.name = '이름은 2자 이상 10자 이하로 입력해주세요.';
     } else if (!/^[A-Za-z가-힣0-9\s]+$/.test(formData.name.trim())) {
       newErrors.name = '이름에는 특수문자를 사용할 수 없습니다.';
     }
@@ -299,6 +299,7 @@ const SignupPage = () => {
                     value={formData.password}
                     onChange={handleChange}
                     placeholder="비밀번호를 입력해주세요"
+                    maxLength={100}
                     className="block w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     />
                   <button
@@ -348,6 +349,7 @@ const SignupPage = () => {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
+                  maxLength={10}
                   placeholder="이름을 입력해주세요"
                   className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 />

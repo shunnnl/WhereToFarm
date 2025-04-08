@@ -733,14 +733,24 @@ const handleKeyPress = (e) => {
 
 // 멘토 이름 가져오기
 const getMentorName = () => {
+  // 채팅방 목록에서 현재 선택된 방의 정보를 먼저 찾음
+  const currentRoom = chatRooms.find(room => room.roomId === roomId);
+  
+  // 채팅방 목록에서 찾은 경우 해당 이름 사용
+  if (currentRoom && currentRoom.otherUserName) {
+    return currentRoom.otherUserName;
+  }
+  
+  // 채팅방 목록에서 찾지 못한 경우 location.state에서 확인
   if (location.state && location.state.mentorName) {
     return location.state.mentorName;
   }
   
-  // state에 없으면 채팅방 목록에서 찾기
-  const currentRoom = chatRooms.find(room => room.roomId === roomId);
-  return currentRoom ? currentRoom.otherUserName : "멘토";
+  // 둘 다 없는 경우 기본값 반환
+  return "멘토";
 };
+
+
 
 return (
   <div className="flex h-[90vh] bg-gray-100 border border-gray-300"> 
@@ -758,7 +768,7 @@ return (
       
       {/* 대화 중인 멘토 목록 */}
       <div className="p-4 flex-1 overflow-y-auto">
-      <h3 className="text-lg font-bold mb-3">대화 중인 멘토 목록</h3>
+      <h3 className="text-lg font-bold mb-3">대화 목록</h3>
             <div className="space-y-4">
               {chatRooms.length > 0 ? (
                 chatRooms.map((room) => (
@@ -827,13 +837,12 @@ return (
                         alt={getMentorName()} 
                         className="w-full h-full object-cover" 
                       />
-
                 </div>
               <div>
                 <h2 className="font-bold">{getMentorName()}</h2>
               </div>
             </div>
-    
+
           </div>
 
           {/* 채팅 메시지 영역 - chatContainerRef 추가 */}
