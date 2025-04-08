@@ -46,7 +46,7 @@ public class ChatService {
         log.info("🔍 채팅 생성 요청 - 사용자 ID: {}, 상대방 ID: {}", userId, chatRequest.getOtherId());
 
         // 로그인한 사용자와 상대방이 있는 채팅이 있을 때 사용
-        Optional<Chat> existingChat = chatRepository.findChatBetweenUsers(userId, chatRequest.getOtherId());
+        Optional<Chat> existingChat = chatRepository.findChatBetweenAnyUsers(userId, chatRequest.getOtherId());
 
         Chat chat = existingChat.orElseGet(() -> {
             log.info("📨 기존 채팅방 없음 - 새로 생성 시작");

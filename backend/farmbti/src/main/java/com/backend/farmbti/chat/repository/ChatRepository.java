@@ -31,8 +31,11 @@ public interface ChatRepository extends JpaRepository<Chat, Long> {
 
     List<Chat> findAllByMenteeId(Long userId);
 
-    @Query("SELECT c FROM Chat c WHERE (c.mentee.id = :userId1 AND c.mentor.id = :userId2) OR (c.mentee.id = :userId2 AND c.mentor.id = :userId1)")
-    Optional<Chat> findChatBetweenUsers(@Param("userId1") Long userId1, @Param("userId2") Long userId2);
+    // ChatRepository에 추가할 메소드
+    @Query("SELECT c FROM Chat c WHERE " +
+            "(c.mentee.id = :userId1 AND c.mentor.user.id = :userId2) OR " +
+            "(c.mentee.id = :userId2 AND c.mentor.user.id = :userId1)")
+    Optional<Chat> findChatBetweenAnyUsers(@Param("userId1") Long userId1, @Param("userId2") Long userId2);
 
 
    // Optional<Chat> findChatBetweenUsers(Long userId, Long otherId);
