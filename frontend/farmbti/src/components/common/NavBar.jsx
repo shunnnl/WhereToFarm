@@ -61,17 +61,17 @@ const Navbar = () => {
     const notificationRef = useRef(null);
     const stompClient = useRef(null);
 
-    const handleMouseLeave = () => {
-      setTimeout(() => {
-          setIsDropdownOpen(false);
-      }, 3000);
-    };
+    // const handleMouseLeave = () => {
+    //   setTimeout(() => {
+    //       setIsDropdownOpen(false);
+    //   }, 3000);
+    // };
   
-    const handleNotificationMouseLeave = () => {
-        setTimeout(() => {
-            setIsNotificationOpen(false);
-        }, 3000);
-    };
+    // const handleNotificationMouseLeave = () => {
+    //     setTimeout(() => {
+    //         setIsNotificationOpen(false);
+    //     }, 3000);
+    // };
     
     // 드롭다운 외부 클릭 시 닫기
     useEffect(() => {
@@ -374,7 +374,6 @@ return (
           <div className="flex items-center">
             <div className="relative" 
             ref={dropdownRef}
-            onMouseLeave={handleMouseLeave}
             >
               <button
                 className="p-2 hover:bg-gray-100 rounded-full"
@@ -429,7 +428,7 @@ return (
             {isLoggedIn && (
               <div className="relative" 
               ref={notificationRef}
-              onMouseLeave={handleNotificationMouseLeave}
+              // onMouseLeave={handleNotificationMouseLeave}
               // onMouseEnter={() => setIsNotificationOpen(true)}
 
               >
