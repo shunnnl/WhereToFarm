@@ -4,13 +4,14 @@
 
 @font-face {
   font-family: 'Pretendard Variable';
-  src: url('./asset/fonts/PretendardVariable.ttf') format('truetype');
+  src: url('/fonts/PretendardVariable.woff2') format('woff2');
   font-weight: 100 900;
   font-display: swap;
+  unicode-range: U+1100-11FF, U+3130-318F, U+A960-A97F, U+AC00-D7A3, U+D7B0-D7FF;
 }
 
 body {
-  font-family: 'Pretendard Variable', sans-serif;
+  font-family: 'Pretendard Variable', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
 }
 
 html, body {
