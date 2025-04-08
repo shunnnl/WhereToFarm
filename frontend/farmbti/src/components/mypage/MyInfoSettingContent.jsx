@@ -185,7 +185,7 @@ const MyInfoSettingContent = forwardRef(({ onChange, initialData }, ref) => {
             onChange={handleChange}
             placeholder="이름를 입력하세요"
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-supportGreen"
-            maxLength={20}
+            maxLength={10}
           />
           {errors.name && (
             <div className="text-red-500 text-sm mt-1">{errors.name}</div>
