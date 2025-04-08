@@ -57,6 +57,7 @@ const UserDeletePage = () => {
         localStorage.removeItem("refreshToken");
         localStorage.removeItem("tokenExpires");
         localStorage.removeItem("user");
+        localStorage.removeItem("isMentor");
         setTimeout(() => {
           // 탈퇴 성공 후 리디렉션
           window.location.href = "/";

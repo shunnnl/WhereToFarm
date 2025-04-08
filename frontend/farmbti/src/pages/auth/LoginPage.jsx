@@ -79,10 +79,11 @@ const LoginPage = () => {
         name: response.data.name,
         address: response.data.address,
         gender: response.data.gender,
-        profileImage: response.data.profileImage
+        profileImage: response.data.profileImage,
       };
       
       localStorage.setItem('user', JSON.stringify(userData));
+      localStorage.setItem('isMentor', response.data.isMentor);
       dispatch(login(userData));
       
       toast.success('로그인 성공!');

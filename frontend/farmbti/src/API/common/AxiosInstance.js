@@ -262,6 +262,7 @@ function handleLogout() {
   localStorage.removeItem("refreshToken");
   localStorage.removeItem("tokenExpires");
   localStorage.removeItem("user");
+  localStorage.removeItem("isMentor");
   
   // 페이지 리디렉션 (로그인 페이지가 아닌 경우에만)
   if (window.location.pathname !== '/login') {
