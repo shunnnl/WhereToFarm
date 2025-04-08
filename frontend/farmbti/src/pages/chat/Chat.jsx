@@ -276,6 +276,7 @@ if (textareaRef.current) {
 const handleMessageChange = (e) => {
 let input = e.target.value;
 
+
 // 연속된 특수문자 사이에 숨겨진 공백 추가 (선택적)
 // 예: ",,,,," -> ", , , , ,"
 // const specialCharsRegex = /([!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]){5,}/g;
@@ -287,6 +288,11 @@ let input = e.target.value;
 // if (input.match(longEnglishWordRegex)) {
 //   input = input.replace(/([a-zA-Z]{10})([a-zA-Z])/g, '$1\u200B$2');
 // }
+
+ // 연속된 스페이스를 비분해 공백으로 변환 (2개 이상 연속된 경우)
+ input = input.replace(/ {2,}/g, match => {
+  return '\u00A0'.repeat(match.length);
+});
 
 if (input.length <= MAX_CHAR_LIMIT) {
   setMessage(input);
@@ -862,10 +868,10 @@ return (
                       wordWrap: 'break-word',
                       overflowWrap: 'break-word',
                       whiteSpace: 'pre-wrap',
-                      hyphens: 'auto'
+                      hyphens: 'auto',
                     }}
                   >
-                    <p className="whitespace-pre-line">{msg.text}</p>
+                    <p className="whitespace-pre-wrap break-all">{msg.text}</p>
                   </div>
                   
                   {/* 상대방 메시지일 경우 시간이 오른쪽에 표시됨 */}
