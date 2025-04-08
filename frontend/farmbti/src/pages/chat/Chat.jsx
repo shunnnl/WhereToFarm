@@ -208,30 +208,45 @@ const handleRoomsUpdate = (payload) => {
   try {
     const update = JSON.parse(payload.body);
     console.log('채팅방 업데이트 수신:', update);
+
+
+
     
     // 단일 채팅방 업데이트 처리
     if (update && update.type === "roomUpdate" && update.roomId) {
-      // 업데이트된 채팅방을 찾아서 lastMessage 업데이트 후 목록 최상단으로 이동
       setChatRooms(prevRooms => {
-        // 먼저 기존 목록에서 업데이트할 채팅방과 나머지 채팅방 분리
+        // 기존 목록에서 업데이트할 채팅방을 찾습니다
         const updatedRoom = prevRooms.find(room => room.roomId === update.roomId);
         const otherRooms = prevRooms.filter(room => room.roomId !== update.roomId);
         
+        // 기존 채팅방 목록에 없는 새 roomId인 경우
         if (!updatedRoom) {
-          console.warn(`채팅방 ${update.roomId}를 찾을 수 없음`);
-          return prevRooms;
+          console.log(`새 채팅방 ${update.roomId} 감지, 목록에 추가합니다`);
+          
+          // sender 필드를 otherUserName으로 사용
+          const newRoom = {
+            roomId: update.roomId,
+            lastMessage: update.lastMessage || "새 대화가 시작되었습니다",
+            lastMessageTime: update.timestamp || new Date().toISOString(),
+            otherUserName: update.sender || "상대방", // sender 필드 활용
+            otherUserProfile: null // 프로필 이미지는 기본값 사용
+          };
+          
+          // 새 채팅방을 목록 맨 위에 추가
+          return [newRoom, ...otherRooms];
         }
         
-        // 해당 채팅방의 lastMessage 업데이트
+        // 기존 채팅방인 경우 lastMessage 업데이트
         const newUpdatedRoom = { 
           ...updatedRoom, 
           lastMessage: update.lastMessage,
-          lastMessageTime: new Date().toISOString() // 최신 시간 정보 추가
+          lastMessageTime: update.timestamp || new Date().toISOString()
         };
         
         // 업데이트된 채팅방을 목록 최상단에 위치시키고 반환
         return [newUpdatedRoom, ...otherRooms];
       });
+      
       
       // 중요: 현재 활성화된 채팅방인지 확인하기 위한 ID 가져오기
       const currentChatRoomId = localStorage.getItem('currentChatRoomId');
