@@ -27,7 +27,7 @@ const ProfileSkeleton = ({ isMentor }) => {
             <div className="h-5 bg-gray-200 rounded w-1/3"></div>
           </div>
         ))}
-        
+
         {/* 작물 정보 (멘토인 경우에만) */}
         {isMentor && (
           <div className="flex justify-between mb-3">
@@ -38,32 +38,54 @@ const ProfileSkeleton = ({ isMentor }) => {
       </div>
 
       {/* 하단 버튼 섹션 - 동일한 조건부 레이아웃 사용 */}
-      <div className={`${
-        isMentor ? "grid grid-cols-2 gap-6" : "flex justify-around"
-      } mx-10 mt-4 p-2`}>
+      <div
+        className={`${
+          isMentor ? "grid grid-cols-2 gap-6" : "flex justify-around"
+        } mx-10 mt-4 p-2`}
+      >
         {/* 채팅 버튼 */}
         <div className="flex flex-col items-center">
-          <div className="w-12 h-12 bg-gray-200 rounded-full mb-2"></div>
+          <div
+            className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mb-2"
+            style={{ width: "48px", height: "48px" }}
+          >
+            <div className="w-5 h-5"></div>
+          </div>
           <div className="h-4 bg-gray-200 rounded w-20"></div>
         </div>
 
         {/* 멘토 정보 수정 (멘토인 경우에만) */}
         {isMentor && (
           <div className="flex flex-col items-center">
-            <div className="w-12 h-12 bg-gray-200 rounded-full mb-2"></div>
+            <div
+            className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mb-2"
+            style={{ width: "48px", height: "48px" }}
+          >
+            <div className="w-5 h-5"></div>
+          </div>
             <div className="h-4 bg-gray-200 rounded w-20"></div>
           </div>
         )}
 
         {/* 회원 정보 수정 */}
         <div className="flex flex-col items-center">
-          <div className="w-12 h-12 bg-gray-200 rounded-full mb-2"></div>
+        <div
+            className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mb-2"
+            style={{ width: "48px", height: "48px" }}
+          >
+            <div className="w-5 h-5"></div>
+          </div>
           <div className="h-4 bg-gray-200 rounded w-20"></div>
         </div>
 
         {/* 비밀번호 수정 */}
         <div className="flex flex-col items-center">
-          <div className="w-12 h-12 bg-gray-200 rounded-full mb-2"></div>
+        <div
+            className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mb-2"
+            style={{ width: "48px", height: "48px" }}
+          >
+            <div className="w-5 h-5"></div>
+          </div>
           <div className="h-4 bg-gray-200 rounded w-20"></div>
         </div>
       </div>
