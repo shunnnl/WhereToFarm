@@ -82,6 +82,7 @@ public class WebSocketController {
                 listUpdate.put("lastMessage", messageRequest.getMessage());
                 listUpdate.put("sender", currentUserName);
                 listUpdate.put("timestamp", messageResponse.getSentAt());
+                listUpdate.put("senderProfile", messageRequest.getSenderProfile());
                 // 채팅 목록 업데이트 알림 전송
                 messagingTemplate.convertAndSendToUser(
                         roomUser,
