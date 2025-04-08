@@ -44,47 +44,57 @@ public class ChatService {
     public ChatResponse create(Long userId, ChatRequest chatRequest) {
         log.info("🔍 채팅 생성 요청 - 사용자 ID: {}, 상대방 ID(멘토): {}", userId, chatRequest.getOtherId());
 
-        // 멘토
-        Mentors mentor = mentorsRepository.findById(chatRequest.getOtherId())
+        // 상대방 멘토 조회
+        Mentors otherMentor = mentorsRepository.findById(chatRequest.getOtherId())
                 .orElseThrow(() -> {
                     log.error("❌ 멘토 조회 실패 - ID: {}", chatRequest.getOtherId());
                     return new GlobalException(MentorsErrorCode.MENTOR_NOT_FOUND);
                 });
 
-        // 멘토의 사용자 ID 조회
-        Long mentorUserId = mentor.getUser().getId();
-        log.info("🔍 멘토의 사용자 ID: {}", mentorUserId);
+        // 상대방 멘토의 사용자 ID 조회
+        Long otherMentorUserId = otherMentor.getUser().getId();
+        log.info("🔍 상대방 멘토의 사용자 ID: {}", otherMentorUserId);
 
         // 현재 사용자가 멘토인지 확인
         Optional<Mentors> currentUserMentor = mentorsRepository.findByUserId(userId);
 
-        // 두 가지 가능한 조합 모두 검색
-        Optional<Chat> existingChat1 = chatRepository.findByMentee_IdAndMentor_Id(userId, chatRequest.getOtherId());
+        // 가능한 모든 채팅방 조합 검색
+        Optional<Chat> existingChat = Optional.empty();
 
-        Optional<Chat> existingChat2 = Optional.empty();
-        if (currentUserMentor.isPresent()) {
-            existingChat2 = chatRepository.findByMentee_IdAndMentor_Id(mentorUserId, currentUserMentor.get().getId());
+        // 1. 현재 사용자(멘티)와 상대방(멘토) 조합 검색
+        Optional<Chat> menteeToMentor = chatRepository.findByMentee_IdAndMentor_Id(userId, otherMentor.getId());
+        if (menteeToMentor.isPresent()) {
+            log.info("✅ 기존 채팅방 발견: 현재 사용자(멘티)와 상대방(멘토) - 채팅방 ID: {}", menteeToMentor.get().getRoomId());
+            existingChat = menteeToMentor;
         }
 
-        // 둘 중 하나라도 존재하면 그것을 사용
-        Optional<Chat> existingChat = existingChat1.isPresent() ? existingChat1 : existingChat2;
+        // 2. 상대방(멘티)과 현재 사용자(멘토) 조합 검색
+        if (!existingChat.isPresent() && currentUserMentor.isPresent()) {
+            Optional<Chat> mentorToMentee = chatRepository.findByMentee_IdAndMentor_Id(
+                    otherMentorUserId, currentUserMentor.get().getId());
+            if (mentorToMentee.isPresent()) {
+                log.info("✅ 기존 채팅방 발견: 상대방(멘티)과 현재 사용자(멘토) - 채팅방 ID: {}", mentorToMentee.get().getRoomId());
+                existingChat = mentorToMentee;
+            }
+        }
 
         Chat chat = existingChat.orElseGet(() -> {
             log.info("📨 기존 채팅방 없음 - 새로 생성 시작");
 
-            // 멘티
-            Users user = usersRepository.findById(userId)
+            // 현재 사용자 조회
+            Users currentUser = usersRepository.findById(userId)
                     .orElseThrow(() -> {
-                        log.error("❌ 멘티 조회 실패 - ID: {}", userId);
+                        log.error("❌ 사용자 조회 실패 - ID: {}", userId);
                         return new GlobalException(AuthErrorCode.USER_NOT_FOUND);
                     });
 
-            log.info("✅ 멘티 조회 완료 - 이름: {}", user.getName());
-            log.info("✅ 멘토 조회 완료 - 이름: {}", mentor.getUser().getName());
+            log.info("✅ 현재 사용자 조회 완료 - 이름: {}", currentUser.getName());
+            log.info("✅ 상대방 멘토 조회 완료 - 이름: {}", otherMentor.getUser().getName());
 
+            // 새 채팅방 생성 (항상 현재 사용자가 멘티, 상대방이 멘토로 설정)
             Chat newChat = Chat.builder()
-                    .mentee(user)
-                    .mentor(mentor)
+                    .mentee(currentUser)
+                    .mentor(otherMentor)
                     .build();
 
             Chat savedChat = chatRepository.save(newChat);
@@ -92,7 +102,7 @@ public class ChatService {
             return savedChat;
         });
 
-        // 응답 생성 시 현재 사용자가 채팅방의 멘티인지 확인
+        // 응답 생성을 위한 역할 확인
         boolean isCurrentUserMentee = chat.getMentee().getId().equals(userId);
 
         // 현재 사용자와 상대방 정보 설정
@@ -116,7 +126,8 @@ public class ChatService {
             profileImageUrl = getProfileImageUrl(chat.getMentee());
         }
 
-        log.info("📦 채팅방 응답 생성 완료 - Room ID: {}, 상대방 이름: {}", chat.getRoomId(), otherUserName);
+        log.info("📦 채팅방 응답 생성 완료 - Room ID: {}, 현재 사용자: {}, 상대방 이름: {}",
+                chat.getRoomId(), currentUserName, otherUserName);
 
         return ChatResponse.builder()
                 .roomId(chat.getRoomId())
