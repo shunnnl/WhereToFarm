@@ -20,4 +20,7 @@ public class LoginResponse {
     private Token token;
     private LocalDateTime createdAt;
     private Byte isOut; // 탈퇴여부
+
+    @Builder.Default
+    private Boolean isMentor = false; // 멘토 여부 필드 추가
 }

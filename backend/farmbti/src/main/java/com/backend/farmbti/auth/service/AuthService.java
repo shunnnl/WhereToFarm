@@ -8,6 +8,7 @@ import com.backend.farmbti.auth.exception.AuthErrorCode;
 import com.backend.farmbti.auth.repository.UsersRepository;
 import com.backend.farmbti.common.exception.GlobalException;
 import com.backend.farmbti.common.service.S3Service;
+import com.backend.farmbti.mentors.repository.MentorsRepository;
 import com.backend.farmbti.security.dto.Token;
 import com.backend.farmbti.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final S3Service s3Service;
+    private final MentorsRepository mentorsRepository;
 
     public void signUp(SignUpRequest request) {
         //1. 에러 검증
@@ -58,7 +60,7 @@ public class AuthService {
             users.updateProfileImageUrl(profileImageUrl, LocalDateTime.now().plusDays(6));
             usersRepository.save(users);
         } catch (Exception e) {
-            
+
         }
 
         log.info("회원가입 완료");
@@ -78,8 +80,6 @@ public class AuthService {
 
 
     public LoginResponse login(LoginRequest request) {
-
-
         //1. 이메일 검증
         Users users = usersRepository.findByEmailAndIsOut(request.getEmail(), (byte) 0)
                 .orElseThrow(() -> new GlobalException(AuthErrorCode.EMAIL_NOT_FOUND));
@@ -96,6 +96,10 @@ public class AuthService {
         // 3. JWT 토큰 생성
         Token token = jwtTokenProvider.generateToken(users);
 
+        // 4. 멘토 여부 확인
+        boolean isMentor = mentorsRepository.findByUserId(users.getId()).isPresent();
+        log.info("멘토 여부 확인: {}", isMentor);
+
         return LoginResponse.builder()
                 .id(users.getId())
                 .email(users.getEmail())
@@ -107,6 +111,7 @@ public class AuthService {
                 .token(token)
                 .createdAt(users.getCreatedAt())
                 .isOut(users.getIsOut()) // 탈퇴여부
+                .isMentor(isMentor) // 멘토 여부 추가
                 .build();
     }
 
