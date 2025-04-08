@@ -31,10 +31,14 @@ public interface ChatRepository extends JpaRepository<Chat, Long> {
 
     List<Chat> findAllByMenteeId(Long userId);
 
-    // 사용자 ID와 멘토 ID로 채팅방 찾기
     @Query("SELECT c FROM Chat c WHERE " +
-            "(c.mentee.id = :userId AND c.mentor.id = :mentorId)")
-    Optional<Chat> findChatBetweenUsers(@Param("userId") Long userId, @Param("mentorId") Long mentorId);
+            "(c.mentee.id = :user1Id AND c.mentor.id = :user2MentorId) OR " +
+            "(c.mentee.id = :user2Id AND c.mentor.id = :user1MentorId)")
+    Optional<Chat> findChatBetweenUsers(
+            @Param("user1Id") Long user1Id,
+            @Param("user2MentorId") Long user2MentorId,
+            @Param("user2Id") Long user2Id,
+            @Param("user1MentorId") Long user1MentorId);
 
     // 두 사용자 간의 모든 채팅방 찾기 (어느 쪽이 멘토/멘티인지 관계없이)
     @Query("SELECT c FROM Chat c WHERE " +

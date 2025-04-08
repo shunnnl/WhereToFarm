@@ -55,8 +55,19 @@ public class ChatService {
         Long mentorUserId = mentor.getUser().getId();
         log.info("🔍 멘토의 사용자 ID: {}", mentorUserId);
 
-        // 로그인한 사용자(멘티)와 상대방(멘토)의 기존 채팅방 찾기
-        Optional<Chat> existingChat = chatRepository.findChatBetweenUsers(userId, chatRequest.getOtherId());
+        // 현재 사용자가 멘토인지 확인
+        Optional<Mentors> currentUserMentor = mentorsRepository.findByUserId(userId);
+
+        // 두 가지 가능한 조합 모두 검색
+        Optional<Chat> existingChat1 = chatRepository.findByMentee_IdAndMentor_Id(userId, chatRequest.getOtherId());
+
+        Optional<Chat> existingChat2 = Optional.empty();
+        if (currentUserMentor.isPresent()) {
+            existingChat2 = chatRepository.findByMentee_IdAndMentor_Id(mentorUserId, currentUserMentor.get().getId());
+        }
+
+        // 둘 중 하나라도 존재하면 그것을 사용
+        Optional<Chat> existingChat = existingChat1.isPresent() ? existingChat1 : existingChat2;
 
         Chat chat = existingChat.orElseGet(() -> {
             log.info("📨 기존 채팅방 없음 - 새로 생성 시작");
@@ -81,18 +92,40 @@ public class ChatService {
             return savedChat;
         });
 
-        String profileImageUrl = getProfileImageUrl(chat.getMentor().getUser());
+        // 응답 생성 시 현재 사용자가 채팅방의 멘티인지 확인
+        boolean isCurrentUserMentee = chat.getMentee().getId().equals(userId);
 
-        log.info("📦 채팅방 응답 생성 완료 - Room ID: {}, 상대방 이름: {}", chat.getRoomId(), chat.getMentor().getUser().getName());
+        // 현재 사용자와 상대방 정보 설정
+        Long currentUserId, otherUserId;
+        String currentUserName, otherUserName;
+        String profileImageUrl;
+
+        if (isCurrentUserMentee) {
+            // 현재 사용자가 멘티인 경우
+            currentUserId = chat.getMentee().getId();
+            otherUserId = chat.getMentor().getId();
+            currentUserName = chat.getMentee().getName();
+            otherUserName = chat.getMentor().getUser().getName();
+            profileImageUrl = getProfileImageUrl(chat.getMentor().getUser());
+        } else {
+            // 현재 사용자가 멘토인 경우
+            currentUserId = chat.getMentor().getUser().getId();
+            otherUserId = chat.getMentee().getId();
+            currentUserName = chat.getMentor().getUser().getName();
+            otherUserName = chat.getMentee().getName();
+            profileImageUrl = getProfileImageUrl(chat.getMentee());
+        }
+
+        log.info("📦 채팅방 응답 생성 완료 - Room ID: {}, 상대방 이름: {}", chat.getRoomId(), otherUserName);
 
         return ChatResponse.builder()
                 .roomId(chat.getRoomId())
-                .currentUserId(chat.getMentee().getId())
-                .otherUserId(chat.getMentor().getId())
-                .currentUserName(chat.getMentee().getName())
-                .otherUserName(chat.getMentor().getUser().getName())
+                .currentUserId(currentUserId)
+                .otherUserId(otherUserId)
+                .currentUserName(currentUserName)
+                .otherUserName(otherUserName)
                 .otherUserProfile(profileImageUrl)
-                .isCurrentUserMentee(true)
+                .isCurrentUserMentee(isCurrentUserMentee)
                 .build();
     }
 
