@@ -42,11 +42,21 @@ public class ChatService {
 
     @Transactional
     public ChatResponse create(Long userId, ChatRequest chatRequest) {
+        log.info("🔍 채팅 생성 요청 - 사용자 ID: {}, 상대방 ID(멘토): {}", userId, chatRequest.getOtherId());
 
-        log.info("🔍 채팅 생성 요청 - 사용자 ID: {}, 상대방 ID: {}", userId, chatRequest.getOtherId());
+        // 멘토
+        Mentors mentor = mentorsRepository.findById(chatRequest.getOtherId())
+                .orElseThrow(() -> {
+                    log.error("❌ 멘토 조회 실패 - ID: {}", chatRequest.getOtherId());
+                    return new GlobalException(MentorsErrorCode.MENTOR_NOT_FOUND);
+                });
 
-        // 로그인한 사용자와 상대방이 있는 채팅이 있을 때 사용
-        Optional<Chat> existingChat = chatRepository.findChatBetweenAnyUsers(userId, chatRequest.getOtherId());
+        // 멘토의 사용자 ID 조회
+        Long mentorUserId = mentor.getUser().getId();
+        log.info("🔍 멘토의 사용자 ID: {}", mentorUserId);
+
+        // 로그인한 사용자(멘티)와 상대방(멘토)의 기존 채팅방 찾기
+        Optional<Chat> existingChat = chatRepository.findChatBetweenUsers(userId, chatRequest.getOtherId());
 
         Chat chat = existingChat.orElseGet(() -> {
             log.info("📨 기존 채팅방 없음 - 새로 생성 시작");
@@ -59,14 +69,6 @@ public class ChatService {
                     });
 
             log.info("✅ 멘티 조회 완료 - 이름: {}", user.getName());
-
-            // 멘토
-            Mentors mentor = mentorsRepository.findById(chatRequest.getOtherId())
-                    .orElseThrow(() -> {
-                        log.error("❌ 멘토 조회 실패 - ID: {}", chatRequest.getOtherId());
-                        return new GlobalException(MentorsErrorCode.MENTOR_NOT_FOUND);
-                    });
-
             log.info("✅ 멘토 조회 완료 - 이름: {}", mentor.getUser().getName());
 
             Chat newChat = Chat.builder()
