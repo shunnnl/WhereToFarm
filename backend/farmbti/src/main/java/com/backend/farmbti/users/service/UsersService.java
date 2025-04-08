@@ -170,16 +170,17 @@ public class UsersService {
 
         // URL 생성 또는 가져오기
         String profileImageUrl;
-        /* try {
+        try {
             profileImageUrl = s3Service.getOrCreateSignedUrl(user);
             // URL이 생성되었거나 갱신되었을 수 있으므로 저장
             usersRepository.save(user);
         } catch (Exception e) {
             log.error("Failed to generate profile image URL for user: {}", userId, e);
             throw new GlobalException(UsersErrorCode.PROFILE_IMAGE_URL_GENERATION_FAILED);
-        } */
+        }
 
         // ✅ Redis 캐싱 추가
+        /*
         profileImageUrl = redisService.getProfileImageUrl(user.getId())
                 .orElseGet(() -> {
                     try {
@@ -190,7 +191,7 @@ public class UsersService {
                         throw new GlobalException(UsersErrorCode.PROFILE_IMAGE_URL_GENERATION_FAILED);
                     }
                 });
-
+*/
         boolean isDefaultImage = profileImageKey.startsWith("basic/");
 
         CurrentUserResponse.CurrentUserResponseBuilder builder = CurrentUserResponse.builder()
@@ -289,9 +290,11 @@ public class UsersService {
             String signedUrl = s3Service.getOrCreateSignedUrl(user);
             usersRepository.save(user);
 
+            /*
             // ✅ 기본 이미지로 초기화 시에도 캐시 갱신
             redisService.evictProfileImage(userId);
             redisService.cacheProfileImageUrl(userId, signedUrl, 3600);
+             */
 
             return UploadProfileImageResponse.builder()
                     .imageUrl(signedUrl)
@@ -372,10 +375,11 @@ public class UsersService {
             String signedUrl = s3Service.getOrCreateSignedUrl(user);
             usersRepository.save(user);
 
+            /*
             // ✅ 프로필 이미지 업로드 후 캐시 무효화 및 갱신
             redisService.evictProfileImage(userId);
             redisService.cacheProfileImageUrl(userId, signedUrl, 3600);
-
+*/
             return UploadProfileImageResponse.builder()
                     .imageUrl(signedUrl)
                     .build();

@@ -109,12 +109,23 @@ public class S3Service {
     // 기본 프로필 이미지 객체 키 가져오기
     public String getDefaultProfileImageKey(Byte gender) {
         String objectKey = "basic/" + (gender == 1 ? "basic_1.jpg" : "basic_0.jpg");
+        log.info("기본 프로필 이미지 접근 - 성별: {}, 객체 키: {}, 버킷: {}", gender, objectKey, bucket);
 
-        if (!amazonS3.doesObjectExist(bucket, objectKey)) {
-            throw new GlobalException(S3ErrorCode.DEFAULT_PROFILE_IMAGE_NOT_FOUND);
+        try {
+            boolean exists = amazonS3.doesObjectExist(bucket, objectKey);
+            log.info("S3 객체 존재 여부 확인 결과: {}", exists);
+
+            if (!exists) {
+                log.error("S3에서 기본 프로필 이미지를 찾을 수 없습니다: {}", objectKey);
+                throw new GlobalException(S3ErrorCode.DEFAULT_PROFILE_IMAGE_NOT_FOUND);
+            }
+
+            return objectKey;
+        } catch (AmazonS3Exception e) {
+            log.error("S3 접근 오류 - 버킷: {}, 키: {}, 상태코드: {}, 에러코드: {}, 메시지: {}, 요청 ID: {}",
+                    bucket, objectKey, e.getStatusCode(), e.getErrorCode(), e.getMessage(), e.getRequestId());
+            throw e;
         }
-
-        return objectKey;
     }
 
     // 이미지 리사이징 메소드
