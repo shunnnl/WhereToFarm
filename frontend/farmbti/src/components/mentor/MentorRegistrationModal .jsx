@@ -20,7 +20,6 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
   const [isCheckingMentorStatus, setIsCheckingMentorStatus] = useState(false);
   const [isAlreadyMentor, setIsAlreadyMentor] = useState(false);
   const [mentorData, setMentorData] = useState(null);
-
   const resetForm = () => {
     setSelectedFoods([]);
     setDescription('');
@@ -81,102 +80,79 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
     },
   ];
 
-  // 모달 열림/닫힘 관련 스크롤 제어
-  useEffect(() => {
-    if (isOpen) {
-      // 모달이 열릴 때 배경 스크롤 막기
-      document.body.style.overflow = 'hidden';
-      
-      // wheel 및 touchmove 이벤트를 통한 스크롤 방지 (팀원 코드와 동일한 방식)
-      const preventScroll = (e) => {
-        // 모달 내부에서의 스크롤은 허용 (이벤트 타겟이 모달 안에 있는지 체크)
-        const modalContent = document.querySelector('.ReactModal__Content');
-        if (modalContent && modalContent.contains(e.target)) {
-          return; // 모달 내부 스크롤은 허용
-        }
-        e.preventDefault(); // 그 외의 스크롤은 방지
-      };
-      
-      // 이벤트 리스너 추가
-      document.addEventListener('wheel', preventScroll, { passive: false });
-      document.addEventListener('touchmove', preventScroll, { passive: false });
-      
-      // 이미 로그인한 상태인 경우 멘토 상태 확인
-      if (isLoggedIn) {
-        checkUserStatus();
-      }
-      
-      resetForm(); // 모달이 열릴 때마다 폼 초기화
-      
-      // 컴포넌트 언마운트 또는 모달이 닫힐 때 이벤트 리스너 제거
-      return () => {
-        document.body.style.overflow = '';
-        document.removeEventListener('wheel', preventScroll);
-        document.removeEventListener('touchmove', preventScroll);
-      };
-    } else {
-      // 모달이 닫힐 때 배경 스크롤 복원
-      document.body.style.overflow = '';
-    }
-  }, [isOpen, isLoggedIn]);
-
-  // 모달 배경 클릭 시 닫기 방지를 위한 핸들러
-  const handleModalContentClick = (e) => {
-    e.stopPropagation(); // 모달 내부 클릭 이벤트가 배경으로 전파되지 않도록 함
-  };
-
   const handleClose = () => {
     resetForm();
     onRequestClose();
   };
 
-  // 사용자 정보 및 멘토 상태 확인
-  const checkUserStatus = async () => {
-    if (!isLoggedIn) return;
-    
-    try {
-      setIsCheckingMentorStatus(true);
-      // 사용자 정보를 가져오는 API 호출
-      const response = await authAxios.get('/users/me');
+  //모달 닫을때 폼 초기화
+  useEffect(() => {
+    if (isOpen) {
+      if (isLoggedIn) {
+        checkUserStatus();
+      }
+      resetForm(); // 모달이 열릴 때마다 폼 초기화
+    }
+  }, [isOpen, isLoggedIn]);
+
+
+
+
+    // 사용자 정보 및 멘토 상태 확인
+    const checkUserStatus = async () => {
+      if (!isLoggedIn) return;
       
-      // API 응답 구조에 맞게 확인
-      if (response.data && response.data.success && response.data.data) {
-        const userData = response.data.data;
+      try {
+        setIsCheckingMentorStatus(true);
+        // 사용자 정보를 가져오는 API 호출
+        const response = await authAxios.get('/users/me');
         
-        // isMentor 필드로 멘토 여부 확인
-        if (userData.isMentor) {
-          console.log('이미 멘토로 등록되어 있습니다:', userData);
-          setIsAlreadyMentor(true);
-          setMentorData({
-            bio: userData.bio || '',
-            farmingYears: userData.farmingYears || 0,
-            cropNames: userData.cropNames || []
-          });
+        // API 응답 구조에 맞게 확인
+        if (response.data && response.data.success && response.data.data) {
+          const userData = response.data.data;
+          
+          // isMentor 필드로 멘토 여부 확인
+          if (userData.isMentor) {
+            console.log('이미 멘토로 등록되어 있습니다:', userData);
+            setIsAlreadyMentor(true);
+            setMentorData({
+              bio: userData.bio || '',
+              farmingYears: userData.farmingYears || 0,
+              cropNames: userData.cropNames || []
+            });
+            setSubmitResult({ 
+              success: false, 
+              message: '이미 멘토로 등록되어 있습니다.' 
+            });
+          } else {
+            setIsAlreadyMentor(false);
+            setMentorData(null);
+          }
+        }
+      } catch (error) {
+        console.error('사용자 정보 확인 중 오류 발생:', error);
+        
+        // 인증 오류인 경우 로그아웃 처리
+        if (error.response && error.response.status === 401) {
+          console.error('인증 오류 - 로그아웃 처리');
+          dispatch(logout());
           setSubmitResult({ 
             success: false, 
-            message: '이미 멘토로 등록되어 있습니다.' 
+            message: '세션이 만료되었습니다. 다시 로그인해주세요.' 
           });
-        } else {
-          setIsAlreadyMentor(false);
-          setMentorData(null);
         }
+      } finally {
+        setIsCheckingMentorStatus(false);
       }
-    } catch (error) {
-      console.error('사용자 정보 확인 중 오류 발생:', error);
-      
-      // 인증 오류인 경우 로그아웃 처리
-      if (error.response && error.response.status === 401) {
-        console.error('인증 오류 - 로그아웃 처리');
-        dispatch(logout());
-        setSubmitResult({ 
-          success: false, 
-          message: '세션이 만료되었습니다. 다시 로그인해주세요.' 
-        });
+    };
+  
+    // 모달이 열릴 때마다 사용자 정보 확인
+    useEffect(() => {
+      if (isOpen && isLoggedIn) {
+        checkUserStatus();
       }
-    } finally {
-      setIsCheckingMentorStatus(false);
-    }
-  };
+    }, [isOpen, isLoggedIn]);
+  
 
   // Redux 로그인 상태 및 토큰 확인
   useEffect(() => {
@@ -237,7 +213,7 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
     
     if (!description.trim() || description.trim().length < 10) {
       toast.error('멘토 소개는 10자 이상 입력해주세요.');
-      return false;
+      isValid = false;
     }
       
     return true;
@@ -368,48 +344,13 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
     (_, i) => currentYear - i
   );
 
-  // React Modal의 기본 설정 - 앱이 마운트될 때 한 번만 실행
-  useEffect(() => {
-    Modal.setAppElement('#root'); // 또는 적절한 앱 엘리먼트 ID/클래스
-    
-    // 전역 스타일 추가
-    const styleElement = document.createElement('style');
-    styleElement.innerHTML = `
-      .ReactModal__Body--open {
-        overflow: hidden;
-        position: fixed;
-        width: 100%;
-        height: 100%;
-      }
-    `;
-    document.head.appendChild(styleElement);
-    
-    return () => {
-      // 컴포넌트 언마운트 시 스타일 제거
-      if (document.head.contains(styleElement)) {
-        document.head.removeChild(styleElement);
-      }
-    };
-  }, []);
-
   return (
     <Modal
       isOpen={isOpen}
       onRequestClose={onRequestClose}
       className="bg-white p-6 rounded-xl shadow-md max-w-4xl w-full mx-auto"
       overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]"
-      onAfterOpen={() => {
-        document.body.style.overflow = 'hidden'; // 모달 열릴 때 배경 스크롤 방지
-        document.body.classList.add('ReactModal__Body--open'); // CSS 클래스 추가
-      }}
-      onAfterClose={() => {
-        document.body.style.overflow = ''; // 모달 닫힐 때 배경 스크롤 복원
-        document.body.classList.remove('ReactModal__Body--open'); // CSS 클래스 제거
-      }}
-      shouldCloseOnOverlayClick={true}
-      contentLabel="멘토 등록 모달"
-      onClick={handleModalContentClick}
-    >
+        >
       <form onSubmit={handleSubmit} className="w-full">
         <div className='mb-4 text-center w-full'>
           <h2 className="text-2xl font-bold mb-2">멘토 등록</h2>
