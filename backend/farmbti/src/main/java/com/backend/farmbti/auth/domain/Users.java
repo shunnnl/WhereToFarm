@@ -24,7 +24,7 @@ public class Users extends TimeStampEntity {
     @Column(nullable = false, length = 50) // NULL 불가, 최대 길이 50, 중복 방지
     private String email;
 
-    @Column(nullable = false, length = 100) // NULL 불가, 최대 길이 100
+    @Column(nullable = false, length = 110) // NULL 불가, 최대 길이 100
     private String password;
 
     @Column(nullable = false, length = 20) // NULL 불가, 최대 길이 30
