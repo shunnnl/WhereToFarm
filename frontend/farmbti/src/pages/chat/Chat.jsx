@@ -736,7 +736,9 @@ const handleSendMessage = () => {
         senderId: userInfo.id,      // 사용자 ID 명시적으로 추가
         sentAt: kstTimeString,      // KST ISO 문자열(+09:00 포함)
         timestamp: kstTimeString,   // 대체 필드로도 전송
-        kstOffset: '+09:00'         // 명시적 KST 오프셋 정보 추가
+        kstOffset: '+09:00',         // 명시적 KST 오프셋 정보 추가
+        senderProfile: userInfo.profileImage
+        
       })
     });
     
