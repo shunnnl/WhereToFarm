@@ -16,4 +16,5 @@ public class PropertyListResponse {
     private Integer deposit;
     private Double area;
     private String feature;
+    private String formattedDeposit; // "1억 400만원" 형식
 }

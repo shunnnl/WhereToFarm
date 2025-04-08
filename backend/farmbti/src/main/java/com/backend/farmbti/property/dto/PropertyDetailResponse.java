@@ -20,4 +20,6 @@ public class PropertyDetailResponse {
     // 좌표 정보 추가
     private Double latitude;
     private Double longitude;
+
+    private String formattedDeposit; // "1억 400만원" 형식
 }

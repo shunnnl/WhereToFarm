@@ -157,6 +157,7 @@ public class PropertyService {
                 .address(property.getDetailAddress())
                 .agency(property.getAgency())
                 .deposit(property.getDeposit())
+                .formattedDeposit(formatDepositAmount(property.getDeposit())) // 형식화된 값 추가
                 .area(property.getArea())
                 .feature(property.getFeature())
                 .latitude(coordinates.get("latitude"))
@@ -173,8 +174,40 @@ public class PropertyService {
                 .address(property.getDetailAddress())
                 .agency(property.getAgency())
                 .deposit(property.getDeposit())
+                .formattedDeposit(formatDepositAmount(property.getDeposit())) // 형식화된 값 추가
                 .area(property.getArea())
                 .feature(property.getFeature())
                 .build();
+    }
+
+    /**
+     * 예금액을 억/만원 단위로 형식화
+     * 예: 10400 -> "1억 400만원"
+     */
+    private String formatDepositAmount(Integer depositInTenThousand) {
+        if (depositInTenThousand == null) {
+            return "0원";
+        }
+
+        int billion = depositInTenThousand / 10000; // 억 단위
+        int tenThousand = depositInTenThousand % 10000; // 만 단위
+
+        StringBuilder result = new StringBuilder();
+
+        if (billion > 0) {
+            result.append(billion).append("억 ");
+        }
+
+        if (tenThousand > 0) {
+            result.append(tenThousand).append("만");
+        }
+
+        if (result.length() > 0) {
+            result.append("원");
+        } else {
+            result.append("0원");
+        }
+
+        return result.toString();
     }
 }
