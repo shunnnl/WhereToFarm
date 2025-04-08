@@ -60,6 +60,23 @@ const MyProfile = ({ myInfo: initialMyInfo, isLoading = false }) => {
     }
   });
 
+  const cropTextRef = useRef(null);
+  const [showAboveTooltip, setShowAboveTooltip] = useState(true);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (cropTextRef.current) {
+        const rect = cropTextRef.current.getBoundingClientRect();
+        const windowHeight = window.innerHeight;
+        setShowAboveTooltip(rect.top > windowHeight / 2);
+      }
+    };
+
+    handleScroll(); // 초기 위치 설정
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   // 데이터에서 파생되는 값은 useMemo로 계산 (불필요한 재계산 방지)
   const birth = useMemo(() => {
     if (!myInfo?.birth) return { year: "", month: "", day: "" };
@@ -377,17 +394,25 @@ const MyProfile = ({ myInfo: initialMyInfo, isLoading = false }) => {
           <div className="flex justify-between mb-1">
             <p className="text-md text-textColor-gray text-start">재배 작물</p>
             <div className="relative group">
-              {/* 최대 3개 작물만 표시하고 나머지는 +N개로 표시 */}
-              <p className="text-lg text-textColor-black text-end max-w-[200px] truncate">
+              {/* ref 속성 추가 */}
+              <p
+                ref={cropTextRef}
+                className="text-lg text-textColor-black text-end max-w-[200px] truncate"
+              >
                 {myInfo.cropNames.length <= 3
                   ? myInfo.cropNames.join(", ")
                   : `${myInfo.cropNames.slice(0, 3).join(", ")} +${
                       myInfo.cropNames.length - 3
                     }개`}
               </p>
-              {/* 호버 시 모든 작물 표시 */}
+              {/* 호버 시 모든 작물 표시 - 위치 조건부 변경 */}
               {myInfo.cropNames.length > 0 && (
-                <div className="absolute hidden group-hover:block right-0 bottom-full mb-2 bg-white shadow-md p-2 rounded-md z-10 min-w-[150px] max-w-[300px]">
+                <div
+                  className={`absolute hidden group-hover:block right-0 
+            ${showAboveTooltip ? "bottom-full mb-2" : "top-full mt-2"} 
+            bg-white shadow-md p-2 rounded-md z-10 
+            min-w-[150px] max-w-[300px]`}
+                >
                   <ul className="text-sm text-textColor-black whitespace-normal break-words">
                     {myInfo.cropNames.map((crop, index) => (
                       <li key={index} className="py-1">
