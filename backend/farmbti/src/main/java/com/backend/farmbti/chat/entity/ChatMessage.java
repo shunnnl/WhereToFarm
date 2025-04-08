@@ -30,4 +30,7 @@ public class ChatMessage {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_id")
     private Chat chat;
+
+    @Column(name = "is_read", nullable = false)
+    private boolean isRead = false; // 기본값은 읽지 않음 상태
 }

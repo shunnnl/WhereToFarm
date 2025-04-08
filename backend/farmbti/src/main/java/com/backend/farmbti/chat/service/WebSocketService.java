@@ -142,4 +142,9 @@ public class WebSocketService {
         // 참가자 이름 목록 반환
         return List.of(mentorName, menteeName);
     }
+
+    @Transactional
+    public void markMessagesAsRead(Long roomId, Long userId) {
+        chatMessageRepository.markMessagesAsRead(roomId, userId);
+    }
 }
