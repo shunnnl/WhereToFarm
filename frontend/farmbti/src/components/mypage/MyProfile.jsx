@@ -48,13 +48,19 @@ const MyProfile = ({ myInfo: initialMyInfo, isLoading = false }) => {
   // 상태, 예외 처리
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [isMentorState, setIsMentorState] = useState(false);
+  const [isMentorState, setIsMentorState] = useState(() => {
+    try {
+      // localStorage에서 값을 읽어 초기 상태로 설정
+      const storedValue = localStorage.getItem("isMentor");
+      // 문자열 "true"뿐만 아니라 다양한 형태의 true 값 처리
+      return storedValue === "true";
+    } catch (error) {
+      console.error("localStorage 접근 오류:", error);
+      return false; // 기본값
+    }
+  });
 
-  useEffect(() => {
-    // 컴포넌트 마운트 시 localStorage에서 값 읽기
-    const storedIsMentor = localStorage.getItem("isMentor") === "true";
-    setIsMentorState(storedIsMentor);
-  }, []);
+
 
   // 데이터에서 파생되는 값은 useMemo로 계산 (불필요한 재계산 방지)
   const birth = useMemo(() => {
