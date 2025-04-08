@@ -277,6 +277,7 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
       const response = await authAxios.post('/mentors', mentorData);
       
       console.log('멘토 등록 성공:', response);
+      localStorage.setItem("isMentor", true);
       toast.success('멘토 등록이 성공적으로 완료되었습니다.');
       setSubmitResult({ success: true, message: '멘토 등록이 성공적으로 완료되었습니다.' });
       

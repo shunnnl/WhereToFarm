@@ -48,6 +48,35 @@ const MyProfile = ({ myInfo: initialMyInfo, isLoading = false }) => {
   // 상태, 예외 처리
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const [isMentorState, setIsMentorState] = useState(() => {
+    try {
+      // localStorage에서 값을 읽어 초기 상태로 설정
+      const storedValue = localStorage.getItem("isMentor");
+      // 문자열 "true"뿐만 아니라 다양한 형태의 true 값 처리
+      return storedValue === "true";
+    } catch (error) {
+      console.error("localStorage 접근 오류:", error);
+      return false; // 기본값
+    }
+  });
+
+  const cropTextRef = useRef(null);
+  const [showAboveTooltip, setShowAboveTooltip] = useState(true);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (cropTextRef.current) {
+        const rect = cropTextRef.current.getBoundingClientRect();
+        const windowHeight = window.innerHeight;
+        setShowAboveTooltip(rect.top > windowHeight / 2);
+      }
+    };
+
+    handleScroll(); // 초기 위치 설정
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   // 데이터에서 파생되는 값은 useMemo로 계산 (불필요한 재계산 방지)
   const birth = useMemo(() => {
     if (!myInfo?.birth) return { year: "", month: "", day: "" };
@@ -239,8 +268,6 @@ const MyProfile = ({ myInfo: initialMyInfo, isLoading = false }) => {
             gender,
           });
 
-          
-
           // 성공했다면 로컬 상태 업데이트
           if (myInfoResponse.success) {
             // UI에 즉시 반영하기 위해 상태 업데이트
@@ -251,8 +278,8 @@ const MyProfile = ({ myInfo: initialMyInfo, isLoading = false }) => {
               name: myInfoResponse.data.name,
               address: myInfoResponse.data.address,
               gender: myInfoResponse.data.gender,
-              profileImage: myInfoResponse.data.profileImage
-            };;
+              profileImage: myInfoResponse.data.profileImage,
+            };
             localStorage.setItem("user", JSON.stringify(userData));
             toast.success("회원 정보가 수정 되었습니다.");
           }
@@ -310,7 +337,7 @@ const MyProfile = ({ myInfo: initialMyInfo, isLoading = false }) => {
   if (isLoading || !myInfo) {
     return (
       <div className={containerStyle}>
-        <ProfileSkeleton />
+        <ProfileSkeleton isMentor={isMentorState} />
       </div>
     );
   }
@@ -367,17 +394,25 @@ const MyProfile = ({ myInfo: initialMyInfo, isLoading = false }) => {
           <div className="flex justify-between mb-1">
             <p className="text-md text-textColor-gray text-start">재배 작물</p>
             <div className="relative group">
-              {/* 최대 3개 작물만 표시하고 나머지는 +N개로 표시 */}
-              <p className="text-lg text-textColor-black text-end max-w-[200px] truncate">
+              {/* ref 속성 추가 */}
+              <p
+                ref={cropTextRef}
+                className="text-lg text-textColor-black text-end max-w-[200px] truncate"
+              >
                 {myInfo.cropNames.length <= 3
                   ? myInfo.cropNames.join(", ")
                   : `${myInfo.cropNames.slice(0, 3).join(", ")} +${
                       myInfo.cropNames.length - 3
                     }개`}
               </p>
-              {/* 호버 시 모든 작물 표시 */}
+              {/* 호버 시 모든 작물 표시 - 위치 조건부 변경 */}
               {myInfo.cropNames.length > 0 && (
-                <div className="absolute hidden group-hover:block right-0 bg-white shadow-md p-2 rounded-md z-10 min-w-[150px] max-w-[300px]">
+                <div
+                  className={`absolute hidden group-hover:block right-0 
+            ${showAboveTooltip ? "bottom-full mb-2" : "top-full mt-2"} 
+            bg-white shadow-md p-2 rounded-md z-10 
+            min-w-[150px] max-w-[300px]`}
+                >
                   <ul className="text-sm text-textColor-black whitespace-normal break-words">
                     {myInfo.cropNames.map((crop, index) => (
                       <li key={index} className="py-1">

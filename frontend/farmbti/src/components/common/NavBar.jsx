@@ -290,6 +290,7 @@ const handleLogout = async (e) => {
           localStorage.removeItem("refreshToken");
           localStorage.removeItem("tokenExpires");
           localStorage.removeItem("user");
+          localStorage.removeItem("isMentor");
           
           // 리덕스 스토어에서 로그아웃 액션 디스패치
           dispatch(logout());
@@ -317,6 +318,7 @@ const handleLogout = async (e) => {
       localStorage.removeItem("refreshToken");
       localStorage.removeItem("tokenExpires");
       localStorage.removeItem("user");
+      localStorage.removeItem("isMentor");
       
       dispatch(logout());
       

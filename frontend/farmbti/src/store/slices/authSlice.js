@@ -19,6 +19,7 @@ export const authSlice = createSlice({
       localStorage.removeItem('refreshToken');
       localStorage.removeItem('tokenExpires');
       localStorage.removeItem('user');
+      localStorage.removeItem("isMentor");
       
       state.isLoggedIn = false;
       state.user = null;

@@ -96,7 +96,7 @@ const EstateDetailPage = () => {
                       매매 가격
                     </span>
                     <h2 className="text-2xl font-bold text-green-800">
-                      {property.deposit.toLocaleString()} 만원
+                      {property.formattedDeposit}
                     </h2>
                   </div>
                   <div className="md:mb-0">
@@ -143,7 +143,7 @@ const EstateDetailPage = () => {
                     <div className="flex justify-between items-center py-2">
                       <span className="text-gray-600">매매 가격</span>
                       <span className="font-medium">
-                        {property.deposit.toLocaleString()} 만원
+                        {property.formattedDeposit}
                       </span>
                     </div>
 
