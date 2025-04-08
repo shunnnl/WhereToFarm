@@ -132,9 +132,9 @@ const TogetherSection = () => {
       <MentorRegistrationModal 
         isOpen={modalIsOpen} 
         onRequestClose={() => setModalIsOpen(false)} 
-        className="bg-white rounded-xl shadow-lg"
+        className="bg-white rounded-xl shadow-lg max-h-[90vh] flex flex-col"
         overlayClassName="fixed inset-0 flex items-center justify-center"      
-      />
+                              />
 
 
 
