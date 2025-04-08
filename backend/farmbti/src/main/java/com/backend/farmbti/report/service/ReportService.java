@@ -137,8 +137,12 @@ public class ReportService {
             }
 
             // 캐릭터 이미지의 Signed URL 생성
+            /*
             String characterImagePath = characterType.getImage();
             String characterImageUrl = s3Service.getSignedUrl(characterImagePath);
+
+             */
+            String characterImageUrl = characterType.getImage();
 
             // 3. 최종 응답 DTO 생성
             return ReportResponseDto.builder()
@@ -210,8 +214,12 @@ public class ReportService {
         CharacterType characterType = report.getCharacterType();
 
         // 캐릭터 이미지의 Signed URL 생성
+        String characterImageUrl = characterType.getImage();
+        /*
         String characterImagePath = characterType.getImage();
         String characterImageUrl = s3Service.getSignedUrl(characterImagePath);
+
+         */
 
         // 지역 결과 목록 구성
         List<ReportResponseDto.RegionResultDto> regionResults = report.getReportRegions().stream()
