@@ -51,7 +51,7 @@ const ProfileSkeleton = ({ isMentor }) => {
           >
             <div className="w-5 h-5"></div>
           </div>
-          <div className="h-4 bg-gray-200 rounded w-20"></div>
+          <div className="h-4 bg-gray-200 rounded w-20 mt-2"></div>
         </div>
 
         {/* 멘토 정보 수정 (멘토인 경우에만) */}
@@ -63,7 +63,7 @@ const ProfileSkeleton = ({ isMentor }) => {
           >
             <div className="w-5 h-5"></div>
           </div>
-            <div className="h-4 bg-gray-200 rounded w-20"></div>
+            <div className="h-4 bg-gray-200 rounded w-20 mt-2"></div>
           </div>
         )}
 
@@ -75,7 +75,7 @@ const ProfileSkeleton = ({ isMentor }) => {
           >
             <div className="w-5 h-5"></div>
           </div>
-          <div className="h-4 bg-gray-200 rounded w-20"></div>
+          <div className="h-4 bg-gray-200 rounded w-20 mt-2"></div>
         </div>
 
         {/* 비밀번호 수정 */}
@@ -86,7 +86,7 @@ const ProfileSkeleton = ({ isMentor }) => {
           >
             <div className="w-5 h-5"></div>
           </div>
-          <div className="h-4 bg-gray-200 rounded w-20"></div>
+          <div className="h-4 bg-gray-200 rounded w-20 mt-2"></div>
         </div>
       </div>
     </div>
