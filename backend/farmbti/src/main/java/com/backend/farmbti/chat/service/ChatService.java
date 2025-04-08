@@ -45,7 +45,7 @@ public class ChatService {
 
         //로그인한 사용자와 상대방이 있는 채팅이 있을 때 사용
         //우리는 멘티만 채팅을 걸 수 있다.
-        Optional<Chat> existingChat = chatRepository.findByMentee_IdAndMentor_Id(userId, chatRequest.getOtherId());
+        Optional<Chat> existingChat = chatRepository.findChatBetweenUsers(userId, chatRequest.getOtherId());
 
         Chat chat = existingChat.orElseGet(() -> {
 
