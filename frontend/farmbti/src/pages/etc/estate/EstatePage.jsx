@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useSearchParams, useLocation } from "react-router-dom";
 import PageHeader from "../../../components/common/PageHeader";
 import PropertyCard from "../../../components/etc/estate/PropertyCard";
@@ -14,13 +14,13 @@ const EstatePage = () => {
   const location = useLocation();
 
   // URL에서 필터 및 페이지 정보 가져오기
-  const getParamsFromUrl = () => {
+  const getParamsFromUrl = useCallback(() => {
     return {
       page: searchParams.get("page") ? parseInt(searchParams.get("page")) : 1,
       province: searchParams.get("province") || "",
       city: searchParams.get("city") || "",
     };
-  };
+  }, [searchParams]);
 
   const urlParams = getParamsFromUrl();
 
@@ -65,7 +65,7 @@ const EstatePage = () => {
       setFilterParams({ province: params.province, city: params.city });
       setIsFiltered(!!params.province);
     }
-  }, [location.search]);
+  }, [location.search, getParamsFromUrl, filterParams]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -95,84 +95,93 @@ const EstatePage = () => {
   }, [selectedProvince, selectedCity]);
 
   // 매물 데이터 가져오는 함수
-  const getProperties = async (page = 1) => {
-    setLoading(true);
-    setError(null);
+  const getProperties = useCallback(
+    async (page = 1) => {
+      setLoading(true);
+      setError(null);
 
-    try {
-      const response = await getAllEstate(page - 1, itemsPerPage);
-      setProperties(response.content);
-      setTotalItemsCount(response.totalElements);
-    } catch (error) {
-      handleError(error);
-      console.error("매물 데이터를 불러오는 중 오류가 발생했습니다:", error);
-      setError("매물 데이터를 불러오는 중 오류가 발생했습니다.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // 필터링 상태에서 페이지네이션 처리하는 함수
-  const getFilteredPropertiesWithPagination = async (page = 1) => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const response = await getFilteredEstate(
-        filterParams.province,
-        filterParams.city,
-        page - 1,
-        itemsPerPage
-      );
-
-      if (response.content && response.totalElements) {
+      try {
+        const response = await getAllEstate(page - 1, itemsPerPage);
         setProperties(response.content);
         setTotalItemsCount(response.totalElements);
-      } else {
-        setProperties(response);
-        setTotalItemsCount(response.length);
+      } catch (error) {
+        handleError(error);
+        console.error("매물 데이터를 불러오는 중 오류가 발생했습니다:", error);
+        setError("매물 데이터를 불러오는 중 오류가 발생했습니다.");
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      handleError(error);
-      // 에러 처리
-      console.error(
-        "필터링된 매물 데이터를 불러오는 중 오류가 발생했습니다:",
-        error
-      );
-      setError("필터링된 매물 데이터를 불러오는 중 오류가 발생했습니다.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [itemsPerPage]
+  );
+
+  // 필터링 상태에서 페이지네이션 처리하는 함수
+  const getFilteredPropertiesWithPagination = useCallback(
+    async (page = 1) => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const response = await getFilteredEstate(
+          filterParams.province,
+          filterParams.city,
+          page - 1,
+          itemsPerPage
+        );
+
+        if (response.content && response.totalElements) {
+          setProperties(response.content);
+          setTotalItemsCount(response.totalElements);
+        } else {
+          setProperties(response);
+          setTotalItemsCount(response.length);
+        }
+      } catch (error) {
+        handleError(error);
+        // 에러 처리
+        console.error(
+          "필터링된 매물 데이터를 불러오는 중 오류가 발생했습니다:",
+          error
+        );
+        setError("필터링된 매물 데이터를 불러오는 중 오류가 발생했습니다.");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [filterParams, itemsPerPage]
+  );
 
   // 페이지 변경 핸들러 - URL 쿼리 파라미터 업데이트
-  const handlePageChange = (pageNumber) => {
-    // 페이지 상단으로 스크롤
-    window.scrollTo({ top: 0, behavior: "smooth" });
+  const handlePageChange = useCallback(
+    (pageNumber) => {
+      // 페이지 상단으로 스크롤
+      window.scrollTo({ top: 0, behavior: "smooth" });
 
-    // URL 쿼리 파라미터 업데이트
-    const newParams = new URLSearchParams(searchParams);
-    newParams.set("page", pageNumber);
-    setSearchParams(newParams);
+      // URL 쿼리 파라미터 업데이트
+      const newParams = new URLSearchParams(searchParams);
+      newParams.set("page", pageNumber);
+      setSearchParams(newParams);
 
-    // 페이지 번호 상태 업데이트
-    setActivePage(pageNumber);
-  };
+      // 페이지 번호 상태 업데이트
+      setActivePage(pageNumber);
+    },
+    [searchParams, setSearchParams]
+  );
 
   // 도(province) 변경 핸들러
-  const handleProvinceChange = (e) => {
+  const handleProvinceChange = useCallback((e) => {
     const province = e.target.value;
     setSelectedProvince(province);
-  };
+  }, []);
 
   // 시/군/구(city) 변경 핸들러
-  const handleCityChange = (e) => {
+  const handleCityChange = useCallback((e) => {
     const city = e.target.value;
     setSelectedCity(city);
-  };
+  }, []);
 
   // 도/시 필터 적용 핸들러
-  const handleFilter = () => {
+  const handleFilter = useCallback(() => {
     // 새로운 필터 상태 설정
     const newFilterParams = {
       province: selectedProvince,
@@ -180,9 +189,12 @@ const EstatePage = () => {
     };
 
     // 이전 필터와 동일한지 확인
-    const isSameFilter =
+    if (
       prevFilterParams.current.province === newFilterParams.province &&
-      prevFilterParams.current.city === newFilterParams.city;
+      prevFilterParams.current.city === newFilterParams.city
+    ) {
+      return; // 필터 값이 변경되지 않았으면 함수 종료
+    }
 
     // URL 쿼리 파라미터 업데이트
     const newParams = new URLSearchParams();
@@ -191,28 +203,23 @@ const EstatePage = () => {
     // 도가 선택되었으면 필터링 모드로 전환
     if (selectedProvince) {
       setIsFiltered(true);
-      // 필터 참조값 업데이트
-      prevFilterParams.current = newFilterParams;
-
       // URL에 필터 파라미터 추가
       newParams.set("province", selectedProvince);
       if (selectedCity) {
         newParams.set("city", selectedCity);
       }
-
-      // 필터가 변경된 경우에만 새 API 요청 트리거
-      if (!isSameFilter) {
-        setFilterParams(newFilterParams); // 상태 업데이트로 useEffect 트리거
-      }
     } else {
       setIsFiltered(false);
-      prevFilterParams.current = { province: "", city: "" };
-      setFilterParams({ province: "", city: "" });
     }
+
+    // 필터 참조값 업데이트
+    prevFilterParams.current = newFilterParams;
+    // 필터 상태 업데이트
+    setFilterParams(newFilterParams);
 
     setSearchParams(newParams);
     setActivePage(1);
-  };
+  }, [selectedProvince, selectedCity, setSearchParams]);
 
   return (
     <div className="bg-gray-50 min-h-screen pb-12">
@@ -270,6 +277,10 @@ const EstatePage = () => {
             <button
               className="px-4 py-2 bg-primaryGreen text-white rounded hover:bg-primaryGreen/90 transition-colors"
               onClick={handleFilter}
+              disabled={
+                prevFilterParams.current.province === selectedProvince &&
+                prevFilterParams.current.city === selectedCity
+              }
             >
               필터 적용
             </button>
