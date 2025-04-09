@@ -104,6 +104,16 @@ useEffect(() => {
           } else if (response.data && response.data.success) {
             setChatRooms(response.data.data);
           }
+
+
+          // lastMessageTime 처리 (read 필드는 백엔드에서 제공)
+          const roomsWithTime = roomsData.map(room => ({
+            ...room,
+            lastMessageTime: room.lastMessageTime || new Date().toISOString()
+            // read 필드는 이미 백엔드에서 제공되므로 별도 처리 필요 없음
+          }));
+
+
         } catch (error) {
           console.error('채팅방 목록 조회 실패:', error);
         }
@@ -204,76 +214,64 @@ useEffect(() => {
 
 
 // 채팅방 목록 업데이트 처리 함수
+// 채팅방 목록 업데이트 처리 함수 수정
 const handleRoomsUpdate = (payload) => {
   try {
     const update = JSON.parse(payload.body);
     console.log('채팅방 업데이트 수신:', update);
-
-
-
     
     // 단일 채팅방 업데이트 처리
     if (update && update.type === "roomUpdate" && update.roomId) {
+      // 현재 활성화된 채팅방 ID 확인
+      const currentChatRoomId = localStorage.getItem('currentChatRoomId');
+      console.log(`비교: updateRoomId=${update.roomId}, currentRoomId=${currentChatRoomId}`);
+      
+      // 문자열로 변환하여 비교 (타입 불일치 방지)
+      const isSameRoom = String(update.roomId) === String(currentChatRoomId);
+      console.log(`isSameRoom=${isSameRoom}`);
+      
       setChatRooms(prevRooms => {
-        // 기존 목록에서 업데이트할 채팅방을 찾습니다
-        const updatedRoom = prevRooms.find(room => room.roomId === update.roomId);
-        const otherRooms = prevRooms.filter(room => room.roomId !== update.roomId);
+        // 기존 목록에서 업데이트할 채팅방을 찾음
+        const updatedRoom = prevRooms.find(room => String(room.roomId) === String(update.roomId));
+        const otherRooms = prevRooms.filter(room => String(room.roomId) !== String(update.roomId));
         
-        // 기존 채팅방 목록에 없는 새 roomId인 경우
+        // 1. 새 채팅방인 경우
         if (!updatedRoom) {
           console.log(`새 채팅방 ${update.roomId} 감지, 목록에 추가합니다`);
           
-          // sender 필드를 otherUserName으로 사용
           const newRoom = {
             roomId: update.roomId,
             lastMessage: update.lastMessage || "새 대화가 시작되었습니다",
             lastMessageTime: update.timestamp || new Date().toISOString(),
-            otherUserName: update.sender || "상대방", // sender 필드 활용
-            otherUserProfile: null // 프로필 이미지는 기본값 사용
+            otherUserName: update.sender || "상대방",
+            otherUserProfile: null,
+            read: false // 새 채팅방은 안읽음 상태로 시작
           };
           
           // 새 채팅방을 목록 맨 위에 추가
           return [newRoom, ...otherRooms];
         }
         
-        // 기존 채팅방인 경우 lastMessage 업데이트
+        // 2. 기존 채팅방인 경우
+        // 중요: 현재 채팅방이 아닌 다른 채팅방의 메시지는 무조건 읽지 않음 상태로 설정
+        const newReadStatus = isSameRoom ? true : false;
+        
+        if (!isSameRoom) {
+          console.log(`채팅방 ${update.roomId}에 새 메시지 알림 추가 (현재 활성 채팅방: ${currentChatRoomId})`);
+        }
+        
         const newUpdatedRoom = { 
           ...updatedRoom, 
           lastMessage: update.lastMessage,
-          lastMessageTime: update.timestamp || new Date().toISOString()
+          lastMessageTime: update.timestamp || new Date().toISOString(),
+          read: newReadStatus // 현재 채팅방이면 읽음, 아니면 안읽음
         };
+        
+        console.log(`채팅방 ${update.roomId} 업데이트 완료: ${update.lastMessage}, 읽음상태: ${newReadStatus}`);
         
         // 업데이트된 채팅방을 목록 최상단에 위치시키고 반환
         return [newUpdatedRoom, ...otherRooms];
       });
-      
-      
-      // 중요: 현재 활성화된 채팅방인지 확인하기 위한 ID 가져오기
-      const currentChatRoomId = localStorage.getItem('currentChatRoomId');
-      
-      // 타입 변환하여 비교
-      const updateRoomIdNum = Number(update.roomId);
-      const currentRoomIdNum = Number(currentChatRoomId);
-      
-      console.log(`비교: updateRoomIdNum=${updateRoomIdNum}, currentRoomIdNum=${currentRoomIdNum}, 동일여부=${updateRoomIdNum === currentRoomIdNum}`);
-      
-      // 중요: 조건문 로직 직접 확인
-      const isSameRoom = updateRoomIdNum === currentRoomIdNum;
-      console.log(`isSameRoom=${isSameRoom}`);
-      
-      if (isSameRoom) {
-        // 현재 활성화된 채팅방의 메시지는 알림 표시 안함
-        console.log(`현재 활성화된 채팅방(${currentChatRoomId})의 메시지, 알림 표시 안함`);
-      } else {
-        // 다른 채팅방의 메시지는 알림 표시
-        setUnreadMessages(prev => ({
-          ...prev,
-          [update.roomId]: (prev[update.roomId] || 0) + 1
-        }));
-        console.log(`채팅방 ${update.roomId}에 새 메시지 알림 추가 (현재 활성 채팅방: ${currentChatRoomId})`);
-      }
-      
-      console.log(`채팅방 ${update.roomId} 업데이트 완료: ${update.lastMessage}`);
     } else {
       console.warn('처리할 수 없는 채팅방 업데이트 형식:', update);
     }
@@ -281,7 +279,6 @@ const handleRoomsUpdate = (payload) => {
     console.error('채팅방 업데이트 처리 오류:', error);
   }
 };
-
 
 /* 텍스트 영역 자동 높이 조절을 위한 함수 */
 const adjustTextareaHeight = (element) => {
@@ -540,15 +537,20 @@ const onMessageReceived = (payload, currentRoomId) => {
     if (messageRoomId && messageRoomId !== currentRoomId) {
       console.log(`다른 채팅방 메시지(${messageRoomId}), 현재 채팅방(${currentRoomId})에서 무시`);
       
-      // 읽지 않은 메시지 카운트 증가
-      setUnreadMessages(prev => ({
-        ...prev,
-        [messageRoomId]: (prev[messageRoomId] || 0) + 1
-      }));
-      
-      // 채팅방 목록에서 해당 채팅방의 lastMessage 업데이트
-      updateChatRoomLastMessage(messageRoomId, receivedMessage.content || receivedMessage.message);
-      
+      // 다른 채팅방의 메시지는 '읽지 않음' 상태로 표시
+      setChatRooms(prev => {
+        return prev.map(room => {
+          if (room.roomId === messageRoomId) {
+            return { 
+              ...room, 
+              read: false,  // 중요: read 필드를 false로 설정
+              lastMessage: messageContent,
+              lastMessageTime: new Date().toISOString()
+            };
+          }
+          return room;
+        });
+      });
       
       return;
     }
@@ -610,17 +612,39 @@ const handleRoomSelect = (selectedRoomId) => {
 
   setRoomId(selectedRoomId);
 
-  // localStorage에 현재 채팅방 ID 저장 (즉시 적용)
+  // localStorage에 현재 채팅방 ID 저장
   localStorage.setItem('currentChatRoomId', selectedRoomId);
   console.log(`현재 채팅방 ID를 localStorage에 저장: ${selectedRoomId}`);
   
-  // 선택한 채팅방의 읽지 않은 메시지 카운트 초기화
-  setUnreadMessages(prev => ({
-    ...prev,
-    [selectedRoomId]: 0
-  }));
-  
-  // 채팅방 클릭 시에는 순서 변경하지 않음
+  // 채팅방 읽음 처리 요청 전송
+  if (stompClient.current && stompClient.current.connected) {
+    // 사용자 정보 가져오기
+    const userInfo = JSON.parse(localStorage.getItem('user') || '{}');
+    
+    console.log(`채팅방 ${selectedRoomId} 읽음 처리 요청 전송 중...`);
+    
+    // 백엔드 요청 형식에 맞게 데이터 구성
+    stompClient.current.publish({
+      destination: `/chat/${selectedRoomId}/enter`,
+      body: JSON.stringify({
+        senderId: userInfo.id,
+        senderName: userInfo.name,
+        senderProfile: userInfo.profileImage
+      })
+    });
+    
+    console.log(`채팅방 ${selectedRoomId} 읽음 처리 요청 완료`);
+    
+    // 서버 응답을 기다리지 않고 UI에서 먼저 읽음 상태로 표시 (UX 향상)
+    setChatRooms(prevRooms => {
+      return prevRooms.map(room => {
+        if (room.roomId === selectedRoomId) {
+          return { ...room, read: true };
+        }
+        return room;
+      });
+    });
+  }
 };
 
 
@@ -845,18 +869,17 @@ return (
                         <p className="font-bold truncate">{room.otherUserName}</p>
                         
                         {/* 읽지 않은 메시지 카운트 표시 */}
-                        {unreadMessages[room.roomId] > 0 && (
-                          <span className="ml-2 bg-green-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                            {unreadMessages[room.roomId] > 9 ? '9+' : unreadMessages[room.roomId]}
-                          </span>
-                        )}
+                        {room.read === false && (
+                            <span className="ml-2 bg-green-500 w-3 h-3 rounded-full flex-shrink-0"></span>
+                          )}
+
                       </div>
-                      <p className={`text-sm ${unreadMessages[room.roomId] > 0 ? 'font-bold text-gray-800' : 'text-gray-500'} truncate`}>
-                        {room.lastMessage 
-                          ? (room.lastMessage.length > 20 
-                            ? room.lastMessage.substring(0, 20) + '...' 
-                            : room.lastMessage)
-                          : "대화를 시작합니다"}
+                      <p className={`text-sm ${room.read === false ? 'font-bold text-gray-800' : 'text-gray-500'} truncate`}>
+                      {room.lastMessage 
+                        ? (room.lastMessage.length > 20 
+                          ? room.lastMessage.substring(0, 20) + '...' 
+                          : room.lastMessage)
+                        : "대화를 시작합니다"}
                       </p>
                     </div>
                   </div>
