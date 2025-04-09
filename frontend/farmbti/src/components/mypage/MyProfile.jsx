@@ -281,6 +281,7 @@ const MyProfile = ({ myInfo: initialMyInfo, isLoading = false }) => {
               profileImage: myInfoResponse.data.profileImage,
             };
             localStorage.setItem("user", JSON.stringify(userData));
+            localStorage.setItem("birth", myInfoFormData.data.year);
             toast.success("회원 정보가 수정 되었습니다.");
           }
           break;
