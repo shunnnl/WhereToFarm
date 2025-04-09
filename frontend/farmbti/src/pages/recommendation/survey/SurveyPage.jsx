@@ -103,7 +103,11 @@ const SurveyPage = () => {
   };
 
   if (isSubmitting) {
-    return <LoadingSpinner text="결과를 분석하는 중..." />;
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 z-[9999] flex items-center justify-center">
+        <LoadingSpinner text="결과를 분석하는 중..." />
+      </div>
+    );
   }
 
   return (
