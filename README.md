@@ -134,16 +134,18 @@ Infrastructure
 
 
 ## 🔍 시스템 아키텍처
-
+![image](/uploads/f3ea4e35631592b9352daf236f0cc041/image.png){width=792 height=497}
 
 
 ## 💾 ERD Diagram
 ![image](/uploads/c026cec944b592c293132a059f34db21/image.png){width=903 height=417}
 
 
-## 👥 우아한 자매들 (Team UHAHA Sisters)
+## 👥 우아한 자매들
 
-우아한 자매들은 프론트엔드 3명, 백엔드 2명, 인프라 1명명으로 구성된 팀입니다!
+우아한 자매들은 프론트엔드 3명, 백엔드 2명, 인프라 1명으로 구성된 팀입니다.
+
+
 
 👑Frontend Frontend Frontend 
 유진 (팀장) 하은 
