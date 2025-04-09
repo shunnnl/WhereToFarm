@@ -24,6 +24,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -142,8 +144,13 @@ public class ChatService {
 
 
     @Transactional
-    public List<ChatListResponse> getAllRooms(Long userId) {
+    public List<ChatResponse> getAllRooms(Long userId) {
         List<Chat> chats = chatRepository.findAllByMenteeIdOrMentorUserId(userId, userId);
+
+        // 현재 사용자 정보 가져오기
+        Users currentUser = usersRepository.findById(userId)
+                .orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
+        String currentUserName = currentUser.getName();
 
         return chats.stream()
                 .map(chat -> {
@@ -151,12 +158,12 @@ public class ChatService {
                     Long otherUserId = isUserMentee ? chat.getMentor().getUser().getId() : chat.getMentee().getId();
 
                     // 상대방 유저 찾기
-                    Users user = usersRepository.findById(otherUserId)
+                    Users otherUser = usersRepository.findById(otherUserId)
                             .orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
 
                     // 탈퇴한 유저면 null 리턴 (아래 filter에서 제거됨)
-                    if (user.getIsOut() == 1) {
-                        System.out.println(" 탈퇴한 유저" + user.getName());
+                    if (otherUser.getIsOut() == 1) {
+                        System.out.println(" 탈퇴한 유저" + otherUser.getName());
                         return null;
                     }
 
@@ -164,29 +171,29 @@ public class ChatService {
                             ? chat.getMentor().getUser().getName()
                             : chat.getMentee().getName();
 
-                    /*
-                    String otherUserProfile = isUserMentee
-                            ? chat.getMentor().getUser().getProfileImage()
-                            : chat.getMentee().getProfileImage();
-
-                     */
-                    Users otherUser = isUserMentee
+                    Users profileUser = isUserMentee
                             ? chat.getMentor().getUser()
                             : chat.getMentee();
 
                     ChatMessage latestMessageObj = chatMessageRepository.findTopByChat_RoomIdOrderBySendAtDesc(chat.getRoomId());
-                    String latestMessage = (latestMessageObj != null) ? latestMessageObj.getContent() : null;
 
-                    return ChatListResponse.builder()
+                    // 최신 메시지 시간 가져오기 (정렬에 사용)
+                    LocalDateTime lastMessageTime = (latestMessageObj != null) ? latestMessageObj.getSendAt() :
+                            chat.getCreatedAt(); // 메시지가 없으면 채팅방 생성 시간 사용
+
+                    return ChatResponse.builder()
                             .roomId(chat.getRoomId())
+                            .currentUserId(userId)
                             .otherUserId(otherUserId)
+                            .currentUserName(currentUserName)
                             .otherUserName(otherUserName)
-                            //.otherUserProfile(s3Service.getSignedUrl(otherUserProfile))
-                            .otherUserProfile(getProfileImageUrl(otherUser))
-                            .lastMessage(latestMessage)
+                            .otherUserProfile(getProfileImageUrl(profileUser))
+                            .isCurrentUserMentee(isUserMentee)
+                            .lastMessageTime(lastMessageTime)
                             .build();
                 })
                 .filter(Objects::nonNull)  // null 값 제거 (isOut=1이면 제외)
+                .sorted(Comparator.comparing(ChatResponse::getLastMessageTime).reversed()) // 최신 메시지 시간 기준 내림차순 정렬
                 .collect(Collectors.toList());
     }
 
