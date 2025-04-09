@@ -45,6 +45,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 .withSockJS();  // SockJS 지원 추가 (브라우저 호환성을 위해)
     }
 
+
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
         registration.interceptors(new ChannelInterceptor() {
@@ -68,9 +69,13 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                             String bearerToken = authorization.get(0).replace("Bearer ", "");
                             System.out.println("토큰: " + bearerToken.substring(0, Math.min(10, bearerToken.length())) + "...");
 
-                            String username = jwtTokenProvider.getName(bearerToken);
-                            System.out.println("토큰에서 추출한 사용자 이름: " + username);
-                            accessor.setUser(new UsernamePasswordAuthenticationToken(username, null, null));
+                            // 사용자 이름 대신 ID를 가져옴
+                            Long userId = jwtTokenProvider.getUserId(bearerToken); // 이 메소드 추가 필요
+                            System.out.println("토큰에서 추출한 사용자 ID: " + userId);
+
+                            // userId를 문자열로 변환하여 Principal로 설정
+                            accessor.setUser(new UsernamePasswordAuthenticationToken(
+                                    String.valueOf(userId), null, null));
                         }
                     }
                 }
