@@ -138,6 +138,7 @@ Infrastructure
 
 
 ## 💾 ERD Diagram
+![image](/uploads/c026cec944b592c293132a059f34db21/image.png){width=903 height=417}
 
 
 ## 👥 우아한 자매들 (Team UHAHA Sisters)
