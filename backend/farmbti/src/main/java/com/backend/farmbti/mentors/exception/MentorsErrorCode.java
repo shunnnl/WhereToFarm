@@ -18,7 +18,8 @@ public enum MentorsErrorCode implements ErrorCode {
     MENTOR_UPDATE_FAILED(500, "멘토 정보 수정 중 오류가 발생했습니다."),
     MENTOR_CROP_RELATION_FAILED(500, "멘토와 작물 관계 설정 중 오류가 발생했습니다."),
     MENTOR_CROP_VALIDATION_FAILED(400, "멘토의 작물 정보 검증에 실패했습니다."),
-    MENTOR_LOCATION_SEARCH_FAILED(500, "지역 기반 멘토 검색 중 오류가 발생했습니다.");
+    MENTOR_LOCATION_SEARCH_FAILED(500, "지역 기반 멘토 검색 중 오류가 발생했습니다."),
+    INVALID_FARMING_BIRTH(400,"생일보다 귀농 년도가 더 빠릅니다." );
 
     private final int status;
     private final String message;

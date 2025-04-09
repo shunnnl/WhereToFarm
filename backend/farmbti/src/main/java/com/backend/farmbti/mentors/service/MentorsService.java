@@ -15,6 +15,7 @@ import com.backend.farmbti.mentors.exception.MentorsCropsErrorCode;
 import com.backend.farmbti.mentors.exception.MentorsErrorCode;
 import com.backend.farmbti.mentors.repository.MentorsCropsRepository;
 import com.backend.farmbti.mentors.repository.MentorsRepository;
+import com.backend.farmbti.security.util.SecurityUtils;
 import com.backend.farmbti.users.dto.CurrentUserResponse;
 import com.backend.farmbti.users.exception.UsersErrorCode;
 import com.backend.farmbti.users.service.UsersService;
@@ -23,7 +24,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,6 +41,7 @@ public class MentorsService {
     private final MentorsCropsRepository mentorsCropsRepository;
     private final UsersService usersService;
     private final S3Service s3Service;
+    private final SecurityUtils securityUtils;
 
     /**
      * 멘토 등록
@@ -278,6 +282,22 @@ public class MentorsService {
         // 영농 경력 연수 검증
         if (request.getFarmingYears() == null) {
             throw new GlobalException(MentorsErrorCode.INVALID_FARMING_YEARS);
+        }
+
+        //선택한 영농 경력이 사용자 생일보다 빠르면 검증
+        int first4Digits = Integer.parseInt(Integer.toString(request.getFarmingYears()).substring(0, 4));
+
+        // 현재 사용자 정보 가져오기
+        Users currentUser = usersRepository.findById(securityUtils.getCurrentUsersId())
+                .orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
+
+        Date birthDate = currentUser.getBirth();
+        int year = birthDate.getYear() + 1900; // 1900을 더해서 실제 연도를 얻습니다
+
+        log.info("귀농년도 보다 내 나이가 더 적다!!!!!!!!");
+
+        if(first4Digits < year) {
+            throw new GlobalException(MentorsErrorCode.INVALID_FARMING_BIRTH);
         }
 
         // 작물 선택 검증
