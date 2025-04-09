@@ -170,6 +170,15 @@ public class ChatService {
                             ? chat.getMentor().getUser()
                             : chat.getMentee();
 
+                    // 안 읽은 메시지 수 확인
+                    Long unreadCount = chatMessageRepository.countByChat_RoomIdAndIsReadIsFalseAndSenderIdNot(
+                            chat.getRoomId(),
+                            userId  // 현재 사용자가 보낸 메시지가 아닌 것
+                    );
+
+                    boolean isRead = (unreadCount == 0);  // 안 읽은 메시지가 없으면 true
+
+
                     ChatMessage latestMessageObj = chatMessageRepository.findTopByChat_RoomIdOrderBySendAtDesc(chat.getRoomId());
                     String lastMessage = (latestMessageObj != null) ? latestMessageObj.getContent() : null;
 
@@ -184,6 +193,7 @@ public class ChatService {
                             .otherUserProfile(getProfileImageUrl(profileUser))
                             .lastMessage(lastMessage)
                             .lastMessageTime(lastMessageTime)
+                            .isRead(isRead)
                             .build();
                 })
                 .filter(Objects::nonNull)  // null 값 제거 (isOut=1이면 제외)

@@ -147,6 +147,7 @@ public class WebSocketController {
         readStatus.put("reader", currentUserName);
         readStatus.put("timestamp", LocalDateTime.now());
 
+
         // 상대방에게 읽음 상태 업데이트 알림 전송
         messagingTemplate.convertAndSendToUser(
                 receiverUsername,

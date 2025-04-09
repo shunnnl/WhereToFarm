@@ -14,4 +14,5 @@ public class ChatListResponse {
     private String otherUserProfile;
     private String lastMessage;
     private LocalDateTime lastMessageTime; // 정렬에 사용할 시간 정보
+    private boolean isRead;
 }
