@@ -931,16 +931,16 @@ return (
               
                 {/* 메시지들 */}
                 {messages.length > 0 ? (
-  messages.map((msg) => (
-    <div key={msg.id} className={`flex ${msg.isMe ? 'justify-end' : 'justify-start'}`}>
-      <div className="flex flex-col">
-        <div className="flex items-end mb-1">
-          {/* 내 메시지일 경우 시간이 왼쪽에 표시됨 */}
-          {msg.isMe && (
-            <span className="text-xs text-gray-500 mr-2 mb-1.5">
-              {msg.time}
-            </span>
-          )}
+                    messages.map((msg) => (
+                      <div key={msg.id} className={`flex ${msg.isMe ? 'justify-end' : 'justify-start'}`}>
+                        <div className="flex flex-col">
+                          <div className="flex items-end mb-1">
+                            {/* 내 메시지일 경우 시간이 왼쪽에 표시됨 */}
+                            {msg.isMe && (
+                              <span className="text-xs text-gray-500 mr-2 mb-1.5">
+                                {msg.time}
+                              </span>
+                            )}
           
                 {/* 메시지 버블 */}
                 <div 
@@ -992,44 +992,51 @@ return (
 
           {/* 메시지 입력 영역 */}
           <div className="bg-white p-4 border-t">
-            <div className="flex items-center">
-              <div className="flex-1 relative">
-              <textarea
-                ref={textareaRef}
-                className="w-full border rounded-lg py-2 px-4 pr-12 resize-none"
-                placeholder="메시지를 입력해주세요. (최대 1000자)"
-                rows={1}
-                style={{ 
-                  whiteSpace: 'pre-wrap',
-                  wordBreak: 'break-all',        // 모든 문자에서 줄바꿈 허용
-                  wordWrap: 'break-word',        // 단어 내에서도 줄바꿈 허용
-                  overflowWrap: 'break-word',    // 길이가 긴 단어도 적절히 줄바꿈
-                  hyphens: 'auto',               // 가능한 경우 하이픈 추가
-                                minHeight: '40px',
-                  maxHeight: '120px',
-                  overflow: 'auto',
-                  lineHeight: '1.5',
-                  display: 'block',
-                  width: '100%'
-                }}
-                value={message}
-                onChange={handleMessageChange}
-                onKeyPress={handleKeyPress}
-              />
-                <span className="absolute right-3 bottom-2 text-gray-400 text-sm">
-                  {message.length}/{MAX_CHAR_LIMIT}
-                </span>
+              <div className="flex flex-col">
+                <div className="flex items-center">
+                  <div className="flex-1">
+                    <textarea
+                      ref={textareaRef}
+                      className="w-full border rounded-lg py-2 px-4 resize-none"
+                      placeholder="메시지를 입력해주세요. (최대 1000자)"
+                      rows={1}
+                      style={{ 
+                        whiteSpace: 'pre-wrap',
+                        wordBreak: 'break-all',        // 모든 문자에서 줄바꿈 허용
+                        wordWrap: 'break-word',        // 단어 내에서도 줄바꿈 허용
+                        overflowWrap: 'break-word',    // 길이가 긴 단어도 적절히 줄바꿈
+                        hyphens: 'auto',               // 가능한 경우 하이픈 추가
+                        minHeight: '40px',
+                        maxHeight: '120px',
+                        overflow: 'auto',
+                        lineHeight: '1.5',
+                        display: 'block',
+                        width: '100%'
+                      }}
+                      value={message}
+                      onChange={handleMessageChange}
+                      onKeyPress={handleKeyPress}
+                    />
+                  </div>
+                  <button 
+                    className={`ml-2 p-2 rounded-full ${message.trim() ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-400'}`}
+                    onClick={handleSendMessage}
+                    disabled={!message.trim() || !connected}
+                  >
+                    전송
+                  </button>
+                </div>
+                {/* 글자 수 카운터를 텍스트 영역 아래에 배치 */}
+                <div className="flex justify-end mt-1">
+                  <span className="text-gray-400 text-sm">
+                    {message.length}/{MAX_CHAR_LIMIT}
+                  </span>
+                </div>
               </div>
-              <button 
-                className={`ml-2 p-2 rounded-full ${message.trim() ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-400'}`}
-                onClick={handleSendMessage}
-                disabled={!message.trim() || !connected}
-              >
-                전송
-              </button>
-            </div>
-          </div>
-        </>
+            </div>        
+
+
+    </>
       ) : (
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center p-8">
