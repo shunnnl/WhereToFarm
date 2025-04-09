@@ -156,6 +156,35 @@ public class WebSocketController {
         );
     }
 
+    /**
+     * 알림 클릭 시 메시지 읽음 처리를 위한 메소드
+     * @param roomId 채팅방 ID
+     * @param messageRequest 읽음 처리 요청 정보
+     */
+    @MessageMapping("/{roomId}/alarm-click")
+    public void handleNotificationClick(@DestinationVariable Long roomId, MessageRequest messageRequest) {
+        Long userId = messageRequest.getSenderId();
+        String currentUserName = messageRequest.getSenderName();
+
+        // 메시지 읽음 처리 서비스 호출
+        webSocketService.markMessagesAsRead(roomId, userId);
+
+        // 읽음 상태 업데이트 알림 구성
+        String receiverUsername = webSocketService.getRecevierName(roomId, currentUserName);
+        Map<String, Object> readStatus = new HashMap<>();
+        readStatus.put("type", "readStatus");
+        readStatus.put("roomId", roomId);
+        readStatus.put("reader", currentUserName);
+        readStatus.put("timestamp", LocalDateTime.now());
+
+        // 상대방에게 읽음 상태 업데이트 알림 전송
+        messagingTemplate.convertAndSendToUser(
+                receiverUsername,
+                "/queue/read-status",
+                readStatus
+        );
+    }
+
 
 
 
