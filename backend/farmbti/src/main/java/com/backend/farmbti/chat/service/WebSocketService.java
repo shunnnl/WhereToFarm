@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -120,31 +121,40 @@ public class WebSocketService {
     }
 
 
-    /**
-     * 채팅방에 속한 모든 사용자 이름을 조회하는 메소드
-     * @param roomId 채팅방 ID
-     * @return 채팅방 참가자 이름 목록
-     */
-    @Transactional(readOnly = true)
-    public List<String> getRoomUsernames(Long roomId) {
-        // 채팅방 조회
-        Chat chatRoom = chatRepository.findById(roomId)
-                .orElseThrow(() -> new GlobalException(ChatErrorCode.CHAT_ROOM_NOT_FOUND));
-
-        // 멘토 이름 조회
-        String mentorName = chatRoom.getMentor().getUser().getName();
-
-        // 멘티 이름 조회
-        Users mentee = usersRepository.findById(chatRoom.getMentee().getId())
-                .orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
-        String menteeName = mentee.getName();
-
-        // 참가자 이름 목록 반환
-        return List.of(mentorName, menteeName);
-    }
-
     @Transactional
     public void markMessagesAsRead(Long roomId, Long userId) {
         chatMessageRepository.markMessagesAsRead(roomId, userId);
+    }
+
+
+    // 새로 추가된 메소드: 채팅방 사용자 ID 목록 가져오기
+    @Transactional
+    public List<Long> getRoomUserIds(Long roomId) {
+        Chat chatRoom = chatRepository.findById(roomId)
+                .orElseThrow(() -> new GlobalException(ChatErrorCode.CHAT_ROOM_NOT_FOUND));
+
+        List<Long> userIds = new ArrayList<>();
+        userIds.add(chatRoom.getMentor().getUser().getId());
+        userIds.add(chatRoom.getMentee().getId());
+
+        return userIds;
+    }
+
+
+    @Transactional
+    public Long getReceiverId(Long roomId, Long currentUserId) {
+        Chat chatRoom = chatRepository.findById(roomId)
+                .orElseThrow(() -> new GlobalException(ChatErrorCode.CHAT_ROOM_NOT_FOUND));
+
+        // 채팅방에서 멘토와 멘티 ID 가져오기
+        Long mentorId = chatRoom.getMentor().getUser().getId();
+        Long menteeId = chatRoom.getMentee().getId();
+
+        // 보낸 사람이 멘토면 멘티에게, 멘티면 멘토에게
+        if (currentUserId.equals(mentorId)) {
+            return menteeId;
+        } else {
+            return mentorId;
+        }
     }
 }

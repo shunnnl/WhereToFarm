@@ -4,7 +4,6 @@ import com.backend.farmbti.chat.dto.MessageRequest;
 import com.backend.farmbti.chat.dto.MessageResponse;
 import com.backend.farmbti.chat.exception.ChatErrorCode;
 import com.backend.farmbti.chat.service.WebSocketService;
-import com.backend.farmbti.common.dto.CommonResponseDto;
 import com.backend.farmbti.common.exception.GlobalException;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -50,18 +49,25 @@ public class WebSocketController {
         System.out.println("보내는 사람: " + currentUserName);
         System.out.println("받는 사람: " + receiverUsername);
 
-        //알림 발송 로직
+
+
+        // 사용자 이름 대신 ID를 가져오는 메소드를 사용해야 함
+        Long senderId = messageRequest.getSenderId();
+
+        // 이 부분을 수정: getRecevierName 대신 getReceiverId 메소드 필요
+        Long receiverId = webSocketService.getReceiverId(roomId, senderId);
+
+        // 알림 발송 로직
         Map<String, Object> notification = new HashMap<>();
-        notification.put("sender", currentUserName); //보낸사람
+        notification.put("sender", currentUserName);
+        notification.put("senderId", senderId); // ID도 함께 전송
         notification.put("timestamp", messageResponse.getSentAt());
         notification.put("roomId", roomId);
 
-        // 메시지를 받는 사람에게 알림 전송
-        // 전송 시도 후
+        // 이 부분을 수정: 사용자 이름 대신 ID로 전송
         try {
-            System.out.println("receiverUsername: [" + receiverUsername + "]"); // 이름에 공백이나 특수문자가 있는지 확인
             messagingTemplate.convertAndSendToUser(
-                    receiverUsername,
+                    String.valueOf(receiverId), // ID를 문자열로 변환
                     "/queue/notifications",
                     notification
             );
@@ -71,28 +77,28 @@ public class WebSocketController {
             e.printStackTrace();
         }
 
-
-
         // 채팅방 목록 업데이트를 위한 알림 전송 (모든 참가자에게)
-        List<String> roomUsers = webSocketService.getRoomUsernames(roomId);
-        for (String roomUser : roomUsers) {
-            if (!roomUser.equals(currentUserName)) {  // 발신자는 제외
+        List<Long> roomUserIds = webSocketService.getRoomUserIds(roomId);
+        for (Long roomUserId : roomUserIds) {
+            if (!roomUserId.equals(messageRequest.getSenderId())) {  // 발신자는 제외
                 // 채팅 목록 업데이트용 알림 데이터 구성
                 Map<String, Object> listUpdate = new HashMap<>();
                 listUpdate.put("type", "roomUpdate");
                 listUpdate.put("roomId", roomId);
                 listUpdate.put("lastMessage", messageRequest.getMessage());
                 listUpdate.put("sender", currentUserName);
+                listUpdate.put("senderId", messageRequest.getSenderId());
                 listUpdate.put("timestamp", messageResponse.getSentAt());
                 listUpdate.put("senderProfile", messageRequest.getSenderProfile());
                 // 채팅 목록 업데이트 알림 전송
                 messagingTemplate.convertAndSendToUser(
-                        roomUser,
-                        "/queue/room-updates",             // 채팅방 목록 업데이트용 채널
+                        String.valueOf(roomUserId), // ID를 문자열로 변환
+                        "/queue/room-updates",
                         listUpdate
                 );
             }
         }
+
 
         return messageResponse;
     }
