@@ -144,13 +144,8 @@ public class ChatService {
 
 
     @Transactional
-    public List<ChatResponse> getAllRooms(Long userId) {
+    public List<ChatListResponse> getAllRooms(Long userId) {
         List<Chat> chats = chatRepository.findAllByMenteeIdOrMentorUserId(userId, userId);
-
-        // 현재 사용자 정보 가져오기
-        Users currentUser = usersRepository.findById(userId)
-                .orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
-        String currentUserName = currentUser.getName();
 
         return chats.stream()
                 .map(chat -> {
@@ -176,24 +171,23 @@ public class ChatService {
                             : chat.getMentee();
 
                     ChatMessage latestMessageObj = chatMessageRepository.findTopByChat_RoomIdOrderBySendAtDesc(chat.getRoomId());
+                    String lastMessage = (latestMessageObj != null) ? latestMessageObj.getContent() : null;
 
                     // 최신 메시지 시간 가져오기 (정렬에 사용)
                     LocalDateTime lastMessageTime = (latestMessageObj != null) ? latestMessageObj.getSendAt() :
                             chat.getCreatedAt(); // 메시지가 없으면 채팅방 생성 시간 사용
 
-                    return ChatResponse.builder()
+                    return ChatListResponse.builder()
                             .roomId(chat.getRoomId())
-                            .currentUserId(userId)
                             .otherUserId(otherUserId)
-                            .currentUserName(currentUserName)
                             .otherUserName(otherUserName)
                             .otherUserProfile(getProfileImageUrl(profileUser))
-                            .isCurrentUserMentee(isUserMentee)
+                            .lastMessage(lastMessage)
                             .lastMessageTime(lastMessageTime)
                             .build();
                 })
                 .filter(Objects::nonNull)  // null 값 제거 (isOut=1이면 제외)
-                .sorted(Comparator.comparing(ChatResponse::getLastMessageTime).reversed()) // 최신 메시지 시간 기준 내림차순 정렬
+                .sorted(Comparator.comparing(ChatListResponse::getLastMessageTime).reversed()) // 최신 메시지 시간 기준 내림차순 정렬
                 .collect(Collectors.toList());
     }
 
