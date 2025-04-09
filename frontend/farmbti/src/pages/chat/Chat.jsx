@@ -610,13 +610,24 @@ const updateChatRoomLastMessage = (roomId, lastMessage) => {
 const handleRoomSelect = (selectedRoomId) => {
   const previousRoomId = roomId;
 
+  // 1. 먼저 UI에서 읽음 상태로 표시 (서버 응답을 기다리지 않음)
+  setChatRooms(prevRooms => {
+    return prevRooms.map(room => {
+      if (room.roomId === selectedRoomId) {
+        return { ...room, read: true };
+      }
+      return room;
+    });
+  });
+  
+  // 2. 이후 채팅방 ID 상태 업데이트
   setRoomId(selectedRoomId);
 
-  // localStorage에 현재 채팅방 ID 저장
+  // 3. localStorage에 현재 채팅방 ID 저장
   localStorage.setItem('currentChatRoomId', selectedRoomId);
   console.log(`현재 채팅방 ID를 localStorage에 저장: ${selectedRoomId}`);
   
-  // 채팅방 읽음 처리 요청 전송
+  // 4. 읽음 처리 요청 전송 (백그라운드에서 진행)
   if (stompClient.current && stompClient.current.connected) {
     // 사용자 정보 가져오기
     const userInfo = JSON.parse(localStorage.getItem('user') || '{}');
@@ -634,19 +645,8 @@ const handleRoomSelect = (selectedRoomId) => {
     });
     
     console.log(`채팅방 ${selectedRoomId} 읽음 처리 요청 완료`);
-    
-    // 서버 응답을 기다리지 않고 UI에서 먼저 읽음 상태로 표시 (UX 향상)
-    setChatRooms(prevRooms => {
-      return prevRooms.map(room => {
-        if (room.roomId === selectedRoomId) {
-          return { ...room, read: true };
-        }
-        return room;
-      });
-    });
   }
 };
-
 
 
 
