@@ -1,14 +1,11 @@
 
-# 우아한 자매들의 귀농 프로젝트 🌽🫛 - 어디가농? (Where to Farm)
-
+# 어디가농? 🌽
 
 > **"데이터 기반 맞춤형 귀농 지역 추천 서비스"**  
 우아한 자매들이 만드는 스마트한 귀농 가이드 🚜✨  
 
-🔗 어디가농? 바로가기 
-📽️ 시연 영상 바로가기 
-📝 회의록 보기
-🗂️ 서비스 둘러보기
+📽️ [시연 영상 바로가기](https://drive.google.com/file/d/1nhuQVSqwYE_Bl4Ter0TAZ4RBhGhQi_vt/view) 
+📝 [회의록 보기](https://romantic-blanket-13b.notion.site/1a59cee601788005bacec26dd6a81df2?pvs=4)
 
 
 ## 목차
@@ -33,14 +30,15 @@
 
 ## 👥 팀 소개 및 역할
 
-### ⏰ 개발 기간
+### ⏰ 개발 기간 (6주)
 2025.03.03 ~ 2025.03.14 (2주) 기획, 설계
+<br>
 2025.04.15 ~ 2025.04.11 (4주) 개발
 
 ### 💡 기획 배경
 
-귀농을 고려하는 사람들은 지역 선택에 많은 어려움을 느낍니다. 환경, 비용, 인프라 등 다양한 요소를 고려해야 하지만, 이러한 정보를 종합적으로 제공하는 서비스가 부족합니다.
-또한 귀농 후 실패율이 높은 이유 중 하나는 충분한 정보와 준비 없이 결정하는 경우가 많기 때문입니다. 귀농 희망자가 더 현명한 선택을 할 수 있도록 데이터에 기반한 맞춤형 추천과 경험자와의 소통 기능을 결합한 서비스를 기획했습니다.
+귀농을 고려하는 사람들은 지역 선택에 많은 어려움을 느낍니다. <br>환경, 비용, 인프라 등 다양한 요소를 고려해야 하지만, 이러한 정보를 종합적으로 제공하는 서비스가 부족합니다.<br>
+또한 귀농 후 실패율이 높은 이유 중 하나는 충분한 정보와 준비 없이 결정하는 경우가 많기 때문입니다. <br>귀농 희망자가 더 현명한 선택을 할 수 있도록 데이터에 기반한 맞춤형 추천과 경험자와의 소통 기능을 결합한 서비스를 기획했습니다.
 
 
 ### 🎯 목표 및 주요 기능
@@ -60,7 +58,7 @@
 
 서비스의 주요 기능들을 소개합니다.
 
-### ✅ 메인
+#### ✅ 메인
 
 메인화면에서 모든 서비스를 이용할 수 있음 
 
@@ -68,77 +66,91 @@
 ![image](/uploads/9a41466e94dc97a3bdce77ae49947404/image.png){width=2136 height=975}
 ![image](/uploads/66f1f6d47409f2439d1ec4a90f4881b9/image.png){width=2126 height=883}
 
-### ✅ 회원가입
+#### ✅ 회원가입
 
-이메일과 비밀번호로 회원가입 제공
+이메일과 비밀번호로 회원가입
 
+![image](/uploads/4c1317059de606343e7b2e02608ab081/image.png){width=1377 height=1038}
 
-
-✅ 맞춤형 지역 추천
-
-사용자의 우선순위(환경, 교통, 인프라, 생활비 등)에 따른 개인화된 지역 추천
-직관적인 시각화로 지역별 점수와 장단점 비교 제공
-
-✅ 인터랙티브 지도
-
-전국 시/군/구 단위 지역 데이터를 한눈에 볼 수 있는 시각화 지도
-다양한 필터링 옵션(농작물 적합도, 인프라 분포, 평균 지가 등)
-
-✅ 지역 상세 정보
-
-선택한 지역의 상세 데이터(기후, 토양, 인구, 인프라, 지원 정책 등) 제공
-최근 5년간의 데이터 트렌드 분석 및 예측 정보 제공
-
-✅ 농작물 정보
-
-지역별 특화 작물 정보 및 재배 조건, 수익성 분석
-기후변화에 따른 작물 적합도 변화 예측 데이터 제공
-
-✅ 멘토-멘티 매칭
-
-귀농 경험자(멘토)와 예비 귀농인(멘티) 연결 시스템
-지역, 작물, 경력 등을 고려한 맞춤형 멘토 추천
-
-✅ 실시간 채팅
-
-멘토와 멘티 간 실시간 소통을 위한 1:1 채팅 기능
-채팅 내역 저장 및 자주 묻는 질문 템플릿 제공
+#### ✅ 설문조사
 
 
-✅ 맞춤형 알림 서비스
+맞춤형 리포트를 제공받기 위한 설문조사 
+
+![image](/uploads/c8795bf729c2cc813dd44c6cc5acb176/image.png){width=1424 height=1014}
+![image](/uploads/b32bca384034555c15e3002bf895012b/image.png){width=1275 height=582}
 
 
-관심 지역의 정책, 지원사업, 날씨 변화 등 맞춤 알림 제공
-멘토 답변 및 커뮤니티 활동 알림 기능
+#### ✅ 지역 추천 리포트 
+
+사용자가 한 설문조사를 기반으로 우선순위(환경, 교통, 인프라, 생활)에 따른 개인화된 지역 추천
+
+![image](/uploads/8715edbef3b6ea7ff88d39a9ef02b6b2/image.png){width=1422 height=1131}
+![image](/uploads/6a311e986ee41ada564f7cbfecdff4f8/image.png){width=1422 height=1131}
 
 
-✅ 마이페이지
+#### ✅ 마이페이지 
 
-저장한 지역 정보, 분석 결과, 멘토링 이력 등 관리
-개인 맞춤 귀농 계획 수립 및 체크리스트 제공
+제공된 귀농 리포트, 예상 수익 리포트 조회 
+회원 정보 수정 및 정보 조회 
+
+![image](/uploads/52e7c52a2ae001f935ce4030f04b4b86/image.png){width=1212 height=830}
+![image](/uploads/9abb4ac39fd8a2c275ef5cf7bfb33e9b/image.png){width=1220 height=824}
+
+#### ✅ 멘토 & 멘티 
+
+지도에서 지역 선택 후 멘토 조회
+
+![image](/uploads/54a31863bd63794bc833f163d532a482/image.png){width=792 height=919}
+![image](/uploads/007f5ae1f737596cb96da0ad0cc5fe7a/image.png){width=792 height=919}
+
+
+#### ✅ 실시간 채팅
+
+실시간 채팅과 실시간 알림 조회 
+
+![image](/uploads/a35f5b02f283d4368a2e1836198da99d/image.png){width=1326 height=1125}
+![image](/uploads/1fb6af7ad2f4373a09e587e8053ba9fc/image.png){width=1387 height=450}
+
+#### ✅ 멘토 등록
+
+회원가입한 멘티는 멘토로 등록 가능 
+
+![image](/uploads/018e15a35c26decff0553def661965cd/image.png){width=1142 height=896}
+
+#### ✅ 뉴스
+
+Naver API로 실시간 뉴스 조회 
+
+![image](/uploads/4b133502ec665d5914f1fb001762ccf7/image.png){width=1362 height=1070}
+
+
+#### ✅ 지원 정책 
+
+웹 크롤링으로 데이터 수집 후 지역별 지원 정책 조회
+
+![image](/uploads/a51f3ec0f03d1a1717baaadad2655cab/image.png){width=1364 height=1109}
+![image](/uploads/fb243842c71b8be1fd121edbd8b1ffb4/image.png){width=1308 height=815}
+
 
 ## 📢 기술 스택 소개
 
-Frontend
+#### Hadoop & Spark
+
+#### Frontend
 
 
-Backend
+#### Backend
 
 
-
-Data Processing & ML
-
+#### Data Processing & ML
 
 
-Build & Deployment
+#### Build & Deployment
 
+#### Database & Cache
 
-
-Database & Cache
-
-
-
-Infrastructure
+#### Infrastructure
 
 
 ## 🔍 시스템 아키텍처
