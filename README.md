@@ -60,7 +60,11 @@
 
 서비스의 주요 기능들을 소개합니다.
 
-✅ 메인인
+✅ 메인
+
+![image](/uploads/03a9b270aada745ab15c17af36628163/image.png){width=2137 height=1146}
+![image](/uploads/9a41466e94dc97a3bdce77ae49947404/image.png){width=2136 height=975}
+![image](/uploads/66f1f6d47409f2439d1ec4a90f4881b9/image.png){width=2126 height=883}
 
 ✅ 회원가입
 
