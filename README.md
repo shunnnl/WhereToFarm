@@ -103,120 +103,80 @@
 멘토와 멘티 간 실시간 소통을 위한 1:1 채팅 기능
 채팅 내역 저장 및 자주 묻는 질문 템플릿 제공
 
-✅ 커뮤니티 게시판
-
-지역별/주제별 정보 공유 및 질의응답 게시판
-성공/실패 사례 공유를 통한 실질적인 정보 교환
 
 ✅ 맞춤형 알림 서비스
 
+
 관심 지역의 정책, 지원사업, 날씨 변화 등 맞춤 알림 제공
 멘토 답변 및 커뮤니티 활동 알림 기능
+
 
 ✅ 마이페이지
 
 저장한 지역 정보, 분석 결과, 멘토링 이력 등 관리
 개인 맞춤 귀농 계획 수립 및 체크리스트 제공
 
-📢 기술 스택 소개
+## 📢 기술 스택 소개
+
 Frontend
 
-React
-TypeScript
-Redux Toolkit
-Styled Components
-D3.js / Chart.js
-Mapbox GL JS
-Socket.io-client
-AWS Amplify
 
 Backend
 
-Java Spring Boot
-Python (데이터 분석)
-Node.js (채팅 서버)
-MySQL
-MongoDB
-Redis
-Flask (ML 모델 서빙)
+
 
 Data Processing & ML
 
-Pandas, NumPy
-Scikit-learn
-TensorFlow
-GeoPandas
-QGIS
+
 
 Build & Deployment
 
-Docker
-Jenkins
-AWS EC2
-AWS S3
-AWS CloudFront
-Nginx
+
 
 Database & Cache
 
-MySQL
-MongoDB
-Redis
+
 
 Infrastructure
 
-AWS (EC2, S3, RDS, ElastiCache)
-GCP (ML 모델 호스팅)
 
-🔍 시스템 아키텍처
-[시스템 아키텍처 다이어그램 위치]
-💾 ERD Diagram
-[ERD 다이어그램 위치]
-👥 우아한 자매들 (Team UHAHA Sisters)
-우아한 자매들은 프론트엔드 3명, 백엔드 3명으로 구성된 팀입니다!
-👑Frontend Frontend Frontend 👑Backend Backend Backend
-유진 (팀장) 하은 가희 윤아 (팀장) 혜림 아람
-👥 팀원 별 역할
-FrontEnd Developer
-🧑‍💻 유진 - 프론트 팀장
+## 🔍 시스템 아키텍처
 
-전체 UI/UX 디자인 및 프로토타입 설계
-인터랙티브 지도 구현 (Mapbox GL JS, D3.js 활용)
-데이터 시각화 대시보드 개발
-프론트엔드 아키텍처 설계 및 코드 최적화
 
-🧑‍💻 하은
 
-반응형 웹 디자인 및 모바일 최적화
-멘토-멘티 매칭 시스템 UI 구현
-실시간 채팅 기능 (Socket.io 활용)
-성능 최적화 및 애니메이션 효과 구현
+## 💾 ERD Diagram
 
-🧑‍💻 가희
 
-온보딩 페이지 및 회원 관리 기능 구현
-커뮤니티 게시판 UI 및 기능 개발
-데이터 차트 및 그래프 시각화 (Chart.js 활용)
-사용자 맞춤 추천 결과 페이지 구현
+## 👥 우아한 자매들 (Team UHAHA Sisters)
 
-BackEnd Developer
-🧑‍💻 윤아 - 백엔드 팀장
+우아한 자매들은 프론트엔드 3명, 백엔드 2명, 인프라 1명명으로 구성된 팀입니다!
 
-백엔드 아키텍처 설계 및 API 개발
-데이터 파이프라인 구축 및 관리
-추천 알고리즘 개발 및 최적화
-인프라 구축 및 배포 자동화 시스템 관리
+👑Frontend Frontend Frontend 
+유진 (팀장) 하은 
 
-🧑‍💻 혜림
+👑Backend Backend Backend
+가희 윤아 (팀장) 혜림 아람
 
-공공데이터 수집 및 전처리 파이프라인 구축
-GIS 데이터 분석 및 시각화 API 개발
-지역 데이터 분석 및 머신러닝 모델 개발
-데이터베이스 설계 및 쿼리 최적화
+## 👥 팀원 별 역할
+### FrontEnd Developer
 
-🧑‍💻 아람
+🧑‍💻 순화
 
-실시간 채팅 서버 구현 (Node.js, Socket.io)
-사용자 인증 및 권한 관리 시스템 개발
-알림 서비스 구현 (WebSocket, FCM)
-CI/CD 파이프라인 구축 및 인프라 관리
+🧑‍💻 가영
+
+
+🧑‍💻 미연
+
+
+### BackEnd Developer
+
+🧑‍💻 수비
+
+
+
+🧑‍💻 나금
+
+
+
+🧑‍💻 시윤 
+
