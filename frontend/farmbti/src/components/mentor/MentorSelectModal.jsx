@@ -78,18 +78,19 @@ const MentorSelectModal = ({ isOpen, onClose, mentor }) => {
     <Modal
       isOpen={isOpen}
       onRequestClose={onClose}
-      className="bg-white p-6 rounded-xl shadow-md max-w-4xl w-full mx-auto "
+      className="bg-white p-6 rounded-xl shadow-md max-w-4xl w-full mx-auto relative"
       overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]"
       contentLabel="멘토 프로필 상세 정보"
       shouldReturnFocusAfterClose={false}
-
+      shouldCloseOnOverlayClick={false} // 백드롭 클릭으로 닫히지 않도록 설정
     >
       <div className="mentor-modal w-full">
         {/* 닫기 버튼 */}
-        <div className="absolute top-4 right-4">
+        <div className="absolute top-4 right-4" style={{ zIndex: 10 }}>
           <button 
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 text-xl"
+            className="w-10 h-10 flex items-center justify-center text-2xl"
+            aria-label="모달 닫기"
           >
             ✕
           </button>
@@ -122,7 +123,7 @@ const MentorSelectModal = ({ isOpen, onClose, mentor }) => {
             onClick={handleCreateChat}
             disabled={isLoading}
             className={`px-8 py-3 bg-green-600 text-white rounded hover:bg-green-700 flex items-center justify-center ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
-            >
+          >
             {isLoading ? (
               <span>연결 중...</span>
             ) : (
