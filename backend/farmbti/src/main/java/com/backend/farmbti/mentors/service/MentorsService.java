@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -222,10 +223,11 @@ public class MentorsService {
                 mentors = mentorsRepository.findByUser_AddressContaining(searchTerm);
             }
 
-            // 탈퇴하지 않은 사용자의 멘토만 필터링
+            // 탈퇴하지 않은 사용자의 멘토만 필터링 및 mentor_id 기준 내림차순 정렬
             List<Mentors> activeMentors = mentors.stream()
-                    .filter(mentor -> mentor.getUser().getIsOut() == (byte) 0)
-                    .collect(Collectors.toList());
+                .filter(mentor -> mentor.getUser().getIsOut() == (byte) 0)
+                .sorted(Comparator.comparing(Mentors::getId, Comparator.reverseOrder())) // 내림차순 정렬 추가
+                .collect(Collectors.toList());
 
             if (activeMentors.isEmpty()) {
                 throw new GlobalException(MentorsErrorCode.NO_MENTORS_IN_LOCATION);
