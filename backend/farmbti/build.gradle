@@ -35,6 +35,7 @@ dependencies {
     implementation 'org.hibernate.validator:hibernate-validator'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'io.micrometer:micrometer-registry-prometheus'
+    implementation 'com.zaxxer:HikariCP'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'org.postgresql:postgresql'
     annotationProcessor 'org.projectlombok:lombok'
