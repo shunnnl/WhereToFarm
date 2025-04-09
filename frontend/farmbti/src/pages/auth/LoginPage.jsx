@@ -73,6 +73,12 @@ const LoginPage = () => {
       localStorage.setItem('refreshToken', response.data.token.refreshToken);
       localStorage.setItem('tokenExpires', response.data.token.accessTokenExpiresInForHour);
       
+      // 연도만 추출하기
+      const birthDate = new Date(response.data.birth);
+      const birthYear = birthDate.getFullYear();
+
+
+
       const userData = {
         id: response.data.id,
         email: response.data.email,
@@ -80,6 +86,7 @@ const LoginPage = () => {
         address: response.data.address,
         gender: response.data.gender,
         profileImage: response.data.profileImage,
+        birth: birthYear, // 연도만 저장 (예: 2008)
       };
       
       localStorage.setItem('user', JSON.stringify(userData));
