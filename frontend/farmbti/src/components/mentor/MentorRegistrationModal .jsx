@@ -278,17 +278,13 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
       
       console.log('멘토 등록 성공:', response);
       toast.success('멘토 등록이 성공적으로 완료되었습니다.');
-      setSubmitResult({ success: true, message: '멘토 등록이 성공적으로 완료되었습니다.' });
+      onRequestClose(); // setTimeout 제거하고 바로 닫기
       
       // 성공 시 폼 초기화
       setFormData({ Year: '' });
       setSelectedFoods([]);
       setDescription('');
       
-      // 모달 닫기 전에 성공 메시지 표시
-      setTimeout(() => {
-        onRequestClose();
-      }, 1500);
       
     } catch (error) {
       console.error('멘토 등록 실패:', error);
