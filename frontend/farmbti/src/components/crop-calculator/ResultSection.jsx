@@ -26,7 +26,7 @@ const ResultSection = ({
   return (
     <div className="relative">
       {isSaving && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center z-[9999]">
             <LoadingSpinner text="저장 중..." />
         </div>
       )}
