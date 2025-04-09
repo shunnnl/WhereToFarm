@@ -190,7 +190,7 @@ public class ChatService {
                             .roomId(chat.getRoomId())
                             .otherUserId(otherUserId)
                             .otherUserName(otherUserName)
-                            .otherUserProfile(getProfileImageUrl(profileUser))
+                            .otherUserProfile(profileUser.getProfileImageUrl())
                             .lastMessage(lastMessage)
                             .lastMessageTime(lastMessageTime)
                             .isRead(isRead)
