@@ -101,8 +101,8 @@
 
 지도에서 지역 선택 후 멘토 조회
 
-![image](/uploads/54a31863bd63794bc833f163d532a482/image.png){width=792 height=919}
-![image](/uploads/007f5ae1f737596cb96da0ad0cc5fe7a/image.png){width=792 height=919}
+![image](/uploads/54a31863bd63794bc833f163d532a482/image.png){width=1212 height=919}
+![image](/uploads/007f5ae1f737596cb96da0ad0cc5fe7a/image.png){width=1212 height=919}
 
 
 #### ✅ 실시간 채팅
