@@ -335,6 +335,56 @@ const handleLogout = async (e) => {
   }
 };
 
+// 알림 클릭 핸들러 함수 - 컴포넌트 내 다른 함수들과 같은 위치에 추가
+const handleNotificationClick = (notification) => {
+  // 읽음 처리
+  if (!notification.read) {
+    markAsRead(notification.id);
+  }
+
+  // roomId가 있는 경우 해당 채팅방으로 이동
+  if (notification.roomId) {
+    console.log(`알림 클릭: 채팅방 ${notification.roomId}으로 이동합니다.`);
+    
+    // 웹소켓으로 백엔드에 읽음 신호 전송
+    if (stompClient.current && stompClient.current.connected && user) {
+      try {
+        const message = {
+          senderId: user.id,      // localStorage에 저장된 사용자 ID
+          senderName: user.name   // localStorage에 저장된 사용자 이름
+        };
+        
+        stompClient.current.publish({
+          destination: `/chat/${notification.roomId}/alarm-click`,
+          body: JSON.stringify(message)
+        });
+        
+        console.log(`웹소켓으로 알림 읽음 처리 메시지 전송: ${JSON.stringify(message)}`);
+      } catch (error) {
+        console.error('알림 읽음 처리 메시지 전송 실패:', error);
+      }
+    }
+    
+    navigate('/chat', { 
+      state: { 
+        roomId: notification.roomId,
+        mentorName: notification.senderId, // sender를 mentorName으로 사용
+        refreshChatRooms: true // 새로운 플래그 추가
+      } 
+    });
+  } else {
+    // roomId가 없는 경우 기본 채팅 페이지로 이동
+    console.log('채팅방 ID가 없어 기본 채팅 페이지로 이동합니다.');
+    navigate('/chat', {
+      state: {
+        refreshChatRooms: true // 새로운 플래그 추가
+      }
+    });
+  }
+  setIsNotificationOpen(false);
+
+}
+
 return (
       <nav className="bg-white border-gray-200 relative z-[100]">
         <div className="max-w-screen-2xl flex items-center justify-between mx-auto px-24 py-4">
@@ -475,39 +525,8 @@ return (
                           className={`px-4 py-3 border-b hover:bg-gray-50 cursor-pointer ${
                             !notification.read ? "bg-blue-50" : ""
                           }`}
-                          onClick={() => {
-                            // 읽음 처리
-                            if (!notification.read) {
-                              markAsRead(notification.id);
-                            }
-
-                          // roomId가 있는 경우 해당 채팅방으로 이동
-                          if (notification.roomId) {
-                            console.log(`알림 클릭: 채팅방 ${notification.roomId}으로 이동합니다.`);
-                            navigate('/chat', { 
-                              state: { 
-                                roomId: notification.roomId,
-                                mentorName: notification.senderId, // sender를 mentorName으로 사용
-                                refreshChatRooms: true // 새로운 플래그 추가
-
-                              } 
-                            });
-                          } else {
-                            // roomId가 없는 경우 기본 채팅 페이지로 이동
-                            console.log('채팅방 ID가 없어 기본 채팅 페이지로 이동합니다.');
-                            navigate('/chat', {
-                              state: {
-                                refreshChatRooms: true // 새로운 플래그 추가
-                              }
-                            });
-                        
-
-                          }
-                          setIsNotificationOpen(false);
-
-
-                          }}
-                        >
+                          onClick={() => handleNotificationClick(notification)}
+                          >
                           <div className="flex">
                             <div className="ml-3 w-full">
                               <p className="text-sm font-medium text-gray-900">
