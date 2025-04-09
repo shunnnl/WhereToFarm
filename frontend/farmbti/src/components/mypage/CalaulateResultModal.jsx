@@ -1,4 +1,10 @@
-import { forwardRef, useImperativeHandle, useRef, useState, useEffect } from "react";
+import {
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+  useState,
+  useEffect,
+} from "react";
 import { X } from "lucide-react";
 import ResultSummary from "../crop-calculator/ResultSummary";
 import AnnualBenefitResult from "../crop-calculator/AnnualBenefitResult";
@@ -8,42 +14,77 @@ const CalculateResultModal = forwardRef(({ reportId }, ref) => {
   const [report, setReport] = useState({});
   const dialogRef = useRef(null);
   const contentRef = useRef(null);
+  const [isOpen, setIsOpen] = useState(false);
 
-  // 모달 열렸을 때 스크롤 방지
+  // 모달 상태 관리 및 백그라운드 스크롤 제어를 위한 효과적인 방법
   useEffect(() => {
-    const preventBackdropScroll = (e) => {
-      if (dialogRef.current && dialogRef.current.open) {
-        if (e.target === dialogRef.current) {
-          e.preventDefault();
-        }
+    if (isOpen) {
+      // 모달 열렸을 때 body 스크롤 방지 - position fixed 방식 추가
+      const scrollY = window.scrollY;
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = "100%";
+      document.body.style.overflow = "hidden";
+    } else {
+      // 모달 닫혔을 때 원래 스크롤 위치로 복원
+      const scrollY = document.body.style.top;
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.width = "";
+      document.body.style.overflow = "";
+      if (scrollY) {
+        window.scrollTo(0, parseInt(scrollY || "0", 10) * -1);
       }
+    }
+  }, [isOpen]);
+
+  // 모든 스크롤 이벤트 캡처 및 방지 (터치 이벤트 포함)
+  useEffect(() => {
+    const preventScroll = (e) => {
+      if (isOpen && !contentRef.current?.contains(e.target)) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+      return true;
     };
 
-    document.addEventListener('wheel', preventBackdropScroll, { passive: false });
-    document.addEventListener('touchmove', preventBackdropScroll, { passive: false });
+    // 더 많은 이벤트 리스너 추가
+    const options = { passive: false, capture: true };
+
+    if (isOpen) {
+      document.addEventListener("wheel", preventScroll, options);
+      document.addEventListener("touchmove", preventScroll, options);
+      document.addEventListener("touchstart", preventScroll, options);
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") handleCancel();
+      });
+    }
 
     return () => {
-      document.removeEventListener('wheel', preventBackdropScroll);
-      document.removeEventListener('touchmove', preventBackdropScroll);
+      document.removeEventListener("wheel", preventScroll, options);
+      document.removeEventListener("touchmove", preventScroll, options);
+      document.removeEventListener("touchstart", preventScroll, options);
+      document.removeEventListener("keydown", (e) => {
+        if (e.key === "Escape") handleCancel();
+      });
     };
-  }, []);
+  }, [isOpen]);
 
   // 부모 컴포넌트에서 접근할 수 있는 메소드 노출
   useImperativeHandle(ref, () => ({
     showModal: () => {
+      setIsOpen(true);
       dialogRef.current?.showModal();
-      // 모달 열릴 때 body 스크롤 비활성화
-      document.body.style.overflow = 'hidden';
-      
+
       // 스크롤 위치 초기화
       if (contentRef.current) {
         contentRef.current.scrollTop = 0;
       }
     },
     close: () => {
+      setIsOpen(false);
       dialogRef.current?.close();
-      // 모달 닫힐 때 body 스크롤 다시 활성화
-      document.body.style.overflow = '';
     },
     updateData: (data) => {
       setReport(data);
@@ -57,29 +98,32 @@ const CalculateResultModal = forwardRef(({ reportId }, ref) => {
   }));
 
   const handleCancel = () => {
+    setIsOpen(false);
     dialogRef.current?.close();
-    document.body.style.overflow = '';
   };
 
-  // 배경 클릭시 닫힘 방지 (필요시 사용)
+  // 배경 클릭시 닫힘 방지
   const handleDialogClick = (e) => {
     if (e.target === dialogRef.current) {
       e.preventDefault();
+      e.stopPropagation();
+      return false;
     }
   };
 
   // 모달이 닫힐 때 이벤트 리스너
   useEffect(() => {
-    const resetScroll = () => {
+    const handleClose = () => {
+      setIsOpen(false);
       if (contentRef.current) {
         contentRef.current.scrollTop = 0;
       }
     };
 
-    dialogRef.current?.addEventListener('close', resetScroll);
-    
+    dialogRef.current?.addEventListener("close", handleClose);
+
     return () => {
-      dialogRef.current?.removeEventListener('close', resetScroll);
+      dialogRef.current?.removeEventListener("close", handleClose);
     };
   }, []);
 
@@ -88,7 +132,9 @@ const CalculateResultModal = forwardRef(({ reportId }, ref) => {
       ref={dialogRef}
       className="w-full max-w-5xl mx-auto p-0 rounded-xl bg-white shadow-lg"
       onClick={handleDialogClick}
-      onClose={() => { document.body.style.overflow = ''; }}
+      onClose={() => setIsOpen(false)}
+      aria-modal="true"
+      inert={!isOpen ? "" : undefined}
     >
       {/* 스크롤 영역을 모달 내부에 있도록 처리 */}
       <div className="relative w-full h-full">
@@ -103,7 +149,7 @@ const CalculateResultModal = forwardRef(({ reportId }, ref) => {
         </div>
 
         {/* 스크롤 컨테이너 */}
-        <div 
+        <div
           ref={contentRef}
           className="px-6 pb-6 max-h-[80vh] overflow-y-auto custom-scrollbar"
         >
