@@ -135,22 +135,47 @@ Naver API로 실시간 뉴스 조회
 
 ## 📢 기술 스택 소개
 
-#### Hadoop & Spark
+#### Big-data distribution
+![Hadoop](https://img.shields.io/badge/Hadoop-3.3.6-66CCFF?logo=apachehadoop)
+![Spark](https://img.shields.io/badge/Apache%20Spark-3.5.0-E25A1C?logo=apachespark)
+![Zeppelin](https://img.shields.io/badge/Zeppelin-0.10.1-2D2D2D?logo=apachezeppelin)
+![Zookeeper](https://img.shields.io/badge/Zookeeper-3.7.1-7E3794?logo=apachezookeeper)
 
 #### Frontend
+![React](https://img.shields.io/badge/React-18.3.1-61DAFB?logo=react)
+![Vite](https://img.shields.io/badge/Vite-6.0.5-646CFF?logo=vite)
+![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?logo=javascript&logoColor=000)
+![Redux](https://img.shields.io/badge/Redux-Toolkit-764ABC?logo=redux&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.3.3-38B2AC?logo=tailwindcss)
 
-
-#### Backend
-
+#### Backend 
+![Java](https://img.shields.io/badge/Java-17-blue?logo=java)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.3-brightgreen?logo=springboot)
+![JPA](https://img.shields.io/badge/JPA-Hibernate-59666C?logo=hibernate)
+![JWT](https://img.shields.io/badge/JWT-Authentication-000000?logo=jsonwebtokens)
+![Gradle](https://img.shields.io/badge/Gradle-7.6-02303A?logo=gradle)
 
 #### Data Processing & ML
-
+![Pandas](https://img.shields.io/badge/Pandas-1.5.3-150458?logo=pandas)
+![NumPy](https://img.shields.io/badge/NumPy-1.24-013243?logo=numpy)
+![scikit-learn](https://img.shields.io/badge/scikit--learn-1.4.1-F7931E?logo=scikitlearn)
+![Matplotlib](https://img.shields.io/badge/Matplotlib-3.7.1-11557C?logo=matplotlib)
+![Jupyter](https://img.shields.io/badge/Jupyter-Lab-orange?logo=jupyter)
 
 #### Build & Deployment
+![EC2](https://img.shields.io/badge/AWS%20EC2-t3.medium-FF9900?logo=amazonaws&logoColor=white)
+![Docker Compose](https://img.shields.io/badge/Docker--Compose-2496ED?logo=docker&logoColor=white)
+![Jenkins](https://img.shields.io/badge/Jenkins-Automation-D24939?logo=jenkins)
+![Nginx](https://img.shields.io/badge/Nginx-1.27.4-009639?logo=nginx)
 
 #### Database & Cache
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14-336791?logo=postgresql)
+![Redis](https://img.shields.io/badge/Redis-7.2-DC382D?logo=redis)
 
 #### Infrastructure
+![Ubuntu](https://img.shields.io/badge/Ubuntu-22.04-E95420?logo=ubuntu)
+![Prometheus](https://img.shields.io/badge/Prometheus-Metrics-orange?logo=prometheus)
+![Grafana](https://img.shields.io/badge/Grafana-Dashboard-F46800?logo=grafana)
 
 
 ## 🔍 시스템 아키텍처
