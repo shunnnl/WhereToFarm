@@ -36,7 +36,10 @@ const EstatePage = () => {
   const [totalItemsCount, setTotalItemsCount] = useState(0);
   const itemsPerPage = 10;
 
+  // 여기는 원래 코드를 유지하되, 초기 렌더링을 제어하기 위한 ref 추가
   const [isFiltered, setIsFiltered] = useState(!!urlParams.province);
+  const initialRenderComplete = useRef(false);
+
   // 필터 파라미터를 상태로 관리
   const [filterParams, setFilterParams] = useState({
     province: urlParams.province,
@@ -71,8 +74,57 @@ const EstatePage = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  // 초기 로드 및 페이지/필터 변경 시 데이터 로드
+  // 초기 로드를 위한 새로운 useEffect 추가
   useEffect(() => {
+    // 초기 데이터 로드 처리
+    const initialLoad = async () => {
+      setLoading(true);
+      try {
+        if (urlParams.province) {
+          // URL에 필터 파라미터가 있으면 필터링된 데이터 로드
+          const response = await getFilteredEstate(
+            urlParams.province,
+            urlParams.city || "",
+            urlParams.page - 1,
+            itemsPerPage
+          );
+
+          if (response.content && response.totalElements) {
+            setProperties(response.content);
+            setTotalItemsCount(response.totalElements);
+          } else {
+            setProperties(response);
+            setTotalItemsCount(response.length);
+          }
+        } else {
+          // 필터 없으면 전체 데이터 로드
+          const response = await getAllEstate(urlParams.page - 1, itemsPerPage);
+          setProperties(response.content);
+          setTotalItemsCount(response.totalElements);
+        }
+      } catch (error) {
+        handleError(error);
+        console.error(
+          "초기 매물 데이터를 불러오는 중 오류가 발생했습니다:",
+          error
+        );
+        setError("매물 데이터를 불러오는 중 오류가 발생했습니다.");
+      } finally {
+        setLoading(false);
+        initialRenderComplete.current = true;
+      }
+    };
+
+    initialLoad();
+  }, []); // 컴포넌트 마운트 시 한 번만 실행
+
+  // 초기 로드 및 페이지/필터 변경 시 데이터 로드 - 초기 렌더링은 건너뛰기
+  useEffect(() => {
+    // 초기 렌더링은 위의 useEffect에서 처리했으므로 건너뛰기
+    if (!initialRenderComplete.current) {
+      return;
+    }
+
     if (isFiltered) {
       // 필터링된 상태에서 페이지네이션
       getFilteredPropertiesWithPagination(activePage);
@@ -80,7 +132,7 @@ const EstatePage = () => {
       // 전체 데이터 페이지네이션
       getProperties(activePage);
     }
-  }, [activePage, isFiltered, filterParams]); // filterParams 의존성 추가
+  }, [activePage, isFiltered, filterParams]); // filterParams 의존성 유지
 
   // 도(province) 선택 시 해당 시/군/구 목록 업데이트
   useEffect(() => {
