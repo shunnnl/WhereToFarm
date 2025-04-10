@@ -7,6 +7,7 @@ import com.backend.farmbti.chat.service.WebSocketService;
 import com.backend.farmbti.common.exception.GlobalException;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -21,6 +22,7 @@ import java.util.Map;
 @Controller
 @Tag(name = "WebSocket 채팅 컨트롤러", description = "실시간 채팅 메시지 처리를 위한 컨트롤러")
 @RequiredArgsConstructor
+@Slf4j
 public class WebSocketController {
 
     private final WebSocketService webSocketService;
@@ -192,6 +194,12 @@ public class WebSocketController {
 
     @MessageMapping("/{roomId}/user-activity")
     public void handleUserActivity(@DestinationVariable Long roomId, MessageRequest messageRequest) {
+
+        // 기본 로그
+        log.info("채팅방 활성 상태 - 방ID: {}, 사용자ID: {}, 상태: {}",
+                roomId, messageRequest.getSenderId(), messageRequest.isActive());
+
+
         Long userId = messageRequest.getSenderId();
         String currentUserName = messageRequest.getSenderName();
         boolean isActive = messageRequest.isActive(); // 클라이언트에서 전송하는 활성 상태 값
