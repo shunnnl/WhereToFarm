@@ -250,7 +250,7 @@ const handleRoomsUpdate = (payload) => {
             lastMessage: update.lastMessage || "새 대화가 시작되었습니다",
             lastMessageTime: update.timestamp || new Date().toISOString(),
             otherUserName: update.sender || "상대방",
-            otherUserProfile: null,
+            otherUserProfile: update.senderProfile || null,
             read: false // 새 채팅방은 안읽음 상태로 시작
           };
           
