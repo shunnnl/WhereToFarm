@@ -20,6 +20,7 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
   const [isCheckingMentorStatus, setIsCheckingMentorStatus] = useState(false);
   const [isAlreadyMentor, setIsAlreadyMentor] = useState(false);
   const [mentorData, setMentorData] = useState(null);
+  const [userBirthYear, setUserBirthYear] = useState(null);
   const resetForm = () => {
     setSelectedFoods([]);
     setDescription('');
@@ -94,6 +95,27 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
       resetForm(); // 모달이 열릴 때마다 폼 초기화
     }
   }, [isOpen, isLoggedIn]);
+
+
+
+  useEffect(() => {
+    const getUserBirthYear = () => {
+      try {
+        const userDataString = localStorage.getItem('user');
+        if (userDataString) {
+          const userData = JSON.parse(userDataString);
+          if (userData && userData.birth) {
+            setUserBirthYear(parseInt(userData.birth));
+            console.log('User birth year:', userData.birth);
+          }
+        }
+      } catch (error) {
+        console.error('유저 정보 파싱 오류:', error);
+      }
+    };
+  
+    getUserBirthYear();
+  }, []);
 
 
 
@@ -337,10 +359,10 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
   // 연도 옵션 생성 (현재 연도부터 100년 전까지)
   const currentYear = new Date().getFullYear();
   const yearOptions = Array.from(
-    { length: 100 }, 
+    { length: currentYear - (userBirthYear || currentYear - 100) + 1 }, 
     (_, i) => currentYear - i
-  );
-
+  ).filter(year => userBirthYear ? year >= userBirthYear : true);
+  
   return (
     <Modal
       isOpen={isOpen}
