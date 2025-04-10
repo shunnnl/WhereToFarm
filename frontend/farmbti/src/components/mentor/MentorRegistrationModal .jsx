@@ -368,9 +368,19 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
       isOpen={isOpen}
       onRequestClose={() => {}} // 백드롭 클릭으로 닫히는 것을 방지
       shouldCloseOnOverlayClick={false} // 백드롭 클릭으로 닫히는 것을 방지
-      className="bg-white p-6 rounded-xl shadow-md max-w-4xl w-full mx-auto"
+      className="bg-white p-6 rounded-xl shadow-md max-w-4xl w-full mx-auto relative"
       overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]"
     >
+
+      {/* X 버튼 */}
+      <button 
+        onClick={handleClose}
+        className="absolute top-4 right-4 text-gray-600 hover:text-gray-900"
+        aria-label="닫기"
+      >
+        ✕
+      </button>
+
       <form onSubmit={handleSubmit} className="w-full">
         <div className='mb-4 text-center w-full'>
           <h2 className="text-2xl font-bold mb-2">멘토 등록</h2>
@@ -456,14 +466,6 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
         )}
 
         <div className="flex justify-center gap-4 mt-4">
-          <button
-            type="button"
-            className="bg-gray-100 text-black py-2 px-4 rounded"
-            onClick={handleClose}   
-          >
-            닫기
-          </button>
-
           <button 
             type="submit"
             className={`${isSubmitting ? 'bg-green-600' : 'bg-green-800 hover:bg-green-700'} text-white py-2 px-4 rounded transition-colors flex items-center justify-center`}
