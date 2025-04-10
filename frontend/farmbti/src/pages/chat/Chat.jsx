@@ -969,7 +969,7 @@ return (
                   >
                     <div className="w-12 h-12 rounded-full overflow-hidden mr-3 flex-shrink-0">
                       <img 
-                        src={room.otherUserProfile && room.otherUserProfile.startsWith('http') 
+                        src={room.otherUserProfile && room.otherUserProfile.startsWith('https') 
                           ? room.otherUserProfile 
                           : `/api/placeholder/48/48`} 
                         alt={room.otherUserName} 
