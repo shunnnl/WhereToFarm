@@ -42,6 +42,25 @@ const MyProfileImage = ({ imageUrl, isDefaultImage }) => {
     return () => clearTimeout(timeoutId);
   }, []);
 
+  // 로컬 스토리지 업데이트 함수
+  const updateLocalStorageUser = useCallback((newImageUrl) => {
+    try {
+      // 로컬 스토리지에서 기존 사용자 데이터 가져오기
+      const userDataString = localStorage.getItem("user");
+      if (!userDataString) return;
+
+      // JSON 파싱 및 새 이미지 URL로 업데이트
+      const userData = JSON.parse(userDataString);
+      userData.profileImage = newImageUrl;
+
+      // 업데이트된 데이터를 로컬 스토리지에 저장
+      localStorage.setItem("user", JSON.stringify(userData));
+      console.log("로컬 스토리지 프로필 이미지 업데이트 완료:", newImageUrl);
+    } catch (error) {
+      console.error("로컬 스토리지 업데이트 실패:", error);
+    }
+  }, []);
+
   // 이미지 URL이 변경될 때 처리
   useEffect(() => {
     if (imageUrl) {
@@ -60,6 +79,17 @@ const MyProfileImage = ({ imageUrl, isDefaultImage }) => {
       }
     }
   }, [imageUrl, isDefaultImage, preloadImage]);
+
+  // profileData가 변경될 때 로컬 스토리지 업데이트
+  useEffect(() => {
+    // 이미지 URL이 유효하고 초기값이 아닐 때만 로컬 스토리지 업데이트
+    if (
+      profileData.imageUrl &&
+      profileData.imageUrl !== "/api/placeholder/200/200"
+    ) {
+      updateLocalStorageUser(profileData.imageUrl);
+    }
+  }, [profileData.imageUrl, updateLocalStorageUser]);
 
   // 파일 유효성 검사 함수
   const validateFile = (file) => {
@@ -172,6 +202,8 @@ const MyProfileImage = ({ imageUrl, isDefaultImage }) => {
             imageUrl: response.imageUrl,
           });
 
+          // 로컬 스토리지 업데이트는 useEffect에서 처리됨
+
           toast.success("프로필 이미지가 업로드되었습니다.");
         } catch (error) {
           handleError(error);
@@ -214,6 +246,8 @@ const MyProfileImage = ({ imageUrl, isDefaultImage }) => {
         isDefaultImage: true,
         imageUrl: response.imageUrl,
       });
+
+      // 로컬 스토리지 업데이트는 useEffect에서 처리됨
 
       toast.success("기본 프로필 이미지로 변경되었습니다.");
     } catch (error) {
