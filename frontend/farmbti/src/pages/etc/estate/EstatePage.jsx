@@ -28,7 +28,7 @@ const EstatePage = () => {
   const [selectedCity, setSelectedCity] = useState(urlParams.city);
   const [cities, setCities] = useState([]);
   const [properties, setProperties] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true); // Start with loading state true
   const [error, setError] = useState(null);
 
   // 페이지네이션 상태 - URL에서 초기값 가져오기
@@ -36,103 +36,15 @@ const EstatePage = () => {
   const [totalItemsCount, setTotalItemsCount] = useState(0);
   const itemsPerPage = 10;
 
-  // 여기는 원래 코드를 유지하되, 초기 렌더링을 제어하기 위한 ref 추가
+  // 필터 상태 관리
   const [isFiltered, setIsFiltered] = useState(!!urlParams.province);
-  const initialRenderComplete = useRef(false);
-
-  // 필터 파라미터를 상태로 관리
   const [filterParams, setFilterParams] = useState({
-    province: urlParams.province,
-    city: urlParams.city,
-  });
-  const prevFilterParams = useRef({
     province: urlParams.province,
     city: urlParams.city,
   });
 
   // 도(province) 목록을 KoreaCityData에서 가져오기
   const provinces = Object.keys(KoreaCityData);
-
-  // URL 쿼리 파라미터가 변경될 때 상태 업데이트
-  useEffect(() => {
-    const params = getParamsFromUrl();
-    setActivePage(params.page);
-
-    // 필터 파라미터가 변경된 경우에만 상태 업데이트
-    if (
-      params.province !== filterParams.province ||
-      params.city !== filterParams.city
-    ) {
-      setSelectedProvince(params.province);
-      setSelectedCity(params.city);
-      setFilterParams({ province: params.province, city: params.city });
-      setIsFiltered(!!params.province);
-    }
-  }, [location.search, getParamsFromUrl, filterParams]);
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-
-  // 초기 로드를 위한 새로운 useEffect 추가
-  useEffect(() => {
-    // 초기 데이터 로드 처리
-    const initialLoad = async () => {
-      setLoading(true);
-      try {
-        if (urlParams.province) {
-          // URL에 필터 파라미터가 있으면 필터링된 데이터 로드
-          const response = await getFilteredEstate(
-            urlParams.province,
-            urlParams.city || "",
-            urlParams.page - 1,
-            itemsPerPage
-          );
-
-          if (response.content && response.totalElements) {
-            setProperties(response.content);
-            setTotalItemsCount(response.totalElements);
-          } else {
-            setProperties(response);
-            setTotalItemsCount(response.length);
-          }
-        } else {
-          // 필터 없으면 전체 데이터 로드
-          const response = await getAllEstate(urlParams.page - 1, itemsPerPage);
-          setProperties(response.content);
-          setTotalItemsCount(response.totalElements);
-        }
-      } catch (error) {
-        handleError(error);
-        console.error(
-          "초기 매물 데이터를 불러오는 중 오류가 발생했습니다:",
-          error
-        );
-        setError("매물 데이터를 불러오는 중 오류가 발생했습니다.");
-      } finally {
-        setLoading(false);
-        initialRenderComplete.current = true;
-      }
-    };
-
-    initialLoad();
-  }, []); // 컴포넌트 마운트 시 한 번만 실행
-
-  // 초기 로드 및 페이지/필터 변경 시 데이터 로드 - 초기 렌더링은 건너뛰기
-  useEffect(() => {
-    // 초기 렌더링은 위의 useEffect에서 처리했으므로 건너뛰기
-    if (!initialRenderComplete.current) {
-      return;
-    }
-
-    if (isFiltered) {
-      // 필터링된 상태에서 페이지네이션
-      getFilteredPropertiesWithPagination(activePage);
-    } else {
-      // 전체 데이터 페이지네이션
-      getProperties(activePage);
-    }
-  }, [activePage, isFiltered, filterParams]); // filterParams 의존성 유지
 
   // 도(province) 선택 시 해당 시/군/구 목록 업데이트
   useEffect(() => {
@@ -145,6 +57,11 @@ const EstatePage = () => {
       setCities([]);
     }
   }, [selectedProvince, selectedCity]);
+
+  // 페이지 상단으로 스크롤 - 컴포넌트 마운트 시 한 번만 실행
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   // 매물 데이터 가져오는 함수
   const getProperties = useCallback(
@@ -169,14 +86,14 @@ const EstatePage = () => {
 
   // 필터링 상태에서 페이지네이션 처리하는 함수
   const getFilteredPropertiesWithPagination = useCallback(
-    async (page = 1) => {
+    async (page = 1, province, city) => {
       setLoading(true);
       setError(null);
 
       try {
         const response = await getFilteredEstate(
-          filterParams.province,
-          filterParams.city,
+          province,
+          city,
           page - 1,
           itemsPerPage
         );
@@ -190,7 +107,6 @@ const EstatePage = () => {
         }
       } catch (error) {
         handleError(error);
-        // 에러 처리
         console.error(
           "필터링된 매물 데이터를 불러오는 중 오류가 발생했습니다:",
           error
@@ -200,8 +116,46 @@ const EstatePage = () => {
         setLoading(false);
       }
     },
-    [filterParams, itemsPerPage]
+    [itemsPerPage]
   );
+
+  // URL 쿼리 파라미터가 변경될 때 데이터 로드
+  useEffect(() => {
+    const currentParams = getParamsFromUrl();
+
+    // 페이지 번호 상태 업데이트
+    setActivePage(currentParams.page);
+
+    // 필터 파라미터가 존재하는지 확인
+    const hasFilterParams = !!currentParams.province;
+    setIsFiltered(hasFilterParams);
+
+    // 필터 상태 업데이트
+    setFilterParams({
+      province: currentParams.province,
+      city: currentParams.city,
+    });
+
+    // 선택된 필터 값 업데이트
+    setSelectedProvince(currentParams.province);
+    setSelectedCity(currentParams.city);
+
+    // 필터 상태에 따라 데이터 로드
+    if (hasFilterParams) {
+      getFilteredPropertiesWithPagination(
+        currentParams.page,
+        currentParams.province,
+        currentParams.city
+      );
+    } else {
+      getProperties(currentParams.page);
+    }
+  }, [
+    location.search,
+    getParamsFromUrl,
+    getProperties,
+    getFilteredPropertiesWithPagination,
+  ]);
 
   // 페이지 변경 핸들러 - URL 쿼리 파라미터 업데이트
   const handlePageChange = useCallback(
@@ -213,9 +167,6 @@ const EstatePage = () => {
       const newParams = new URLSearchParams(searchParams);
       newParams.set("page", pageNumber);
       setSearchParams(newParams);
-
-      // 페이지 번호 상태 업데이트
-      setActivePage(pageNumber);
     },
     [searchParams, setSearchParams]
   );
@@ -224,6 +175,9 @@ const EstatePage = () => {
   const handleProvinceChange = useCallback((e) => {
     const province = e.target.value;
     setSelectedProvince(province);
+    if (!province) {
+      setSelectedCity("");
+    }
   }, []);
 
   // 시/군/구(city) 변경 핸들러
@@ -234,43 +188,20 @@ const EstatePage = () => {
 
   // 도/시 필터 적용 핸들러
   const handleFilter = useCallback(() => {
-    // 새로운 필터 상태 설정
-    const newFilterParams = {
-      province: selectedProvince,
-      city: selectedCity,
-    };
-
-    // 이전 필터와 동일한지 확인
-    if (
-      prevFilterParams.current.province === newFilterParams.province &&
-      prevFilterParams.current.city === newFilterParams.city
-    ) {
-      return; // 필터 값이 변경되지 않았으면 함수 종료
-    }
-
     // URL 쿼리 파라미터 업데이트
     const newParams = new URLSearchParams();
     newParams.set("page", "1"); // 필터 적용 시 항상 1페이지로 이동
 
     // 도가 선택되었으면 필터링 모드로 전환
     if (selectedProvince) {
-      setIsFiltered(true);
       // URL에 필터 파라미터 추가
       newParams.set("province", selectedProvince);
       if (selectedCity) {
         newParams.set("city", selectedCity);
       }
-    } else {
-      setIsFiltered(false);
     }
 
-    // 필터 참조값 업데이트
-    prevFilterParams.current = newFilterParams;
-    // 필터 상태 업데이트
-    setFilterParams(newFilterParams);
-
     setSearchParams(newParams);
-    setActivePage(1);
   }, [selectedProvince, selectedCity, setSearchParams]);
 
   return (
@@ -329,10 +260,6 @@ const EstatePage = () => {
             <button
               className="px-4 py-2 bg-primaryGreen text-white rounded hover:bg-primaryGreen/90 transition-colors"
               onClick={handleFilter}
-              disabled={
-                prevFilterParams.current.province === selectedProvince &&
-                prevFilterParams.current.city === selectedCity
-              }
             >
               필터 적용
             </button>
@@ -351,7 +278,17 @@ const EstatePage = () => {
                 <p className="text-red-500">{error}</p>
                 <button
                   className="mt-4 px-4 py-2 bg-primaryGreen text-white rounded-md hover:bg-primaryGreen/90"
-                  onClick={() => getProperties(activePage)}
+                  onClick={() => {
+                    if (isFiltered) {
+                      getFilteredPropertiesWithPagination(
+                        activePage,
+                        filterParams.province,
+                        filterParams.city
+                      );
+                    } else {
+                      getProperties(activePage);
+                    }
+                  }}
                 >
                   다시 시도
                 </button>
@@ -376,7 +313,7 @@ const EstatePage = () => {
             )}
           </div>
 
-          {properties.length > 0 && (
+          {properties.length > 0 && !loading && (
             <div className="p-4 border-t border-gray-200">
               <PaginationComponent
                 activePage={activePage}
