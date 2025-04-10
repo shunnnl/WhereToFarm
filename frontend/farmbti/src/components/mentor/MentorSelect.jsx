@@ -107,7 +107,7 @@ const MentorSelect = ({ candidateList, regionName, cityName }) => {
       }
         
     } catch (err) {
-      console.error('멘토 정보 로딩 에러:', err);
+      // console.error('멘토 정보 로딩 에러:', err);
           
       // 서버에서 제공하는 오류 메시지 직접 사용
       if (err.error && err.error.message) {
