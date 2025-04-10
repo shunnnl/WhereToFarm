@@ -142,6 +142,9 @@ public class WebSocketController {
         Long userId = messageRequest.getSenderId();
         String currentUserName = messageRequest.getSenderName();
 
+        // 사용자를 활성 상태로 설정
+        webSocketService.setUserActive(roomId, userId, true);
+
         // 메시지 읽음 처리 서비스 호출
         webSocketService.markMessagesAsRead(roomId, userId);
 
@@ -189,6 +192,16 @@ public class WebSocketController {
                 "/queue/read-status",
                 readStatus
         );
+    }
+
+    // 새로운 메소드 추가 - 채팅방 나갈 때 호출
+    @MessageMapping("/{roomId}/leave")
+    public void leaveChatRoom(@DestinationVariable Long roomId, MessageRequest messageRequest) {
+        Long userId = messageRequest.getSenderId();
+
+        // 사용자를 비활성 상태로 설정
+        webSocketService.setUserActive(roomId, userId, false);
+        log.info("사용자 채팅방 퇴장 - 방ID: {}, 사용자ID: {}", roomId, userId);
     }
 
 

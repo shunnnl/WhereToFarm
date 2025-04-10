@@ -162,4 +162,13 @@ public class WebSocketService {
         }
     }
 
+    // WebSocketService에 추가할 코드
+    private final Map<String, Boolean> userActiveStatus = new ConcurrentHashMap<>();
+
+    public void setUserActive(Long roomId, Long userId, boolean isActive) {
+        String key = roomId + ":" + userId;
+        userActiveStatus.put(key, isActive);
+        log.info("사용자 활성 상태 변경 - 방ID: {}, 사용자ID: {}, 상태: {}", roomId, userId, isActive);
+    }
+
 }
