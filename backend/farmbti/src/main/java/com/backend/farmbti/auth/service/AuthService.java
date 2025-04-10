@@ -139,7 +139,7 @@ public class AuthService {
         Users users = usersRepository.findById(id)
                 .orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
 
-        // 🔥 Redis 토큰 삭제
+        // ✅ Redis 토큰 삭제
         String redisLoginKey = redisKey.getLoginTokenKey(users.getId());
         redisKey.redisTemplate().delete(redisLoginKey);
         log.info("Redis 로그인 토큰 삭제 완료: {}", redisLoginKey);
