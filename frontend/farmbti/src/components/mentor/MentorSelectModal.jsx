@@ -3,6 +3,7 @@ import Modal from 'react-modal';
 import { authAxios } from '../../API/common/AxiosInstance';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { X } from 'lucide-react';
 
 // 모달 앱 요소 설정 (접근성 목적)
 Modal.setAppElement('#root'); // 앱에 맞게 수정 필요
@@ -92,7 +93,7 @@ const MentorSelectModal = ({ isOpen, onClose, mentor }) => {
             className="w-10 h-10 flex items-center justify-center text-2xl"
             aria-label="모달 닫기"
           >
-            ✕
+            <X size={24} />
           </button>
         </div>
 
