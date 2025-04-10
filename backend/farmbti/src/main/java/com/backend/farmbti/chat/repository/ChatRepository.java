@@ -2,6 +2,7 @@ package com.backend.farmbti.chat.repository;
 
 import com.backend.farmbti.auth.domain.Users;
 import com.backend.farmbti.chat.entity.Chat;
+import com.backend.farmbti.chat.entity.ChatMessage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -46,6 +47,6 @@ public interface ChatRepository extends JpaRepository<Chat, Long> {
             "(c.mentee.id = :userId2 AND c.mentor.user.id = :userId1)")
     Optional<Chat> findChatBetweenAnyUsers(@Param("userId1") Long userId1, @Param("userId2") Long userId2);
 
-   // Optional<Chat> findChatBetweenUsers(Long userId, Long otherId);
+    // Optional<Chat> findChatBetweenUsers(Long userId, Long otherId);
     //"mentee의 id가 주어진 값과 일치하거나 mentor의 user의 id가 주어진 값과 일치하는 모든 Chat 엔티티를 찾아라"
 }
