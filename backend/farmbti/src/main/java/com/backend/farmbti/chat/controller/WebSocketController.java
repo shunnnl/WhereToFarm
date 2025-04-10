@@ -53,6 +53,16 @@ public class WebSocketController {
         // 이 부분을 수정: getRecevierName 대신 getReceiverId 메소드 필요
         Long receiverId = webSocketService.getReceiverId(roomId, messageRequest.getSenderId());
 
+        // 메시지 저장 후 수신자 활성 상태 확인
+        boolean isReceiverActive = webSocketService.isUserActive(roomId, receiverId);
+        if (isReceiverActive) {
+            // 수신자가 활성 상태면 즉시 읽음 처리
+            webSocketService.markMessagesAsRead(roomId, receiverId);
+            log.info("수신자 활성 상태 - 읽음 처리 완료 - 방ID: {}, 수신자ID: {}", roomId, receiverId);
+        } else {
+            log.info("수신자 비활성 상태 - 읽음 처리 생략 - 방ID: {}, 수신자ID: {}", roomId, receiverId);
+        }
+
         // 알림 발송 로직
         Map<String, Object> notification = new HashMap<>();
         notification.put("sender", currentUserName);

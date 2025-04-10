@@ -180,4 +180,13 @@ public class WebSocketService {
         userActiveStatus.put(key, isActive);
         log.info("사용자 활성 상태 변경 - 방ID: {}, 사용자ID: {}, 상태: {}", roomId, userId, isActive);
     }
+
+    public boolean isUserActive(Long roomId, Long userId) {
+        String key = roomId + ":" + userId;
+        Boolean isActive = userActiveStatus.get(key);
+        log.debug("사용자 활성 상태 조회 - 방ID: {}, 사용자ID: {}, 활성상태: {}", roomId, userId, isActive);
+        // 만약 상태 정보가
+        // 없으면 기본적으로 비활성 상태로 간주
+        return isActive != null && isActive;
+    }
 }
