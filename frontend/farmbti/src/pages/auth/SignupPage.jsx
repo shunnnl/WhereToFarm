@@ -4,7 +4,7 @@ import { toast } from 'react-toastify'; // 추가: 토스트 알림을 위한 im
 import signup_image from '../../asset/auth/login.png';
 import useKakaoAddressService from '../../API/useKakaoAddressService';
 import { publicAxios } from '../../API/common/AxiosInstance';
-import { Eye, EyeOff } from 'lucide-react'; 
+import { Eye, EyeOff, Loader2 } from 'lucide-react'; 
 
 const SignupPage = () => {
   const navigate = useNavigate(); // 추가: 페이지 이동을 위한 navigate 함수
@@ -156,17 +156,21 @@ const SignupPage = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  const [isSubmitting, setIsSubmitting] = useState(false);  // 제출 상태 추가
 
-
-  
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // 이미 제출 중이면 중복 제출 방지
+    if (isSubmitting) return;
     
     // 폼 유효성 검사 실행
     const isValid = validateForm();
   
     if (isValid) {
       try {
+        setIsSubmitting(true);  // 제출 시작
+        
         const birthDate = new Date(
           formData.birthYear,
           formData.birthMonth - 1,
@@ -219,10 +223,11 @@ const SignupPage = () => {
           // 형식에 맞지 않는 에러
           toast.error('알 수 없는 오류가 발생했습니다.');
         }
+      } finally {
+        setIsSubmitting(false);  // 제출 완료
       }
     }
   };
-
 
   // 연도 옵션 생성 (현재 연도부터 100년 전까지)
   const currentYear = new Date().getFullYear();
@@ -466,9 +471,21 @@ const SignupPage = () => {
             <div>
               <button
                 type="submit"
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                disabled={isSubmitting}
+                className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white
+                  ${isSubmitting 
+                    ? 'bg-green-400 cursor-not-allowed' 
+                    : 'bg-green-600 hover:bg-green-700'} 
+                  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500`}
               >
-                회원가입
+                {isSubmitting ? (
+                  <div className="flex items-center">
+                    <Loader2 className="animate-spin h-5 w-5 mr-2" />
+                    <span>처리중...</span>
+                  </div>
+                ) : (
+                  '회원가입'
+                )}
               </button>
             </div>
             <div className="text-center">
