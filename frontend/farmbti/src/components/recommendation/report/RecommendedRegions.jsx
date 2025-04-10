@@ -6,7 +6,7 @@ const RecommendedRegions = ({ regions }) => {
   return (
     <div className="bg-white rounded-lg p-8 mx-8 mt-8 shadow-[0_4px_9px_-4px_rgba(0,0,0,0.2)]">
       <div className="mb-12 text-center">
-        <h2 className="text-2xl font-bold mb-3">🌟 FARMbit 맞춤 추천 지역 TOP3 🌟</h2>
+        <h2 className="text-2xl font-bold mb-3">🌟 FARMbti 맞춤 추천 지역 TOP3 🌟</h2>
         <p className="text-gray-600">
           회원님의 FARM 성향을 분석한 결과, 다음 지역들이 가장 적합할 것 같아요!
         </p>
