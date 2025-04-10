@@ -11,6 +11,7 @@ import com.backend.farmbti.chat.repository.ChatMessageRepository;
 import com.backend.farmbti.chat.repository.ChatRepository;
 import com.backend.farmbti.common.exception.GlobalException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class WebSocketService {
 
     private final ChatRepository chatRepository;
@@ -123,7 +125,9 @@ public class WebSocketService {
 
     @Transactional
     public void markMessagesAsRead(Long roomId, Long userId) {
-        chatMessageRepository.markMessagesAsRead(roomId, userId);
+        int updatedCount = chatMessageRepository.markMessagesAsRead(roomId, userId);
+        log.info("메시지 읽음 처리 결과 - 방ID: {}, 사용자ID: {}, 업데이트된 메시지 수: {}",
+                roomId, userId, updatedCount);
     }
 
 
