@@ -14,7 +14,7 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
     List<ChatMessage> findByChat_RoomId(Long roomId);
 
     @Modifying
-    @Query("UPDATE ChatMessage m SET m.isRead = true WHERE m.chat.roomId = :roomId AND m.senderId != :userId AND m.isRead = false")
+    @Query("UPDATE ChatMessage m SET m.isRead = true WHERE m.chat.roomId = :roomId AND m.senderId <> :userId AND m.isRead = false")
     int markMessagesAsRead(@Param("roomId") Long roomId, @Param("userId") Long userId);
 
 

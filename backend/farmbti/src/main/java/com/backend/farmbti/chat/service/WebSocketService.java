@@ -33,23 +33,25 @@ public class WebSocketService {
 
     // 사용자 ID와 사용자명을 매핑하는 맵 (스레드 안전한 ConcurrentHashMap 사용)
     private final Map<Long, String> userUsernameMap = new ConcurrentHashMap<>();
+    private final Map<String, Boolean> userActiveStatus = new ConcurrentHashMap<>();
 
     @Transactional
     public MessageResponse saveAndGetMessage(Long roomId, String message, Long senderId) {
-
         Chat chat = chatRepository.findById(roomId)
                 .orElseThrow(() -> new GlobalException(ChatErrorCode.CHAT_ROOM_NOT_EXISTS));
 
-        System.out.println(senderId);
+        log.info("메시지 저장 시작 - 방ID: {}, 발신자ID: {}", roomId, senderId);
 
         ChatMessage chatMessage = ChatMessage.builder()
                 .senderId(senderId)
                 .content(message)
                 .sendAt(LocalDateTime.now())
                 .chat(chat)
+                .isRead(false) // 초기값은 읽지 않음으로 설정
                 .build();
 
         chatMessageRepository.save(chatMessage);
+        log.info("메시지 저장 완료 - 메시지ID: {}", chatMessage.getMessageId());
 
         return MessageResponse.builder()
                 .roomId(chat.getRoomId())
@@ -62,7 +64,6 @@ public class WebSocketService {
 
     @Transactional
     public String getRecevierName(Long roomId, String currentUserName) {
-
         Chat chatRoom = chatRepository.findById(roomId)
                 .orElseThrow(() -> new GlobalException(ChatErrorCode.CHAT_ROOM_NOT_FOUND));
 
@@ -79,7 +80,6 @@ public class WebSocketService {
         } else {
             return mentorName;
         }
-
     }
 
     /**
@@ -95,7 +95,7 @@ public class WebSocketService {
 
         // 사용자가 멘토인 채팅방 ID 목록 조회
         List<Long> mentorRoomIds = chatRepository.findAllByMentorUser(user)
-                .stream()  // 여기서 Collection의 stream() 메소드 호출
+                .stream()
                 .map(Chat::getRoomId)
                 .collect(Collectors.toList());
 
@@ -122,17 +122,31 @@ public class WebSocketService {
         // 필요시 사용자별 구독 채팅방 정보도 저장할 수 있음
     }
 
-
     @Transactional
     public void markMessagesAsRead(Long roomId, Long userId) {
-        int updatedCount = chatMessageRepository.markMessagesAsRead(roomId, userId);
-        log.info("메시지 읽음 처리 결과 - 방ID: {}, 사용자ID: {}, 업데이트된 메시지 수: {}",
-                roomId, userId, updatedCount);
+        log.info("메시지 읽음 처리 시작 - 방ID: {}, 사용자ID: {}", roomId, userId);
+
+        try {
+            int updatedCount = chatMessageRepository.markMessagesAsRead(roomId, userId);
+            log.info("메시지 읽음 처리 결과 - 방ID: {}, 사용자ID: {}, 업데이트된 메시지 수: {}",
+                    roomId, userId, updatedCount);
+
+            // 업데이트 결과가 0인 경우 로그 추가
+            if (updatedCount == 0) {
+                // 읽지 않은 메시지 개수 확인
+                Long unreadCount = chatMessageRepository.countByChat_RoomIdAndIsReadIsFalseAndSenderIdNot(roomId, userId);
+                log.info("읽지 않은 메시지 수 확인 - 방ID: {}, 사용자ID: {}, 읽지 않은 메시지 수: {}",
+                        roomId, userId, unreadCount);
+            }
+        } catch (Exception e) {
+            log.error("메시지 읽음 처리 중 오류 발생 - 방ID: {}, 사용자ID: {}, 오류: {}",
+                    roomId, userId, e.getMessage(), e);
+            throw e;
+        }
     }
 
-
-    // 새로 추가된 메소드: 채팅방 사용자 ID 목록 가져오기
-    @Transactional
+    // 채팅방 사용자 ID 목록 가져오기
+    @Transactional(readOnly = true)
     public List<Long> getRoomUserIds(Long roomId) {
         Chat chatRoom = chatRepository.findById(roomId)
                 .orElseThrow(() -> new GlobalException(ChatErrorCode.CHAT_ROOM_NOT_FOUND));
@@ -144,8 +158,7 @@ public class WebSocketService {
         return userIds;
     }
 
-
-    @Transactional
+    @Transactional(readOnly = true)
     public Long getReceiverId(Long roomId, Long currentUserId) {
         Chat chatRoom = chatRepository.findById(roomId)
                 .orElseThrow(() -> new GlobalException(ChatErrorCode.CHAT_ROOM_NOT_FOUND));
@@ -162,13 +175,9 @@ public class WebSocketService {
         }
     }
 
-    // WebSocketService에 추가할 코드
-    private final Map<String, Boolean> userActiveStatus = new ConcurrentHashMap<>();
-
     public void setUserActive(Long roomId, Long userId, boolean isActive) {
         String key = roomId + ":" + userId;
         userActiveStatus.put(key, isActive);
         log.info("사용자 활성 상태 변경 - 방ID: {}, 사용자ID: {}, 상태: {}", roomId, userId, isActive);
     }
-
 }

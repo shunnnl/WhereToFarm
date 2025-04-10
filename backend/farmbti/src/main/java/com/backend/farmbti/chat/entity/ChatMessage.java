@@ -32,5 +32,5 @@ public class ChatMessage {
     private Chat chat;
 
     @Column(name = "is_read")
-    private boolean isRead = false; // 기본값은 읽지 않음 상태
+    private boolean isRead;
 }

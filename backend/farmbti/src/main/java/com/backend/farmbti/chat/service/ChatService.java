@@ -219,25 +219,39 @@ public class ChatService {
 
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public List<MessageResponse> getMessageDetail(Long roomId, Long usersId) {
-        // 시간순으로 정렬된 메시지 조회 메소드 사용
+        log.info("메시지 상세 조회 시작 - 방ID: {}, 사용자ID: {}", roomId, usersId);
+
+        // 채팅방 존재 여부 확인
+        Chat chat = chatRepository.findById(roomId)
+                .orElseThrow(() -> new GlobalException(ChatErrorCode.CHAT_ROOM_NOT_EXISTS));
+
+        // 권한 확인 (방 참여자인지)
+        boolean isAuthorized = chat.getMentee().getId().equals(usersId) ||
+                chat.getMentor().getUser().getId().equals(usersId);
+
+        if (!isAuthorized) {
+            log.error("메시지 조회 권한 없음 - 방ID: {}, 요청 사용자ID: {}", roomId, usersId);
+            throw new GlobalException(GlobalErrorCode.UNAUTHORIZED_ACCESS);
+        }
+
+        // 시간순으로 정렬된 메시지 조회
         List<ChatMessage> chatMessages = chatMessageRepository.findByChatRoomIdOrderBySendAtAsc(roomId);
+        log.info("메시지 조회 완료 - 방ID: {}, 메시지 수: {}", roomId, chatMessages.size());
+
+        // 조회와 동시에 메시지 읽음 처리
+        chatMessageRepository.markMessagesAsRead(roomId, usersId);
+        log.info("메시지 읽음 처리 - 방ID: {}, 사용자ID: {}", roomId, usersId);
 
         return chatMessages.stream().map(
-                messages -> {
-                    //현재 로그인한 사용자가 멘티라면
-                    //boolean isUserMentee = messages.getChat().getMentee().getId().equals(usersId);
-                    //Long otherUserId = isUserMentee ? messages.getChat().getMentor().getId() : messages.getChat().getMentee().getId();
-
-                    return MessageResponse.builder()
-                            .senderId(messages.getSenderId())
-                            .messageId(messages.getMessageId())
-                            .content(messages.getContent())
-                            .sentAt(messages.getSendAt())
-                            .build();
-
-                }).collect(Collectors.toList());
+                messages -> MessageResponse.builder()
+                        .senderId(messages.getSenderId())
+                        .messageId(messages.getMessageId())
+                        .content(messages.getContent())
+                        .sentAt(messages.getSendAt())
+                        .build()
+        ).collect(Collectors.toList());
     }
 
     private String getProfileImageUrl(Users user) {
