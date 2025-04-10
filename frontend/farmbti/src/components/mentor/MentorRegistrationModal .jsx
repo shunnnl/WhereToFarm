@@ -342,14 +342,7 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
             success: false, 
             message: serverErrorMessage
           });
-        } else {
-          const fallbackErrorMessage = error.message || '알 수 없는 오류';
-          toast.error(fallbackErrorMessage);
-          setSubmitResult({ 
-            success: false, 
-            message: fallbackErrorMessage
-          });
-        }
+        } 
       }
     } finally {
       setIsSubmitting(false);
