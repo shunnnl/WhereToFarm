@@ -79,6 +79,14 @@ useEffect(() => {
   return () => {
     console.log(`채팅방에서 나갑니다.`);
     localStorage.removeItem('currentChatRoomId');
+        
+    // 추가: 채팅방 ID가 있을 경우 활동 상태 비활성화
+    if (roomId) {
+      sendUserActivityStatus(roomId, false);
+    }
+    
+    localStorage.removeItem('currentChatRoomId');
+
   };
 }, [roomId]);
 
@@ -433,6 +441,10 @@ useEffect(() => {
     // 채팅방 변경 시 웹소켓 재연결 및 메시지 로드
     fetchMessages(roomId);
     connectWebSocket();
+
+    // 추가: 채팅방 입장 시 활동 상태 활성화
+    sendUserActivityStatus(roomId, true);
+
   }
 }, [roomId]);
 
@@ -474,6 +486,10 @@ const connectWebSocket = () => {
     onConnect: () => {
       console.log(`채팅방 ${roomId}에 웹소켓 연결 완료`);
       setConnected(true);
+
+      // 추가: 웹소켓 연결 후 활동 상태 활성화
+      sendUserActivityStatus(roomId, true);
+
       
       // 현재 채팅방만 구독
       const subscription = client.subscribe(`/topic/chat/${roomId}`, (payload) => {
@@ -521,6 +537,37 @@ const connectWebSocket = () => {
   client.activate();
   stompClient.current = client;
 };
+
+
+
+// 사용자 활동 상태 전송 함수
+const sendUserActivityStatus = (roomId, isActive) => {
+  if (!roomId || !stompClient.current || !stompClient.current.connected) return;
+  
+  try {
+    // 사용자 정보 가져오기
+    const userInfo = JSON.parse(localStorage.getItem('user') || '{}');
+    
+    console.log(`채팅방 ${roomId} 활동 상태 업데이트: ${isActive ? '활성' : '비활성'}`);
+    
+    // 웹소켓을 통해 메시지 전송
+    stompClient.current.publish({
+      destination: `/chat/${roomId}/user-activity`,
+      body: JSON.stringify({
+        message: '',
+        senderName: userInfo.name,
+        senderId: userInfo.id,
+        senderProfile: userInfo.profileImage,
+        active: isActive
+      })
+    });
+    
+    console.log(`채팅방 ${roomId} 활동 상태 업데이트 요청 완료`);
+  } catch (error) {
+    console.error('활동 상태 업데이트 처리 오류:', error);
+  }
+};
+
 
 
 
@@ -677,6 +724,10 @@ const handleRoomSelect = (selectedRoomId) => {
       })
     });
     
+    // 5. 사용자 활동 상태 업데이트 (active = true)
+    sendUserActivityStatus(selectedRoomId, true);
+
+
     console.log(`채팅방 ${selectedRoomId} 읽음 처리 요청 완료`);
   }
 };
