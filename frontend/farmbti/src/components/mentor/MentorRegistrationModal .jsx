@@ -362,11 +362,12 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
     { length: currentYear - (userBirthYear || currentYear - 100) + 1 }, 
     (_, i) => currentYear - i
   ).filter(year => userBirthYear ? year >= userBirthYear : true);
-  
+
   return (
     <Modal
       isOpen={isOpen}
-      onRequestClose={onRequestClose}
+      onRequestClose={() => {}} // 백드롭 클릭으로 닫히는 것을 방지
+      shouldCloseOnOverlayClick={false} // 백드롭 클릭으로 닫히는 것을 방지
       className="bg-white p-6 rounded-xl shadow-md max-w-4xl w-full mx-auto"
       overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]"
     >
