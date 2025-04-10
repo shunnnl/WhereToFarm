@@ -21,7 +21,6 @@ const MentorRegistrationModal = ({ isOpen, onRequestClose }) => {
   const [isCheckingMentorStatus, setIsCheckingMentorStatus] = useState(false);
   const [isAlreadyMentor, setIsAlreadyMentor] = useState(false);
   const [mentorData, setMentorData] = useState(null);
-  const [userBirthYear, setUserBirthYear] = useState(null);
   const resetForm = () => {
     setSelectedFoods([]);
     setDescription("");
@@ -116,27 +115,9 @@ const MentorRegistrationModal = ({ isOpen, onRequestClose }) => {
       // 사용자 정보를 가져오는 API 호출
       const response = await authAxios.get("/users/me");
 
-  useEffect(() => {
-    const getUserBirthYear = () => {
-      try {
-        const userDataString = localStorage.getItem('user');
-        if (userDataString) {
-          const userData = JSON.parse(userDataString);
-          if (userData && userData.birth) {
-            setUserBirthYear(parseInt(userData.birth));
-            console.log('User birth year:', userData.birth);
-          }
-        }
-      } catch (error) {
-        console.error('유저 정보 파싱 오류:', error);
-      }
-    };
-  
-    getUserBirthYear();
-  }, []);
-
-
-
+      // API 응답 구조에 맞게 확인
+      if (response.data && response.data.success && response.data.data) {
+        const userData = response.data.data;
 
         // isMentor 필드로 멘토 여부 확인
         if (userData.isMentor) {
@@ -341,11 +322,11 @@ const MentorRegistrationModal = ({ isOpen, onRequestClose }) => {
 
         if (serverErrorMessage) {
           toast.error(serverErrorMessage);
-          setSubmitResult({ 
-            success: false, 
-            message: serverErrorMessage
+          setSubmitResult({
+            success: false,
+            message: serverErrorMessage,
           });
-        } 
+        }
       }
     } finally {
       setIsSubmitting(false);
@@ -354,29 +335,15 @@ const MentorRegistrationModal = ({ isOpen, onRequestClose }) => {
 
   // 연도 옵션 생성 (현재 연도부터 100년 전까지)
   const currentYear = new Date().getFullYear();
-  const yearOptions = Array.from(
-    { length: currentYear - (userBirthYear || currentYear - 100) + 1 }, 
-    (_, i) => currentYear - i
-  ).filter(year => userBirthYear ? year >= userBirthYear : true);
+  const yearOptions = Array.from({ length: 100 }, (_, i) => currentYear - i);
 
   return (
     <Modal
       isOpen={isOpen}
-      onRequestClose={() => {}} // 백드롭 클릭으로 닫히는 것을 방지
-      shouldCloseOnOverlayClick={false} // 백드롭 클릭으로 닫히는 것을 방지
-      className="bg-white p-6 rounded-xl shadow-md max-w-4xl w-full mx-auto relative"
+      onRequestClose={onRequestClose}
+      className="bg-white p-6 rounded-xl shadow-md max-w-4xl w-full mx-auto"
       overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]"
     >
-
-      {/* X 버튼 */}
-      <button 
-        onClick={handleClose}
-        className="absolute top-4 right-4 text-gray-600 hover:text-gray-900"
-        aria-label="닫기"
-      >
-        ✕
-      </button>
-
       <form onSubmit={handleSubmit} className="w-full">
         <div className="mb-4 text-center w-full">
           <h2 className="text-2xl font-bold mb-2">멘토 등록</h2>
@@ -482,7 +449,15 @@ const MentorRegistrationModal = ({ isOpen, onRequestClose }) => {
         )}
 
         <div className="flex justify-center gap-4 mt-4">
-          <button 
+          <button
+            type="button"
+            className="bg-gray-100 text-black py-2 px-4 rounded"
+            onClick={handleClose}
+          >
+            닫기
+          </button>
+
+          <button
             type="submit"
             className={`${
               isSubmitting ? "bg-green-600" : "bg-green-800 hover:bg-green-700"
