@@ -6,6 +6,7 @@ import { publicAxios, authAxios } from '../../API/common/AxiosInstance';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../store/slices/authSlice'; 
 import { toast } from 'react-toastify'; // Toast 알림 import 추가
+import { X } from 'lucide-react';
 
 const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
   const dispatch = useDispatch();
@@ -371,7 +372,7 @@ const MentorRegistrationModal  = ({ isOpen, onRequestClose }) => {
         className="absolute top-4 right-4 text-gray-600 hover:text-gray-900"
         aria-label="닫기"
       >
-        ✕
+        <X size={24} />
       </button>
 
       <form onSubmit={handleSubmit} className="w-full">
