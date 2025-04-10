@@ -483,6 +483,35 @@ const connectWebSocket = () => {
       // 구독 정보 저장
       client.currentSubscription = subscription;
       client.currentRoomId = roomId;
+
+  // 추가: 웹소켓 연결 완료 시 즉시 읽음 처리 요청 전송
+  try {
+    const userInfo = JSON.parse(localStorage.getItem('user') || '{}');
+    console.log(`채팅방 ${roomId} 읽음 처리 요청 전송`);
+    
+    client.publish({
+      destination: `/chat/${roomId}/enter`,
+      body: JSON.stringify({
+        senderId: userInfo.id,
+        senderName: userInfo.name,
+        senderProfile: userInfo.profileImage
+      })
+    });
+    
+    // UI 상태 업데이트 (읽음 표시)
+    setChatRooms(prevRooms => {
+      return prevRooms.map(room => {
+        if (room.roomId === roomId) {
+          return { ...room, read: true };
+        }
+        return room;
+      });
+    });
+  } catch (error) {
+    console.error('읽음 처리 요청 전송 중 오류:', error);
+  }
+
+      
     },
     onStompError: (frame) => {
       console.error('STOMP 에러:', frame);
@@ -492,6 +521,10 @@ const connectWebSocket = () => {
   client.activate();
   stompClient.current = client;
 };
+
+
+
+
 
 // 웹소켓 연결 해제 함수 수정 - 구독 해제 로직 강화
 const disconnectWebSocket = () => {
