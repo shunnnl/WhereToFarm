@@ -34,11 +34,9 @@ const PolicyModal = ({ policy, isOpen, onClose }) => {
           margin: 0,
           padding: 0
         }}
-        onClick={onClose}
       >
         <div 
           className="bg-white rounded-lg p-8 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto relative"
-          onClick={e => e.stopPropagation()}
         >
           <div className="flex justify-between items-start mb-6">
             <h2 className="text-2xl font-bold text-gray-900">{policy.title}</h2>

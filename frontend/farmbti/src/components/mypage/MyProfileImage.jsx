@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Camera, RefreshCw } from "lucide-react";
 import { toast } from "react-toastify";
 import { uploadImage, deleteImage } from "../../API/mypage/MyPageAPI";
@@ -10,8 +10,39 @@ const MyProfileImage = ({ imageUrl, isDefaultImage }) => {
     imageUrl: imageUrl || "/api/placeholder/200/200",
   });
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // 이미지 업로드 로딩 상태
+  const [isLoadingImg, setIsLoadingImg] = useState(true); // 이미지 로딩 상태
 
+  // 이미지 미리 로드 함수
+  const preloadImage = useCallback((url) => {
+    setIsLoadingImg(true);
+
+    // 안전장치: 5초 후 강제로 로딩 상태 해제
+    const timeoutId = setTimeout(() => {
+      setIsLoadingImg(false);
+      console.log("이미지 로드 타임아웃, 강제 완료");
+    }, 5000);
+
+    const img = new Image();
+
+    img.onload = () => {
+      console.log("이미지 미리 로드 완료:", url);
+      setIsLoadingImg(false);
+      clearTimeout(timeoutId);
+    };
+
+    img.onerror = () => {
+      console.log("이미지 미리 로드 실패:", url);
+      setIsLoadingImg(false);
+      clearTimeout(timeoutId);
+    };
+
+    img.src = url;
+
+    return () => clearTimeout(timeoutId);
+  }, []);
+
+  // 이미지 URL이 변경될 때 처리
   useEffect(() => {
     if (imageUrl) {
       setProfileData({
@@ -19,8 +50,16 @@ const MyProfileImage = ({ imageUrl, isDefaultImage }) => {
         imageUrl: imageUrl,
       });
       console.log("프로필 이미지 URL:", imageUrl);
+
+      // S3 URL이면 미리 로드
+      if (imageUrl.includes("s3.") || imageUrl.includes("amazonaws.com")) {
+        return preloadImage(imageUrl);
+      } else {
+        // 기본 이미지나 내부 리소스는 바로 로드 완료 처리
+        setIsLoadingImg(false);
+      }
     }
-  }, [imageUrl, isDefaultImage]);
+  }, [imageUrl, isDefaultImage, preloadImage]);
 
   // 파일 유효성 검사 함수
   const validateFile = (file) => {
@@ -75,7 +114,7 @@ const MyProfileImage = ({ imageUrl, isDefaultImage }) => {
           ) {
             isValid = true;
           }
-          
+
           if (isValid) {
             resolve(true);
           } else {
@@ -189,20 +228,33 @@ const MyProfileImage = ({ imageUrl, isDefaultImage }) => {
     <div className="profile-image">
       <div className="relative mb-2">
         <div className="w-32 h-32 rounded-full bg-background flex items-center justify-center overflow-hidden border-4 border-primaryGreen">
+          {/* 로딩 UI와 이미지 렌더링 */}
           {isLoading ? (
             <div className="w-full h-full flex items-center justify-center bg-gray-200">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-800"></div>
             </div>
           ) : (
-            <img
-              src={profileData.imageUrl} // 기본 이미지 폴백 추가
-              alt="Profile"
-              className="w-full h-full object-cover bg-[#4891E0] rounded-full text-[#4891E0]"
-            />
+            <div className="relative w-full h-full">
+              {/* 이미지가 완전히 로드되기 전에 표시할 로딩 스피너 */}
+              {isLoadingImg && (
+                <div className="absolute inset-0 z-10 flex items-center justify-center bg-gray-200">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-800"></div>
+                </div>
+              )}
+
+              {/* 이미지 - DOM에는 항상 존재하지만 로딩 중일 때는 숨김 처리 */}
+              <img
+                src={profileData.imageUrl}
+                alt="Profile"
+                className={`w-full h-full object-cover bg-[#4891E0] rounded-full text-[#4891E0] transition-opacity duration-300 ${
+                  isLoadingImg ? "opacity-0" : "opacity-100"
+                }`}
+              />
+            </div>
           )}
         </div>
 
-        {/* 조건부 버튼 렌더링 - 로딩 중이 아닐 때만 표시 */}
+        {/* 조건부 버튼 렌더링 - 업로드 중이 아닐 때만 표시 */}
         {!isLoading && (
           <div className="absolute bottom-0 right-0 flex">
             {/* 이미지 업로드 버튼 */}
