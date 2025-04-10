@@ -221,15 +221,13 @@ public class ChatService {
 
     @Transactional(readOnly = true)
     public List<MessageResponse> getMessageDetail(Long roomId, Long usersId) {
-
-        List<ChatMessage> chatMessages = chatMessageRepository.findByChat_RoomId(roomId);
+        // 시간순으로 정렬된 메시지 조회 메소드 사용
+        List<ChatMessage> chatMessages = chatMessageRepository.findByChatRoomIdOrderBySendAtAsc(roomId);
 
         return chatMessages.stream().map(
                 messages -> {
-
                     //현재 로그인한 사용자가 멘티라면
                     //boolean isUserMentee = messages.getChat().getMentee().getId().equals(usersId);
-
                     //Long otherUserId = isUserMentee ? messages.getChat().getMentor().getId() : messages.getChat().getMentee().getId();
 
                     return MessageResponse.builder()

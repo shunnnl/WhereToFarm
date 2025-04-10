@@ -17,6 +17,11 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
     @Query("UPDATE ChatMessage m SET m.isRead = true WHERE m.chat.roomId = :roomId AND m.senderId != :userId AND m.isRead = false")
     void markMessagesAsRead(@Param("roomId") Long roomId, @Param("userId") Long userId);
 
+
+    @Query("SELECT m FROM ChatMessage m WHERE m.chat.roomId = :roomId ORDER BY m.sendAt ASC")
+    List<ChatMessage> findByChatRoomIdOrderBySendAtAsc(@Param("roomId") Long roomId);
+
+
     // 이것을 사용하세요
     Long countByChat_RoomIdAndIsReadIsFalseAndSenderIdNot(Long roomId, Long userId);
 }
