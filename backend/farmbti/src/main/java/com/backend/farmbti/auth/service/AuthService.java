@@ -94,13 +94,21 @@ public class AuthService {
             throw new GlobalException(AuthErrorCode.INVALID_PASSWORD);
         }
 
+        // ✅ 동시 로그인 방지 체크
+        String redisLoginKey = redisKey.getLoginTokenKey(users.getId());
+        String storedToken = (String) redisKey.redisTemplate().opsForValue().get(redisLoginKey);
+
+        if (storedToken != null) {
+            log.warn("[AuthService] 이미 로그인된 사용자 - userId: {}", users.getId());
+            throw new GlobalException(AuthErrorCode.ALREADY_LOGGED_IN); // ✅ 새로 정의 필요
+        }
+
         log.info("로그인 성공", users.getEmail());
 
         // 3. JWT 토큰 생성
         Token token = jwtTokenProvider.generateToken(users);
 
         // Redis에 access token 저장 (동시 로그인 방지용)
-        String redisLoginKey = redisKey.getLoginTokenKey(users.getId());
         redisKey.redisTemplate().opsForValue().set(
             redisLoginKey,
             token.getAccessToken(),
@@ -130,6 +138,11 @@ public class AuthService {
     public void logout(Long id) {
         Users users = usersRepository.findById(id)
                 .orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
+
+        // 🔥 Redis 토큰 삭제
+        String redisLoginKey = redisKey.getLoginTokenKey(users.getId());
+        redisKey.redisTemplate().delete(redisLoginKey);
+        log.info("Redis 로그인 토큰 삭제 완료: {}", redisLoginKey);
 
         invalidateRefreshToken(users);
         log.info("로그아웃 완료", users.getEmail());
