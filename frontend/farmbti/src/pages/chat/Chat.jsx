@@ -8,7 +8,6 @@ const convertUTCtoKST = (utcTimestamp) => {
     
     // 유효한 날짜인지 확인
     if (isNaN(utcDate.getTime())) {
-      console.warn('유효하지 않은 UTC 날짜:', utcTimestamp);
       return formatTime(new Date());
     }
     
@@ -84,7 +83,6 @@ useEffect(() => {
     if (roomId) {
       sendUserActivityStatus(roomId, false);
     }
-    
     localStorage.removeItem('currentChatRoomId');
 
   };
@@ -395,8 +393,8 @@ const fetchMessages = async (chatRoomId) => {
       const msgSenderId = typeof msg.senderId === 'string' ? parseInt(msg.senderId, 10) : msg.senderId;
       
       // 상세 로깅: ID 타입과 값 비교
-      console.log(`메시지 ID ${msg.messageId} - 송신자 ID: ${msgSenderId} (${typeof msgSenderId}), 현재 사용자 ID: ${currentUserId} (${typeof currentUserId})`);
-      console.log(`ID 일치 여부: ${msgSenderId === currentUserId}`);
+      // console.log(`메시지 ID ${msg.messageId} - 송신자 ID: ${msgSenderId} (${typeof msgSenderId}), 현재 사용자 ID: ${currentUserId} (${typeof currentUserId})`);
+      // console.log(`ID 일치 여부: ${msgSenderId === currentUserId}`);
       
       // 타입까지 고려한 ID 비교
       const isMe = msgSenderId === currentUserId;
@@ -417,9 +415,9 @@ const fetchMessages = async (chatRoomId) => {
     console.log(`채팅방 ${chatRoomId}에서 ${fetchedMessages.length}개의 메시지를 로드 완료`);
     
     // 디버깅: 각 메시지의 isMe 속성 확인
-    fetchedMessages.forEach(msg => {
-      console.log(`메시지 '${msg.text}' - isMe: ${msg.isMe}, 시간: ${msg.time}`);
-    });
+    // fetchedMessages.forEach(msg => {
+    //   console.log(`메시지 '${msg.text}' - isMe: ${msg.isMe}, 시간: ${msg.time}`);
+    // });
     
     // 상태 업데이트
     setMessages(fetchedMessages);
@@ -487,6 +485,11 @@ const connectWebSocket = () => {
       console.log(`채팅방 ${roomId}에 웹소켓 연결 완료`);
       setConnected(true);
 
+      // 사용자 정보 가져오기
+      const userInfo = JSON.parse(localStorage.getItem('user') || '{}');
+      const userId = userInfo.id;
+
+
       // 추가: 웹소켓 연결 후 활동 상태 활성화
       sendUserActivityStatus(roomId, true);
 
@@ -495,9 +498,24 @@ const connectWebSocket = () => {
       const subscription = client.subscribe(`/topic/chat/${roomId}`, (payload) => {
         onMessageReceived(payload, roomId);
       });
+
+      
+      // 읽음 상태 응답 구독 추가
+      const readStatusSubscription = client.subscribe(`/user/${userId}/queue/read-status`, (payload) => {
+        console.log('서버에서 받은 읽음 상태 응답:', payload.body);
+        try {
+          const response = JSON.parse(payload.body);
+          console.log('파싱된 읽음 상태 응답:', response);
+        } catch (e) {
+          console.error('읽음 상태 응답 파싱 오류:', e);
+        }
+      });
+
+
       
       // 구독 정보 저장
       client.currentSubscription = subscription;
+      client.readStatusSubscription = readStatusSubscription; // 새 구독 저장
       client.currentRoomId = roomId;
 
   // 추가: 웹소켓 연결 완료 시 즉시 읽음 처리 요청 전송
@@ -549,6 +567,17 @@ const sendUserActivityStatus = (roomId, isActive) => {
     const userInfo = JSON.parse(localStorage.getItem('user') || '{}');
     
     console.log(`채팅방 ${roomId} 활동 상태 업데이트: ${isActive ? '활성' : '비활성'}`);
+    
+
+      // 요청 내용 로깅
+      const requestBody = {
+        message: '',
+        senderName: userInfo.name,
+        senderId: userInfo.id,
+        senderProfile: userInfo.profileImage,
+        active: isActive
+      };
+      console.log('활동 상태 업데이트 요청 데이터:', requestBody);
     
     // 웹소켓을 통해 메시지 전송
     stompClient.current.publish({
@@ -818,7 +847,6 @@ const getKSTISOString = () => {
     timeZone: 'Asia/Seoul'
   }).format(now));
   
-  console.log('서버에 보낼 ISO 시간(KST):', isoString);
   
   return isoString;
 };
