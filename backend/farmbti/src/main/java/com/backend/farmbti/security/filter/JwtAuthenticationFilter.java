@@ -1,5 +1,6 @@
 package com.backend.farmbti.security.filter;
 
+import com.backend.farmbti.redis.RedisKey;
 import com.backend.farmbti.security.config.SecurityPath;
 import com.backend.farmbti.security.jwt.JwtTokenProvider;
 import jakarta.servlet.FilterChain;
@@ -26,6 +27,7 @@ import java.util.List;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final RedisKey redisKey;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -75,6 +77,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 //토큰에서 사용자 id, email, address 가져와서 Authentication 객체 생성
                 Long userId = jwtTokenProvider.getUserId(token);
+
+                // ✅ 동시로그인 관련 코드
+                String redisTokenKey = redisKey.getLoginTokenKey(userId);
+                String storedToken = (String) redisKey.redisTemplate().opsForValue().get(redisTokenKey);
+
+                if (storedToken != null && !storedToken.equals(token)) {
+                    log.warn("[JwtAuthenticationFilter] 다른 기기에서 로그인된 상태 - userId: {}", userId);
+                    response.setContentType("application/json;charset=UTF-8");
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.getWriter().write("{\"success\":false,\"error\":{\"code\":\"DUPLICATE_LOGIN\",\"message\":\"다른 기기에서 로그인되었습니다.\",\"status\":401}}");
+                    return;
+                }
+                // 동시로그인 end
+
                 String name = jwtTokenProvider.getName(token);
                 String email = jwtTokenProvider.getEmail(token);
                 String address = jwtTokenProvider.getAddress(token);

@@ -33,7 +33,7 @@ public class SwaggerConfig {
                 .info(new Info()
                         .title("FarmBTI API")
                         .description("FarmBTI 서비스의 API 문서")
-                        .version("1.0.0"))
-                .servers(List.of(new Server().url("https://j12d209.p.ssafy.io/api"))); // api 붙어야함!
+                        .version("1.0.0"));
+                //.servers(List.of(new Server().url("https://j12d209.p.ssafy.io/api"))); // api 붙어야함!
     }
 }

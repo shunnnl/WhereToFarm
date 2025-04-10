@@ -9,6 +9,7 @@ import com.backend.farmbti.auth.repository.UsersRepository;
 import com.backend.farmbti.common.exception.GlobalException;
 import com.backend.farmbti.common.service.S3Service;
 import com.backend.farmbti.mentors.repository.MentorsRepository;
+import com.backend.farmbti.redis.RedisKey;
 import com.backend.farmbti.security.dto.Token;
 import com.backend.farmbti.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +31,7 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final S3Service s3Service;
     private final MentorsRepository mentorsRepository;
+    private final RedisKey redisKey;
 
     public void signUp(SignUpRequest request) {
         //1. 에러 검증
@@ -95,6 +98,15 @@ public class AuthService {
 
         // 3. JWT 토큰 생성
         Token token = jwtTokenProvider.generateToken(users);
+
+        // Redis에 access token 저장 (동시 로그인 방지용)
+        String redisLoginKey = redisKey.getLoginTokenKey(users.getId());
+        redisKey.redisTemplate().opsForValue().set(
+            redisLoginKey,
+            token.getAccessToken(),
+            jwtTokenProvider.getAccessTokenValidity(),
+            TimeUnit.MILLISECONDS
+        );
 
         // 4. 멘토 여부 확인
         boolean isMentor = mentorsRepository.findByUserId(users.getId()).isPresent();

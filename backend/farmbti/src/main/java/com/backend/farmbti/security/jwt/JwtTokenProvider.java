@@ -245,5 +245,8 @@ public class JwtTokenProvider {
         }
     }
 
+    public long getAccessTokenValidity() {
+        return jwtProperties.getExpirationTime();
+    }
 
 }
