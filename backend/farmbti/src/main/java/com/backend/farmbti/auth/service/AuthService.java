@@ -127,7 +127,7 @@ public class AuthService {
                 .address(users.getAddress())
                 .gender(users.getGender())
                 .birth(users.getBirth())
-                .profileImage(users.getProfileImage())
+                .profileImage(users.getProfileImageUrl())
                 .token(token)
                 .createdAt(users.getCreatedAt())
                 .isOut(users.getIsOut()) // 탈퇴여부
