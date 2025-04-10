@@ -49,8 +49,6 @@ public class WebSocketController {
         System.out.println("보내는 사람: " + currentUserName);
         System.out.println("받는 사람: " + receiverUsername);
 
-
-
         // 사용자 이름 대신 ID를 가져오는 메소드를 사용해야 함
         Long senderId = messageRequest.getSenderId();
 
@@ -191,6 +189,35 @@ public class WebSocketController {
         );
     }
 
+
+    @MessageMapping("/{roomId}/user-activity")
+    public void handleUserActivity(@DestinationVariable Long roomId, MessageRequest messageRequest) {
+        Long userId = messageRequest.getSenderId();
+        String currentUserName = messageRequest.getSenderName();
+        boolean isActive = messageRequest.isActive(); // 클라이언트에서 전송하는 활성 상태 값
+
+        if(isActive) {
+            // 메시지 읽음 처리
+            webSocketService.markMessagesAsRead(roomId, userId);
+
+            // 읽음 상태 업데이트 알림 구성
+            Long receiverId = webSocketService.getReceiverId(roomId, userId);
+
+            Map<String, Object> readStatus = new HashMap<>();
+            readStatus.put("type", "readStatus");
+            readStatus.put("roomId", roomId);
+            readStatus.put("reader", currentUserName);
+            readStatus.put("readerId", userId);
+            readStatus.put("timestamp", LocalDateTime.now());
+
+            // 상대방에게 읽음 상태 업데이트 알림 전송
+            messagingTemplate.convertAndSendToUser(
+                    String.valueOf(receiverId),
+                    "/queue/read-status",
+                    readStatus
+            );
+        }
+    }
 
 
 
