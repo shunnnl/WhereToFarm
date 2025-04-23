@@ -5,7 +5,7 @@
 우아한 자매들이 만드는 스마트한 귀농 가이드 🚜✨  
 
 📽️ [시연 영상 바로가기](https://drive.google.com/file/d/1nhuQVSqwYE_Bl4Ter0TAZ4RBhGhQi_vt/view) 
-📝 [회의록 보기](https://romantic-blanket-13b.notion.site/1a59cee601788005bacec26dd6a81df2?pvs=4)
+📝 [회의록 보기](https://cloud-ice-455.notion.site/1d515a2ee9308155bc00c09a12c43fbe?pvs=4)
 
 
 ## 목차
