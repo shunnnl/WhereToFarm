@@ -95,6 +95,7 @@
 ![image](/uploads/66741214da58e878296f628e3bd241ed/어디가농_-_영상포폴_시연.mp4_snapshot_01.27__2025.06.04_15.13.19_.jpg)
 ![image](/uploads/eeff58827064c5328621e247264dea90/어디가농_-_영상포폴_시연.mp4_snapshot_01.31__2025.06.04_15.13.36_.jpg)
 
+
 #### ✅ 마이페이지 
 
 제공된 귀농 리포트, 예상 수익 리포트 조회 
@@ -102,6 +103,7 @@
 
 ![image](/uploads/52e7c52a2ae001f935ce4030f04b4b86/image.png){width=1212 height=830}
 ![image](/uploads/9abb4ac39fd8a2c275ef5cf7bfb33e9b/image.png){width=1220 height=824}
+
 
 #### ✅ 멘토 & 멘티 
 
