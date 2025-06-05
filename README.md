@@ -208,7 +208,8 @@ Naver API로 실시간 뉴스 조회
 
 우아한 자매들은 프론트엔드 3명, 백엔드 3명으로 구성된 팀입니다.
 
-![image](/uploads/aa310f5cbadb5743ac0b922bf1ca6731/image.png){width=700 height=400}
+![image (21)](https://github.com/user-attachments/assets/d0a82d3c-643f-42a7-b05f-485d85eb3d9b)
+
 
 
 | Frontend | Frontend | Frontend | Backend | Backend | Backend |
