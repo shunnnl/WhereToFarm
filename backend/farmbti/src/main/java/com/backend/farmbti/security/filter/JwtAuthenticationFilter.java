@@ -102,7 +102,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 // 사용자 인증 객체 생성 및 SecurityContext에 설정
                 Authentication authentication = new UsernamePasswordAuthenticationToken(
-                        email,
+                        email,                  // principal (보통 username이나 email)
                         token,                   // securityUtil에서 추출힘
                         authorities            // 권한 목록
                 );
@@ -112,7 +112,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 log.info("[JwtAuthenticationFilter] 인증 정보 설정 완료");
 
                 // 추가 정보를 요청 속성에 저장하여 컨트롤러에서 사용할 수 있게 함
-                request.setAttribute("name", name);
                 request.setAttribute("userId", userId);
                 request.setAttribute("userEmail", email);
                 request.setAttribute("userAddress", address);

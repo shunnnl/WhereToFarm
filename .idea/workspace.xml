@@ -4,9 +4,73 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a2f44978-6b66-4045-88da-5621e7d124fe" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/backend/farmbti/src/main/resources/application.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/main/resources/application.properties" beforeDir="false" />
+    <list default="true" id="a2f44978-6b66-4045-88da-5621e7d124fe" name="Changes" comment="Changes">
+      <change afterPath="$PROJECT_DIR$/exec/D209_우아한자매들_어디가농프로젝트_포팅_매뉴얼.pdf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/exec/db/dump_character_type.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/exec/db/dump_crops.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/exec/db/dump_crops_price.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/exec/db/dump_policy.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/exec/db/dump_property.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/exec/db/dump_region.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/exec/db/dump_region_crops.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/.gitattributes" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/backend/farmbti/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/backend/farmbti/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/Jenkinsfile" beforeDir="false" afterPath="$PROJECT_DIR$/backend/farmbti/Jenkinsfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/backend/farmbti/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/farmbti/docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/gradle/wrapper/gradle-wrapper.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/gradlew" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/gradlew.bat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/settings.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/FarmbtiApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/FarmbtiApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/auth/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/auth/controller/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/auth/domain/Users.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/auth/domain/Users.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/auth/dto/LoginRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/auth/dto/LoginResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/auth/dto/LoginResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/auth/dto/RefreshTokenRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/auth/dto/SignUpRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/auth/exception/AuthErrorCode.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/auth/exception/AuthErrorCode.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/auth/repository/UsersRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/auth/repository/UsersRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/auth/service/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/auth/service/AuthService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/common/config/SwaggerConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/common/config/SwaggerConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/common/dto/CommonResponseDto.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/common/dto/ErrorResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/common/entity/TimeStampEntity.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/common/exception/ErrorCode.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/common/exception/GlobalErrorCode.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/common/exception/GlobalErrorCode.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/common/exception/GlobalException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/common/exception/GlobalExceptionHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/crops/controller/CropsController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/crops/domain/Crops.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/crops/domain/Crops.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/crops/domain/CropsReport.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/crops/dto/CropsAllResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/crops/dto/CropsAllResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/crops/dto/CropsDetailReponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/crops/dto/CropsDetailReponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/crops/dto/CropsEstimateRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/crops/dto/CropsEstimateResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/crops/dto/CropsEstimateResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/crops/exception/CropsErrorCode.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/crops/exception/CropsReportErrorCode.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/crops/repository/CropsReportRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/crops/repository/CropsReportRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/crops/repository/CropsRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/crops/service/CropsService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/crops/service/CropsService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/redis/RedisController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/redis/RedisService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/redis/RedisService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/redis/config/RedisConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/redis/config/RedisConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/security/config/CorsConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/security/config/CorsConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/security/config/SecurityConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/security/config/SecurityPath.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/security/config/SecurityPath.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/security/dto/Token.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/security/exception/JwtErrorCode.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/security/filter/JwtAuthenticationFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/security/filter/JwtAuthenticationFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/security/jwt/JwtProperties.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/security/jwt/JwtTokenProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/security/jwt/JwtTokenProvider.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/security/util/SecurityUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/farmbti/src/main/java/com/backend/farmbti/security/util/SecurityUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/farmbti/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/farmbti/src/test/java/com/backend/farmbti/FarmbtiApplicationTests.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -14,11 +78,16 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="develop" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 8
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 8
+}</component>
   <component name="ProjectId" id="2u70MDphjaFsW3WF6rvnphBb2Qp" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -26,12 +95,14 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "develop",
+    "git-widget-placeholder": "backend 병합 중",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/SSAFY/Desktop/S12P21D209/backend/farmbti"
+    "last_opened_file_path": "C:/Users/SSAFY/Desktop/nn/S12P21D209"
   }
 }]]></component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
