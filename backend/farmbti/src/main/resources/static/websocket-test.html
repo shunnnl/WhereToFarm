@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Farm BTI 로그인 및 채팅 테스트</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <style>
+        .chat-container {
+            height: 500px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+        }
+
+        .notification-container {
+            height: 200px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            background-color: #f8f9fa;
+        }
+
+        .message {
+            margin-bottom: 10px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            max-width: 80%;
+            word-break: break-word;
+        }
+
+        .received {
+            background-color: #f1f0f0;
+            align-self: flex-start;
+        }
+
+        .sent {
+            background-color: #dcf8c6;
+            align-self: flex-end;
+            margin-left: auto;
+        }
+
+        .notification {
+            padding: 8px;
+            margin-bottom: 5px;
+            background-color: #e3f2fd;
+            border-radius: 5px;
+        }
+
+        .timestamp {
+            font-size: 0.75rem;
+            color: #666;
+            display: block;
+            margin-top: 3px;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            border-bottom: none;
+            border-radius: 5px 5px 0 0;
+            background-color: #f8f9fa;
+        }
+
+        .tab.active {
+            background-color: #fff;
+            border-bottom: 2px solid #007bff;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 0 5px 5px 5px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="mb-4">Farm BTI 로그인 및 채팅 테스트</h1>
+
+    <div class="tabs">
+        <div class="tab active" data-tab="login-tab">로그인</div>
+        <div class="tab" data-tab="chat-tab">채팅</div>
+    </div>
+
+    <!-- 로그인 탭 -->
+    <div class="tab-content active" id="login-tab">
+        <div class="card">
+            <div class="card-header">
+                <h2>로그인</h2>
+            </div>
+            <div class="card-body">
+                <form id="login-form">
+                    <div class="mb-3">
+                        <label class="form-label" for="email">이메일</label>
+                        <input class="form-control" id="email" placeholder="이메일을 입력하세요" required type="email">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="password">비밀번호</label>
+                        <input class="form-control" id="password" placeholder="비밀번호를 입력하세요" required type="password">
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary" type="submit">로그인</button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer">
+                <div class="mt-3" id="login-status"></div>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header">
+                <h3>인증 토큰 정보</h3>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label" for="stored-token">JWT 토큰</label>
+                    <textarea class="form-control" id="stored-token" readonly rows="4"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="token-info">토큰 정보</label>
+                    <pre class="form-control" id="token-info" style="min-height: 150px;"></pre>
+                </div>
+                <div class="d-grid gap-2">
+                    <button class="btn btn-danger" id="clear-token">토큰 삭제</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 채팅 탭 -->
+    <div class="tab-content" id="chat-tab">
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label" for="username">사용자 이름</label>
+                    <input class="form-control" id="username" placeholder="사용자 이름을 입력하세요" type="text">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label" for="roomId">채팅방 ID</label>
+                    <input class="form-control" id="roomId" placeholder="채팅방 ID를 입력하세요" type="number" value="3">
+                </div>
+            </div>
+        </div>
+
+        <div class="d-grid gap-2 mb-4">
+            <button class="btn btn-primary" id="connect">연결하기</button>
+            <button class="btn btn-danger" disabled id="disconnect">연결 끊기</button>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <h2>채팅</h2>
+                <div class="chat-container d-flex flex-column" id="chat-messages">
+                    <!-- 메시지가 여기에 표시됩니다 -->
+                </div>
+
+                <div class="input-group mb-3">
+                    <input class="form-control" disabled id="message" placeholder="메시지를 입력하세요" type="text">
+                    <button class="btn btn-success" disabled id="send">보내기</button>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <h2>알림</h2>
+                <div class="notification-container" id="notifications">
+                    <!-- 알림이 여기에 표시됩니다 -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 탭 전환 기능
+    const tabs = document.querySelectorAll('.tab');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const tabId = tab.getAttribute('data-tab');
+
+            // 모든 탭 비활성화
+            tabs.forEach(t => t.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
+
+            // 선택한 탭 활성화
+            tab.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        });
+    });
+
+    // 로그인 관련 변수 및 함수
+    let jwtToken = localStorage.getItem('jwtToken') || '';
+    const loginForm = document.getElementById('login-form');
+    const loginStatus = document.getElementById('login-status');
+    const storedTokenInput = document.getElementById('stored-token');
+    const tokenInfoPre = document.getElementById('token-info');
+    const clearTokenButton = document.getElementById('clear-token');
+
+    // 페이지 로드 시 저장된 토큰 확인
+    if (jwtToken) {
+        storedTokenInput.value = jwtToken;
+        displayTokenInfo(jwtToken);
+        loginStatus.innerHTML = '<div class="alert alert-success">이미 로그인되어 있습니다.</div>';
+    }
+
+    // 로그인 이벤트 리스너
+    loginForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        login();
+    });
+
+    // 토큰 삭제 버튼
+    clearTokenButton.addEventListener('click', function () {
+        localStorage.removeItem('jwtToken');
+        jwtToken = '';
+        storedTokenInput.value = '';
+        tokenInfoPre.textContent = '';
+        loginStatus.innerHTML = '<div class="alert alert-warning">로그아웃되었습니다.</div>';
+    });
+
+    // 로그인 함수
+    function login() {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        const loginRequest = {
+            email: email,
+            password: password
+        };
+
+        loginStatus.innerHTML = '<div class="alert alert-info">로그인 중...</div>';
+
+        fetch(`/auth/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(loginRequest)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('로그인 실패');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // 서버 응답 구조에 맞게 토큰 추출
+                console.log('Login response:', data);
+                jwtToken = data.data.token.accessToken;
+                localStorage.setItem('jwtToken', jwtToken);
+
+                // 사용자 정보 저장
+                const userData = data.data;
+                localStorage.setItem('userName', userData.name);
+                document.getElementById('username').value = userData.name;
+
+                storedTokenInput.value = jwtToken;
+                displayTokenInfo(jwtToken);
+
+                loginStatus.innerHTML = '<div class="alert alert-success">로그인 성공!</div>';
+
+                // 채팅 탭으로 전환
+                document.querySelector('.tab[data-tab="chat-tab"]').click();
+            })
+            .catch(error => {
+                console.error('Login error:', error);
+                loginStatus.innerHTML = `<div class="alert alert-danger">로그인 실패: ${error.message}</div>`;
+            });
+    }
+
+    // 토큰 정보 표시 함수
+    function displayTokenInfo(token) {
+        try {
+            // JWT는 header.payload.signature 형식
+            const parts = token.split('.');
+            if (parts.length !== 3) {
+                throw new Error('유효한 JWT 토큰 형식이 아닙니다.');
+            }
+
+            // Base64 디코딩 (padding 처리)
+            const decodeBase64 = (str) => {
+                // Base64 URL 안전 문자열을 표준 Base64로 변환
+                str = str.replace(/-/g, '+').replace(/_/g, '/');
+                // padding 추가
+                while (str.length % 4) {
+                    str += '=';
+                }
+
+                try {
+                    return JSON.parse(atob(str));
+                } catch (e) {
+                    return null;
+                }
+            };
+
+            const header = decodeBase64(parts[0]);
+            const payload = decodeBase64(parts[1]);
+
+            const tokenInfo = {
+                header: header,
+                payload: payload,
+                expiresAt: payload.exp ? new Date(payload.exp * 1000).toLocaleString() : 'N/A'
+            };
+
+            tokenInfoPre.textContent = JSON.stringify(tokenInfo, null, 2);
+        } catch (e) {
+            tokenInfoPre.textContent = `토큰 정보를 파싱할 수 없습니다: ${e.message}`;
+        }
+    }
+
+    // WebSocket 관련 변수 및 함수
+    let stompClient = null;
+    let currentUsername = '';
+    let currentRoomId = '';
+
+    // DOM 요소
+    const usernameInput = document.getElementById('username');
+    const roomIdInput = document.getElementById('roomId');
+    const connectButton = document.getElementById('connect');
+    const disconnectButton = document.getElementById('disconnect');
+    const messageInput = document.getElementById('message');
+    const sendButton = document.getElementById('send');
+    const chatMessages = document.getElementById('chat-messages');
+    const notificationsContainer = document.getElementById('notifications');
+
+    // 연결 버튼 클릭 이벤트
+    connectButton.addEventListener('click', connect);
+
+    // 연결 해제 버튼 클릭 이벤트
+    disconnectButton.addEventListener('click', disconnect);
+
+    // 메시지 전송 버튼 클릭 이벤트
+    sendButton.addEventListener('click', sendMessage);
+
+    // 엔터 키로 메시지 전송
+    messageInput.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    });
+
+    // WebSocket 연결 함수
+    function connect() {
+        currentUsername = usernameInput.value.trim();
+        currentRoomId = roomIdInput.value.trim();
+
+        if (!currentUsername) {
+            alert('사용자 이름을 입력해주세요.');
+            return;
+        }
+
+        if (!currentRoomId) {
+            alert('채팅방 ID를 입력해주세요.');
+            return;
+        }
+
+        // JWT 토큰 가져오기 (로컬 스토리지에서)
+        const token = localStorage.getItem('jwtToken');
+
+        if (!token) {
+            alert('로그인이 필요합니다! 로그인 탭으로 이동합니다.');
+            document.querySelector('.tab[data-tab="login-tab"]').click();
+            return;
+        }
+
+        // SockJS 객체 생성 (올바른 대소문자 사용)
+        const socket = new SockJS('http://localhost:18081/gs-guide-websocket');
+        stompClient = Stomp.over(socket);
+
+        // 연결 시 헤더에 인증 정보 추가
+        const headers = {
+            'Authorization': 'Bearer ' + token
+        };
+
+        stompClient.connect(headers, function (frame) {
+            console.log('Connected: ' + frame);
+
+            // UI 상태 변경
+            setConnected(true);
+
+            // 채팅방의 메시지 구독
+            stompClient.subscribe('/topic/chat/' + currentRoomId, function (message) {
+                const messageData = JSON.parse(message.body);
+                showMessage(messageData);
+            });
+
+            // 개인 알림 구독
+            stompClient.subscribe('/user/' + currentUsername + '/queue/notifications', function (notification) {
+                console.log("수신된 알림:", notification);
+                const notificationData = JSON.parse(notification.body);
+                showNotification(notificationData);
+            });
+
+            // 연결 성공 메시지 표시
+            const connectMsg = document.createElement('div');
+            connectMsg.className = 'alert alert-info';
+            connectMsg.textContent = `${currentUsername}님이 채팅방 ${currentRoomId}에 연결되었습니다.`;
+            chatMessages.appendChild(connectMsg);
+        }, function (error) {
+            // 연결 에러 처리
+            console.error('Connection error: ', error);
+            alert('연결 실패: ' + error);
+            disconnect();
+        });
+    }
+
+    // 연결 해제 함수
+    function disconnect() {
+        if (stompClient !== null) {
+            stompClient.disconnect();
+            stompClient = null;
+            console.log('Disconnected');
+        }
+
+        // UI 상태 변경
+        setConnected(false);
+
+        // 연결 해제 메시지 표시
+        const disconnectMsg = document.createElement('div');
+        disconnectMsg.className = 'alert alert-warning';
+        disconnectMsg.textContent = '채팅방에서 연결이 해제되었습니다.';
+        chatMessages.appendChild(disconnectMsg);
+    }
+
+    // 메시지 전송 함수
+    function sendMessage() {
+        const messageContent = messageInput.value.trim();
+        if (messageContent && stompClient) {
+            // 테스트를 위해 메시지에 사용자 이름을 추가
+            const messageWithUsername = JSON.stringify({
+                message: messageContent,
+                senderName: currentUsername  // 백엔드에서 사용할 수 있는 사용자 식별자
+            });
+
+            const destination = `/chat/${currentRoomId}/send`;
+            stompClient.send(destination, {}, messageWithUsername);
+            messageInput.value = '';
+        }
+    }
+
+    // 메시지 표시 함수
+    function showMessage(message) {
+        const messageElement = document.createElement('div');
+        const isMine = message.senderName === currentUsername;
+
+        messageElement.className = `message ${isMine ? 'sent' : 'received'}`;
+
+        const senderSpan = document.createElement('span');
+        senderSpan.className = 'fw-bold';
+        senderSpan.textContent = message.senderName + ': ';
+
+        const contentSpan = document.createElement('span');
+        contentSpan.textContent = message.content;
+
+        const timestampSpan = document.createElement('span');
+        timestampSpan.className = 'timestamp';
+        timestampSpan.textContent = new Date(message.sentAt).toLocaleString();
+
+        messageElement.appendChild(senderSpan);
+        messageElement.appendChild(contentSpan);
+        messageElement.appendChild(timestampSpan);
+
+        chatMessages.appendChild(messageElement);
+
+        // 스크롤을 최신 메시지로 이동
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // 알림 표시 함수
+    function showNotification(notification) {
+        const notificationElement = document.createElement('div');
+        notificationElement.className = 'notification';
+
+        const contentDiv = document.createElement('div');
+        contentDiv.textContent = `${notification.sender}님이 새 메시지를 보냈습니다.`;
+
+        const timestampDiv = document.createElement('div');
+        timestampDiv.className = 'timestamp';
+        timestampDiv.textContent = new Date(notification.timestamp).toLocaleString();
+
+        notificationElement.appendChild(contentDiv);
+        notificationElement.appendChild(timestampDiv);
+
+        notificationsContainer.appendChild(notificationElement);
+
+        // 알림 소리 재생 (옵션)
+        playNotificationSound();
+    }
+
+    // 알림 소리 재생 함수
+    function playNotificationSound() {
+        const audio = new Audio('https://media.geeksforgeeks.org/wp-content/uploads/20190531135120/beep.mp3');
+        audio.play().catch(e => console.log('Notification sound could not be played: ' + e));
+    }
+
+    // 연결 상태에 따른 UI 변경 함수
+    function setConnected(connected) {
+        connectButton.disabled = connected;
+        disconnectButton.disabled = !connected;
+        messageInput.disabled = !connected;
+        sendButton.disabled = !connected;
+
+        if (connected) {
+            usernameInput.disabled = true;
+            roomIdInput.disabled = true;
+        } else {
+            usernameInput.disabled = false;
+            roomIdInput.disabled = false;
+        }
+    }
+</script>
+</body>
+</html>

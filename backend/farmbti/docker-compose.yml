@@ -1,0 +1,51 @@
+services:
+  backend:
+    container_name: farmbti-backend
+    build: .
+    image: nageum/farmbti_backend
+    ports:
+      - "8081:8081"
+    env_file:
+      - .env
+    volumes:
+      - ./src/main/resources/application.yml:/app/application.yml
+    depends_on:
+      - postgres
+      - redis
+    restart: always
+    networks:
+      - farmbti
+
+  postgres:
+    container_name: postgres
+    image: postgres:14
+    restart: always
+    environment:
+      POSTGRES_DB: farmbti_db
+      POSTGRES_USER: ssafy
+      POSTGRES_PASSWORD: ssafy209!@
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - farmbti
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - farmbti
+
+networks:
+  farmbti:
+    external: true
+
+volumes:
+  postgres_data:
+  redis_data:

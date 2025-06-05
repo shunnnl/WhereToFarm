@@ -1,3 +1,6 @@
+
+.idea/workspace.xml
+
 # Created by https://www.toptal.com/developers/gitignore/api/venv,python,jupyternotebooks
 # Edit at https://www.toptal.com/developers/gitignore?templates=venv,python,jupyternotebooks
 
@@ -200,3 +203,4 @@ pip-selfcheck.json
 
 
 .env
+
