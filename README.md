@@ -62,38 +62,44 @@
 
 메인화면에서 모든 서비스를 이용할 수 있음 
 
-![image](/uploads/03a9b270aada745ab15c17af36628163/image.png){width=2137 height=1146}
-![image](/uploads/9a41466e94dc97a3bdce77ae49947404/image.png){width=2136 height=975}
-![image](/uploads/66f1f6d47409f2439d1ec4a90f4881b9/image.png){width=2126 height=883}
+![image (1)](https://github.com/user-attachments/assets/9b594f6c-3241-4fee-b4e1-d80aea8c020a)
+![image (2)](https://github.com/user-attachments/assets/0bab8afd-a6d2-48d2-967e-a52f8fa8640d)
+![image (20)](https://github.com/user-attachments/assets/fe332403-d955-4fb4-83b3-309b95ed8e4e)
+
 
 #### ✅ 회원가입
 
 이메일과 비밀번호로 회원가입
 
-![image](/uploads/4c1317059de606343e7b2e02608ab081/image.png){width=1377 height=1038}
+![image (4)](https://github.com/user-attachments/assets/b1784fa4-0a60-47dc-a1f0-fa1476411f7a)
+
 
 #### ✅ 설문조사
 
 맞춤형 리포트를 제공받기 위한 설문조사 
 
-![image](/uploads/c8795bf729c2cc813dd44c6cc5acb176/image.png){width=1424 height=1014}
-![image](/uploads/b32bca384034555c15e3002bf895012b/image.png){width=1275 height=582}
+![image (5)](https://github.com/user-attachments/assets/4973a526-ce07-4deb-9544-48a8e276c99b)
+![image (6)](https://github.com/user-attachments/assets/73bc9109-c4ea-4cd5-b207-955e57ea5c6a)
+
 
 
 #### ✅ 지역 추천 리포트 
 
 사용자가 한 설문조사를 기반으로 우선순위(환경, 교통, 인프라, 생활)에 따른 개인화된 지역 추천
 
-![image](/uploads/8715edbef3b6ea7ff88d39a9ef02b6b2/image.png){width=1422 height=1131}
-![image](/uploads/6a311e986ee41ada564f7cbfecdff4f8/image.png){width=1422 height=1131}
+![image (7)](https://github.com/user-attachments/assets/1553c8f2-9b30-48cf-9f78-ea78a146e1c4)
+![image (8)](https://github.com/user-attachments/assets/72393e0a-e8fd-4b72-b6f4-f1212653ccc0)
+
 
 
 #### ✅ 작물 예상 수익 계산기
 
 총 경지 면적과 작물을 선택하면 연간 예상 수확량과 월별 1kg당 매출 추이 및 예측 그래프 확인
 
-![image](/uploads/66741214da58e878296f628e3bd241ed/어디가농_-_영상포폴_시연.mp4_snapshot_01.27__2025.06.04_15.13.19_.jpg)
-![image](/uploads/eeff58827064c5328621e247264dea90/어디가농_-_영상포폴_시연.mp4_snapshot_01.31__2025.06.04_15.13.36_.jpg)
+![어디가농_-_영상포폴_시연 mp4_snapshot_01 27__2025 06 04_15 13 19_](https://github.com/user-attachments/assets/ed49810f-3d44-4f93-9fb6-5097cff46cb5)
+![어디가농_-_영상포폴_시연 mp4_snapshot_01 31__2025 06 04_15 13 36_](https://github.com/user-attachments/assets/109fc112-8f47-4840-a035-8aaa51003d3f)
+
+
 
 
 #### ✅ 마이페이지 
@@ -101,44 +107,47 @@
 제공된 귀농 리포트, 예상 수익 리포트 조회 
 회원 정보 수정 및 정보 조회 
 
-![image](/uploads/52e7c52a2ae001f935ce4030f04b4b86/image.png){width=1212 height=830}
-![image](/uploads/9abb4ac39fd8a2c275ef5cf7bfb33e9b/image.png){width=1220 height=824}
+![image (9)](https://github.com/user-attachments/assets/d056302b-ee5f-4d18-9d65-040d22701aa4)
+![image (10)](https://github.com/user-attachments/assets/e0036bcf-9a39-412e-a2d7-a28bac2d4a14)
 
 
 #### ✅ 멘토 & 멘티 
 
 지도에서 지역 선택 후 멘토 조회
 
-![image](/uploads/54a31863bd63794bc833f163d532a482/image.png){width=1212 height=919}
-![image](/uploads/007f5ae1f737596cb96da0ad0cc5fe7a/image.png){width=1212 height=919}
+![image (12)](https://github.com/user-attachments/assets/cbca9cf1-5ab7-4d0f-a036-3b7a1ad29373)
+![image (13)](https://github.com/user-attachments/assets/b813145c-66e8-400e-b989-44957cff2a72)
 
 
 #### ✅ 실시간 채팅
 
 실시간 채팅과 실시간 알림 조회 
 
-![image](/uploads/a35f5b02f283d4368a2e1836198da99d/image.png){width=1326 height=1125}
-![image](/uploads/1fb6af7ad2f4373a09e587e8053ba9fc/image.png){width=1387 height=450}
+![image (14)](https://github.com/user-attachments/assets/67c37dd8-523c-4d75-9379-4ce1b8b26682)
+![image (15)](https://github.com/user-attachments/assets/f4e71849-790e-4930-a012-bf185ebb9b68)
+
 
 #### ✅ 멘토 등록
 
 회원가입한 멘티는 멘토로 등록 가능 
 
-![image](/uploads/018e15a35c26decff0553def661965cd/image.png){width=1142 height=896}
+![image (16)](https://github.com/user-attachments/assets/d700a197-418c-4c5b-bba9-9be4c2700aff)
+
 
 #### ✅ 뉴스
 
 Naver API로 실시간 뉴스 조회 
 
-![image](/uploads/4b133502ec665d5914f1fb001762ccf7/image.png){width=1362 height=1070}
+
+![image (17)](https://github.com/user-attachments/assets/d22edb27-efca-49e4-878d-ae44c3cd7f5f)
 
 
 #### ✅ 지원 정책 
 
 웹 크롤링으로 데이터 수집 후 지역별 지원 정책 조회
 
-![image](/uploads/a51f3ec0f03d1a1717baaadad2655cab/image.png){width=1364 height=1109}
-![image](/uploads/fb243842c71b8be1fd121edbd8b1ffb4/image.png){width=1308 height=815}
+![image (18)](https://github.com/user-attachments/assets/93fa87fc-9dd5-4b9f-b9f5-7ed8cfa8fcaf)
+![image (19)](https://github.com/user-attachments/assets/c730b5d4-f296-4920-9261-b4720732e8ee)
 
 
 ## 📢 기술 스택 소개
@@ -187,11 +196,12 @@ Naver API로 실시간 뉴스 조회
 
 
 ## 🔍 시스템 아키텍처
-![image](/uploads/f3ea4e35631592b9352daf236f0cc041/image.png){width=792 height=497}
+![image](https://github.com/user-attachments/assets/5c22d572-d624-4179-a834-4edefe298916)
+
 
 
 ## 💾 ERD Diagram
-![image](/uploads/c026cec944b592c293132a059f34db21/image.png){width=903 height=417}
+![image (46)](https://github.com/user-attachments/assets/a4b765ff-cdf6-4f74-902e-49b2286f6739)
 
 
 ## 👥 우아한 자매들
